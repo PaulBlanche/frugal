@@ -1,0 +1,29 @@
+{
+  "compilerOptions": {
+    "lib": [
+      "esnext",
+      "deno.ns",
+      "deno.unstable",
+      "dom",
+      "dom.iterable",
+      "dom.asynciterable"
+    ]
+  },
+  "fmt": {
+    "files": {
+      "exclude": ["./.deno_dir/", "./ulule/dist/", "./.vscode/"]
+    },
+    "options": {
+      "useTabs": false,
+      "lineWidth": 80,
+      "indentWidth": 4,
+      "singleQuote": true,
+      "proseWrap": "preserve"
+    }
+  },
+  "lint": {
+    "files": {
+      "exclude": ["./.deno_dir/", "./ulule/dist/", "./.vscode/"]
+    }
+  }
+}

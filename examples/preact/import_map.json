@@ -1,0 +1,6 @@
+{
+    "imports": {
+        "preact": "https://esm.sh/preact@10.6.4",
+        "preact-render-to-string": "https://esm.sh/preact-render-to-string@5.1.19"
+    }
+}
