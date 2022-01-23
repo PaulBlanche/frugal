@@ -198,7 +198,7 @@ export class FrugalLogger {
   }
 }
 
-type Config = {
+export type Config = {
   type?: "human" | "json";
   loggers: {
     [name: string]: log.LevelName;

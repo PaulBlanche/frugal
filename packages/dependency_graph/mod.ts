@@ -20,8 +20,6 @@ type Config = {
   resolve?: (specifier: string, referrer: URL) => URL|undefined
 }
 
-const logger = log.getLogger("dependency_graph");
-
 export async function build(entrypoints: URL[], config: Config = {}): Promise<tree.Root> {
   const analysisCache = new Map<string, Promise<AnalysisResult>>();
 
@@ -139,7 +137,7 @@ type AnalysisResult = {
 async function analyze(resolvedModuleSpecifier: URL, config: Config): Promise<AnalysisResult> {
   const dependencies: URL[] = [];
 
-  logger.info({
+  log.getLogger("dependency_graph").info({
     op: "analysing",
     path: resolvedModuleSpecifier,
     msg() {

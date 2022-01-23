@@ -2,6 +2,7 @@ import { Cache } from "./Cache.ts";
 import * as path from "../../dep/std/path.ts";
 import * as graph from "../dependency_graph/mod.ts";
 import * as asset from "./asset.ts";
+import * as log from "../log/mod.ts";
 import { Page } from "./Page.ts";
 import { Context } from "./loader.ts";
 import { assert } from "../assert/mod.ts";
@@ -14,18 +15,25 @@ export type Config = {
   loaders?: Loader<any>[];
   outputDir: string;
   pages: string[];
+  logging?: log.Config
 };
 
-async function loadImportMap(config: Config): Promise<importmap.ImportMap|undefined> {
-  if (config.importMap === undefined) {
-    return undefined
+const DEFAULT_LOGGER_CONFIG:log.Config = {
+  type: 'human',
+  loggers: {
+    dependency_graph: "INFO",
   }
-
-  const source = await Deno.readTextFile(new URL(config.importMap, `file:///${config.root}/`))
-  return JSON.parse(source)
 }
 
 export async function build(config: Config) {
+  log.setup({
+    type: config.logging?.type ?? DEFAULT_LOGGER_CONFIG.type,
+    loggers: {
+      ...DEFAULT_LOGGER_CONFIG.loggers,
+      ...config.logging?.loggers,
+    }
+  })
+
   const cachePath = path.join(cacheDir(config), "frugal.json");
   const cache = await Cache.load(cachePath);
 
@@ -101,3 +109,13 @@ export function publicDir(config: Config) {
 export function cacheDir(config: Config) {
   return path.resolve(config.root, config.outputDir, ".cache");
 }
+
+async function loadImportMap(config: Config): Promise<importmap.ImportMap|undefined> {
+  if (config.importMap === undefined) {
+    return undefined
+  }
+
+  const source = await Deno.readTextFile(new URL(config.importMap, `file:///${config.root}/`))
+  return JSON.parse(source)
+}
+
