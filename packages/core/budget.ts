@@ -1,35 +1,35 @@
 export const CONNECTIONS = {
-  "slow 2G": 35 * 1000,
-  "56k": 49 * 1000,
-  "fast 2G": 150 * 1000,
-  "edge": 240 * 1000,
-  "slow 3G": 780 * 1000,
-  "dsl": 1.5 * 1000 * 1000,
-  "fast 3G": 1.6 * 1000 * 1000,
-  "cable": 5 * 1000 * 1000,
-  "adsl": 15 * 1000 * 1000,
-  "slow fiber": 30 * 1000 * 1000,
-  "slow 4G": 40 * 1000 * 1000,
-  "fast 4G": 60 * 1000 * 1000,
-  "fast fiber": 100 * 1000 * 1000,
+    'slow 2G': 35 * 1000,
+    '56k': 49 * 1000,
+    'fast 2G': 150 * 1000,
+    'edge': 240 * 1000,
+    'slow 3G': 780 * 1000,
+    'dsl': 1.5 * 1000 * 1000,
+    'fast 3G': 1.6 * 1000 * 1000,
+    'cable': 5 * 1000 * 1000,
+    'adsl': 15 * 1000 * 1000,
+    'slow fiber': 30 * 1000 * 1000,
+    'slow 4G': 40 * 1000 * 1000,
+    'fast 4G': 60 * 1000 * 1000,
+    'fast fiber': 100 * 1000 * 1000,
 };
 
-import * as path from "../../dep/std/path.ts";
-import * as dom from "../../dep/dom.ts";
+import * as path from '../../dep/std/path.ts';
+import * as dom from '../../dep/dom.ts';
 
 const parser = new dom.DOMParser();
 
 export async function size(filePath: string) {
-  const document = parser.parseFromString(
-    await Deno.readTextFile(filePath),
-    "text/html",
-  );
+    const document = parser.parseFromString(
+        await Deno.readTextFile(filePath),
+        'text/html',
+    );
 
-  const base = path.dirname(filePath);
+    const base = path.dirname(filePath);
 
-  const sizePromises: Promise<number>[] = [localSize(filePath)];
+    const sizePromises: Promise<number>[] = [localSize(filePath)];
 
-  /*document?.querySelectorAll('script').forEach((script) => {
+    /*document?.querySelectorAll('script').forEach((script) => {
         const url = (script as dom.Element).getAttribute('src');
         if (url === null) {
             return;
@@ -73,18 +73,18 @@ export async function size(filePath: string) {
         }
     });*/
 
-  const sizes = await Promise.all(sizePromises);
+    const sizes = await Promise.all(sizePromises);
 
-  return sizes.reduce((a, b) => a + b);
+    return sizes.reduce((a, b) => a + b);
 }
 
 async function localSize(filePath: string) {
-  const stat = await Deno.stat(filePath);
-  return stat.size;
+    const stat = await Deno.stat(filePath);
+    return stat.size;
 }
 
 async function distantSize(url: string) {
-  const response = await fetch(url);
-  const blob = await response.blob();
-  return blob.size;
+    const response = await fetch(url);
+    const blob = await response.blob();
+    return blob.size;
 }

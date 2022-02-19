@@ -1,1 +1,1 @@
-export * from "./loader.ts";
+export * from './loader.ts';

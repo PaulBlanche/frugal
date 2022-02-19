@@ -1,1 +1,1 @@
-export * from "https://esm.sh/preact-render-to-string@5.1.19";
+export * from 'https://esm.sh/preact-render-to-string@5.1.19';

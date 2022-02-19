@@ -1,63 +1,64 @@
 /* @jsx preact.h */
 /* @jsxFrag preact.Fragment */
-import * as preact from "../../dep/preact/preact.ts";
-import * as hooks from "../../dep/preact/hooks.ts";
-import "./types.ts";
+import * as preact from '../../dep/preact/preact.ts';
+import * as hooks from '../../dep/preact/hooks.ts';
+import './types.ts';
 
 type DataContext = { data: any; url: string };
 
 const dataContext = preact.createContext<
-  DataContext | undefined
+    DataContext | undefined
 >(undefined);
 
 export function useData<DATA>(): DATA {
-  const context = hooks.useContext(dataContext);
-  if (context === undefined) {
-    throw Error("wrap in DataProvider");
-  }
+    const context = hooks.useContext(dataContext);
+    if (context === undefined) {
+        throw Error('wrap in DataProvider');
+    }
 
-  return context.data;
+    return context.data;
 }
 
 export function useUrl(): string {
-  const context = hooks.useContext(dataContext);
-  if (context === undefined) {
-    throw Error("wrap in DataProvider");
-  }
+    const context = hooks.useContext(dataContext);
+    if (context === undefined) {
+        throw Error('wrap in DataProvider');
+    }
 
-  return context.url;
+    return context.url;
 }
 
 type DataProviderProps = {
-  context?: DataContext;
-  children: preact.ComponentChildren;
+    context?: DataContext;
+    children: preact.ComponentChildren;
 };
 
 export function DataProvider({ context, children }: DataProviderProps) {
-  if (typeof window.document === "undefined") {
-    return (
-      <>
-        {context && (
-          <script
-            dangerouslySetInnerHTML={{
-              __html: `window.__FRUGAL__ = window.__FRUGAL__ || {}; 
+    if (typeof window.document === 'undefined') {
+        return (
+            <>
+                {context && (
+                    <script
+                        dangerouslySetInnerHTML={{
+                            __html:
+                                `window.__FRUGAL__ = window.__FRUGAL__ || {}; 
 window.__FRUGAL__.context = ${JSON.stringify(context)}`.replace(
-                /<\/script>/g,
-                "<\\/script>",
-              ),
-            }}
-          />
-        )}
-        <dataContext.Provider value={context}>
-          {children}
-        </dataContext.Provider>
-      </>
-    );
-  } else {
-    return (
-      <dataContext.Provider value={window.__FRUGAL__.context}>
-        {children}
-      </dataContext.Provider>
-    );
-  }
+                                    /<\/script>/g,
+                                    '<\\/script>',
+                                ),
+                        }}
+                    />
+                )}
+                <dataContext.Provider value={context}>
+                    {children}
+                </dataContext.Provider>
+            </>
+        );
+    } else {
+        return (
+            <dataContext.Provider value={window.__FRUGAL__.context}>
+                {children}
+            </dataContext.Provider>
+        );
+    }
 }

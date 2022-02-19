@@ -3,12 +3,12 @@ import * as preact from '../../dep/preact/preact.ts';
 const isServer = typeof window.document === 'undefined';
 
 export type Manager = {
-    update(state: preact.VNode[]): void,
-    instanceStack: Set<preact.VNode<any>>
-}
+    update(state: preact.VNode[]): void;
+    instanceStack: Set<preact.VNode<any>>;
+};
 
 type SideEffectProps = {
-    reduceComponentsToState:(
+    reduceComponentsToState: (
         components: preact.VNode<any>[],
     ) => preact.VNode[];
     manager: Manager;

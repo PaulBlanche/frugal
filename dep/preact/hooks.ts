@@ -1,1 +1,1 @@
-export * from "https://esm.sh/preact@10.5.14/hooks";
+export * from 'https://esm.sh/preact@10.5.14/hooks';

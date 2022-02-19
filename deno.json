@@ -1,29 +1,24 @@
 {
-  "compilerOptions": {
-    "lib": [
-      "esnext",
-      "deno.ns",
-      "deno.unstable",
-      "dom",
-      "dom.iterable",
-      "dom.asynciterable"
-    ]
-  },
-  "fmt": {
-    "files": {
-      "exclude": ["./.deno_dir/", "./ulule/dist/", "./.vscode/"]
+    "compilerOptions": {
+        "lib": [
+            "esnext",
+            "deno.ns",
+            "deno.unstable",
+            "dom",
+            "dom.iterable",
+            "dom.asynciterable"
+        ]
     },
-    "options": {
-      "useTabs": false,
-      "lineWidth": 80,
-      "indentWidth": 4,
-      "singleQuote": true,
-      "proseWrap": "preserve"
+    "fmt": {
+        "files": {
+            "exclude": ["./examples", "./.vscode/"]
+        },
+        "options": {
+            "useTabs": false,
+            "lineWidth": 80,
+            "indentWidth": 4,
+            "singleQuote": true,
+            "proseWrap": "preserve"
+        }
     }
-  },
-  "lint": {
-    "files": {
-      "exclude": ["./.deno_dir/", "./ulule/dist/", "./.vscode/"]
-    }
-  }
 }
