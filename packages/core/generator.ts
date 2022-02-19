@@ -21,16 +21,34 @@ export type Config = {
 const DEFAULT_LOGGER_CONFIG:log.Config = {
   type: 'human',
   loggers: {
-    dependency_graph: "INFO",
+    'frugal:asset': "INFO",
+    'frugal:cache': "INFO",
+    'frugal:dependency_graph': "INFO",
+    'frugal:generator': "INFO",
+    'frugal:page': "INFO",
   }
 }
 
+function logger() {
+  return log.getLogger('frugal:generator')
+}
+
 export async function build(config: Config) {
-  log.setup({
+  await log.setup({
     type: config.logging?.type ?? DEFAULT_LOGGER_CONFIG.type,
     loggers: {
       ...DEFAULT_LOGGER_CONFIG.loggers,
       ...config.logging?.loggers,
+    }
+  })
+
+  logger().info({
+    op: 'start',
+    msg() {
+      return `${this.op} ${this.logger!.timerStart}`
+    },
+    logger: {
+      timerStart: 'generation'
     }
   })
 
@@ -68,6 +86,17 @@ export async function build(config: Config) {
   }));
 
   await cache.save(cachePath);
+
+  logger().info({
+    op: 'done',
+    msg() {
+      return `${this.logger!.timerStart} ${this.op}`
+    },
+    logger: {
+      timerStart: 'generation'
+    }
+  })
+
 }
 
 async function load(
@@ -76,6 +105,10 @@ async function load(
   cache: Cache,
 ) {
   const context: Context = {};
+
+  logger().info({
+    msg: 'build entrypoint contexts',
+  })
 
   await Promise.all((config.loaders ?? []).map(async (loader) => {
     const loaderCache = cache.getNamespace(loader.name);

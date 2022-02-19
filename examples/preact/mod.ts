@@ -16,6 +16,16 @@ build({
   pages: [
     "./page.tsx",
   ],
+  logging: {
+    type: 'human',
+    loggers: {
+      'frugal:asset': "DEBUG",
+      'frugal:cache': "DEBUG",
+      'frugal:dependency_graph': "DEBUG",
+      'frugal:generator': "DEBUG",
+      'frugal:page': "DEBUG",
+    }  
+  }
 });
 
 declare global {

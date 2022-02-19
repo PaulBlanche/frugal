@@ -1,5 +1,6 @@
 import * as fs from "../../dep/std/fs.ts";
 import * as path from "../../dep/std/path.ts";
+import * as log from "../log/mod.ts";
 
 type CacheData = {
   [s: string]: any;
@@ -11,12 +12,20 @@ type MemoizeConfig<V> = {
   otherwise?: () => Promise<void> | void;
 };
 
+function logger() {
+  return log.getLogger('frugal:cache')
+}
+
 export class Cache<VALUE = unknown> {
   private previousData: CacheData;
   private nextData: CacheData;
   private namespace: string;
 
   static async load(cachePath: string) {
+    logger().info({
+      op: 'loading',
+      msg() { return `${this.op}` }
+    })
     try {
       const data = await Deno.readTextFile(cachePath);
       return Cache.unserialize(JSON.parse(data));
@@ -105,6 +114,11 @@ export class Cache<VALUE = unknown> {
   }
 
   async save(cachePath: string): Promise<void> {
+    logger().info({
+      op: 'saving',
+      msg() { return `${this.op}` }
+    })
+
     await fs.ensureDir(path.dirname(cachePath));
     await Deno.writeTextFile(cachePath, JSON.stringify(this.serialize()));
   }

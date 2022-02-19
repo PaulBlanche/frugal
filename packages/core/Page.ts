@@ -4,6 +4,7 @@ import * as path from "../../dep/std/path.ts";
 import * as fs from "../../dep/std/fs.ts";
 import { assert } from "../assert/mod.ts";
 import { Context } from "./loader.ts";
+import * as log from "../log/mod.ts";
 
 export type GetRequestList<REQUEST> = () => Promise<REQUEST[]>;
 
@@ -48,10 +49,18 @@ export type PageDescriptor<REQUEST, DATA> = {
 export class Page<REQUEST, DATA> {
   private descriptor: PageDescriptor<REQUEST, DATA>;
   private moduleHash: string;
+  private path: string;
 
   static async load<REQUEST, DATA>(
     entrypoint: { url: URL; moduleHash: string },
   ): Promise<Page<REQUEST, DATA>> {
+    logger().info({
+      op: 'loading',
+      url: entrypoint.url.toString(),
+      msg() {
+        return `${this.op} ${this.url}`
+      }
+    })
     const pageDescriptor = await import(entrypoint.url.toString());
     return new Page(entrypoint.url.toString(), pageDescriptor, entrypoint.moduleHash);
   }
@@ -63,6 +72,7 @@ export class Page<REQUEST, DATA> {
   ) {
     this.descriptor = descriptor;
     this.moduleHash = moduleHash;
+    this.path = path;
     this.validateDescriptor(path);
   }
 
@@ -71,6 +81,16 @@ export class Page<REQUEST, DATA> {
     context: Context,
     publicDir: string,
   ): Promise<void> {
+    logger().info({
+      op: 'start',
+      msg() {
+        return `${this.op} ${this.logger!.timerStart}`
+      },
+      logger: {
+        timerStart: `page generation ${this.path}`
+      }
+    })
+
     const requestsList = await this.descriptor.getRequestList();
 
     const instancePromise = [];
@@ -82,6 +102,16 @@ export class Page<REQUEST, DATA> {
     }
 
     await Promise.all(instancePromise);
+
+    logger().info({
+      op: 'done',
+      msg() {
+        return `${this.logger!.timerStart} ${this.op}`
+      },
+      logger: {
+        timerStart: `page generation ${this.path}`
+      }
+    })
   }
 
   private async generateInstance(
@@ -113,8 +143,6 @@ export class Page<REQUEST, DATA> {
         const pagePath = path.join(publicDir, url);
         await fs.ensureDir(path.dirname(pagePath));
 
-        console.log(pagePath, content)
-
         await Deno.writeTextFile(pagePath, content);
       },
     });
@@ -138,4 +166,8 @@ export class Page<REQUEST, DATA> {
       `Page descriptor "${path}" has no getContent function`,
     );
   }
+}
+
+function logger() {
+  return log.getLogger('frugal:page')
 }

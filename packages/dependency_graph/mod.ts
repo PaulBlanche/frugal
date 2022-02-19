@@ -23,9 +23,29 @@ type Config = {
 export async function build(entrypoints: URL[], config: Config = {}): Promise<tree.Root> {
   const analysisCache = new Map<string, Promise<AnalysisResult>>();
 
+  logger().info({
+    op: 'start',
+    msg() {
+      return `${this.op} ${this.logger!.timerStart}`
+    },
+    logger: {
+      timerStart: 'dependency graph'
+    }
+  })
+
   const dependencies = await Promise.all(
     entrypoints.map((entrypoint) => buildForEntrypoint(entrypoint)),
   );
+
+  logger().info({
+    op: 'done',
+    msg() {
+      return `${this.logger!.timerStart} ${this.op}`
+    },
+    logger: {
+      timerStart: 'dependency graph'
+    }
+  })
 
   return {
     type: "root",
@@ -137,7 +157,7 @@ type AnalysisResult = {
 async function analyze(resolvedModuleSpecifier: URL, config: Config): Promise<AnalysisResult> {
   const dependencies: URL[] = [];
 
-  log.getLogger("dependency_graph").info({
+  logger().debug({
     op: "analysing",
     path: resolvedModuleSpecifier,
     msg() {
@@ -229,3 +249,6 @@ function baseResolve(specifier: string, referrer: URL): URL {
   return new URL(specifier, referrer)
 }
 
+function logger() {
+  return log.getLogger("frugal:dependency_graph");
+}
