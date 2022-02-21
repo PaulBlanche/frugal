@@ -6,7 +6,7 @@ import * as frugal from '../core/mod.ts';
 import { SVGFile } from './svg-sprite.ts';
 
 type Config = {
-    test: RegExp;
+    test: (url: URL) => boolean;
     jsx: Function;
     render: Function;
 };

@@ -1,6 +1,6 @@
 /* @jsx preact.h */
 /* @jsxFrag preact.Fragment */
-import * as preact from '../../dep/preact/preact.ts';
+import * as preact from 'preact';
 import { DataProvider } from './dataContext.tsx';
 import type { HydrationStrategy } from './types.ts';
 

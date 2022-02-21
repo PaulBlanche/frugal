@@ -1,6 +1,7 @@
 /* @jsx preact.h */
 /* @jsxFrag preact.Fragment */
-import * as preact from '../../dep/preact/preact.ts';
+
+import * as preact from 'preact';
 import { cx } from '../loader_style/styled.ts';
 
 import type { HydrationStrategy } from './types.ts';

@@ -6,7 +6,6 @@ const ROOT = path.dirname(new URL(import.meta.url).pathname);
 
 build({
     root: ROOT,
-    importMap: './import_map.json',
     outputDir: './dist',
     loaders: [
         script({

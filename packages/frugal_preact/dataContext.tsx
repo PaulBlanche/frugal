@@ -1,7 +1,7 @@
 /* @jsx preact.h */
 /* @jsxFrag preact.Fragment */
-import * as preact from '../../dep/preact/preact.ts';
-import * as hooks from '../../dep/preact/hooks.ts';
+import * as preact from 'preact';
+import * as hooks from 'preact/hooks';
 import './types.ts';
 
 type DataContext = { data: any; url: string };

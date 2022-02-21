@@ -1,4 +1,4 @@
-import * as preact from '../../dep/preact/preact.ts';
+import * as preact from 'preact';
 
 const isServer = typeof window.document === 'undefined';
 
