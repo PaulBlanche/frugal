@@ -24,13 +24,16 @@ export function style(config: Config): frugal.Loader<string, string> {
         return cache.memoize({
             key: bundleHash,
             producer: async () => {
-                const styleModule = path.resolve(
-                    path.dirname(new URL(import.meta.url).pathname),
-                    './styled.ts',
+                const styleModule = new URL(
+                    path.resolve(
+                        path.dirname(new URL(import.meta.url).pathname),
+                        './styled.ts',
+                    ),
+                    import.meta.url
                 );
 
                 const styleGeneratorScript = `
-import * as style from "file://${styleModule}";
+import * as style from "${styleModule}";
 ${
                     assets.map(({ module }) =>
                         `import "${module}";`

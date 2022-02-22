@@ -28,13 +28,16 @@ export function svg(config: Config): frugal.Loader<void, void> {
         return cache.memoize({
             key: bundleHash,
             producer: async () => {
-                const svgModule = path.resolve(
-                    path.dirname(new URL(import.meta.url).pathname),
-                    './svg-sprite.ts',
-                );
+                const svgModule = new URL(
+                    path.resolve(
+                        path.dirname(new URL(import.meta.url).pathname),
+                        './svg-sprite.ts',
+                    ),
+                    import.meta.url
+                )
 
                 const svgGeneratorScript = `
-import * as svg from "file://${svgModule}";
+import * as svg from "${svgModule}";
 ${
                     assets.map(({ module }) =>
                         `import "${module}";`

@@ -52,7 +52,7 @@ export function script(
                         entrypoint,
                         content: orderedModules.map((path, i) => {
                             const name = `import${i}`;
-                            return `import { main as ${name} } from "${path}";
+                            return `import { main as ${name} } from "${path}";
                             ${name}();`;
                         }).join('\n'),
                     });
