@@ -5,7 +5,7 @@ import * as murmur from '../murmur/mod.ts';
 import * as frugal from '../core/mod.ts';
 
 type Config = {
-    test: RegExp;
+    test: (url: URL) => boolean;
     transform?: (bundle: string) => string;
 };
 
