@@ -4,7 +4,7 @@ import * as preact from 'preact';
 import { DataProvider } from './dataContext.tsx';
 import type { HydrationStrategy } from './types.ts';
 
-type App<PROPS> = (props: PROPS) => Promise<preact.VNode> | preact.VNode;
+type App<PROPS> = (props: PROPS) => preact.VNode;
 
 type GetApp<PROPS> = () => App<PROPS>;
 
@@ -89,15 +89,13 @@ export function queryHydratables(
     );
 }
 
-export async function hydrateElement<PROPS>(root: Element, App: App<PROPS>) {
+export function hydrateElement<PROPS>(root: Element, App: App<PROPS>) {
     const data = root.querySelector('[type="application/json"]')!;
     const props: PROPS = JSON.parse(data.textContent!);
 
-    const syncApp = await App(props);
-
     preact.render(
         <DataProvider>
-            {syncApp}
+            <App {...props} />
         </DataProvider>,
         root,
     );

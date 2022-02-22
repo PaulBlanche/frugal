@@ -3,6 +3,7 @@
 
 import * as preact from 'preact';
 import { cx } from '../loader_style/styled.ts';
+import { DataProvider } from './dataContext.tsx';
 
 import type { HydrationStrategy } from './types.ts';
 

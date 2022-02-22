@@ -31,6 +31,7 @@ export type GetContentParams<REQUEST, DATA> = {
     request: REQUEST;
     data: DATA;
     url: string;
+    path: string;
     context: Context;
     cache: Cache;
 };
@@ -140,6 +141,7 @@ export class Page<REQUEST, DATA> {
                     request,
                     data,
                     url,
+                    path: this.path,
                     context,
                     cache,
                 });
