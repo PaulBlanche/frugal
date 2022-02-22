@@ -2,14 +2,14 @@ import * as rollup from '../../dep/rollup.ts';
 import * as styled from './styled.ts';
 
 type Config = {
-    test: RegExp;
+    test: (url: string) => boolean;
 };
 
 export function style({ test }: Config): rollup.Plugin {
     return {
         name: 'frugal-style',
         async transform(_code, id) {
-            if (test.test(id)) {
+            if (test(id)) {
                 const stylesheet: { [s: string]: styled.Rules } = await import(
                     id
                 );
