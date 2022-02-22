@@ -34,15 +34,15 @@ export function svg(config: Config): frugal.Loader<void, void> {
                 );
 
                 const svgGeneratorScript = `
-import { output } from "file://${svgModule}";
+import * as svg from "file://${svgModule}";
 ${
                     assets.map(({ module }) =>
-                        `import "file://${module}";`
+                        `import "${module}";`
                     ).join('\n')
                 }
-export const output = output()`;
+export const output = svg.output()`;
 
-                const output = await import(
+                const { output } = await import(
                     URL.createObjectURL(new Blob([svgGeneratorScript]))
                 );
 
@@ -67,7 +67,7 @@ export async function write(
                     jsx(
                         'defs',
                         {
-                            childre: svgFile.sprites.map((sprite) => {
+                            children: svgFile.sprites.map((sprite) => {
                                 return jsx(
                                     'g',
                                     {

@@ -9,12 +9,9 @@ type Config = {
     name: string;
     order?(modules: string[]): string[];
     input?: Omit<rollup.InputOptions, 'input'>;
+    outputs?: rollup.OutputOptions[]
     inline?: boolean;
-    format: NonNullable<rollup.OutputOptions['format']>[];
     end?: () => void;
-    transformChunk?: (
-        code: string,
-    ) => Promise<string> | string;
 };
 
 export function script(
@@ -67,10 +64,9 @@ export function script(
                     cache,
                     input: config.input,
                     inline: config.inline,
-                    format: config.format,
+                    outputs: config.outputs,
                     publicDir: dir.public,
                     scripts: facades,
-                    transformChunk: config.transformChunk,
                 });
             },
             otherwise: () => {

@@ -30,18 +30,18 @@ export function style(config: Config): frugal.Loader<string, string> {
                 );
 
                 const styleGeneratorScript = `
-import { output } from "file://${styleModule}";
+import * as style from "file://${styleModule}";
 ${
                     assets.map(({ module }) =>
-                        `import "file://${module}";`
+                        `import "${module}";`
                     ).join('\n')
                 }
-export const result = output()`;
+export const output = style.output()`;
 
-                const code = await import(
+                const { output } = await import(
                     URL.createObjectURL(new Blob([styleGeneratorScript]))
                 );
-                const bundle = config.transform ? config.transform(code) : code;
+                const bundle = config.transform ? config.transform(output) : output;
 
                 const bundleHash = new murmur.Hash()
                     .update(bundle)

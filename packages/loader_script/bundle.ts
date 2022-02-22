@@ -8,16 +8,13 @@ import * as frugal from '../core/mod.ts';
 type BundleConfig = {
     cache: frugal.Cache<any>;
     input?: Omit<rollup.InputOptions, 'input' | 'cache'>;
+    outputs?: rollup.OutputOptions[]
     inline?: boolean;
-    format: NonNullable<rollup.OutputOptions['format']>[];
     publicDir: string;
     scripts: {
         entrypoint: string;
         content: string;
     }[];
-    transformChunk?: (
-        code: string,
-    ) => Promise<string> | string;
 };
 
 export function bundle(config: BundleConfig) {
@@ -34,8 +31,10 @@ export function INLINE_CACHE_KEY(entrypoint: string) {
 
 export const CODE_SPLIT_CACHE_KEY = `rollup-code-split`;
 
+const SOURCEMAPPING_URL = 'sourceMa'+'ppingURL';
+
 export async function bundleInline(
-    { cache, input, scripts, format, transformChunk }: BundleConfig,
+    { cache, input, scripts, outputs = [] }: BundleConfig,
 ): Promise<Record<string, Record<string, string>>> {
     const bundles: Record<string, Record<string, string>> = {};
 
@@ -56,14 +55,12 @@ export async function bundleInline(
 
         cache.set(cacheKey, rollupBundle.cache);
 
-        await Promise.all(format.map(async (format) => {
-            const { output } = await rollupBundle.generate({
-                format,
-            });
+        await Promise.all(outputs.map(async (outputConfig) => {
+            const { output } = await rollupBundle.generate(outputConfig);
 
-            const bundle = transformChunk
-                ? await transformChunk(output[0].code)
-                : output[0].code;
+            const bundle = output[0].code
+
+            const format = outputConfig.format ?? 'es'
 
             bundles[script.entrypoint] = bundles[script.entrypoint] ?? {};
             bundles[script.entrypoint][format] = bundle;
@@ -76,7 +73,7 @@ export async function bundleInline(
 }
 
 export async function bundleCodeSplit(
-    { cache, input, scripts, format, transformChunk, publicDir }: BundleConfig,
+    { cache, input, scripts, outputs = [], publicDir }: BundleConfig,
 ): Promise<Record<string, Record<string, string>>> {
     const urls: Record<string, Record<string, string>> = {};
 
@@ -95,20 +92,15 @@ export async function bundleCodeSplit(
 
     cache.set(CODE_SPLIT_CACHE_KEY, rollupBundle.cache);
 
-    await Promise.all(format.map(async (format) => {
-        const { output } = await rollupBundle.generate({
-            format,
-        });
+    await Promise.all(outputs.map(async (outputConfig) => {
+        const { output } = await rollupBundle.generate(outputConfig);
 
         await Promise.all(output.map(async (chunkOrAsset) => {
             if (chunkOrAsset.type === 'asset') {
                 return;
             }
 
-            const bundle = transformChunk
-                ? await transformChunk(chunkOrAsset.code)
-                : chunkOrAsset.code;
-
+            let bundle = chunkOrAsset.code    
             const hash = new murmur.Hash().update(bundle).alphabetic();
 
             const ext = path.extname(chunkOrAsset.fileName);
@@ -117,11 +109,34 @@ export async function bundleCodeSplit(
                 ? `${name}-${hash}${ext}`
                 : chunkOrAsset.fileName;
 
+            const format = outputConfig.format ?? 'es'
+
             const chunkUrl = `/js/${format}/${fileName}`;
             const chunkPath = path.join(publicDir, chunkUrl);
 
-            await fs.ensureDir(path.dirname(chunkPath));
-            await Deno.writeTextFile(chunkPath, bundle);
+            if (outputConfig.sourcemap && chunkOrAsset.map) {
+                if (outputConfig.sourcemap === 'inline') {
+                    const sourceMapUrl = chunkOrAsset.map.toUrl();
+                    const code = bundle + `//# ${SOURCEMAPPING_URL}=${sourceMapUrl}\n`;
+ 
+                    await fs.ensureDir(path.dirname(chunkPath));
+                    await Deno.writeTextFile(chunkPath, code)
+                } else {
+                    const sourceMapPath = `${chunkPath}.map`
+                    const sourceMapUrl = `${path.basename(sourceMapPath)}`;
+
+                    let code = bundle;
+                    if (outputConfig.sourcemap !== 'hidden') {
+                        code += `//# ${SOURCEMAPPING_URL}=${sourceMapUrl}\n`;
+                    }
+    
+                    await fs.ensureDir(path.dirname(chunkPath));
+                    await Promise.all([
+                        Deno.writeTextFile(chunkPath, code),
+                        Deno.writeTextFile(sourceMapPath, chunkOrAsset.map.toString())
+                    ])        
+                }
+            }
 
             if (chunkOrAsset.isEntry && chunkOrAsset.facadeModuleId !== null) {
                 urls[chunkOrAsset.facadeModuleId] =
