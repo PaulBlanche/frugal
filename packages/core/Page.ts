@@ -111,10 +111,10 @@ export class Page<REQUEST, DATA> {
         logger().info({
             op: 'done',
             msg() {
-                return `${this.logger!.timerStart} ${this.op}`;
+                return `${this.logger!.timerEnd} ${this.op}`;
             },
             logger: {
-                timerStart: `page generation ${this.path}`,
+                timerEnd: `page generation ${this.path}`,
             },
         });
     }

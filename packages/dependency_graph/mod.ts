@@ -45,10 +45,10 @@ export async function build(
     logger().info({
         op: 'done',
         msg() {
-            return `${this.logger!.timerStart} ${this.op}`;
+            return `${this.logger!.timerEnd} ${this.op}`;
         },
         logger: {
-            timerStart: 'dependency graph',
+            timerEnd: 'dependency graph',
         },
     });
 

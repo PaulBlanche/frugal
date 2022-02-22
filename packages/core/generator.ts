@@ -99,10 +99,10 @@ export async function build(config: Config) {
     logger().info({
         op: 'done',
         msg() {
-            return `${this.logger!.timerStart} ${this.op}`;
+            return `${this.logger!.timerEnd} ${this.op}`;
         },
         logger: {
-            timerStart: 'generation',
+            timerEnd: 'generation',
         },
     });
 }
