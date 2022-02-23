@@ -36,7 +36,7 @@ export function style(config: Config): frugal.Loader<string, string> {
 import * as style from "${styleModule}";
 ${
                     assets.map(({ module }) =>
-                        `import "${module}";`
+                        `await import("${module}");`
                     ).join('\n')
                 }
 export const output = style.output()`;

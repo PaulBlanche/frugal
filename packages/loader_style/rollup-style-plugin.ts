@@ -11,7 +11,7 @@ export function style({ test }: Config): rollup.Plugin {
         async transform(_code, id) {
             if (test(id)) {
                 const stylesheet: { [s: string]: styled.Rules } = await import(
-                    id
+                    getModuleUrl(id).toString()
                 );
                 const script = Object.entries(stylesheet).map(
                     ([name, rules]) => {
@@ -24,4 +24,17 @@ export function style({ test }: Config): rollup.Plugin {
             return null;
         },
     };
+}
+
+// rollup comes from node world, where every module is local. This means that
+// absolute url imports (http:// and file://) are treated correctly, but relative
+// import stay relative. 
+// So if we find an id that is not parsable as URL, this means that it is a relative
+// import to a local module
+function getModuleUrl(id: string): URL {
+    try {
+        return new URL(id)
+    } catch {
+        return new URL(`file://${id}`)
+    }
 }
