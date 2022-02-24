@@ -52,9 +52,7 @@ const CONTENT_CONFIG: ContentConfig = {
                 <head>
                     {head}
                 </head>
-                <body>
-                    <div dangerouslySetInnerHTML={dangerouslySetInnerHTML} />
-                </body>
+                <body dangerouslySetInnerHTML={dangerouslySetInnerHTML} />
             </html>
         );
     }
@@ -83,17 +81,20 @@ export function getContentFrom<REQUEST, DATA>(
     }) => {
         let head: preact.VNode[] = [];
 
-        const html = server.render(<App path={path} context={context} cache={cache}>
+        const html = server.render(
             <HeadProvider
                 onHeadUpdate={(nextHead) => {
                     head = nextHead;
                 }}
             >
-                <DataProvider context={{ data, url }}>
-                    <Page path={path} context={context} cache={cache}/>
-                </DataProvider>
+                <App path={path} context={context} cache={cache}>
+                    <DataProvider context={{ data, url }}>
+                        
+                        <Page path={path} context={context} cache={cache}/>
+                    </DataProvider>
+                </App>
             </HeadProvider>
-        </App>);
+        );
 
         return `<!DOCTYPE html>${
             server.render(
