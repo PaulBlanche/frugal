@@ -6,7 +6,7 @@ import type { HydrationStrategy } from './types.ts';
 
 type App<PROPS> = (props: PROPS) => preact.VNode;
 
-type GetApp<PROPS> = () => App<PROPS>;
+type GetApp<PROPS> = () => Promise<App<PROPS>>|App<PROPS>;
 
 export function hydrate<PROPS>(name: string, getApp: GetApp<PROPS>) {
     const hydratableOnLoad = queryHydratables(name, 'load');
@@ -34,9 +34,9 @@ function hydrateOnLoad<PROPS>(
     hydratables: NodeListOf<HTMLElement>,
     getApp: GetApp<PROPS>,
 ) {
-    hydratables.forEach((root) => {
-        hydrateElement(root, getApp());
-    });
+    Array.from(hydratables).map(async (root) => {
+        hydrateElement(root, await getApp());
+    })
 }
 
 function hydrateOnIdle<PROPS>(
@@ -44,9 +44,9 @@ function hydrateOnIdle<PROPS>(
     getApp: GetApp<PROPS>,
 ) {
     setTimeout(() => {
-        hydratables.forEach((root) => {
-            hydrateElement(root, getApp());
-        });
+        Array.from(hydratables).map(async (root) => {
+            hydrateElement(root, await getApp());
+        })
     }, 10);
 }
 
@@ -55,9 +55,9 @@ function hydrateOnVisible<PROPS>(
     getApp: GetApp<PROPS>,
 ) {
     const observer = new IntersectionObserver((entries, observer) => {
-        entries.forEach((entry) => {
+        entries.map(async (entry) => {
             if (entry.isIntersecting) {
-                hydrateElement(entry.target, getApp());
+                hydrateElement(entry.target, await getApp());
                 observer.unobserve(entry.target);
             }
         });
@@ -72,10 +72,10 @@ function hydrateOnMediaQuery<PROPS>(
     hydratables: NodeListOf<HTMLElement>,
     getApp: GetApp<PROPS>,
 ) {
-    hydratables.forEach((root) => {
+    Array.from(hydratables).map(async (root) => {
         const query = root.dataset['hydrationQuery'];
         if (query && matchMedia(query)) {
-            hydrateElement(root, getApp());
+            hydrateElement(root, await getApp());
         }
     });
 }

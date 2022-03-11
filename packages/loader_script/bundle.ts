@@ -131,11 +131,15 @@ export async function bundleCodeSplit(
                     }
     
                     await fs.ensureDir(path.dirname(chunkPath));
+
                     await Promise.all([
                         Deno.writeTextFile(chunkPath, code),
                         Deno.writeTextFile(sourceMapPath, chunkOrAsset.map.toString())
                     ])        
                 }
+            } else {
+                await fs.ensureDir(path.dirname(chunkPath));
+                await Deno.writeTextFile(chunkPath, bundle)
             }
 
             if (chunkOrAsset.isEntry && chunkOrAsset.facadeModuleId !== null) {
