@@ -1,6 +1,6 @@
 import { PageContext } from './loader.ts';
 import { Cache } from './Cache.ts';
-import { Page, Phase } from './Page.ts'
+import { Page } from './Page.ts'
 import * as mumur from '../murmur/mod.ts';
 import * as pathToRegexp from '../../dep/path-to-regexp.ts';
 import * as path from '../../dep/std/path.ts';
@@ -40,12 +40,10 @@ export class PageBuilder<REQUEST extends object, DATA> {
             },
         });
 
-        const requestsList = await this.page.getRequestList({
-            phase: 'build'
-        });
+        const requestsList = await this.page.getRequestList({});
 
         await Promise.all(requestsList.map(async request => {
-            await this.generate(request, 'build')
+            await this.generate(request)
         }));
 
         logger().info({
@@ -60,7 +58,7 @@ export class PageBuilder<REQUEST extends object, DATA> {
         });
     }
 
-    async generate(request: REQUEST, phase: Phase): Promise<void> {
+    async generate(request: REQUEST): Promise<void> {
         const url = this.urlCompiler(request);
 
         logger().debug({
@@ -72,7 +70,6 @@ export class PageBuilder<REQUEST extends object, DATA> {
         });
 
         const data = await this.page.getData({
-            phase,
             request, 
             cache: this.config.cache 
         });
@@ -98,7 +95,6 @@ export class PageBuilder<REQUEST extends object, DATA> {
                 });
         
                 const content = await this.page.getContent({
-                    phase,
                     request,
                     data,
                     url,

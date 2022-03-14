@@ -42,7 +42,7 @@ export class PageRegenerator<REQUEST extends object, DATA> {
             },
         });
 
-        await this.builder.generate(match.params, 'regenerate')
+        await this.builder.generate(match.params)
 
         logger().info({
             op: 'done',

@@ -2,20 +2,15 @@ import { PageContext } from './loader.ts';
 import { assert } from '../assert/mod.ts';
 import { Cache } from './Cache.ts';
 
-export type Phase = 'build'|'regenerate'
-
 export type GetRequestListParams = {
-    phase: Phase
 };
 
 export type GetDataParams<REQUEST> = {
-    phase: Phase
     request: REQUEST;
     cache: Cache;
 };
 
 export type GetContentParams<REQUEST, DATA> = {
-    phase: Phase
     request: REQUEST;
     data: DATA;
     url: string;
