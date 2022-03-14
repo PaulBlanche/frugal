@@ -1,6 +1,6 @@
 import * as preact from 'preact';
 
-const isServer = typeof window.document === 'undefined';
+const isServer = typeof document === 'undefined';
 
 export type Manager = {
     update(state: preact.VNode[]): void;

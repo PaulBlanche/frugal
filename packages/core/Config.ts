@@ -31,10 +31,14 @@ const DEFAULT_LOGGER_CONFIG: log.Config = {
         'frugal:Builder': 'INFO',
         'frugal:FrugalContext': 'INFO',
         'frugal:PageRegenerator': 'INFO',
-        'frugal:PageBuilder': 'DEBUG',
+        'frugal:PageBuilder': 'INFO',
         'frugal:Regenerator': 'INFO',
-        'frugal:cache': 'INFO',
+        'frugal:Cache': 'INFO',
         'frugal:dependency_graph': 'INFO',
+        'frugal:RegeneratorWorker': 'INFO',
+        'frugal:loader:jsx_svg': 'INFO',
+        'frugal:loader:script': 'INFO',
+        'frugal:loader:style': 'INFO',
     },
 };
 
@@ -55,7 +59,7 @@ export class CleanConfig implements CleanConfigBase {
         }
     
         const source = await Deno.readTextFile(
-            new URL(config.importMap, `file:///${config.root}/`),
+            new URL(config.importMap, `file:///${config.root}`),
         );
 
         return JSON.parse(source);
@@ -115,9 +119,8 @@ export class CleanConfig implements CleanConfigBase {
         })
     }
 
-    
     get root() {
-        return this.config.root
+        return path.dirname(this.config.root)
     }
 
     get loaders() {
@@ -153,7 +156,7 @@ export class CleanConfig implements CleanConfigBase {
         }
     }
 
-    get cachePath() {
-        return path.join(this.cacheDir, 'frugal.json');
+    get configPath() {
+        return this.config.root
     }
 }

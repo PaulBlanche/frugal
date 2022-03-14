@@ -86,11 +86,15 @@ export class PageBuilder<REQUEST extends object, DATA> {
             key: pageInstanceHash,
             producer: async () => {
                 logger().debug({
+                    op: 'start',
                     pattern: this.page.pattern,
                     url,
                     msg() {
-                        return `real generation of ${this.url} (from ${this.pattern})`;
+                        return `${this.op} ${this.logger!.timerStart}`;
                     },
+                    logger: {
+                        timerStart: `real generation of ${url} (from ${this.page.pattern})`
+                    }
                 });
         
                 const content = await this.page.getContent({
@@ -106,6 +110,19 @@ export class PageBuilder<REQUEST extends object, DATA> {
                 await fs.ensureDir(path.dirname(pagePath));
 
                 await Deno.writeTextFile(pagePath, content);
+
+                logger().debug({
+                    op: 'done',
+                    pattern: this.page.pattern,
+                    url,
+                    msg() {
+                        return `${this.logger!.timerEnd} ${this.op}`;
+                    },
+                    logger: {
+                        timerEnd: `real generation of ${url} (from ${this.page.pattern})`
+                    }
+                });
+    
             },
             otherwise: () => {
                 logger().debug({

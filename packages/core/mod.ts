@@ -10,4 +10,5 @@ export type {
     GetRequestListParams,
     PageDescriptor,
 } from './Page.ts';
-export { Frugal } from './Frugal.ts';
+export { Frugal, build } from './Frugal.ts';
+export type { RegenerationRequest } from './Regenerator.ts';

@@ -84,8 +84,6 @@ export function getContentFrom<REQUEST, DATA>(
             </HeadProvider>
         );
         
-        console.log('getContent', html)
-
         return `<!DOCTYPE html>${
             server.render(
                 <Document

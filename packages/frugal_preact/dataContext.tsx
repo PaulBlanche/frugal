@@ -44,7 +44,7 @@ type DataProviderProps = {
 };
 
 export function DataProvider({ context, children }: DataProviderProps) {
-    if (typeof window.document === 'undefined') {
+    if (typeof document === 'undefined') {
         return (
             <>
                 {context && (

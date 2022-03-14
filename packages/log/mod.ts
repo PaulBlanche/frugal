@@ -24,12 +24,15 @@ class StopWatch {
 
     time(record: FrugalLogRecord) {
         if (record.logger.timerStart) {
-            this.timers.set(record.logger.timerStart, performance.now());
+            const timerStartKey = `${record.logger.scope}:${record.logger.timerStart}`
+            this.timers.set(timerStartKey, performance.now());
         }
 
-        if (record.logger.timerEnd && this.timers.has(record.logger.timerEnd)) {
-            record.logger.delta = performance.now() -
-                this.timers.get(record.logger.timerEnd)!;
+        if (record.logger.timerEnd) { 
+            const timerEndKey = `${record.logger.scope}:${record.logger.timerEnd}`
+            if(this.timers.has(timerEndKey)) {
+                record.logger.delta = performance.now() - this.timers.get(timerEndKey)!;
+            }
         }
     }
 }
@@ -100,7 +103,7 @@ class HumanHandler extends FrugalHandler {
         const record = this.toFrugalRecord(logRecord);
 
         const time =
-            `${record.logger.datetime.toLocaleDateString()} ${record.logger.datetime.toLocaleTimeString()}`;
+            `${record.logger.datetime.toLocaleDateString()} ${record.logger.datetime.toLocaleTimeString()}.${record.logger.datetime.getMilliseconds()}`;
         const scope = record.logger.scope;
         const level = record.logger.levelName;
 

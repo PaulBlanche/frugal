@@ -7,11 +7,9 @@ function logger() {
     return log.getLogger('frugal:Regenerator');
 }
 
-type RegenerationRequest = {
-    pathname: string
+export type RegenerationRequest = {
+    url: string
 }
-
-export type RegeneratorHandler = (request: RegenerationRequest) => Promise<boolean>
 
 export class Regenerator {
     private config: CleanConfig
@@ -22,16 +20,17 @@ export class Regenerator {
         this.context = context
     }
 
-    register(): RegeneratorHandler {
+    async handle(request: RegenerationRequest): Promise<boolean> {
         this.config.setupServerLogging()
 
         logger().info({
             op: 'start',
+            url: request.url,
             msg() {
                 return `${this.op} ${this.logger!.timerStart}`;
             },
             logger: {
-                timerStart: 'registering',
+                timerStart: `regeneration of ${request.url}`,
             },
         });
 
@@ -43,15 +42,36 @@ export class Regenerator {
             })
         })
 
-        return async (request) => {
-            const pageRegenerator = getMatchingPageRegenerator(pageRegenerators, request.pathname)
-            if (pageRegenerator !== undefined) {
-                await pageRegenerator.regenerate(request.pathname)
-                return true;
-            }
-
+        const pageRegenerator = getMatchingPageRegenerator(pageRegenerators, request.url)
+        
+        if (pageRegenerator === undefined) {
+            logger().info({
+                url: request.url,
+                msg() {
+                    return `no match found for ${this.url}`;
+                },
+                logger: {
+                    timerEnd: `regeneration of ${request.url}`,
+                },    
+            });
             return false
         }
+
+        await pageRegenerator.regenerate(request.url)
+        await this.context.save()
+
+        logger().info({
+            op: 'done',
+            url: request.url,
+            msg() {
+                return `${this.logger!.timerEnd} ${this.op}`;
+            },
+            logger: {
+                timerEnd: `regeneration of ${request.url}`,
+            },
+        });
+
+        return true;
     }
 }
 

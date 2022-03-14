@@ -13,7 +13,7 @@ type MemoizeConfig<V> = {
 };
 
 function logger() {
-    return log.getLogger('frugal:cache');
+    return log.getLogger('frugal:Cache');
 }
 
 export class Cache<VALUE = unknown> {

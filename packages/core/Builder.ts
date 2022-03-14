@@ -41,5 +41,18 @@ export class Builder {
         
             await builder.generateAll();
         }));
+
+        await this.context.save()
+
+        logger().info({
+            op: 'done',
+            msg() {
+                return `${this.op} ${this.logger!.timerEnd}`;
+            },
+            logger: {
+                timerEnd: 'build',
+            },
+        });
+
     }
 }

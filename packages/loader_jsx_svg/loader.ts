@@ -1,9 +1,14 @@
 import * as path from '../../dep/std/path.ts';
 import * as fs from '../../dep/std/fs.ts';
 import * as murmur from '../murmur/mod.ts';
+import * as log from '../log/mod.ts';
 
 import * as frugal from '../core/mod.ts';
 import { SVGFile } from './svg-sprite.ts';
+
+function logger() {
+    return log.getLogger('frugal:loader:jsx_svg')
+}
 
 type Config = {
     test: (url: URL) => boolean;
@@ -11,7 +16,7 @@ type Config = {
     render: Function;
 };
 
-export function svg(config: Config): frugal.Loader<void, void> {
+export function svg(config: Config): frugal.Loader<string, void> {
     return {
         name: 'jsx-svg',
         test: config.test,
@@ -20,7 +25,11 @@ export function svg(config: Config): frugal.Loader<void, void> {
 
     function generate(
         { cache, assets, dir }: frugal.GenerateParams<void>,
-    ): Promise<void> {
+    ): Promise<string> {
+        logger().debug({
+            msg: 'generate'
+        });
+    
         const bundleHash = assets.reduce((hash, asset) => {
             return hash.update(asset.hash);
         }, new murmur.Hash()).alphabetic();
@@ -28,6 +37,16 @@ export function svg(config: Config): frugal.Loader<void, void> {
         return cache.memoize({
             key: bundleHash,
             producer: async () => {
+                logger().debug({
+                    op: 'start',
+                    msg() {
+                        return `${this.op} ${this.logger!.timerStart}`;
+                    },
+                    logger: {
+                        timerStart: `real generation`,
+                    },
+                });
+        
                 const svgModule = new URL(
                     path.resolve(
                         path.dirname(new URL(import.meta.url).pathname),
@@ -50,7 +69,25 @@ export const output = svg.output()`;
                 );
 
                 await write(output, dir.public, config.jsx, config.render);
+
+                logger().debug({
+                    op: 'done',
+                    msg() {
+                        return `${this.logger!.timerEnd} ${this.op}`;
+                    },
+                    logger: {
+                        timerEnd: `real generation`,
+                    },
+                });
+
+                return bundleHash
+
             },
+            otherwise() {
+                logger().debug({
+                    msg: 'nothing new to generate'
+                });        
+            }
         });
     }
 }
@@ -86,6 +123,15 @@ export async function write(
 
                 const svgPath = path.join(publicDir, svgFile.url);
                 await fs.ensureDir(path.dirname(svgPath));
+
+                logger().debug({
+                    path: svgPath,
+                    sprites: svgFile.sprites.map(sprite => sprite.id),
+                    msg() {
+                        return `output ${this.path} containing ${this.sprites.join(',')}`
+                    }
+                });
+
                 await Deno.writeTextFile(svgPath, svgContent);
             } catch (e) {
                 throw e;

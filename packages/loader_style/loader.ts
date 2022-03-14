@@ -1,8 +1,13 @@
 import * as path from '../../dep/std/path.ts';
 import * as fs from '../../dep/std/fs.ts';
+import * as log from '../log/mod.ts';
 
 import * as murmur from '../murmur/mod.ts';
 import * as frugal from '../core/mod.ts';
+
+function logger() {
+    return log.getLogger('frugal:loader:style')
+}
 
 type Config = {
     test: (url: URL) => boolean;
@@ -17,6 +22,10 @@ export function style(config: Config): frugal.Loader<string, string> {
     };
 
     function generate({ assets, cache, dir }: frugal.GenerateParams) {
+        logger().debug({
+            msg: 'generate'
+        });
+
         const bundleHash = assets.reduce((hash, asset) => {
             return hash.update(asset.hash);
         }, new murmur.Hash()).alphabetic();
@@ -24,6 +33,16 @@ export function style(config: Config): frugal.Loader<string, string> {
         return cache.memoize({
             key: bundleHash,
             producer: async () => {
+                logger().debug({
+                    op: 'start',
+                    msg() {
+                        return `${this.op} ${this.logger!.timerStart}`;
+                    },
+                    logger: {
+                        timerStart: `real generation`,
+                    },
+                });
+
                 const styleModule = new URL(
                     path.resolve(
                         path.dirname(new URL(import.meta.url).pathname),
@@ -54,11 +73,33 @@ export const output = style.output()`;
                 const bundleUrl = `/style/${bundleName}.css`;
                 const bundlePath = path.join(dir.public, bundleUrl);
 
+                logger().debug({
+                    url: bundleUrl,
+                    msg() {
+                        return `output ${this.url}`
+                    }
+                });
+
                 await fs.ensureDir(path.dirname(bundlePath));
                 await Deno.writeTextFile(bundlePath, bundle);
 
+                logger().debug({
+                    op: 'done',
+                    msg() {
+                        return `${this.logger!.timerEnd} ${this.op}`;
+                    },
+                    logger: {
+                        timerEnd: `real generation`,
+                    },
+                });
+
                 return bundleUrl;
             },
+            otherwise: () => {
+                logger().debug({
+                    msg: 'nothing new to generate'
+                });        
+            }
         });
     }
 }

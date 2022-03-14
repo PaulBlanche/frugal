@@ -3,7 +3,6 @@
 
 import * as preact from 'preact';
 import { cx } from '../loader_style/styled.ts';
-import { DataProvider } from './dataContext.tsx';
 
 import type { HydrationStrategy } from './types.ts';
 
@@ -23,7 +22,7 @@ export function Host<PROPS>(
             PROPS
         >,
 ) {
-    if (typeof window.document === 'undefined') {
+    if (typeof document === 'undefined') {
         return (
             <div
                 className={cx(`host-${name}`, className)}

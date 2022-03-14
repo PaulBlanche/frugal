@@ -4,6 +4,11 @@ import * as rollup from '../../dep/rollup.ts';
 import { denoResolver } from '../../dep/rollup-plugin-deno-resolver.ts';
 import * as murmur from '../murmur/mod.ts';
 import * as frugal from '../core/mod.ts';
+import * as log from '../log/mod.ts';
+
+function logger() {
+    return log.getLogger('frugal:loader:script')
+}
 
 type BundleConfig = {
     cache: frugal.Cache<any>;
@@ -64,6 +69,14 @@ export async function bundleInline(
 
             bundles[script.entrypoint] = bundles[script.entrypoint] ?? {};
             bundles[script.entrypoint][format] = bundle;
+
+            logger().debug({
+                entrypoint: script.entrypoint,
+                format: outputConfig.format,
+                msg() {
+                    return `add inline script ${this.entrypoint} (${this.format} format)`
+                }
+            })
         }));
 
         await rollupBundle.close();
@@ -100,7 +113,7 @@ export async function bundleCodeSplit(
                 return;
             }
 
-            let bundle = chunkOrAsset.code    
+            const bundle = chunkOrAsset.code    
             const hash = new murmur.Hash().update(bundle).alphabetic();
 
             const ext = path.extname(chunkOrAsset.fileName);
@@ -147,6 +160,15 @@ export async function bundleCodeSplit(
                     urls[chunkOrAsset.facadeModuleId] ??
                         {};
                 urls[chunkOrAsset.facadeModuleId][format] = chunkUrl;
+            
+                logger().debug({
+                    url: chunkUrl,
+                    format: format,
+                    page: chunkOrAsset.facadeModuleId,
+                    msg() {
+                        return `add bundle script ${this.url} for ${this.page} (${this.format} format)`
+                    }
+                })    
             }
         }));
     }));
