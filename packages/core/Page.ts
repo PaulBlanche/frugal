@@ -1,40 +1,36 @@
-import { Cache } from './Cache.ts';
-import * as mumur from '../murmur/mod.ts';
-import * as path from '../../dep/std/path.ts';
-import * as fs from '../../dep/std/fs.ts';
+import { PageContext } from './loader.ts';
 import { assert } from '../assert/mod.ts';
-import { Context } from './loader.ts';
-import * as log from '../log/mod.ts';
+import { Cache } from './Cache.ts';
 
-export type GetRequestList<REQUEST> = () => Promise<REQUEST[]>;
+export type Phase = 'build'|'regenerate'
+
+export type GetRequestListParams = {
+    phase: Phase
+};
 
 export type GetDataParams<REQUEST> = {
+    phase: Phase
     request: REQUEST;
     cache: Cache;
 };
-
-export type GetData<REQUEST, DATA> = (
-    params: GetDataParams<REQUEST>,
-) => Promise<DATA> | DATA;
-
-export type GetUrlParams<REQUEST, DATA> = {
-    request: REQUEST;
-    data: DATA;
-    cache: Cache;
-};
-
-export type GetUrl<REQUEST, DATA> = (
-    params: GetUrlParams<REQUEST, DATA>,
-) => string;
 
 export type GetContentParams<REQUEST, DATA> = {
+    phase: Phase
     request: REQUEST;
     data: DATA;
     url: string;
     path: string;
-    context: Context;
+    context: PageContext;
     cache: Cache;
 };
+
+export type GetRequestList<REQUEST> = (
+    params: GetRequestListParams
+) => Promise<REQUEST[]>;
+
+export type GetData<REQUEST, DATA> = (
+    params: GetDataParams<REQUEST>,
+) => Promise<DATA> | DATA;
 
 export type GetContent<REQUEST, DATA> = (
     params: GetContentParams<REQUEST, DATA>,
@@ -43,137 +39,67 @@ export type GetContent<REQUEST, DATA> = (
 export type PageDescriptor<REQUEST, DATA> = {
     getRequestList: GetRequestList<REQUEST>;
     getData: GetData<REQUEST, DATA>;
-    getUrl: GetUrl<REQUEST, DATA>;
+    pattern: string
     getContent: GetContent<REQUEST, DATA>;
 };
 
-export class Page<REQUEST, DATA> {
+export class Page<REQUEST extends object, DATA> implements PageDescriptor<REQUEST, DATA> {
     private descriptor: PageDescriptor<REQUEST, DATA>;
-    private moduleHash: string;
-    private path: string;
+    readonly path: string
+    readonly hash: string
 
-    static async load<REQUEST, DATA>(
-        entrypoint: { url: URL; moduleHash: string },
+    static async load<REQUEST extends object, DATA>(
+        path: string,
+        hash: string
     ): Promise<Page<REQUEST, DATA>> {
-        logger().info({
-            op: 'loading',
-            url: entrypoint.url.toString(),
-            msg() {
-                return `${this.op} ${this.url}`;
-            },
-        });
-        const pageDescriptor = await import(entrypoint.url.toString());
-        return new Page(
-            entrypoint.url.toString(),
-            pageDescriptor,
-            entrypoint.moduleHash,
+        const descriptor = await import(path)
+        this.validateDescriptor(path, descriptor)
+        return new Page(path, hash, descriptor);
+    }
+
+    static validateDescriptor<REQUEST extends object, DATA>(path: string, descriptor: PageDescriptor<REQUEST, DATA>): void {
+        assert(
+            typeof descriptor.getRequestList === 'function',
+            `Page descriptor "${path}" has no getRequestList function`,
+        );
+        assert(
+            typeof descriptor.getData === 'function',
+            `Page descriptor "${path}" has no getData function`,
+        );
+        assert(
+            typeof descriptor.pattern === 'string',
+            `Page descriptor "${path}" has no pattern`,
+        );
+        assert(
+            typeof descriptor.getContent === 'function',
+            `Page descriptor "${path}" has no getContent function`,
         );
     }
 
     private constructor(
         path: string,
+        hash: string,
         descriptor: PageDescriptor<REQUEST, DATA>,
-        moduleHash: string,
     ) {
         this.descriptor = descriptor;
-        this.moduleHash = moduleHash;
+        this.hash = hash
         this.path = path;
-        this.validateDescriptor(path);
+    }    
+
+    getData(params: GetDataParams<REQUEST>) {
+        return this.descriptor.getData(params)
     }
 
-    async generate(
-        cache: Cache,
-        context: Context,
-        publicDir: string,
-    ): Promise<void> {
-        logger().info({
-            op: 'start',
-            msg() {
-                return `${this.op} ${this.logger!.timerStart}`;
-            },
-            logger: {
-                timerStart: `page generation ${this.path}`,
-            },
-        });
-
-        const requestsList = await this.descriptor.getRequestList();
-
-        const instancePromise = [];
-
-        for (const request of requestsList) {
-            instancePromise.push(
-                this.generateInstance(request, cache, context, publicDir),
-            );
-        }
-
-        await Promise.all(instancePromise);
-
-        logger().info({
-            op: 'done',
-            msg() {
-                return `${this.logger!.timerEnd} ${this.op}`;
-            },
-            logger: {
-                timerEnd: `page generation ${this.path}`,
-            },
-        });
+    getRequestList(params: GetRequestListParams) {
+        return this.descriptor.getRequestList(params)
     }
 
-    private async generateInstance(
-        request: REQUEST,
-        cache: Cache,
-        context: Context,
-        publicDir: string,
-    ): Promise<void> {
-        const data = await this.descriptor.getData({ request, cache });
-
-        const pageInstanceHash = new mumur.Hash()
-            .update(JSON.stringify(data))
-            .update(this.moduleHash)
-            .alphabetic();
-
-        await cache.memoize({
-            key: pageInstanceHash,
-            producer: async () => {
-                const url = this.descriptor.getUrl({ request, data, cache });
-
-                const content = await this.descriptor.getContent({
-                    request,
-                    data,
-                    url,
-                    path: this.path,
-                    context,
-                    cache,
-                });
-
-                const pagePath = path.join(publicDir, url);
-                await fs.ensureDir(path.dirname(pagePath));
-
-                await Deno.writeTextFile(pagePath, content);
-            },
-        });
+    get pattern() {
+        return this.descriptor.pattern
     }
 
-    private validateDescriptor(path: string): void {
-        assert(
-            typeof this.descriptor.getRequestList === 'function',
-            `Page descriptor "${path}" has no getRequestList function`,
-        );
-        assert(
-            typeof this.descriptor.getData === 'function',
-            `Page descriptor "${path}" has no getData function`,
-        );
-        assert(
-            typeof this.descriptor.getUrl === 'function',
-            `Page descriptor "${path}" has no getUrl function`,
-        );
-        assert(
-            typeof this.descriptor.getContent === 'function',
-            `Page descriptor "${path}" has no getContent function`,
-        );
+    getContent(params: Omit<GetContentParams<REQUEST, DATA>, 'path'>) {
+        return this.descriptor.getContent({ ...params, path: this.path })
     }
 }
 
-function logger() {
-    return log.getLogger('frugal:page');
-}

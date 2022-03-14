@@ -4,7 +4,7 @@ import * as preact from 'preact';
 import * as hooks from 'preact/hooks';
 import './types.ts';
 
-type DataContext = { data: any; url: string };
+type DataContext = { data: any; url: string, timestamp: number };
 
 const dataContext = preact.createContext<
     DataContext | undefined
@@ -27,6 +27,16 @@ export function useUrl(): string {
 
     return context.url;
 }
+
+export function useCreationTimestamp(): number {
+    const context = hooks.useContext(dataContext);
+    if (context === undefined) {
+        throw Error('wrap in DataProvider');
+    }
+
+    return context.timestamp;
+}
+
 
 type DataProviderProps = {
     context?: DataContext;

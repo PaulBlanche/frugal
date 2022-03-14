@@ -22,10 +22,12 @@ type Config = {
     resolve?: (specifier: string, referrer: URL) => URL | undefined;
 };
 
+export type DependencyTree = tree.Root
+
 export async function build(
     entrypoints: URL[],
     config: Config = {},
-): Promise<tree.Root> {
+): Promise<DependencyTree> {
     const analysisCache = new Map<string, Promise<AnalysisResult>>();
 
     logger().info({

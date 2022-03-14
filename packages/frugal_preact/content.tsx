@@ -11,7 +11,7 @@ import { DataProvider } from './dataContext.tsx';
 export type PageProps = { 
     path: string,
     cache: frugal.Cache;
-    context: frugal.Context 
+    context: frugal.PageContext 
 };
 
 export type Page = preact.ComponentType<PageProps>;
@@ -23,7 +23,7 @@ export type App = (
 
 export type AppProps = {
     path: string,
-    context: frugal.Context
+    context: frugal.PageContext
     children: preact.ComponentChildren;
     cache: frugal.Cache;
 }
@@ -33,7 +33,7 @@ export type Document = preact.ComponentType<DocumentProps>;
 export type DocumentProps = {
     head: preact.VNode[];
     path: string,
-    context: frugal.Context
+    context: frugal.PageContext
     dangerouslySetInnerHTML: { __html: string };
 };
 
@@ -42,35 +42,24 @@ type ContentConfig = {
     Document: Document
 }
 
-const CONTENT_CONFIG: ContentConfig = {
-    App: ({ children }) => {
-        return <>{children}</>;
-    },
-    Document: ({ head, dangerouslySetInnerHTML }: DocumentProps) => {
-        return (
-            <html>
-                <head>
-                    {head}
-                </head>
-                <body dangerouslySetInnerHTML={dangerouslySetInnerHTML} />
-            </html>
-        );
-    }
+const DEFAULT_APP: App = ({ children }) => {
+    return <>{children}</>;
 }
 
-export function setContentConfig({ App, Document }: Partial<ContentConfig>) {
-    if (App) {
-        CONTENT_CONFIG.App = App
-    }
-    if (Document) {
-        CONTENT_CONFIG.Document = Document
-    }
+const DEFAULT_DOCUMENT: Document = ({ head, dangerouslySetInnerHTML }: DocumentProps) => {
+    return (
+        <html>
+            <head>
+                {head}
+            </head>
+            <body dangerouslySetInnerHTML={dangerouslySetInnerHTML} />
+        </html>
+    );
 }
-
 
 export function getContentFrom<REQUEST, DATA>(
     Page: Page,
-    { App, Document }: ContentConfig = CONTENT_CONFIG
+    { App = DEFAULT_APP, Document = DEFAULT_DOCUMENT }: Partial<ContentConfig> = {}
 ): frugal.GetContent<REQUEST, DATA> {
     return ({
         data,
@@ -88,13 +77,14 @@ export function getContentFrom<REQUEST, DATA>(
                 }}
             >
                 <App path={path} context={context} cache={cache}>
-                    <DataProvider context={{ data, url }}>
-                        
+                    <DataProvider context={{ data, url, timestamp: Date.now() }}>
                         <Page path={path} context={context} cache={cache}/>
                     </DataProvider>
                 </App>
             </HeadProvider>
         );
+        
+        console.log('getContent', html)
 
         return `<!DOCTYPE html>${
             server.render(

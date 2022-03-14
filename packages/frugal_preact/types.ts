@@ -5,6 +5,7 @@ declare global {
         context: {
             data: any;
             url: string;
+            timestamp: number
         };
     }
 

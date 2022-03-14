@@ -1,7 +1,7 @@
 #!/bin/bash
 
 function test {
-    deno test --config deno.json--import-map=./import_map.json --allow-read=. --allow-write=. 
+    deno test --config deno.json --import-map=./import_map.json --allow-read=. --allow-write=. 
 }
 
 function fmt {

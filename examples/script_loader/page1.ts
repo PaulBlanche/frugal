@@ -33,8 +33,6 @@ export function getUrl({ request }: frugal.GetUrlParams<Request, Data>) {
 export function getContent(
     { data, context }: frugal.GetContentParams<Request, Data>,
 ) {
-    console.log(context);
-
     const entrypoint = new URL(import.meta.url).toString();
     const bodyScript = context['script-body'][entrypoint];
 
