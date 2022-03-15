@@ -1,0 +1,37 @@
+version: '3'
+
+vars:
+  CONFIG_FILE: ./deno.json
+  IMPORT_MAP: ./import_map.json
+  LOCK_FILE: ./.lock.json
+  #authorizations
+  ALLOW_READ: .
+  ALLOW_WRITE: .
+  ALLOW_NET_REPO: deno.land,esm.sh,cdn.esm.sh,cdn.jsdelivr.net,unpkg.com
+
+env:
+  DENO_DIR: ./.deno_dir
+
+tasks:
+  fmt:
+    cmds:
+      - deno fmt 
+          --config {{.CONFIG_FILE}}
+  test:
+    cmds:
+      - deno --unstable test
+          --config {{.CONFIG_FILE}}
+          --import-map={{.IMPORT_MAP}}
+          --allow-read={{.ALLOW_READ}}
+          --allow-write={{.ALLOW_WRITE}}
+          {{.CLI_ARGS}}
+  example:
+    cmds:
+      - deno --unstable run
+          --config {{.CONFIG_FILE}}
+          --import-map={{.IMPORT_MAP}}
+          --allow-read={{.ALLOW_READ}}
+          --allow-write={{.ALLOW_WRITE}}
+          --allow-net={{.ALLOW_NET_REPO}}
+          --no-check
+          {{.CLI_ARGS}}

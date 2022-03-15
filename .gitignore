@@ -1,2 +1,3 @@
-.vscode
 dist/
+.vscode
+.deno_dir/
