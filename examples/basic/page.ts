@@ -26,9 +26,7 @@ export function getData({ request }: frugal.GetDataParams<Request>): Data {
     };
 }
 
-export function getUrl({ request }: frugal.GetUrlParams<Request, Data>) {
-    return `/${request.slug}.html`;
-}
+export const pattern = '/:slug.html'
 
 export function getContent({ data }: frugal.GetContentParams<Request, Data>) {
     return `<html>

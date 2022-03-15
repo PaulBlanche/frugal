@@ -3,7 +3,7 @@
 import * as preact from 'preact';
 import type * as frugal from '../../packages/core/mod.ts';
 import {
-    content,
+    getContentFrom,
     Head,
     PageProps,
 } from '../../packages/frugal_preact/mod.server.ts';
@@ -32,29 +32,31 @@ export function getData({ request }: frugal.GetDataParams<Request>): Data {
     };
 }
 
-export function getUrl({ request }: frugal.GetUrlParams<Request, Data>) {
-    return `/${request.slug}.html`;
-}
+export const pattern = `/:slug.html`
 
-export const getContent = content(Page);
+export const getContent = getContentFrom(Page, { App });
 
 import { Article } from './Article.iso.tsx';
-import { useData } from '../../packages/frugal_preact/mod.client.ts';
+import { useData, AppProps } from '../../packages/frugal_preact/mod.client.ts';
 
-const entrypoint = new URL(import.meta.url).toString();
-
-function Page({ context }: PageProps) {
+function Page() {
     const data = useData<Data>();
 
     return (
         <>
-            <Head>
-                <title>toto</title>
-                <script src={context['script-body'][entrypoint]['esm']}>
-                </script>
-            </Head>
             <Article title={data.title} content={data.content} />
             <p>this is some static content</p>
         </>
     );
+}
+
+function App({ path, context, children }: AppProps) {
+    return <>
+        <Head>
+            <meta charSet='utf-8' />
+            <title>toto</title>
+        </Head>
+        {children}
+        <script src={context['script-body'][path]['esm']}></script>
+    </>
 }
