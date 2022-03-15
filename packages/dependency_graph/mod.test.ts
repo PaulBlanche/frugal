@@ -30,6 +30,9 @@ class FakeEnvironment {
     }
 
     hash(path: string) {
+        if (path.startsWith('http')) {
+            return new murmur.Hash().update(`//${path}`).alphabetic();
+        }
         return new murmur.Hash().update(this.get(path)).alphabetic();
     }
 
@@ -96,14 +99,6 @@ Deno.test('dependency_graph/file without dependencies', async () => {
         'each local file should be read once',
     );
 
-    asserts.assertEquals(
-        asSpy(fetch).calls.map((call) => call.params[0].toString()),
-        [
-            'http://localhost/entrypoint3.ts',
-        ],
-        'each remote file should be read once',
-    );
-
     asserts.assertEquals<tree.Root>(
         tree,
         root(ffs, {
@@ -154,15 +149,6 @@ Deno.test('dependency_graph/files with basic tree dependency', async () => {
         'each local file should be read once',
     );
 
-    asserts.assertEquals(
-        asSpy(fetch).calls.map((call) => call.params[0].toString()),
-        [
-            'https://localhost/module2.ts',
-            'https://localhost/module21.ts',
-        ],
-        'each remote file should be read once',
-    );
-
     asserts.assertEquals<tree.Root>(
         tree,
         root(ffs, {
@@ -176,9 +162,6 @@ Deno.test('dependency_graph/files with basic tree dependency', async () => {
                     }],
                 }, {
                     url: new URL('https://localhost/module2.ts'),
-                    dependencies: [{
-                        url: new URL('https://localhost/module21.ts'),
-                    }],
                 }],
             }],
         }),
@@ -229,15 +212,6 @@ Deno.test('dependency_graph/files with acyclic graph dependency', async () => {
         'each local file should be read once',
     );
 
-    asserts.assertEquals(
-        asSpy(fetch).calls.map((call) => call.params[0].toString()),
-        [
-            'https://localhost/remote.ts',
-            'https://localhost/bar.ts',
-        ],
-        'each remote file should be read once',
-    );
-
     asserts.assertEquals<tree.Root>(
         tree,
         root(ffs, {
@@ -248,9 +222,6 @@ Deno.test('dependency_graph/files with acyclic graph dependency', async () => {
                     url: new URL('file:///foo.ts'),
                 }, {
                     url: new URL('https://localhost/remote.ts'),
-                    dependencies: [{
-                        url: new URL('https://localhost/bar.ts'),
-                    }],
                 }, {
                     url: new URL('file:///module1.ts'),
                     dependencies: [{

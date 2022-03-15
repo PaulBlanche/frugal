@@ -251,6 +251,7 @@ async function baseLoad(resolvedModuleSpecifier: URL): Promise<string> {
     if (resolvedModuleSpecifier.protocol.startsWith('http')) {
         //const response = await fetch(resolvedModuleSpecifier);
         //return await response.text();
+        console.log(`//${resolvedModuleSpecifier}`)
         return `//${resolvedModuleSpecifier}`
     }
 
