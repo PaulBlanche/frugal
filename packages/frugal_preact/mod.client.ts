@@ -1,4 +1,4 @@
-export { useCreationTimestamp, useData, useUrl } from './dataContext.tsx';
+export { useCreationTimestamp, useData, usePathname } from './dataContext.tsx';
 export type { AppProps } from './content.tsx';
 export { Host } from './Host.tsx';
 export type { HostProps } from './Host.tsx'

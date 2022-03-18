@@ -1,11 +1,13 @@
 import { Router, composeMiddleware, Middleware } from '../../dep/oak.ts';
 import { Frugal } from '../core/mod.ts';
 
-export function getRefreshMiddleware(frugal: Frugal): Middleware {
+export function refreshRouter(frugal: Frugal): Router {
     const router = new Router()
 
-    router.post('/regenerate', async (context) => {
+    router.get('/refresh', async (context) => {
         const pathname = context.request.url.searchParams.get('pathname')
+
+        console.log(pathname)
         
         if (pathname === null) {
             context.response.status = 400
@@ -25,6 +27,6 @@ export function getRefreshMiddleware(frugal: Frugal): Middleware {
         context.response.body = 'Page regenerated'
     })
 
-    return composeMiddleware([router.routes(), router.allowedMethods()])
+    return router
 }
 

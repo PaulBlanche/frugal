@@ -9,7 +9,7 @@ import * as frugal from '../core/mod.ts';
 import { DataProvider } from './dataContext.tsx';
 
 export type PageProps = {
-    path: string;
+    entrypoint: string;
     cache: frugal.Cache;
     context: frugal.PageContext;
 };
@@ -21,7 +21,7 @@ export type App = (
 ) => preact.VNode;
 
 export type AppProps = {
-    path: string;
+    entrypoint: string;
     context: frugal.PageContext;
     children: preact.ComponentChildren;
     cache: frugal.Cache;
@@ -31,7 +31,7 @@ export type Document = preact.ComponentType<DocumentProps>;
 
 export type DocumentProps = {
     head: preact.VNode[];
-    path: string;
+    entrypoint: string;
     context: frugal.PageContext;
     dangerouslySetInnerHTML: { __html: string };
 };
@@ -65,8 +65,8 @@ export function getContentFrom<REQUEST, DATA>(
 ): frugal.GetContent<REQUEST, DATA> {
     return ({
         data,
-        url,
-        path,
+        pathname,
+        entrypoint,
         context,
         cache,
     }) => {
@@ -78,11 +78,11 @@ export function getContentFrom<REQUEST, DATA>(
                     head = nextHead;
                 }}
             >
-                <App path={path} context={context} cache={cache}>
+                <App entrypoint={entrypoint} context={context} cache={cache}>
                     <DataProvider
-                        context={{ data, url, timestamp: Date.now() }}
+                        context={{ data, pathname, timestamp: Date.now() }}
                     >
-                        <Page path={path} context={context} cache={cache} />
+                        <Page entrypoint={entrypoint} context={context} cache={cache} />
                     </DataProvider>
                 </App>
             </HeadProvider>,
@@ -91,7 +91,7 @@ export function getContentFrom<REQUEST, DATA>(
         return `<!DOCTYPE html>${
             server.render(
                 <Document
-                    path={path}
+                    entrypoint={entrypoint}
                     context={context}
                     head={head}
                     dangerouslySetInnerHTML={{ __html: html }}

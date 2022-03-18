@@ -4,7 +4,7 @@ declare global {
     interface FrugalGlobalNamespace {
         context: {
             data: any;
-            url: string;
+            pathname: string;
             timestamp: number;
         };
     }

@@ -75,10 +75,10 @@ export async function load<REQUEST extends object, DATA>(
     assert(false, `Page descriptor "${path}" has neither "getDynamicData" nor "getStaticData" method`)
 }
 
-function isStaticDescriptor<REQUEST extends object, DATA>(
+function isDynamicDescriptor<REQUEST extends object, DATA>(
     path: string,
     descriptor: any,
-): descriptor is StaticPageDescriptor<REQUEST, DATA> {
+): descriptor is DynamicPageDescriptor<REQUEST, DATA> {
     if (typeof descriptor === 'object' && descriptor !== null) {
         if ('getDynamicData' in descriptor) {
             validateDynamicDescriptor(path, descriptor)
@@ -88,10 +88,10 @@ function isStaticDescriptor<REQUEST extends object, DATA>(
     return false
 }
 
-function isDynamicDescriptor<REQUEST extends object, DATA>(
+function isStaticDescriptor<REQUEST extends object, DATA>(
     path: string,
     descriptor: any,
-): descriptor is DynamicPageDescriptor<REQUEST, DATA> {
+): descriptor is StaticPageDescriptor<REQUEST, DATA> {
     if (typeof descriptor === 'object' && descriptor !== null) {
         if ('getStaticData' in descriptor) {
             validateStaticDescriptor(path, descriptor)
