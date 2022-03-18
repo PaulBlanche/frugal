@@ -1,6 +1,6 @@
 import { PageContext } from './loader.ts';
 import { Cache } from './Cache.ts';
-import { Page, Phase, DynamicPage } from './Page.ts';
+import { DynamicPage, Page, Phase } from './Page.ts';
 import * as path from '../../dep/std/path.ts';
 import * as log from '../log/mod.ts';
 import { assert } from '../../dep/std/asserts.ts';
@@ -25,15 +25,21 @@ export class PageGenerator<REQUEST extends object, DATA> {
     }
 
     get route() {
-        return this.page.pattern
+        return this.page.pattern;
     }
 
     match(url: string): boolean {
         return Boolean(this.page.match(url));
     }
 
-    async generate(pathname: string, searchParams: URLSearchParams): Promise<{ pagePath: string, content: string }> {
-        assert(this.page instanceof DynamicPage, `Can't dynamically generate StaticPage ${this.page.pattern}`)
+    async generate(
+        pathname: string,
+        searchParams: URLSearchParams,
+    ): Promise<{ pagePath: string; content: string }> {
+        assert(
+            this.page instanceof DynamicPage,
+            `Can't dynamically generate StaticPage ${this.page.pattern}`,
+        );
 
         const match = this.page.match(pathname);
         assert(match !== false);
@@ -48,18 +54,28 @@ export class PageGenerator<REQUEST extends object, DATA> {
         });
 
         const data = await this.page.getDynamicData({
-            phase: 'generate', 
+            phase: 'generate',
             request,
             cache: this.config.cache,
-            searchParams
+            searchParams,
         });
 
-        const result = await this.generateContentFromData(pathname, data, request, 'generate')
-    
-        return result
+        const result = await this.generateContentFromData(
+            pathname,
+            data,
+            request,
+            'generate',
+        );
+
+        return result;
     }
 
-    async generateContentFromData(pathname:string, data: DATA, request: REQUEST, phase: Phase): Promise<{ pagePath: string, content: string }> {
+    async generateContentFromData(
+        pathname: string,
+        data: DATA,
+        request: REQUEST,
+        phase: Phase,
+    ): Promise<{ pagePath: string; content: string }> {
         logger().debug({
             op: 'start',
             pattern: this.page.pattern,
@@ -97,6 +113,6 @@ export class PageGenerator<REQUEST extends object, DATA> {
             },
         });
 
-        return { pagePath, content }
+        return { pagePath, content };
     }
 }

@@ -16,7 +16,9 @@ export class Generator {
     constructor(config: CleanConfig, context: FrugalContext) {
         this.config = config;
         this.context = context;
-        this.generators = this.context.pages.filter(page => page instanceof DynamicPage).map((page) => {
+        this.generators = this.context.pages.filter((page) =>
+            page instanceof DynamicPage
+        ).map((page) => {
             return new PageGenerator(page, {
                 cache: this.context.cache,
                 context: this.context.pageContext,
@@ -26,7 +28,7 @@ export class Generator {
     }
 
     get routes() {
-        return this.generators.map(generator => generator.route)
+        return this.generators.map((generator) => generator.route);
     }
 
     async generate(pathname: string, urlSearchParams: URLSearchParams) {
@@ -40,7 +42,8 @@ export class Generator {
                 return `${this.op} ${this.logger!.timerStart}`;
             },
             logger: {
-                timerStart: `generation of ${pathname}?${urlSearchParams.toString()}`,
+                timerStart:
+                    `generation of ${pathname}?${urlSearchParams.toString()}`,
             },
         });
 
@@ -54,7 +57,8 @@ export class Generator {
                     return `no match found for ${this.pathname}`;
                 },
                 logger: {
-                    timerEnd: `generation of ${pathname}?${urlSearchParams.toString()}`,
+                    timerEnd:
+                        `generation of ${pathname}?${urlSearchParams.toString()}`,
                 },
             });
             return undefined;
@@ -70,7 +74,8 @@ export class Generator {
                 return `${this.logger!.timerEnd} ${this.op}`;
             },
             logger: {
-                timerEnd: `generation of ${pathname}?${urlSearchParams.toString()}`,
+                timerEnd:
+                    `generation of ${pathname}?${urlSearchParams.toString()}`,
             },
         });
 
@@ -85,9 +90,7 @@ export class Generator {
                 return pageGenerator;
             }
         }
-    
+
         return undefined;
     }
-    
 }
-

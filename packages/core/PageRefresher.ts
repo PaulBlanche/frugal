@@ -19,7 +19,7 @@ export class PageRefresher<REQUEST extends object, DATA> {
     }
 
     get route() {
-        return this.page.pattern
+        return this.page.pattern;
     }
 
     match(pathname: string): boolean {

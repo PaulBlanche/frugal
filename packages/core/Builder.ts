@@ -9,14 +9,16 @@ function logger() {
 }
 
 export class Builder {
-    private config: CleanConfig
+    private config: CleanConfig;
     private context: FrugalContext;
     private builders: PageBuilder<any, any>[];
 
     constructor(config: CleanConfig, context: FrugalContext) {
         this.config = config;
         this.context = context;
-        this.builders = this.context.pages.filter(page => page instanceof StaticPage).map((page) => {
+        this.builders = this.context.pages.filter((page) =>
+            page instanceof StaticPage
+        ).map((page) => {
             return new PageBuilder(
                 page,
                 {
@@ -25,7 +27,7 @@ export class Builder {
                     publicDir: this.config.publicDir,
                 },
             );
-        })
+        });
     }
 
     async build() {

@@ -3,10 +3,10 @@ import { assert } from '../assert/mod.ts';
 import { Cache } from './Cache.ts';
 import * as pathToRegexp from '../../dep/path-to-regexp.ts';
 
-export type Phase = 'build'|'refresh'|'generate'
+export type Phase = 'build' | 'refresh' | 'generate';
 
 export type GetRequestListParams = {
-    phase: Phase
+    phase: Phase;
 };
 
 export type GetStaticDataParams<REQUEST> = {
@@ -19,11 +19,11 @@ export type GetDynamicDataParams<REQUEST> = {
     phase: Phase;
     request: REQUEST;
     cache: Cache;
-    searchParams: URLSearchParams
-}
+    searchParams: URLSearchParams;
+};
 
 export type GetContentParams<REQUEST, DATA> = {
-    phase: Phase
+    phase: Phase;
     request: REQUEST;
     data: DATA;
     pathname: string;
@@ -53,7 +53,7 @@ export type StaticPageDescriptor<REQUEST, DATA> = {
     getRequestList: GetRequestList<REQUEST>;
     getStaticData: GetStaticData<REQUEST, DATA>;
     getContent: GetContent<REQUEST, DATA>;
-}
+};
 
 export type DynamicPageDescriptor<REQUEST, DATA> = {
     pattern: string;
@@ -70,9 +70,12 @@ export async function load<REQUEST extends object, DATA>(
         return new StaticPage(path, hash, descriptor);
     }
     if (isDynamicDescriptor<REQUEST, DATA>(path, descriptor)) {
-        return new DynamicPage(path, hash, descriptor)
+        return new DynamicPage(path, hash, descriptor);
     }
-    assert(false, `Page descriptor "${path}" has neither "getDynamicData" nor "getStaticData" method`)
+    assert(
+        false,
+        `Page descriptor "${path}" has neither "getDynamicData" nor "getStaticData" method`,
+    );
 }
 
 function isDynamicDescriptor<REQUEST extends object, DATA>(
@@ -81,11 +84,11 @@ function isDynamicDescriptor<REQUEST extends object, DATA>(
 ): descriptor is DynamicPageDescriptor<REQUEST, DATA> {
     if (typeof descriptor === 'object' && descriptor !== null) {
         if ('getDynamicData' in descriptor) {
-            validateDynamicDescriptor(path, descriptor)
+            validateDynamicDescriptor(path, descriptor);
             return true;
-        } 
+        }
     }
-    return false
+    return false;
 }
 
 function isStaticDescriptor<REQUEST extends object, DATA>(
@@ -94,13 +97,12 @@ function isStaticDescriptor<REQUEST extends object, DATA>(
 ): descriptor is StaticPageDescriptor<REQUEST, DATA> {
     if (typeof descriptor === 'object' && descriptor !== null) {
         if ('getStaticData' in descriptor) {
-            validateStaticDescriptor(path, descriptor)
-            return true
+            validateStaticDescriptor(path, descriptor);
+            return true;
         }
     }
-    return false
+    return false;
 }
-
 
 function validateStaticDescriptor<REQUEST extends object, DATA>(
     path: string,
@@ -142,9 +144,17 @@ function validateDynamicDescriptor<REQUEST extends object, DATA>(
     );
 }
 
-export type Page<REQUEST extends object, DATA> = StaticPage<REQUEST, DATA> | DynamicPage<REQUEST, DATA>
+export type Page<REQUEST extends object, DATA> =
+    | StaticPage<REQUEST, DATA>
+    | DynamicPage<REQUEST, DATA>;
 
-export class BasePage<REQUEST extends object, DATA, DESCRIPTOR extends StaticPageDescriptor<REQUEST, DATA>|DynamicPageDescriptor<REQUEST, DATA>> {
+export class BasePage<
+    REQUEST extends object,
+    DATA,
+    DESCRIPTOR extends
+        | StaticPageDescriptor<REQUEST, DATA>
+        | DynamicPageDescriptor<REQUEST, DATA>,
+> {
     protected descriptor: DESCRIPTOR;
     readonly path: string;
     readonly hash: string;
@@ -159,8 +169,8 @@ export class BasePage<REQUEST extends object, DATA, DESCRIPTOR extends StaticPag
         this.descriptor = descriptor;
         this.hash = hash;
         this.path = path;
-        this.urlCompiler = pathToRegexp.compile(this.descriptor.pattern)
-        this.urlMatcher = pathToRegexp.match(this.descriptor.pattern)
+        this.urlCompiler = pathToRegexp.compile(this.descriptor.pattern);
+        this.urlMatcher = pathToRegexp.match(this.descriptor.pattern);
     }
 
     get pattern() {
@@ -172,21 +182,23 @@ export class BasePage<REQUEST extends object, DATA, DESCRIPTOR extends StaticPag
     }
 
     compile(request: REQUEST) {
-        return this.urlCompiler(request)
+        return this.urlCompiler(request);
     }
 
     match(path: string) {
-        return this.urlMatcher(path)
+        return this.urlMatcher(path);
     }
 }
 
-export class StaticPage<REQUEST extends object, DATA> extends BasePage<REQUEST, DATA, StaticPageDescriptor<REQUEST, DATA>> implements StaticPageDescriptor<REQUEST, DATA> {
+export class StaticPage<REQUEST extends object, DATA>
+    extends BasePage<REQUEST, DATA, StaticPageDescriptor<REQUEST, DATA>>
+    implements StaticPageDescriptor<REQUEST, DATA> {
     constructor(
         path: string,
         hash: string,
         descriptor: StaticPageDescriptor<REQUEST, DATA>,
     ) {
-        super(path, hash, descriptor)
+        super(path, hash, descriptor);
     }
 
     getStaticData(params: GetStaticDataParams<REQUEST>) {
@@ -198,13 +210,15 @@ export class StaticPage<REQUEST extends object, DATA> extends BasePage<REQUEST, 
     }
 }
 
-export class DynamicPage<REQUEST extends object, DATA> extends BasePage<REQUEST, DATA, DynamicPageDescriptor<REQUEST, DATA>> implements DynamicPageDescriptor<REQUEST, DATA> {
+export class DynamicPage<REQUEST extends object, DATA>
+    extends BasePage<REQUEST, DATA, DynamicPageDescriptor<REQUEST, DATA>>
+    implements DynamicPageDescriptor<REQUEST, DATA> {
     constructor(
         path: string,
         hash: string,
         descriptor: DynamicPageDescriptor<REQUEST, DATA>,
     ) {
-        super(path, hash, descriptor)
+        super(path, hash, descriptor);
     }
 
     getDynamicData(params: GetDynamicDataParams<REQUEST>) {

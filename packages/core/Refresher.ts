@@ -16,7 +16,9 @@ export class Refresher {
     constructor(config: CleanConfig, context: FrugalContext) {
         this.config = config;
         this.context = context;
-        this.refreshers = this.context.pages.filter(page => page instanceof StaticPage).map((page) => {
+        this.refreshers = this.context.pages.filter((page) =>
+            page instanceof StaticPage
+        ).map((page) => {
             return new PageRefresher(page, {
                 cache: this.context.cache,
                 context: this.context.pageContext,
@@ -26,7 +28,7 @@ export class Refresher {
     }
 
     get routes() {
-        return this.refreshers.map(refresher => refresher.route)
+        return this.refreshers.map((refresher) => refresher.route);
     }
 
     async refresh(pathname: string): Promise<boolean> {
@@ -85,9 +87,7 @@ export class Refresher {
                 return pageRefresher;
             }
         }
-    
+
         return undefined;
     }
-    
 }
-

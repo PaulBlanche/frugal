@@ -1,2 +1,2 @@
-export * from './generate.ts'
-export * from './refresh.ts'
+export * from './generate.ts';
+export * from './refresh.ts';

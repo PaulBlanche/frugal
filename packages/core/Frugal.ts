@@ -4,9 +4,9 @@ import { Refresher } from './Refresher.ts';
 import { Generator } from './Generator.ts';
 import { FrugalContext } from './FrugalContext.ts';
 export class Frugal {
-    private builder: Builder
-    private refresher: Refresher
-    private generator: Generator
+    private builder: Builder;
+    private refresher: Refresher;
+    private generator: Generator;
 
     static async load(config: Config) {
         const cleanConfig = await CleanConfig.load(config);
@@ -21,9 +21,9 @@ export class Frugal {
     }
 
     constructor(config: CleanConfig, context: FrugalContext) {
-        this.builder = new Builder(config, context)
-        this.refresher = new Refresher(config, context)
-        this.generator = new Generator(config, context)
+        this.builder = new Builder(config, context);
+        this.refresher = new Refresher(config, context);
+        this.generator = new Generator(config, context);
     }
 
     // build all registered static pages
@@ -42,13 +42,12 @@ export class Frugal {
     }
 
     get refreshRoutes() {
-        return this.refresher.routes
+        return this.refresher.routes;
     }
 
     get generateRoutes() {
-        return this.generator.routes
+        return this.generator.routes;
     }
-
 }
 
 export async function build(config: Config) {

@@ -3,28 +3,31 @@ import * as mumur from '../murmur/mod.ts';
 import * as path from '../../dep/std/path.ts';
 import * as fs from '../../dep/std/fs.ts';
 import * as log from '../log/mod.ts';
-import { PageGeneratorConfig, PageGenerator } from './PageGenerator.ts'
+import { PageGenerator, PageGeneratorConfig } from './PageGenerator.ts';
 import { assert } from '../../dep/std/asserts.ts';
 
-export type PageBuilderConfig = PageGeneratorConfig
+export type PageBuilderConfig = PageGeneratorConfig;
 
 function logger() {
     return log.getLogger('frugal:PageBuilder');
 }
 
 export class PageBuilder<REQUEST extends object, DATA> {
-    private generator: PageGenerator<REQUEST, DATA>
+    private generator: PageGenerator<REQUEST, DATA>;
     private page: Page<REQUEST, DATA>;
     private config: PageBuilderConfig;
 
     constructor(page: Page<REQUEST, DATA>, config: PageBuilderConfig) {
         this.page = page;
         this.config = config;
-        this.generator = new PageGenerator(page, config)
+        this.generator = new PageGenerator(page, config);
     }
 
     async buildAll() {
-        assert(this.page instanceof StaticPage, `Can't statically build DynamicPage ${this.page.pattern}`)
+        assert(
+            this.page instanceof StaticPage,
+            `Can't statically build DynamicPage ${this.page.pattern}`,
+        );
 
         logger().info({
             op: 'start',
@@ -38,7 +41,7 @@ export class PageBuilder<REQUEST extends object, DATA> {
         });
 
         const requestsList = await this.page.getRequestList({
-            phase: 'build'
+            phase: 'build',
         });
 
         await Promise.all(requestsList.map(async (request) => {
@@ -58,7 +61,10 @@ export class PageBuilder<REQUEST extends object, DATA> {
     }
 
     async build(request: REQUEST, phase: Phase): Promise<void> {
-        assert(this.page instanceof StaticPage, `Can't statically build DynamicPage ${this.page.pattern}`)
+        assert(
+            this.page instanceof StaticPage,
+            `Can't statically build DynamicPage ${this.page.pattern}`,
+        );
         const url = this.page.compile(request);
 
         logger().debug({
@@ -69,13 +75,12 @@ export class PageBuilder<REQUEST extends object, DATA> {
                 return `${this.op} ${this.logger!.timerStart}`;
             },
             logger: {
-                timerStart:
-                    `build ${this.page.pattern} as ${url}`,
+                timerStart: `build ${this.page.pattern} as ${url}`,
             },
         });
 
         const data = await this.page.getStaticData({
-            phase, 
+            phase,
             request,
             cache: this.config.cache,
         });
@@ -88,7 +93,8 @@ export class PageBuilder<REQUEST extends object, DATA> {
         await this.config.cache.memoize({
             key: pageInstanceHash,
             producer: async () => {
-                const { pagePath, content } = await this.generator.generateContentFromData(url, data, request, phase)
+                const { pagePath, content } = await this.generator
+                    .generateContentFromData(url, data, request, phase);
 
                 await fs.ensureDir(path.dirname(pagePath));
                 await Deno.writeTextFile(pagePath, content);
@@ -101,12 +107,11 @@ export class PageBuilder<REQUEST extends object, DATA> {
                         return `${this.logger!.timerEnd} ${this.op}`;
                     },
                     logger: {
-                        timerEnd:
-                            `build ${this.page.pattern} as ${url}`,
+                        timerEnd: `build ${this.page.pattern} as ${url}`,
                     },
                 });
 
-                return pageInstanceHash
+                return pageInstanceHash;
             },
             otherwise: () => {
                 logger().debug({
@@ -114,15 +119,15 @@ export class PageBuilder<REQUEST extends object, DATA> {
                     pattern: this.page.pattern,
                     url,
                     msg() {
-                        return `${this.logger!.timerEnd} ${this.op} (from cache)`;
+                        return `${
+                            this.logger!.timerEnd
+                        } ${this.op} (from cache)`;
                     },
                     logger: {
-                        timerEnd:
-                            `build ${this.page.pattern} as ${url}`,
+                        timerEnd: `build ${this.page.pattern} as ${url}`,
                     },
                 });
             },
         });
     }
-
 }

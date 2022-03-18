@@ -82,7 +82,11 @@ export function getContentFrom<REQUEST, DATA>(
                     <DataProvider
                         context={{ data, pathname, timestamp: Date.now() }}
                     >
-                        <Page entrypoint={entrypoint} context={context} cache={cache} />
+                        <Page
+                            entrypoint={entrypoint}
+                            context={context}
+                            cache={cache}
+                        />
                     </DataProvider>
                 </App>
             </HeadProvider>,
