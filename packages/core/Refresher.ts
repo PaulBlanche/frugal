@@ -1,23 +1,23 @@
 import * as log from '../log/mod.ts';
-import { PageRegenerator } from './PageRegenerator.ts';
+import { PageRefresher } from './PageRefresher.ts';
 import { CleanConfig } from './Config.ts';
 import { FrugalContext } from './FrugalContext.ts';
 import { StaticPage } from './Page.ts';
 
 function logger() {
-    return log.getLogger('frugal:Regenerator');
+    return log.getLogger('frugal:Refresher');
 }
 
-export class Regenerator {
+export class Refresher {
     private config: CleanConfig;
     private context: FrugalContext;
-    private regenerators: PageRegenerator<any, any>[];
+    private refreshers: PageRefresher<any, any>[];
 
     constructor(config: CleanConfig, context: FrugalContext) {
         this.config = config;
         this.context = context;
-        this.regenerators = this.context.pages.filter(page => page instanceof StaticPage).map((page) => {
-            return new PageRegenerator(page, {
+        this.refreshers = this.context.pages.filter(page => page instanceof StaticPage).map((page) => {
+            return new PageRefresher(page, {
                 cache: this.context.cache,
                 context: this.context.pageContext,
                 publicDir: this.config.publicDir,
@@ -26,10 +26,10 @@ export class Regenerator {
     }
 
     get routes() {
-        return this.regenerators.map(regenerator => regenerator.route)
+        return this.refreshers.map(refresher => refresher.route)
     }
 
-    async regenerate(pathname: string): Promise<boolean> {
+    async refresh(pathname: string): Promise<boolean> {
         this.config.setupServerLogging();
 
         logger().info({
@@ -39,28 +39,28 @@ export class Regenerator {
                 return `${this.op} ${this.logger!.timerStart}`;
             },
             logger: {
-                timerStart: `regeneration of ${pathname}`,
+                timerStart: `refresh of ${pathname}`,
             },
         });
 
-        const pageRegenerator = this.getMatchingPageRegenerator(
+        const pageRefresher = this.getMatchingPageRefresher(
             pathname,
         );
 
-        if (pageRegenerator === undefined) {
+        if (pageRefresher === undefined) {
             logger().info({
                 pathname,
                 msg() {
                     return `no match found for ${this.pathname}`;
                 },
                 logger: {
-                    timerEnd: `regeneration of ${pathname}`,
+                    timerEnd: `refresh of ${pathname}`,
                 },
             });
             return false;
         }
 
-        await pageRegenerator.regenerate(pathname);
+        await pageRefresher.refresh(pathname);
         await this.context.save();
 
         logger().info({
@@ -70,19 +70,19 @@ export class Regenerator {
                 return `${this.logger!.timerEnd} ${this.op}`;
             },
             logger: {
-                timerEnd: `regeneration of ${pathname}`,
+                timerEnd: `refresh of ${pathname}`,
             },
         });
 
         return true;
     }
 
-    private getMatchingPageRegenerator(
+    private getMatchingPageRefresher(
         pathname: string,
-    ): PageRegenerator<any, any> | undefined {
-        for (const pageRegenerator of this.regenerators) {
-            if (pageRegenerator.match(pathname)) {
-                return pageRegenerator;
+    ): PageRefresher<any, any> | undefined {
+        for (const pageRefresher of this.refreshers) {
+            if (pageRefresher.match(pathname)) {
+                return pageRefresher;
             }
         }
     

@@ -4,16 +4,16 @@ import { PageBuilder, PageBuilderConfig } from './PageBuilder.ts';
 import { Page } from './Page.ts';
 
 function logger() {
-    return log.getLogger('frugal:PageRegenerator');
+    return log.getLogger('frugal:PageRefresher');
 }
 
-type PageRegeneratorConfig = PageBuilderConfig;
+type PageRefresherConfig = PageBuilderConfig;
 
-export class PageRegenerator<REQUEST extends object, DATA> {
+export class PageRefresher<REQUEST extends object, DATA> {
     private builder: PageBuilder<REQUEST, DATA>;
     private page: Page<REQUEST, DATA>;
 
-    constructor(page: Page<REQUEST, DATA>, config: PageRegeneratorConfig) {
+    constructor(page: Page<REQUEST, DATA>, config: PageRefresherConfig) {
         this.page = page;
         this.builder = new PageBuilder(page, config);
     }
@@ -26,7 +26,7 @@ export class PageRegenerator<REQUEST extends object, DATA> {
         return Boolean(this.page.match(pathname));
     }
 
-    async regenerate(pathname: string): Promise<void> {
+    async refresh(pathname: string): Promise<void> {
         const match = this.page.match(pathname);
         assert(match !== false);
 
@@ -38,11 +38,11 @@ export class PageRegenerator<REQUEST extends object, DATA> {
                 return `${this.op} ${this.logger!.timerStart}`;
             },
             logger: {
-                timerStart: `regenerate ${this.page.pattern} as ${pathname}`,
+                timerStart: `refreshing ${this.page.pattern} as ${pathname}`,
             },
         });
 
-        await this.builder.build(match.params, 'regenerate');
+        await this.builder.build(match.params, 'refresh');
 
         logger().info({
             op: 'done',
@@ -52,7 +52,7 @@ export class PageRegenerator<REQUEST extends object, DATA> {
                 return `${this.logger!.timerEnd} ${this.op}`;
             },
             logger: {
-                timerEnd: `regenerate ${this.page.pattern} as ${pathname}`,
+                timerEnd: `refreshing ${this.page.pattern} as ${pathname}`,
             },
         });
     }

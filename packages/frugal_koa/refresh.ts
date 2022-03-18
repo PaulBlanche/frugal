@@ -1,7 +1,7 @@
 import { Router, composeMiddleware, Middleware } from '../../dep/oak.ts';
 import { Frugal } from '../core/mod.ts';
 
-export function getRegenerateMiddleware(frugal: Frugal): Middleware {
+export function getRefreshMiddleware(frugal: Frugal): Middleware {
     const router = new Router()
 
     router.post('/regenerate', async (context) => {
@@ -13,7 +13,7 @@ export function getRegenerateMiddleware(frugal: Frugal): Middleware {
             return
         }
 
-        const success = await frugal.regenerate(pathname)
+        const success = await frugal.refresh(pathname)
     
         if (!success) {
             context.response.status = 422

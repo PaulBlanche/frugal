@@ -4,12 +4,14 @@ export type { Config } from './Config.ts';
 export type {
     GetContent,
     GetContentParams,
-    GetData,
-    GetDataParams,
+    GetStaticData,
+    GetDynamicDataParams,
+    GetDynamicData,
+    GetStaticDataParams,
     GetRequestList,
     GetRequestListParams,
-    PageDescriptor,
+    StaticPageDescriptor,
+    DynamicPageDescriptor,
     Phase
 } from './Page.ts';
 export { build, Frugal } from './Frugal.ts';
-export type { RegenerationRequest } from './Regenerator.ts';

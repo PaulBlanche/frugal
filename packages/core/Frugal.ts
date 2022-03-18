@@ -1,13 +1,11 @@
 import { CleanConfig, Config } from './Config.ts';
 import { Builder } from './Builder.ts';
-import { Regenerator } from './Regenerator.ts';
+import { Refresher } from './Refresher.ts';
 import { Generator } from './Generator.ts';
 import { FrugalContext } from './FrugalContext.ts';
 export class Frugal {
-    //config: CleanConfig;
-    //context: FrugalContext;
     private builder: Builder
-    private regenerator: Regenerator
+    private refresher: Refresher
     private generator: Generator
 
     static async load(config: Config) {
@@ -24,7 +22,7 @@ export class Frugal {
 
     constructor(config: CleanConfig, context: FrugalContext) {
         this.builder = new Builder(config, context)
-        this.regenerator = new Regenerator(config, context)
+        this.refresher = new Refresher(config, context)
         this.generator = new Generator(config, context)
     }
 
@@ -33,9 +31,9 @@ export class Frugal {
         await this.builder.build();
     }
 
-    // regenerate a specific static page (might do nothing if nothing changed)
-    regenerate(pathname: string) {
-        return this.regenerator.regenerate(pathname);
+    // refresh a specific static page (might do nothing if nothing changed)
+    refresh(pathname: string) {
+        return this.refresher.refresh(pathname);
     }
 
     // generate a specific dynamic page (allways generate even if nothing changed)
@@ -43,8 +41,8 @@ export class Frugal {
         return this.generator.generate(pathname, urlSearchParams);
     }
 
-    get regenerateRoutes() {
-        return this.regenerator.routes
+    get refreshRoutes() {
+        return this.refresher.routes
     }
 
     get generateRoutes() {

@@ -3,7 +3,7 @@ import { assert } from '../assert/mod.ts';
 import { Cache } from './Cache.ts';
 import * as pathToRegexp from '../../dep/path-to-regexp.ts';
 
-export type Phase = 'build'|'regenerate'|'generate'
+export type Phase = 'build'|'refresh'|'generate'
 
 export type GetRequestListParams = {
     phase: Phase

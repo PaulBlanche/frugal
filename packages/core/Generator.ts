@@ -8,10 +8,6 @@ function logger() {
     return log.getLogger('frugal:Generator');
 }
 
-export type RegenerationRequest = {
-    url: string;
-};
-
 export class Generator {
     private config: CleanConfig;
     private context: FrugalContext;
@@ -30,7 +26,7 @@ export class Generator {
     }
 
     get routes() {
-        return this.generators.map(regenerator => regenerator.route)
+        return this.generators.map(generator => generator.route)
     }
 
     async generate(pathname: string, urlSearchParams: URLSearchParams) {
@@ -74,7 +70,7 @@ export class Generator {
                 return `${this.logger!.timerEnd} ${this.op}`;
             },
             logger: {
-                timerEnd: `regeneration of ${pathname}`,
+                timerEnd: `generation of ${pathname}?${urlSearchParams.toString()}`,
             },
         });
 
