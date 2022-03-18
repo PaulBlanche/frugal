@@ -28,13 +28,13 @@ export function style({ test }: Config): rollup.Plugin {
 
 // rollup comes from node world, where every module is local. This means that
 // absolute url imports (http:// and file://) are treated correctly, but relative
-// import stay relative. 
+// import stay relative.
 // So if we find an id that is not parsable as URL, this means that it is a relative
 // import to a local module
 function getModuleUrl(id: string): URL {
     try {
-        return new URL(id)
+        return new URL(id);
     } catch {
-        return new URL(`file://${id}`)
+        return new URL(`file://${id}`);
     }
 }

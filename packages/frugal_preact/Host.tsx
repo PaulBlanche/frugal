@@ -6,7 +6,7 @@ import { cx } from '../loader_style/styled.ts';
 
 import type { HydrationStrategy } from './types.ts';
 
-type HostProps<PROPS> = {
+export type HostProps<PROPS> = {
     className?: string;
     strategy?: HydrationStrategy;
     clientOnly?: boolean;

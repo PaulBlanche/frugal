@@ -22,7 +22,7 @@ type Config = {
     resolve?: (specifier: string, referrer: URL) => URL | undefined;
 };
 
-export type DependencyTree = tree.Root
+export type DependencyTree = tree.Root;
 
 export async function build(
     entrypoints: URL[],
@@ -251,8 +251,8 @@ async function baseLoad(resolvedModuleSpecifier: URL): Promise<string> {
     if (resolvedModuleSpecifier.protocol.startsWith('http')) {
         //const response = await fetch(resolvedModuleSpecifier);
         //return await response.text();
-        console.log(`//${resolvedModuleSpecifier}`)
-        return `//${resolvedModuleSpecifier}`
+        console.log(`//${resolvedModuleSpecifier}`);
+        return `//${resolvedModuleSpecifier}`;
     }
 
     return await Deno.readTextFile(resolvedModuleSpecifier);

@@ -8,45 +8,46 @@ import * as frugal from '../core/mod.ts';
 
 import { DataProvider } from './dataContext.tsx';
 
-export type PageProps = { 
-    path: string,
+export type PageProps = {
+    path: string;
     cache: frugal.Cache;
-    context: frugal.PageContext 
+    context: frugal.PageContext;
 };
 
 export type Page = preact.ComponentType<PageProps>;
 
-
 export type App = (
     props: AppProps,
-) =>  preact.VNode;
+) => preact.VNode;
 
 export type AppProps = {
-    path: string,
-    context: frugal.PageContext
+    path: string;
+    context: frugal.PageContext;
     children: preact.ComponentChildren;
     cache: frugal.Cache;
-}
+};
 
 export type Document = preact.ComponentType<DocumentProps>;
 
 export type DocumentProps = {
     head: preact.VNode[];
-    path: string,
-    context: frugal.PageContext
+    path: string;
+    context: frugal.PageContext;
     dangerouslySetInnerHTML: { __html: string };
 };
 
 type ContentConfig = {
-    App: App,
-    Document: Document
-}
+    App: App;
+    Document: Document;
+};
 
 const DEFAULT_APP: App = ({ children }) => {
     return <>{children}</>;
-}
+};
 
-const DEFAULT_DOCUMENT: Document = ({ head, dangerouslySetInnerHTML }: DocumentProps) => {
+const DEFAULT_DOCUMENT: Document = (
+    { head, dangerouslySetInnerHTML }: DocumentProps,
+) => {
     return (
         <html>
             <head>
@@ -55,11 +56,12 @@ const DEFAULT_DOCUMENT: Document = ({ head, dangerouslySetInnerHTML }: DocumentP
             <body dangerouslySetInnerHTML={dangerouslySetInnerHTML} />
         </html>
     );
-}
+};
 
 export function getContentFrom<REQUEST, DATA>(
     Page: Page,
-    { App = DEFAULT_APP, Document = DEFAULT_DOCUMENT }: Partial<ContentConfig> = {}
+    { App = DEFAULT_APP, Document = DEFAULT_DOCUMENT }: Partial<ContentConfig> =
+        {},
 ): frugal.GetContent<REQUEST, DATA> {
     return ({
         data,
@@ -77,13 +79,15 @@ export function getContentFrom<REQUEST, DATA>(
                 }}
             >
                 <App path={path} context={context} cache={cache}>
-                    <DataProvider context={{ data, url, timestamp: Date.now() }}>
-                        <Page path={path} context={context} cache={cache}/>
+                    <DataProvider
+                        context={{ data, url, timestamp: Date.now() }}
+                    >
+                        <Page path={path} context={context} cache={cache} />
                     </DataProvider>
                 </App>
-            </HeadProvider>
+            </HeadProvider>,
         );
-        
+
         return `<!DOCTYPE html>${
             server.render(
                 <Document

@@ -24,14 +24,17 @@ class StopWatch {
 
     time(record: FrugalLogRecord) {
         if (record.logger.timerStart) {
-            const timerStartKey = `${record.logger.scope}:${record.logger.timerStart}`
+            const timerStartKey =
+                `${record.logger.scope}:${record.logger.timerStart}`;
             this.timers.set(timerStartKey, performance.now());
         }
 
-        if (record.logger.timerEnd) { 
-            const timerEndKey = `${record.logger.scope}:${record.logger.timerEnd}`
-            if(this.timers.has(timerEndKey)) {
-                record.logger.delta = performance.now() - this.timers.get(timerEndKey)!;
+        if (record.logger.timerEnd) {
+            const timerEndKey =
+                `${record.logger.scope}:${record.logger.timerEnd}`;
+            if (this.timers.has(timerEndKey)) {
+                record.logger.delta = performance.now() -
+                    this.timers.get(timerEndKey)!;
             }
         }
     }

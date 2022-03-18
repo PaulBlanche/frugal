@@ -4,7 +4,7 @@ import * as preact from 'preact';
 import * as hooks from 'preact/hooks';
 import './types.ts';
 
-type DataContext = { data: any; url: string, timestamp: number };
+type DataContext = { data: any; url: string; timestamp: number };
 
 const dataContext = preact.createContext<
     DataContext | undefined
@@ -36,7 +36,6 @@ export function useCreationTimestamp(): number {
 
     return context.timestamp;
 }
-
 
 type DataProviderProps = {
     context?: DataContext;

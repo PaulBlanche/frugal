@@ -7,13 +7,13 @@ import * as frugal from '../core/mod.ts';
 import * as log from '../log/mod.ts';
 
 function logger() {
-    return log.getLogger('frugal:loader:script')
+    return log.getLogger('frugal:loader:script');
 }
 
 type BundleConfig = {
     cache: frugal.Cache<any>;
     input?: Omit<rollup.InputOptions, 'input' | 'cache'>;
-    outputs?: rollup.OutputOptions[]
+    outputs?: rollup.OutputOptions[];
     inline?: boolean;
     publicDir: string;
     scripts: {
@@ -36,7 +36,7 @@ export function INLINE_CACHE_KEY(entrypoint: string) {
 
 export const CODE_SPLIT_CACHE_KEY = `rollup-code-split`;
 
-const SOURCEMAPPING_URL = 'sourceMa'+'ppingURL';
+const SOURCEMAPPING_URL = 'sourceMa' + 'ppingURL';
 
 export async function bundleInline(
     { cache, input, scripts, outputs = [] }: BundleConfig,
@@ -63,9 +63,9 @@ export async function bundleInline(
         await Promise.all(outputs.map(async (outputConfig) => {
             const { output } = await rollupBundle.generate(outputConfig);
 
-            const bundle = output[0].code
+            const bundle = output[0].code;
 
-            const format = outputConfig.format ?? 'es'
+            const format = outputConfig.format ?? 'es';
 
             bundles[script.entrypoint] = bundles[script.entrypoint] ?? {};
             bundles[script.entrypoint][format] = bundle;
@@ -74,9 +74,9 @@ export async function bundleInline(
                 entrypoint: script.entrypoint,
                 format: outputConfig.format,
                 msg() {
-                    return `add inline script ${this.entrypoint} (${this.format} format)`
-                }
-            })
+                    return `add inline script ${this.entrypoint} (${this.format} format)`;
+                },
+            });
         }));
 
         await rollupBundle.close();
@@ -113,7 +113,7 @@ export async function bundleCodeSplit(
                 return;
             }
 
-            const bundle = chunkOrAsset.code    
+            const bundle = chunkOrAsset.code;
             const hash = new murmur.Hash().update(bundle).alphabetic();
 
             const ext = path.extname(chunkOrAsset.fileName);
@@ -122,7 +122,7 @@ export async function bundleCodeSplit(
                 ? `${name}-${hash}${ext}`
                 : chunkOrAsset.fileName;
 
-            const format = outputConfig.format ?? 'es'
+            const format = outputConfig.format ?? 'es';
 
             const chunkUrl = `/js/${format}/${fileName}`;
             const chunkPath = path.join(publicDir, chunkUrl);
@@ -130,29 +130,33 @@ export async function bundleCodeSplit(
             if (outputConfig.sourcemap && chunkOrAsset.map) {
                 if (outputConfig.sourcemap === 'inline') {
                     const sourceMapUrl = chunkOrAsset.map.toUrl();
-                    const code = bundle + `//# ${SOURCEMAPPING_URL}=${sourceMapUrl}\n`;
- 
+                    const code = bundle +
+                        `//# ${SOURCEMAPPING_URL}=${sourceMapUrl}\n`;
+
                     await fs.ensureDir(path.dirname(chunkPath));
-                    await Deno.writeTextFile(chunkPath, code)
+                    await Deno.writeTextFile(chunkPath, code);
                 } else {
-                    const sourceMapPath = `${chunkPath}.map`
+                    const sourceMapPath = `${chunkPath}.map`;
                     const sourceMapUrl = `${path.basename(sourceMapPath)}`;
 
                     let code = bundle;
                     if (outputConfig.sourcemap !== 'hidden') {
                         code += `//# ${SOURCEMAPPING_URL}=${sourceMapUrl}\n`;
                     }
-    
+
                     await fs.ensureDir(path.dirname(chunkPath));
 
                     await Promise.all([
                         Deno.writeTextFile(chunkPath, code),
-                        Deno.writeTextFile(sourceMapPath, chunkOrAsset.map.toString())
-                    ])        
+                        Deno.writeTextFile(
+                            sourceMapPath,
+                            chunkOrAsset.map.toString(),
+                        ),
+                    ]);
                 }
             } else {
                 await fs.ensureDir(path.dirname(chunkPath));
-                await Deno.writeTextFile(chunkPath, bundle)
+                await Deno.writeTextFile(chunkPath, bundle);
             }
 
             if (chunkOrAsset.isEntry && chunkOrAsset.facadeModuleId !== null) {
@@ -160,15 +164,15 @@ export async function bundleCodeSplit(
                     urls[chunkOrAsset.facadeModuleId] ??
                         {};
                 urls[chunkOrAsset.facadeModuleId][format] = chunkUrl;
-            
+
                 logger().debug({
                     url: chunkUrl,
                     format: format,
                     page: chunkOrAsset.facadeModuleId,
                     msg() {
-                        return `add bundle script ${this.url} for ${this.page} (${this.format} format)`
-                    }
-                })    
+                        return `add bundle script ${this.url} for ${this.page} (${this.format} format)`;
+                    },
+                });
             }
         }));
     }));

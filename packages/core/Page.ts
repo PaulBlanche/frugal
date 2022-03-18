@@ -2,15 +2,20 @@ import { PageContext } from './loader.ts';
 import { assert } from '../assert/mod.ts';
 import { Cache } from './Cache.ts';
 
+export type Phase = 'build'|'regenerate'
+
 export type GetRequestListParams = {
+    phase: Phase
 };
 
 export type GetDataParams<REQUEST> = {
+    phase: Phase
     request: REQUEST;
     cache: Cache;
 };
 
 export type GetContentParams<REQUEST, DATA> = {
+    phase: Phase
     request: REQUEST;
     data: DATA;
     url: string;
@@ -20,7 +25,7 @@ export type GetContentParams<REQUEST, DATA> = {
 };
 
 export type GetRequestList<REQUEST> = (
-    params: GetRequestListParams
+    params: GetRequestListParams,
 ) => Promise<REQUEST[]>;
 
 export type GetData<REQUEST, DATA> = (
@@ -34,25 +39,29 @@ export type GetContent<REQUEST, DATA> = (
 export type PageDescriptor<REQUEST, DATA> = {
     getRequestList: GetRequestList<REQUEST>;
     getData: GetData<REQUEST, DATA>;
-    pattern: string
+    pattern: string;
     getContent: GetContent<REQUEST, DATA>;
 };
 
-export class Page<REQUEST extends object, DATA> implements PageDescriptor<REQUEST, DATA> {
+export class Page<REQUEST extends object, DATA>
+    implements PageDescriptor<REQUEST, DATA> {
     private descriptor: PageDescriptor<REQUEST, DATA>;
-    readonly path: string
-    readonly hash: string
+    readonly path: string;
+    readonly hash: string;
 
     static async load<REQUEST extends object, DATA>(
         path: string,
-        hash: string
+        hash: string,
     ): Promise<Page<REQUEST, DATA>> {
-        const descriptor = await import(path)
-        this.validateDescriptor(path, descriptor)
+        const descriptor = await import(path);
+        this.validateDescriptor(path, descriptor);
         return new Page(path, hash, descriptor);
     }
 
-    static validateDescriptor<REQUEST extends object, DATA>(path: string, descriptor: PageDescriptor<REQUEST, DATA>): void {
+    static validateDescriptor<REQUEST extends object, DATA>(
+        path: string,
+        descriptor: PageDescriptor<REQUEST, DATA>,
+    ): void {
         assert(
             typeof descriptor.getRequestList === 'function',
             `Page descriptor "${path}" has no getRequestList function`,
@@ -77,24 +86,23 @@ export class Page<REQUEST extends object, DATA> implements PageDescriptor<REQUES
         descriptor: PageDescriptor<REQUEST, DATA>,
     ) {
         this.descriptor = descriptor;
-        this.hash = hash
+        this.hash = hash;
         this.path = path;
-    }    
+    }
 
     getData(params: GetDataParams<REQUEST>) {
-        return this.descriptor.getData(params)
+        return this.descriptor.getData(params);
     }
 
     getRequestList(params: GetRequestListParams) {
-        return this.descriptor.getRequestList(params)
+        return this.descriptor.getRequestList(params);
     }
 
     get pattern() {
-        return this.descriptor.pattern
+        return this.descriptor.pattern;
     }
 
     getContent(params: Omit<GetContentParams<REQUEST, DATA>, 'path'>) {
-        return this.descriptor.getContent({ ...params, path: this.path })
+        return this.descriptor.getContent({ ...params, path: this.path });
     }
 }
-

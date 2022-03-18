@@ -6,7 +6,7 @@ import * as log from '../log/mod.ts';
 import { bundle, CODE_SPLIT_CACHE_KEY, INLINE_CACHE_KEY } from './bundle.ts';
 
 function logger() {
-    return log.getLogger('frugal:loader:script')
+    return log.getLogger('frugal:loader:script');
 }
 
 type Config = {
@@ -14,7 +14,7 @@ type Config = {
     name: string;
     order?(modules: string[]): string[];
     input?: Omit<rollup.InputOptions, 'input'>;
-    outputs?: rollup.OutputOptions[]
+    outputs?: rollup.OutputOptions[];
     inline?: boolean;
     end?: () => void;
 };
@@ -31,7 +31,7 @@ export function script(
 
     function generate({ assets, cache, dir }: frugal.GenerateParams) {
         logger().debug({
-            msg: 'generate'
+            msg: 'generate',
         });
 
         const bundleHash = assets.reduce((hash, asset) => {
@@ -48,7 +48,9 @@ export function script(
                         return `${this.op} ${this.logger!.timerStart}`;
                     },
                     logger: {
-                        timerStart: `real generation${config.inline ? ' (inline)' : ''}`,
+                        timerStart: `real generation${
+                            config.inline ? ' (inline)' : ''
+                        }`,
                     },
                 });
 
@@ -96,17 +98,19 @@ export function script(
                         return `${this.logger!.timerEnd} ${this.op}`;
                     },
                     logger: {
-                        timerEnd: `real generation${config.inline ? ' (inline)' : ''}`,
+                        timerEnd: `real generation${
+                            config.inline ? ' (inline)' : ''
+                        }`,
                     },
                 });
 
-                return result
+                return result;
             },
             otherwise: () => {
                 logger().debug({
-                    msg: 'nothing new to generate'
-                });        
-    
+                    msg: 'nothing new to generate',
+                });
+
                 cache.propagate(CODE_SPLIT_CACHE_KEY);
                 const entrypoints = [
                     ...new Set(assets.map((asset) => asset.entrypoint)),

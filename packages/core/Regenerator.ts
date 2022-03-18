@@ -1,27 +1,27 @@
 import * as log from '../log/mod.ts';
-import { PageRegenerator } from './PageRegenerator.ts'
-import { CleanConfig } from './Config.ts'
-import { FrugalContext } from './FrugalContext.ts'
+import { PageRegenerator } from './PageRegenerator.ts';
+import { CleanConfig } from './Config.ts';
+import { FrugalContext } from './FrugalContext.ts';
 
 function logger() {
     return log.getLogger('frugal:Regenerator');
 }
 
 export type RegenerationRequest = {
-    url: string
-}
+    url: string;
+};
 
 export class Regenerator {
-    private config: CleanConfig
-    private context: FrugalContext 
+    private config: CleanConfig;
+    private context: FrugalContext;
 
     constructor(config: CleanConfig, context: FrugalContext) {
-        this.config = config
-        this.context = context
+        this.config = config;
+        this.context = context;
     }
 
     async handle(request: RegenerationRequest): Promise<boolean> {
-        this.config.setupServerLogging()
+        this.config.setupServerLogging();
 
         logger().info({
             op: 'start',
@@ -34,16 +34,19 @@ export class Regenerator {
             },
         });
 
-        const pageRegenerators = this.context.pages.map(page => {
+        const pageRegenerators = this.context.pages.map((page) => {
             return new PageRegenerator(page, {
                 cache: this.context.cache,
                 context: this.context.pageContext,
-                publicDir: this.config.publicDir
-            })
-        })
+                publicDir: this.config.publicDir,
+            });
+        });
 
-        const pageRegenerator = getMatchingPageRegenerator(pageRegenerators, request.url)
-        
+        const pageRegenerator = getMatchingPageRegenerator(
+            pageRegenerators,
+            request.url,
+        );
+
         if (pageRegenerator === undefined) {
             logger().info({
                 url: request.url,
@@ -52,13 +55,13 @@ export class Regenerator {
                 },
                 logger: {
                     timerEnd: `regeneration of ${request.url}`,
-                },    
+                },
             });
-            return false
+            return false;
         }
 
-        await pageRegenerator.regenerate(request.url)
-        await this.context.save()
+        await pageRegenerator.regenerate(request.url);
+        await this.context.save();
 
         logger().info({
             op: 'done',
@@ -75,12 +78,15 @@ export class Regenerator {
     }
 }
 
-function getMatchingPageRegenerator(pageRegenerators: PageRegenerator<any, any>[], pathname:string): PageRegenerator<any, any>|undefined  {
+function getMatchingPageRegenerator(
+    pageRegenerators: PageRegenerator<any, any>[],
+    pathname: string,
+): PageRegenerator<any, any> | undefined {
     for (const pageRegenerator of pageRegenerators) {
         if (pageRegenerator.match(pathname)) {
-            return pageRegenerator
+            return pageRegenerator;
         }
     }
 
-    return undefined
+    return undefined;
 }

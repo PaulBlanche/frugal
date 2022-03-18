@@ -1,6 +1,6 @@
 import { PageContext } from './loader.ts';
 import { Cache } from './Cache.ts';
-import { Page } from './Page.ts'
+import { Page, Phase } from './Page.ts';
 import * as mumur from '../murmur/mod.ts';
 import * as pathToRegexp from '../../dep/path-to-regexp.ts';
 import * as path from '../../dep/std/path.ts';
@@ -8,24 +8,24 @@ import * as fs from '../../dep/std/fs.ts';
 import * as log from '../log/mod.ts';
 
 export type PageBuilderConfig = {
-    cache: Cache,
-    context: PageContext,
-    publicDir: string
-}
+    cache: Cache;
+    context: PageContext;
+    publicDir: string;
+};
 
 function logger() {
     return log.getLogger('frugal:PageBuilder');
 }
 
 export class PageBuilder<REQUEST extends object, DATA> {
-    private page: Page<REQUEST, DATA>
-    private config: PageBuilderConfig
-    private urlCompiler: pathToRegexp.PathFunction<REQUEST>
+    private page: Page<REQUEST, DATA>;
+    private config: PageBuilderConfig;
+    private urlCompiler: pathToRegexp.PathFunction<REQUEST>;
 
     constructor(page: Page<REQUEST, DATA>, config: PageBuilderConfig) {
-        this.page = page
-        this.config = config
-        this.urlCompiler = pathToRegexp.compile(this.page.pattern)
+        this.page = page;
+        this.config = config;
+        this.urlCompiler = pathToRegexp.compile(this.page.pattern);
     }
 
     async generateAll() {
@@ -40,10 +40,12 @@ export class PageBuilder<REQUEST extends object, DATA> {
             },
         });
 
-        const requestsList = await this.page.getRequestList({});
+        const requestsList = await this.page.getRequestList({
+            phase: 'build'
+        });
 
-        await Promise.all(requestsList.map(async request => {
-            await this.generate(request)
+        await Promise.all(requestsList.map(async (request) => {
+            await this.generate(request, 'build');
         }));
 
         logger().info({
@@ -58,7 +60,7 @@ export class PageBuilder<REQUEST extends object, DATA> {
         });
     }
 
-    async generate(request: REQUEST): Promise<void> {
+    async generate(request: REQUEST, phase: Phase): Promise<void> {
         const url = this.urlCompiler(request);
 
         logger().debug({
@@ -70,8 +72,9 @@ export class PageBuilder<REQUEST extends object, DATA> {
         });
 
         const data = await this.page.getData({
-            request, 
-            cache: this.config.cache 
+            phase, 
+            request,
+            cache: this.config.cache,
         });
 
         const pageInstanceHash = new mumur.Hash()
@@ -90,11 +93,13 @@ export class PageBuilder<REQUEST extends object, DATA> {
                         return `${this.op} ${this.logger!.timerStart}`;
                     },
                     logger: {
-                        timerStart: `real generation of ${url} (from ${this.page.pattern})`
-                    }
+                        timerStart:
+                            `real generation of ${url} (from ${this.page.pattern})`,
+                    },
                 });
-        
+
                 const content = await this.page.getContent({
+                    phase,
                     request,
                     data,
                     url,
@@ -115,10 +120,10 @@ export class PageBuilder<REQUEST extends object, DATA> {
                         return `${this.logger!.timerEnd} ${this.op}`;
                     },
                     logger: {
-                        timerEnd: `real generation of ${url} (from ${this.page.pattern})`
-                    }
+                        timerEnd:
+                            `real generation of ${url} (from ${this.page.pattern})`,
+                    },
                 });
-    
             },
             otherwise: () => {
                 logger().debug({
@@ -128,8 +133,7 @@ export class PageBuilder<REQUEST extends object, DATA> {
                         return `cache hit for ${this.url} (from ${this.pattern})`;
                     },
                 });
-            }
+            },
         });
-
     }
 }

@@ -4,9 +4,9 @@ import * as preact from 'preact';
 import { DataProvider } from './dataContext.tsx';
 import type { HydrationStrategy } from './types.ts';
 
-type App<PROPS> = (props: PROPS) => preact.VNode;
+export type App<PROPS> = (props: PROPS) => preact.VNode;
 
-type GetApp<PROPS> = () => Promise<App<PROPS>>|App<PROPS>;
+export type GetApp<PROPS> = () => Promise<App<PROPS>> | App<PROPS>;
 
 export function hydrate<PROPS>(name: string, getApp: GetApp<PROPS>) {
     const hydratableOnLoad = queryHydratables(name, 'load');
@@ -36,7 +36,7 @@ function hydrateOnLoad<PROPS>(
 ) {
     Array.from(hydratables).map(async (root) => {
         hydrateElement(root, await getApp());
-    })
+    });
 }
 
 function hydrateOnIdle<PROPS>(
@@ -46,7 +46,7 @@ function hydrateOnIdle<PROPS>(
     setTimeout(() => {
         Array.from(hydratables).map(async (root) => {
             hydrateElement(root, await getApp());
-        })
+        });
     }, 10);
 }
 

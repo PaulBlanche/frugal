@@ -6,7 +6,7 @@ import * as murmur from '../murmur/mod.ts';
 import * as frugal from '../core/mod.ts';
 
 function logger() {
-    return log.getLogger('frugal:loader:style')
+    return log.getLogger('frugal:loader:style');
 }
 
 type Config = {
@@ -23,7 +23,7 @@ export function style(config: Config): frugal.Loader<string, string> {
 
     function generate({ assets, cache, dir }: frugal.GenerateParams) {
         logger().debug({
-            msg: 'generate'
+            msg: 'generate',
         });
 
         const bundleHash = assets.reduce((hash, asset) => {
@@ -48,7 +48,7 @@ export function style(config: Config): frugal.Loader<string, string> {
                         path.dirname(new URL(import.meta.url).pathname),
                         './styled.ts',
                     ),
-                    import.meta.url
+                    import.meta.url,
                 );
 
                 const styleGeneratorScript = `
@@ -63,7 +63,9 @@ export const output = style.output()`;
                 const { output } = await import(
                     URL.createObjectURL(new Blob([styleGeneratorScript]))
                 );
-                const bundle = config.transform ? config.transform(output) : output;
+                const bundle = config.transform
+                    ? config.transform(output)
+                    : output;
 
                 const bundleHash = new murmur.Hash()
                     .update(bundle)
@@ -76,8 +78,8 @@ export const output = style.output()`;
                 logger().debug({
                     url: bundleUrl,
                     msg() {
-                        return `output ${this.url}`
-                    }
+                        return `output ${this.url}`;
+                    },
                 });
 
                 await fs.ensureDir(path.dirname(bundlePath));
@@ -97,9 +99,9 @@ export const output = style.output()`;
             },
             otherwise: () => {
                 logger().debug({
-                    msg: 'nothing new to generate'
-                });        
-            }
+                    msg: 'nothing new to generate',
+                });
+            },
         });
     }
 }

@@ -7,7 +7,7 @@ import * as frugal from '../core/mod.ts';
 import { SVGFile } from './svg-sprite.ts';
 
 function logger() {
-    return log.getLogger('frugal:loader:jsx_svg')
+    return log.getLogger('frugal:loader:jsx_svg');
 }
 
 type Config = {
@@ -27,9 +27,9 @@ export function svg(config: Config): frugal.Loader<string, void> {
         { cache, assets, dir }: frugal.GenerateParams<void>,
     ): Promise<string> {
         logger().debug({
-            msg: 'generate'
+            msg: 'generate',
         });
-    
+
         const bundleHash = assets.reduce((hash, asset) => {
             return hash.update(asset.hash);
         }, new murmur.Hash()).alphabetic();
@@ -46,14 +46,14 @@ export function svg(config: Config): frugal.Loader<string, void> {
                         timerStart: `real generation`,
                     },
                 });
-        
+
                 const svgModule = new URL(
                     path.resolve(
                         path.dirname(new URL(import.meta.url).pathname),
                         './svg-sprite.ts',
                     ),
-                    import.meta.url
-                )
+                    import.meta.url,
+                );
 
                 const svgGeneratorScript = `
 import * as svg from "${svgModule}";
@@ -80,14 +80,13 @@ export const output = svg.output()`;
                     },
                 });
 
-                return bundleHash
-
+                return bundleHash;
             },
             otherwise() {
                 logger().debug({
-                    msg: 'nothing new to generate'
-                });        
-            }
+                    msg: 'nothing new to generate',
+                });
+            },
         });
     }
 }
@@ -126,10 +125,12 @@ export async function write(
 
                 logger().debug({
                     path: svgPath,
-                    sprites: svgFile.sprites.map(sprite => sprite.id),
+                    sprites: svgFile.sprites.map((sprite) => sprite.id),
                     msg() {
-                        return `output ${this.path} containing ${this.sprites.join(',')}`
-                    }
+                        return `output ${this.path} containing ${
+                            this.sprites.join(',')
+                        }`;
+                    },
                 });
 
                 await Deno.writeTextFile(svgPath, svgContent);
