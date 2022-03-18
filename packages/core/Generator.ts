@@ -1,23 +1,27 @@
 import * as log from '../log/mod.ts';
-import { PageRegenerator } from './PageRegenerator.ts';
+import { PageGenerator } from './PageGenerator.ts';
 import { CleanConfig } from './Config.ts';
 import { FrugalContext } from './FrugalContext.ts';
-import { StaticPage } from './Page.ts';
+import { DynamicPage } from './Page.ts';
 
 function logger() {
-    return log.getLogger('frugal:Regenerator');
+    return log.getLogger('frugal:Generator');
 }
 
-export class Regenerator {
+export type RegenerationRequest = {
+    url: string;
+};
+
+export class Generator {
     private config: CleanConfig;
     private context: FrugalContext;
-    private regenerators: PageRegenerator<any, any>[];
+    private generators: PageGenerator<any, any>[];
 
     constructor(config: CleanConfig, context: FrugalContext) {
         this.config = config;
         this.context = context;
-        this.regenerators = this.context.pages.filter(page => page instanceof StaticPage).map((page) => {
-            return new PageRegenerator(page, {
+        this.generators = this.context.pages.filter(page => page instanceof DynamicPage).map((page) => {
+            return new PageGenerator(page, {
                 cache: this.context.cache,
                 context: this.context.pageContext,
                 publicDir: this.config.publicDir,
@@ -26,41 +30,41 @@ export class Regenerator {
     }
 
     get routes() {
-        return this.regenerators.map(regenerator => regenerator.route)
+        return this.generators.map(regenerator => regenerator.route)
     }
 
-    async regenerate(pathname: string): Promise<boolean> {
+    async generate(pathname: string, urlSearchParams: URLSearchParams) {
         this.config.setupServerLogging();
 
         logger().info({
             op: 'start',
             pathname,
+            urlSearchParams,
             msg() {
                 return `${this.op} ${this.logger!.timerStart}`;
             },
             logger: {
-                timerStart: `regeneration of ${pathname}`,
+                timerStart: `generation of ${pathname}?${urlSearchParams.toString()}`,
             },
         });
 
-        const pageRegenerator = this.getMatchingPageRegenerator(
-            pathname,
-        );
+        const pageGenerator = this.getMatchingGenerator(pathname);
 
-        if (pageRegenerator === undefined) {
+        if (pageGenerator === undefined) {
             logger().info({
                 pathname,
+                urlSearchParams,
                 msg() {
                     return `no match found for ${this.pathname}`;
                 },
                 logger: {
-                    timerEnd: `regeneration of ${pathname}`,
+                    timerEnd: `generation of ${pathname}?${urlSearchParams.toString()}`,
                 },
             });
-            return false;
+            return undefined;
         }
 
-        await pageRegenerator.regenerate(pathname);
+        const result = await pageGenerator.generate(pathname, urlSearchParams);
         await this.context.save();
 
         logger().info({
@@ -74,15 +78,15 @@ export class Regenerator {
             },
         });
 
-        return true;
+        return result;
     }
 
-    private getMatchingPageRegenerator(
+    private getMatchingGenerator(
         pathname: string,
-    ): PageRegenerator<any, any> | undefined {
-        for (const pageRegenerator of this.regenerators) {
-            if (pageRegenerator.match(pathname)) {
-                return pageRegenerator;
+    ): PageGenerator<any, any> | undefined {
+        for (const pageGenerator of this.generators) {
+            if (pageGenerator.match(pathname)) {
+                return pageGenerator;
             }
         }
     

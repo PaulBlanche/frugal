@@ -1,11 +1,14 @@
 import { CleanConfig, Config } from './Config.ts';
 import { Builder } from './Builder.ts';
-import { RegenerationRequest, Regenerator } from './Regenerator.ts';
+import { Regenerator } from './Regenerator.ts';
+import { Generator } from './Generator.ts';
 import { FrugalContext } from './FrugalContext.ts';
-import * as worker from './RegeneratorWorker.ts';
 export class Frugal {
-    config: CleanConfig;
-    context: FrugalContext;
+    //config: CleanConfig;
+    //context: FrugalContext;
+    private builder: Builder
+    private regenerator: Regenerator
+    private generator: Generator
 
     static async load(config: Config) {
         const cleanConfig = await CleanConfig.load(config);
@@ -20,24 +23,34 @@ export class Frugal {
     }
 
     constructor(config: CleanConfig, context: FrugalContext) {
-        this.config = config;
-        this.context = context;
+        this.builder = new Builder(config, context)
+        this.regenerator = new Regenerator(config, context)
+        this.generator = new Generator(config, context)
     }
 
+    // build all registered static pages
     async build() {
-        const builder = new Builder(this.config, this.context);
-        await builder.build();
+        await this.builder.build();
     }
 
-    regenerate(request: RegenerationRequest) {
-        const regenerator = new Regenerator(this.config, this.context);
-        return regenerator.handle(request);
+    // regenerate a specific static page (might do nothing if nothing changed)
+    regenerate(pathname: string) {
+        return this.regenerator.regenerate(pathname);
     }
 
-    /*
-    regenerate(request: RegenerationRequest) {
-        return worker.regenerate(request, this.config.configPath);
-    }*/
+    // generate a specific dynamic page (allways generate even if nothing changed)
+    generate(pathname: string, urlSearchParams: URLSearchParams) {
+        return this.generator.generate(pathname, urlSearchParams);
+    }
+
+    get regenerateRoutes() {
+        return this.regenerator.routes
+    }
+
+    get generateRoutes() {
+        return this.generator.routes
+    }
+
 }
 
 export async function build(config: Config) {

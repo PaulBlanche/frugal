@@ -1,34 +1,31 @@
-import { PageContext } from './loader.ts';
-import { Cache } from './Cache.ts';
-import { Page, Phase } from './Page.ts';
+import { Page, Phase, StaticPage } from './Page.ts';
 import * as mumur from '../murmur/mod.ts';
-import * as pathToRegexp from '../../dep/path-to-regexp.ts';
 import * as path from '../../dep/std/path.ts';
 import * as fs from '../../dep/std/fs.ts';
 import * as log from '../log/mod.ts';
+import { PageGeneratorConfig, PageGenerator } from './PageGenerator.ts'
+import { assert } from '../../dep/std/asserts.ts';
 
-export type PageBuilderConfig = {
-    cache: Cache;
-    context: PageContext;
-    publicDir: string;
-};
+export type PageBuilderConfig = PageGeneratorConfig
 
 function logger() {
     return log.getLogger('frugal:PageBuilder');
 }
 
 export class PageBuilder<REQUEST extends object, DATA> {
+    private generator: PageGenerator<REQUEST, DATA>
     private page: Page<REQUEST, DATA>;
     private config: PageBuilderConfig;
-    private urlCompiler: pathToRegexp.PathFunction<REQUEST>;
 
     constructor(page: Page<REQUEST, DATA>, config: PageBuilderConfig) {
         this.page = page;
         this.config = config;
-        this.urlCompiler = pathToRegexp.compile(this.page.pattern);
+        this.generator = new PageGenerator(page, config)
     }
 
-    async generateAll() {
+    async buildAll() {
+        assert(this.page instanceof StaticPage, `Can't statically build DynamicPage ${this.page.pattern}`)
+
         logger().info({
             op: 'start',
             pattern: this.page.pattern,
@@ -36,7 +33,7 @@ export class PageBuilder<REQUEST extends object, DATA> {
                 return `${this.op} ${this.logger!.timerStart}`;
             },
             logger: {
-                timerStart: `generate all ${this.page.pattern}`,
+                timerStart: `build all ${this.page.pattern}`,
             },
         });
 
@@ -45,7 +42,7 @@ export class PageBuilder<REQUEST extends object, DATA> {
         });
 
         await Promise.all(requestsList.map(async (request) => {
-            await this.generate(request, 'build');
+            await this.build(request, 'build');
         }));
 
         logger().info({
@@ -55,23 +52,29 @@ export class PageBuilder<REQUEST extends object, DATA> {
                 return `${this.logger!.timerEnd} ${this.op}`;
             },
             logger: {
-                timerEnd: `generate all ${this.page.pattern}`,
+                timerEnd: `build all ${this.page.pattern}`,
             },
         });
     }
 
-    async generate(request: REQUEST, phase: Phase): Promise<void> {
-        const url = this.urlCompiler(request);
+    async build(request: REQUEST, phase: Phase): Promise<void> {
+        assert(this.page instanceof StaticPage, `Can't statically build DynamicPage ${this.page.pattern}`)
+        const url = this.page.compile(request);
 
         logger().debug({
+            op: 'start',
             pattern: this.page.pattern,
             url,
             msg() {
-                return `generate ${this.pattern} as ${this.url}`;
+                return `${this.op} ${this.logger!.timerStart}`;
+            },
+            logger: {
+                timerStart:
+                    `build ${this.page.pattern} as ${url}`,
             },
         });
 
-        const data = await this.page.getData({
+        const data = await this.page.getStaticData({
             phase, 
             request,
             cache: this.config.cache,
@@ -85,31 +88,9 @@ export class PageBuilder<REQUEST extends object, DATA> {
         await this.config.cache.memoize({
             key: pageInstanceHash,
             producer: async () => {
-                logger().debug({
-                    op: 'start',
-                    pattern: this.page.pattern,
-                    url,
-                    msg() {
-                        return `${this.op} ${this.logger!.timerStart}`;
-                    },
-                    logger: {
-                        timerStart:
-                            `real generation of ${url} (from ${this.page.pattern})`,
-                    },
-                });
+                const { pagePath, content } = await this.generator.generateContentFromData(url, data, request, phase)
 
-                const content = await this.page.getContent({
-                    phase,
-                    request,
-                    data,
-                    url,
-                    context: this.config.context,
-                    cache: this.config.cache,
-                });
-
-                const pagePath = path.join(this.config.publicDir, url);
                 await fs.ensureDir(path.dirname(pagePath));
-
                 await Deno.writeTextFile(pagePath, content);
 
                 logger().debug({
@@ -121,19 +102,27 @@ export class PageBuilder<REQUEST extends object, DATA> {
                     },
                     logger: {
                         timerEnd:
-                            `real generation of ${url} (from ${this.page.pattern})`,
+                            `build ${this.page.pattern} as ${url}`,
                     },
                 });
+
+                return pageInstanceHash
             },
             otherwise: () => {
                 logger().debug({
+                    op: 'done',
                     pattern: this.page.pattern,
                     url,
                     msg() {
-                        return `cache hit for ${this.url} (from ${this.pattern})`;
+                        return `${this.logger!.timerEnd} ${this.op} (from cache)`;
+                    },
+                    logger: {
+                        timerEnd:
+                            `build ${this.page.pattern} as ${url}`,
                     },
                 });
             },
         });
     }
+
 }

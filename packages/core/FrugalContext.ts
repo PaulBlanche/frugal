@@ -1,7 +1,7 @@
 import { Asset, PageContext } from './loader.ts';
 import * as graph from '../dependency_graph/mod.ts';
 import * as path from '../../dep/std/path.ts';
-import { Page } from './Page.ts';
+import { load, Page } from './Page.ts';
 import { Cache } from './Cache.ts';
 import { CleanConfig } from './Config.ts';
 import * as asset from './asset.ts';
@@ -166,7 +166,7 @@ async function loadPages(
         );
         assert(node !== undefined);
 
-        return await Page.load(
+        return await load(
             String(node.url),
             node.moduleHash,
         );

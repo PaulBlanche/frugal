@@ -31,6 +31,7 @@ const DEFAULT_LOGGER_CONFIG: log.Config = {
         'frugal:Builder': 'INFO',
         'frugal:FrugalContext': 'INFO',
         'frugal:PageRegenerator': 'INFO',
+        'frugal:PageGenerator': 'INFO',
         'frugal:PageBuilder': 'INFO',
         'frugal:Regenerator': 'INFO',
         'frugal:Cache': 'INFO',
