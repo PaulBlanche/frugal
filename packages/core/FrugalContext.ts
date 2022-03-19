@@ -5,7 +5,7 @@ import { load, Page } from './Page.ts';
 import { Cache } from './Cache.ts';
 import { CleanConfig } from './Config.ts';
 import * as asset from './asset.ts';
-import { assert } from '../assert/mod.ts';
+import { assert } from '../../dep/std/asserts.ts';
 import * as log from '../log/mod.ts';
 
 function logger() {

@@ -1,9 +1,9 @@
 import * as asserts from '../../dep/std/asserts.ts';
-import { asSpy, spy } from '../test_util/mod.ts';
+import { spy } from '../test_util/mod.ts';
 
 import { Cache } from './Cache.ts';
 
-Deno.test('Cached value is preserved in memory', async () => {
+Deno.test('Cache: Cached value is preserved in memory', async () => {
     const cache = await Cache.unserialize();
 
     const values: Record<string, any> = {};
@@ -20,7 +20,7 @@ Deno.test('Cached value is preserved in memory', async () => {
     }
 });
 
-Deno.test('Cached value is preserved after serialization', async () => {
+Deno.test('Cache: Cached value is preserved after serialization', async () => {
     const cache = await Cache.unserialize();
 
     const values: Record<string, any> = {};
@@ -39,7 +39,7 @@ Deno.test('Cached value is preserved after serialization', async () => {
     }
 });
 
-Deno.test('Cached data not propagated after serialization is lost', async () => {
+Deno.test('Cache: Cached data not propagated after serialization is lost', async () => {
     const cache = await Cache.unserialize();
 
     const values: Record<string, any> = {};
@@ -70,7 +70,7 @@ Deno.test('Cached data not propagated after serialization is lost', async () => 
     }
 });
 
-Deno.test('Cache memoize keeps call results in memory', async () => {
+Deno.test('Cache: memoize keeps call results in memory', async () => {
     const cache = await Cache.unserialize();
 
     const value = {};
@@ -79,18 +79,27 @@ Deno.test('Cache memoize keeps call results in memory', async () => {
         return value;
     });
 
+    const otherwise = spy(() => {
+    })
+
     await Promise.all([
-        cache.memoize({ producer, key: 'key' }),
-        cache.memoize({ producer, key: 'key' }),
-        cache.memoize({ producer, key: 'key' }),
-        cache.memoize({ producer, key: 'key' }),
-        cache.memoize({ producer, key: 'key' }),
+        cache.memoize({ producer, otherwise, key: 'key' }),
+        cache.memoize({ producer, otherwise, key: 'key' }),
+        cache.memoize({ producer, otherwise, key: 'key' }),
+        cache.memoize({ producer, otherwise, key: 'key' }),
+        cache.memoize({ producer, otherwise, key: 'key' }),
     ]);
 
     asserts.assertEquals(producer.calls, [{ params: [], result: value }]);
+    asserts.assertEquals(otherwise.calls, [
+        { params: [], result: undefined },
+        { params: [], result: undefined },
+        { params: [], result: undefined },
+        { params: [], result: undefined }
+    ]);
 });
 
-Deno.test('Cache memoize keeps call results after serialization', async () => {
+Deno.test('Cache: memoize keeps call results after serialization', async () => {
     const cache = await Cache.unserialize();
 
     const value = {};
@@ -99,16 +108,97 @@ Deno.test('Cache memoize keeps call results after serialization', async () => {
         return value;
     });
 
-    await cache.memoize({ producer, key: 'key' });
+    const otherwise = spy(() => {
+    })
+
+    await cache.memoize({ producer, otherwise, key: 'key' });
 
     const newCache = await Cache.unserialize(cache.serialize());
 
     await Promise.all([
-        newCache.memoize({ producer, key: 'key' }),
-        newCache.memoize({ producer, key: 'key' }),
-        newCache.memoize({ producer, key: 'key' }),
-        newCache.memoize({ producer, key: 'key' }),
+        newCache.memoize({ producer, otherwise, key: 'key' }),
+        newCache.memoize({ producer, otherwise, key: 'key' }),
+        newCache.memoize({ producer, otherwise, key: 'key' }),
+        newCache.memoize({ producer, otherwise, key: 'key' }),
+        newCache.memoize({ producer, otherwise, key: 'key' }),
     ]);
 
     asserts.assertEquals(producer.calls, [{ params: [], result: value }]);
+    asserts.assertEquals(otherwise.calls, [
+        { params: [], result: undefined },
+        { params: [], result: undefined },
+        { params: [], result: undefined },
+        { params: [], result: undefined },
+        { params: [], result: undefined }
+    ]);
 });
+
+Deno.test('Cache: memoize keeps call results after save/load', async () => {
+    const cache = await Cache.unserialize();
+
+    const value = {};
+
+    const producer = spy(() => {
+        return value;
+    });
+
+    const otherwise = spy(() => {
+    })
+
+    await cache.memoize({ producer, otherwise, key: 'key' });
+
+    const fs: Record<string, string> = {}
+    Deno.writeTextFile = (path, content) => {
+        fs[String(path)] = content
+        return Promise.resolve() 
+    }
+
+    Deno.readTextFile = (path) => Promise.resolve(fs[String(path)])
+
+    await cache.save('path')
+
+    const newCache = await Cache.load('path')
+
+    await Promise.all([
+        newCache.memoize({ producer, otherwise, key: 'key' }),
+    ]);
+
+    asserts.assertEquals(producer.calls, [{ params: [], result: value }]);
+    asserts.assertEquals(otherwise.calls, [{ params: [], result: undefined }]);
+});
+
+Deno.test('Cache: load with no valid cache file', async () => {
+    const cache = await Cache.unserialize();
+
+    const value = {};
+
+    const producer = spy(() => {
+        return value;
+    });
+
+    const otherwise = spy(() => {
+    })
+
+    await cache.memoize({ producer, otherwise, key: 'key' });
+
+    const fs: Record<string, string> = {}
+    Deno.writeTextFile = (path, content) => {
+        fs[String(path)] = content
+        return Promise.resolve() 
+    }
+
+    Deno.readTextFile = (path) => Promise.resolve(fs[String(path)])
+
+    await cache.save('path')
+
+    const newCache = await Cache.load('invalid path')
+
+    await Promise.all([
+        newCache.memoize({ producer, otherwise, key: 'key' }),
+    ]);
+
+    asserts.assertEquals(producer.calls, [{ params: [], result: value }, { params: [], result: value }]);
+    asserts.assertEquals(otherwise.calls, []);
+});
+
+

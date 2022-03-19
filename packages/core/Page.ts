@@ -1,5 +1,5 @@
 import { PageContext } from './loader.ts';
-import { assert } from '../assert/mod.ts';
+import { assert } from '../../dep/std/asserts.ts';
 import { Cache } from './Cache.ts';
 import * as pathToRegexp from '../../dep/path-to-regexp.ts';
 
@@ -72,6 +72,7 @@ export async function load<REQUEST extends object, DATA>(
     if (isDynamicDescriptor<REQUEST, DATA>(path, descriptor)) {
         return new DynamicPage(path, hash, descriptor);
     }
+    
     assert(
         false,
         `Page descriptor "${path}" has neither "getDynamicData" nor "getStaticData" method`,

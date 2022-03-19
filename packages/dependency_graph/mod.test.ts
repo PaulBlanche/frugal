@@ -71,7 +71,7 @@ class FakeEnvironment {
     }
 }
 
-Deno.test('dependency_graph/file without dependencies', async () => {
+Deno.test('dependency_graph: file without dependencies', async () => {
     const ffs = new FakeEnvironment({
         'file:///entrypoint1.ts': `
             //entrypoint1.ts
@@ -116,7 +116,7 @@ Deno.test('dependency_graph/file without dependencies', async () => {
     );
 });
 
-Deno.test('dependency_graph/files with basic tree dependency', async () => {
+Deno.test('dependency_graph: files with basic tree dependency', async () => {
     const ffs = new FakeEnvironment({
         'file:///entrypoint1.ts': `
             import './module1.ts'
@@ -168,7 +168,7 @@ Deno.test('dependency_graph/files with basic tree dependency', async () => {
     );
 });
 
-Deno.test('dependency_graph/files with acyclic graph dependency', async () => {
+Deno.test('dependency_graph: files with acyclic graph dependency', async () => {
     const ffs = new FakeEnvironment({
         'file:///entrypoint1.ts': `
             import './foo.ts'
@@ -245,7 +245,7 @@ Deno.test('dependency_graph/files with acyclic graph dependency', async () => {
     );
 });
 
-Deno.test('dependency_graph/files with cyclic graph dependency', async () => {
+Deno.test('dependency_graph: files with cyclic graph dependency', async () => {
     const ffs = new FakeEnvironment({
         'file:///entrypoint1.ts': `
             import './module1.ts'
@@ -301,7 +301,7 @@ Deno.test('dependency_graph/files with cyclic graph dependency', async () => {
     );
 });
 
-Deno.test('dependency_graph/multiple entrypoints sharing dependencies', async () => {
+Deno.test('dependency_graph: multiple entrypoints sharing dependencies', async () => {
     const ffs = new FakeEnvironment({
         'file:///entrypoint1.ts': `
         import './foo.ts'
@@ -363,7 +363,7 @@ Deno.test('dependency_graph/multiple entrypoints sharing dependencies', async ()
     );
 });
 
-Deno.test('dependency_graph/custom resolution/loading', async () => {
+Deno.test('dependency_graph: custom resolution/loading', async () => {
     const ffs = new FakeEnvironment({
         'file:///entrypoint1.ts': `
         import 'foo.ts'
@@ -443,6 +443,63 @@ Deno.test('dependency_graph/custom resolution/loading', async () => {
         }),
     );
 });
+
+Deno.test('dependency_graph: handling all kind of imports', async () => {
+    const ffs = new FakeEnvironment({
+        'file:///entrypoint1.ts': `
+            import './bare-import.ts'
+            import foo from './default-import.ts'
+            import { bar } from './named-import.ts'
+            import foobar, { baz } from './default-and-named-import.ts'
+            export { quux } from './named-export-from.ts'
+            export * from './export-all-from.ts'
+        `,
+        'file:///bare-import.ts': `
+            //bare-import.ts
+        `,
+        'file:///default-import.ts': `
+            //default-import.ts
+        `,
+        'file:///named-import.ts': `
+            //named-import.ts
+        `,
+        'file:///default-and-named-import.ts': `
+            //default-and-named-import.ts
+        `,
+        'file:///named-export-from.ts': `
+            //named-export-from.ts
+        `,
+        'file:///export-all-from.ts': `
+            //export-all-from.ts
+        `,
+    });
+
+    const tree = await dependency.build([new URL('file:///entrypoint1.ts')]);
+
+    asserts.assertEquals<tree.Root>(
+        tree,
+        root(ffs, {
+            dependencies: [{
+                url: new URL('file:///entrypoint1.ts'),
+                entrypoint: new URL('file:///entrypoint1.ts'),
+                dependencies: [{
+                    url: new URL('file:///bare-import.ts'),
+                }, {
+                    url: new URL('file:///default-import.ts'),
+                }, {
+                    url: new URL('file:///named-import.ts'),
+                }, {
+                    url: new URL('file:///default-and-named-import.ts'),
+                }, {
+                    url: new URL('file:///named-export-from.ts'),
+                }, {
+                    url: new URL('file:///export-all-from.ts'),
+                }],
+            }],
+        }),
+    );
+});
+
 
 type LightRoot = {
     dependencies: ((LightModule & { entrypoint: URL }) | tree.Module)[];

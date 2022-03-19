@@ -1,0 +1,32 @@
+name: test
+
+on: 
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    name: run tests
+
+    strategy:
+      matrix:
+        deno-version: [1.20.x, 1.19.x, 1.18.x, 1.17.x]
+
+    steps:
+    - name: checkout project
+      uses: actions/checkout@v3
+    - name: install task
+      uses: arduino/setup-task@v1
+    - name: install deno ${{ matrix.deno-version }}
+      uses: denoland/setup-deno@v1
+      with:
+        deno-version: ${{ matrix.deno-version }}
+    - name: run test
+      run: task test
+    - name: code coverage
+      uses: codecov/codecov-action@v2
+      with: 
+        files: ./cov_profile/cov_profile.lcov

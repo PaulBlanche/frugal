@@ -1,7 +1,6 @@
 import * as swc from '../../dep/swc.ts';
-import * as path from '../../dep/std/path.ts';
 import * as murmur from '../murmur/mod.ts';
-import { assert } from '../assert/mod.ts';
+import { assert } from '../../dep/std/asserts.ts';
 
 import * as visitor from './visitor.ts';
 import * as log from '../log/mod.ts';
