@@ -35,7 +35,6 @@ tasks:
           --lcov 
           --include=packages
           --output={{.COVERAGE_DIR}}/cov_profile.lcov
-      - genhtml -o {{.COVERAGE_DIR}}/html {{.COVERAGE_DIR}}/cov_profile.lcov
   example:
     cmds:
       - deno --unstable run
