@@ -4,6 +4,7 @@ vars:
   CONFIG_FILE: ./deno.json
   IMPORT_MAP: ./import_map.json
   LOCK_FILE: ./.lock.json
+  COVERAGE_DIR: ./cov_profile
   #authorizations
   ALLOW_READ: .
   ALLOW_WRITE: .
@@ -25,7 +26,14 @@ tasks:
           --import-map={{.IMPORT_MAP}}
           --allow-read={{.ALLOW_READ}}
           --allow-write={{.ALLOW_WRITE}}
+          --coverage={{.COVERAGE_DIR}}
           {{.CLI_ARGS}}
+  coverage:
+    cmds:
+      - deno --unstable coverage
+          {{.COVERAGE_DIR}}
+          --lcov 
+          --output={{.COVERAGE_DIR}}/cov_profile.lcov
   example:
     cmds:
       - deno --unstable run

@@ -11,7 +11,7 @@
     },
     "fmt": {
         "files": {
-            "exclude": ["./examples", "./.vscode/", "./.deno_dir"]
+            "exclude": ["./examples", "./.vscode/", "./.deno_dir", "./cov_profile"]
         },
         "options": {
             "useTabs": false,

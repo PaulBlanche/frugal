@@ -96,10 +96,10 @@ export class CleanConfig implements CleanConfigBase {
         return config.logging;
     }
 
-    setupServerLogging() {
+    async setupServerLogging() {
         const serverLoggingConfig = this.getServerLoggingConfig(this.config);
 
-        log.setup({
+        await log.setup({
             type: serverLoggingConfig?.type ?? DEFAULT_LOGGER_CONFIG.type,
             loggers: {
                 ...DEFAULT_LOGGER_CONFIG.loggers,
@@ -108,10 +108,10 @@ export class CleanConfig implements CleanConfigBase {
         });
     }
 
-    setupBuildLogging() {
+    async setupBuildLogging() {
         const buildLoggingConfig = this.getBuildLoggingConfig(this.config);
 
-        log.setup({
+        await log.setup({
             type: buildLoggingConfig?.type ?? DEFAULT_LOGGER_CONFIG.type,
             loggers: {
                 ...DEFAULT_LOGGER_CONFIG.loggers,

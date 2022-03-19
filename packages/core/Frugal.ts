@@ -3,6 +3,9 @@ import { Builder } from './Builder.ts';
 import { Refresher } from './Refresher.ts';
 import { Generator } from './Generator.ts';
 import { FrugalContext } from './FrugalContext.ts';
+import { StaticPage } from './Page.ts';
+import { PageBuilder } from './PageBuilder.ts';
+
 export class Frugal {
     private builder: Builder;
     private refresher: Refresher;
@@ -21,7 +24,20 @@ export class Frugal {
     }
 
     constructor(config: CleanConfig, context: FrugalContext) {
-        this.builder = new Builder(config, context);
+        const staticPages = context.pages.filter((page) => page instanceof StaticPage)
+
+        this.builder = new Builder(config, context, 
+            staticPages.map((page) => {
+                return new PageBuilder(
+                    page,
+                    {
+                        cache: context.cache,
+                        context: context.pageContext,
+                        publicDir: config.publicDir,
+                    },
+                );
+            })
+        );
         this.refresher = new Refresher(config, context);
         this.generator = new Generator(config, context);
     }
