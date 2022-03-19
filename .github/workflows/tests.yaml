@@ -26,6 +26,8 @@ jobs:
         deno-version: ${{ matrix.deno-version }}
     - name: run test
       run: task test
+    - name: generate coverage report
+      run: task coverage
     - name: code coverage
       uses: codecov/codecov-action@v2
       with: 
