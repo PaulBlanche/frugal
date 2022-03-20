@@ -17,7 +17,7 @@ jobs:
 
     steps:
     - name: checkout project
-      uses: actions/checkout@v3
+      uses: actions/checkout@v2
     - name: install task
       uses: arduino/setup-task@v1
     - name: install deno ${{ matrix.deno-version }}
