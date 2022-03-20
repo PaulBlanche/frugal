@@ -1,4 +1,5 @@
 import { CleanConfig } from './Config.ts'
+import { LoaderContext } from './LoaderContext.ts'
 import { FrugalContext } from './FrugalContext.ts';
 import { Cache } from './Cache.ts';
 import { Builder } from './Builder.ts';
@@ -69,9 +70,10 @@ function fakeConfig() {
 }
 
 function fakeContext() {
+    const config = fakeConfig()
     const context = new FrugalContext(
-        fakeConfig(), 
-        {}, 
+        config, 
+        new LoaderContext({}, config), 
         { type:'root', hash:'', dependencies: [] },
         [],
         Cache.unserialize()

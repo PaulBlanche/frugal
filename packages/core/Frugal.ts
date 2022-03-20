@@ -32,7 +32,7 @@ export class Frugal {
                     page,
                     {
                         cache: context.cache,
-                        context: context.pageContext,
+                        loaderContext: context.loaderContext,
                         publicDir: config.publicDir,
                     },
                 );

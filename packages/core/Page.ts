@@ -1,4 +1,4 @@
-import { PageContext } from './loader.ts';
+import { LoaderContext } from './LoaderContext.ts';
 import { assert } from '../../dep/std/asserts.ts';
 import { Cache } from './Cache.ts';
 import * as pathToRegexp from '../../dep/path-to-regexp.ts';
@@ -28,7 +28,7 @@ export type GetContentParams<REQUEST, DATA> = {
     data: DATA;
     pathname: string;
     entrypoint: string;
-    context: PageContext;
+    loaderContext: LoaderContext;
     cache: Cache;
 };
 

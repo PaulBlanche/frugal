@@ -11,7 +11,7 @@ import { DataProvider } from './dataContext.tsx';
 export type PageProps = {
     entrypoint: string;
     cache: frugal.Cache;
-    context: frugal.PageContext;
+    loaderContext: frugal.LoaderContext;
 };
 
 export type Page = preact.ComponentType<PageProps>;
@@ -22,7 +22,7 @@ export type App = (
 
 export type AppProps = {
     entrypoint: string;
-    context: frugal.PageContext;
+    loaderContext: frugal.LoaderContext;
     children: preact.ComponentChildren;
     cache: frugal.Cache;
 };
@@ -32,7 +32,7 @@ export type Document = preact.ComponentType<DocumentProps>;
 export type DocumentProps = {
     head: preact.VNode[];
     entrypoint: string;
-    context: frugal.PageContext;
+    loaderContext: frugal.LoaderContext;
     dangerouslySetInnerHTML: { __html: string };
 };
 
@@ -67,7 +67,7 @@ export function getContentFrom<REQUEST, DATA>(
         data,
         pathname,
         entrypoint,
-        context,
+        loaderContext,
         cache,
     }) => {
         let head: preact.VNode[] = [];
@@ -78,13 +78,13 @@ export function getContentFrom<REQUEST, DATA>(
                     head = nextHead;
                 }}
             >
-                <App entrypoint={entrypoint} context={context} cache={cache}>
+                <App entrypoint={entrypoint} loaderContext={loaderContext} cache={cache}>
                     <DataProvider
                         context={{ data, pathname, timestamp: Date.now() }}
                     >
                         <Page
                             entrypoint={entrypoint}
-                            context={context}
+                            loaderContext={loaderContext}
                             cache={cache}
                         />
                     </DataProvider>
@@ -96,7 +96,7 @@ export function getContentFrom<REQUEST, DATA>(
             server.render(
                 <Document
                     entrypoint={entrypoint}
-                    context={context}
+                    loaderContext={loaderContext}
                     head={head}
                     dangerouslySetInnerHTML={{ __html: html }}
                 />,

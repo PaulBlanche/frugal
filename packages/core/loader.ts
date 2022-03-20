@@ -1,7 +1,5 @@
 import { Cache } from './Cache.ts';
 
-export type PageContext = { [s: string]: any };
-
 export type Asset = {
     loader: string;
     module: string;

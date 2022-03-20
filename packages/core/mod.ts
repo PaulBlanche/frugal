@@ -1,5 +1,6 @@
 export { Cache } from './Cache.ts';
-export type { Asset, GenerateParams, Loader, PageContext } from './loader.ts';
+export type { Asset, GenerateParams, Loader } from './loader.ts';
+export type { LoaderContext } from './LoaderContext.ts';
 export type { Config } from './Config.ts';
 export type {
     DynamicPageDescriptor,

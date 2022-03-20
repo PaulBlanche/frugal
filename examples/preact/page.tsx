@@ -38,6 +38,7 @@ export const getContent = getContentFrom(Page, { App });
 
 import { Article } from './Article.iso.tsx';
 import { useData, AppProps } from '../../packages/frugal_preact/mod.client.ts';
+import type { Generated } from '../../packages/loader_script/mod.ts'
 
 function Page() {
     const data = useData<Data>();
@@ -50,13 +51,15 @@ function Page() {
     );
 }
 
-function App({ path, context, children }: AppProps) {
+function App({ entrypoint, loaderContext, children }: AppProps) {
+    const scriptGenerated = loaderContext.get<Generated>('script-body')
+    const esmBundleUrl = scriptGenerated[entrypoint]['esm']
     return <>
         <Head>
             <meta charSet='utf-8' />
             <title>toto</title>
         </Head>
         {children}
-        <script src={context['script-body'][path]['esm']}></script>
+        <script src={esmBundleUrl}></script>
     </>
 }

@@ -1,4 +1,5 @@
-import { Asset, PageContext } from './loader.ts';
+import { Asset } from './loader.ts';
+import { LoaderContext } from './LoaderContext.ts'
 import * as graph from '../dependency_graph/mod.ts';
 import * as path from '../../dep/std/path.ts';
 import { load, Page } from './Page.ts';
@@ -18,7 +19,7 @@ const DEPENDENCY_TREE_FILENAME = 'dependencyTree.json';
 
 export class FrugalContext {
     private config: CleanConfig;
-    readonly pageContext: PageContext;
+    readonly loaderContext: LoaderContext;
     readonly pages: Page<any, any>[];
     readonly cache: Cache;
     readonly dependencyTree: graph.DependencyTree;
@@ -64,14 +65,14 @@ export class FrugalContext {
 
     constructor(
         config: CleanConfig,
-        pageContext: PageContext,
+        loaderContext: LoaderContext,
         dependencyTree: graph.DependencyTree,
         pages: Page<any, any>[],
         cache: Cache,
     ) {
         this.config = config;
         this.dependencyTree = dependencyTree;
-        this.pageContext = pageContext;
+        this.loaderContext = loaderContext;
         this.pages = pages;
         this.cache = cache;
     }
@@ -80,15 +81,8 @@ export class FrugalContext {
         await this.cache.save(
             path.resolve(this.config.cacheDir, CACHE_FILENAME),
         );
-        await this.savePageContext();
+        await this.loaderContext.save();
         await this.saveDependencyTree();
-    }
-
-    private async savePageContext() {
-        await Deno.writeTextFile(
-            path.resolve(this.config.cacheDir, PAGE_CONTEXT_FILENAME),
-            JSON.stringify(this.pageContext),
-        );
     }
 
     private async saveDependencyTree() {
@@ -141,7 +135,7 @@ export async function buildContext(
 
     const assets = asset.gather(dependencyTree, config.loaders);
 
-    const pageContext = await buildPageContext(config, assets, cache);
+    const pageContext = await LoaderContext.build(config, assets, cache);
 
     logger().info({
         op: 'done',
@@ -173,73 +167,11 @@ async function loadPages(
     }));
 }
 
-async function buildPageContext(
-    config: CleanConfig,
-    assets: Asset[],
-    cache: Cache,
-) {
-    logger().info({
-        op: 'start',
-        msg() {
-            return `${this.op} ${this.logger!.timerStart}`;
-        },
-        logger: {
-            timerStart: 'page context build',
-        },
-    });
-
-    const context: PageContext = {};
-
-    await Promise.all((config.loaders ?? []).map(async (loader) => {
-        const loaderCache = cache.getNamespace(loader.name);
-
-        const loadedAssets = assets.filter((entry) =>
-            entry.loader === loader.name
-        );
-
-        if (loadedAssets === undefined || loadedAssets.length === 0) {
-            return;
-        }
-
-        const result = await loader.generate({
-            cache: loaderCache,
-            assets: loadedAssets,
-            dir: {
-                public: config.publicDir,
-                cache: config.cacheDir,
-                root: config.root,
-            },
-        });
-
-        context[loader.name] = result;
-    }));
-
-    logger().info({
-        op: 'done',
-        msg() {
-            return `${this.logger!.timerEnd} ${this.op}`;
-        },
-        logger: {
-            timerEnd: 'page context build',
-        },
-    });
-
-    return context;
-}
-
 async function loadContext(config: CleanConfig) {
-    const pageContext = await loadPageContext(config);
+    const pageContext = await LoaderContext.load(config);
     const dependencyTree = await loadDependencyTree(config);
 
     return { pageContext, dependencyTree };
-}
-
-async function loadPageContext(config: CleanConfig): Promise<PageContext> {
-    return JSON.parse(
-        await Deno.readTextFile(
-            path.resolve(config.cacheDir, PAGE_CONTEXT_FILENAME),
-        ),
-    );
 }
 
 async function loadDependencyTree(

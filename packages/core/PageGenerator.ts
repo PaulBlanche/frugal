@@ -1,4 +1,4 @@
-import { PageContext } from './loader.ts';
+import { LoaderContext } from './LoaderContext.ts';
 import { Cache } from './Cache.ts';
 import { DynamicPage, Page, Phase } from './Page.ts';
 import * as path from '../../dep/std/path.ts';
@@ -7,7 +7,7 @@ import { assert } from '../../dep/std/asserts.ts';
 
 export type PageGeneratorConfig = {
     cache: Cache;
-    context: PageContext;
+    loaderContext: LoaderContext;
     publicDir: string;
 };
 
@@ -94,7 +94,7 @@ export class PageGenerator<REQUEST extends object, DATA> {
             request,
             data,
             pathname,
-            context: this.config.context,
+            loaderContext: this.config.loaderContext,
             cache: this.config.cache,
         });
 

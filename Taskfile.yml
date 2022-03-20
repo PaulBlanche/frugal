@@ -9,7 +9,7 @@ vars:
   ALLOW_READ: .
   ALLOW_WRITE: .
   ALLOW_NET_REPO: deno.land,esm.sh,cdn.esm.sh,cdn.jsdelivr.net,unpkg.com
-  ALLOW_ENV: NODE_ENV
+  ALLOW_ENV: NODE_ENV,DENO_DIR
 
 env:
   DENO_DIR: ./.deno_dir
