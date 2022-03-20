@@ -1,7 +1,13 @@
 import { CleanConfig } from './Config.ts';
 import { Entrypoint } from './Entrypoint.ts';
-import { DynamicPageDescriptor, StaticPageDescriptor } from './Page.ts';
+import {
+    DynamicPage,
+    DynamicPageDescriptor,
+    StaticPage,
+    StaticPageDescriptor,
+} from './Page.ts';
 import { EntrypointLoader } from './EntrypointLoader.ts';
+import * as asserts from '../../dep/std/asserts.ts';
 
 Deno.test('EntrypointLoader: given a config and a dependency tree, load pages', async () => {
     const config = fakeConfig({
@@ -48,6 +54,13 @@ Deno.test('EntrypointLoader: given a config and a dependency tree, load pages', 
             dependencies: [],
         }],
     });
+
+    asserts.assert(loaded[0] instanceof DynamicPage);
+    asserts.assertEquals(loaded[0].hash, 'foo');
+    asserts.assertEquals(loaded[0].path, 'file:///foo.ts');
+    asserts.assert(loaded[1] instanceof StaticPage);
+    asserts.assertEquals(loaded[1].hash, 'baz');
+    asserts.assertEquals(loaded[1].path, 'file:///baz.ts');
 });
 
 function fakeConfig(conf: { entrypoint: Entrypoint[] }) {
