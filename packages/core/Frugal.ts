@@ -24,9 +24,13 @@ export class Frugal {
     }
 
     constructor(config: CleanConfig, context: FrugalContext) {
-        const staticPages = context.pages.filter((page) => page instanceof StaticPage)
+        const staticPages = context.pages.filter((page) =>
+            page instanceof StaticPage
+        );
 
-        this.builder = new Builder(config, context, 
+        this.builder = new Builder(
+            config,
+            context,
             staticPages.map((page) => {
                 return new PageBuilder(
                     page,
@@ -36,7 +40,7 @@ export class Frugal {
                         publicDir: config.publicDir,
                     },
                 );
-            })
+            }),
         );
         this.refresher = new Refresher(config, context);
         this.generator = new Generator(config, context);

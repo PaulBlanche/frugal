@@ -12,7 +12,11 @@ export class Builder {
     private context: FrugalContext;
     private builders: PageBuilder<any, any>[];
 
-    constructor(config: CleanConfig, context: FrugalContext, builders: PageBuilder<any, any>[]) {
+    constructor(
+        config: CleanConfig,
+        context: FrugalContext,
+        builders: PageBuilder<any, any>[],
+    ) {
         this.config = config;
         this.context = context;
         this.builders = builders;

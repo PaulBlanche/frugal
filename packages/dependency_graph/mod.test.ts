@@ -500,7 +500,6 @@ Deno.test('dependency_graph: handling all kind of imports', async () => {
     );
 });
 
-
 type LightRoot = {
     dependencies: ((LightModule & { entrypoint: URL }) | tree.Module)[];
 };

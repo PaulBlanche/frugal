@@ -19,7 +19,7 @@ type Config = {
     end?: () => void;
 };
 
-export type Generated = Record<string, Record<string, string>>
+export type Generated = Record<string, Record<string, string>>;
 
 export function script(
     config: Config,

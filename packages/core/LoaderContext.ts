@@ -11,8 +11,8 @@ function logger() {
 const LOADER_CONTEXT_FILENAME = 'LoaderContext.json';
 
 export class LoaderContext {
-    private context: { [s: string]: any }
-    private config: CleanConfig
+    private context: { [s: string]: any };
+    private config: CleanConfig;
 
     static async build(
         config: CleanConfig,
@@ -28,20 +28,20 @@ export class LoaderContext {
                 timerStart: 'loader context build',
             },
         });
-        
-        const context: { [s: string]: any } = {}
+
+        const context: { [s: string]: any } = {};
 
         await Promise.all((config.loaders ?? []).map(async (loader) => {
             const loaderCache = cache.getNamespace(loader.name);
-    
+
             const loadedAssets = assets.filter((entry) =>
                 entry.loader === loader.name
             );
-    
+
             if (loadedAssets === undefined || loadedAssets.length === 0) {
                 return;
             }
-    
+
             const result = await loader.generate({
                 cache: loaderCache,
                 assets: loadedAssets,
@@ -51,10 +51,10 @@ export class LoaderContext {
                     root: config.root,
                 },
             });
-    
+
             context[loader.name] = result;
         }));
-    
+
         logger().info({
             op: 'done',
             msg() {
@@ -64,8 +64,8 @@ export class LoaderContext {
                 timerEnd: 'loader context build',
             },
         });
-    
-        return new LoaderContext(context, config)
+
+        return new LoaderContext(context, config);
     }
 
     static async load(
@@ -76,13 +76,13 @@ export class LoaderContext {
                 path.resolve(config.cacheDir, LOADER_CONTEXT_FILENAME),
             ),
         );
-    
-        return new LoaderContext(context, config)
+
+        return new LoaderContext(context, config);
     }
 
     constructor(context: { [s: string]: any }, config: CleanConfig) {
-        this.context = context
-        this.config = config
+        this.context = context;
+        this.config = config;
     }
 
     async save() {
@@ -93,6 +93,6 @@ export class LoaderContext {
     }
 
     get<VALUE = any>(name: string): VALUE {
-        return this.context[name]
+        return this.context[name];
     }
 }

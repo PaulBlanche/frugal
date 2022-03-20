@@ -1,5 +1,5 @@
 import { Asset } from './loader.ts';
-import { LoaderContext } from './LoaderContext.ts'
+import { LoaderContext } from './LoaderContext.ts';
 import * as graph from '../dependency_graph/mod.ts';
 import * as path from '../../dep/std/path.ts';
 import { load, Page } from './Page.ts';

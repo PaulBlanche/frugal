@@ -80,7 +80,7 @@ Deno.test('Cache: memoize keeps call results in memory', async () => {
     });
 
     const otherwise = spy(() => {
-    })
+    });
 
     await Promise.all([
         cache.memoize({ producer, otherwise, key: 'key' }),
@@ -95,7 +95,7 @@ Deno.test('Cache: memoize keeps call results in memory', async () => {
         { params: [], result: undefined },
         { params: [], result: undefined },
         { params: [], result: undefined },
-        { params: [], result: undefined }
+        { params: [], result: undefined },
     ]);
 });
 
@@ -109,7 +109,7 @@ Deno.test('Cache: memoize keeps call results after serialization', async () => {
     });
 
     const otherwise = spy(() => {
-    })
+    });
 
     await cache.memoize({ producer, otherwise, key: 'key' });
 
@@ -129,7 +129,7 @@ Deno.test('Cache: memoize keeps call results after serialization', async () => {
         { params: [], result: undefined },
         { params: [], result: undefined },
         { params: [], result: undefined },
-        { params: [], result: undefined }
+        { params: [], result: undefined },
     ]);
 });
 
@@ -143,21 +143,21 @@ Deno.test('Cache: memoize keeps call results after save/load', async () => {
     });
 
     const otherwise = spy(() => {
-    })
+    });
 
     await cache.memoize({ producer, otherwise, key: 'key' });
 
-    const fs: Record<string, string> = {}
+    const fs: Record<string, string> = {};
     Deno.writeTextFile = (path, content) => {
-        fs[String(path)] = content
-        return Promise.resolve() 
-    }
+        fs[String(path)] = content;
+        return Promise.resolve();
+    };
 
-    Deno.readTextFile = (path) => Promise.resolve(fs[String(path)])
+    Deno.readTextFile = (path) => Promise.resolve(fs[String(path)]);
 
-    await cache.save('path')
+    await cache.save('path');
 
-    const newCache = await Cache.load('path')
+    const newCache = await Cache.load('path');
 
     await Promise.all([
         newCache.memoize({ producer, otherwise, key: 'key' }),
@@ -177,28 +177,29 @@ Deno.test('Cache: load with no valid cache file', async () => {
     });
 
     const otherwise = spy(() => {
-    })
+    });
 
     await cache.memoize({ producer, otherwise, key: 'key' });
 
-    const fs: Record<string, string> = {}
+    const fs: Record<string, string> = {};
     Deno.writeTextFile = (path, content) => {
-        fs[String(path)] = content
-        return Promise.resolve() 
-    }
+        fs[String(path)] = content;
+        return Promise.resolve();
+    };
 
-    Deno.readTextFile = (path) => Promise.resolve(fs[String(path)])
+    Deno.readTextFile = (path) => Promise.resolve(fs[String(path)]);
 
-    await cache.save('path')
+    await cache.save('path');
 
-    const newCache = await Cache.load('invalid path')
+    const newCache = await Cache.load('invalid path');
 
     await Promise.all([
         newCache.memoize({ producer, otherwise, key: 'key' }),
     ]);
 
-    asserts.assertEquals(producer.calls, [{ params: [], result: value }, { params: [], result: value }]);
+    asserts.assertEquals(producer.calls, [{ params: [], result: value }, {
+        params: [],
+        result: value,
+    }]);
     asserts.assertEquals(otherwise.calls, []);
 });
-
-

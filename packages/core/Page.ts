@@ -72,7 +72,7 @@ export async function load<REQUEST extends object, DATA>(
     if (isDynamicDescriptor<REQUEST, DATA>(path, descriptor)) {
         return new DynamicPage(path, hash, descriptor);
     }
-    
+
     assert(
         false,
         `Page descriptor "${path}" has neither "getDynamicData" nor "getStaticData" method`,
