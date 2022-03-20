@@ -21,7 +21,7 @@ export class Generator {
         ).map((page) => {
             return new PageGenerator(page, {
                 cache: this.context.cache,
-                context: this.context.pageContext,
+                loaderContext: this.context.loaderContext,
                 publicDir: this.config.publicDir,
             });
         });

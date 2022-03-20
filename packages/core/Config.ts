@@ -2,6 +2,7 @@ import * as log from '../log/mod.ts';
 import { Loader } from './loader.ts';
 import * as importmap from '../../dep/importmap.ts';
 import * as path from '../../dep/std/path.ts';
+import { Entrypoint } from './Entrypoint.ts';
 
 export type Config = {
     root: string;
@@ -21,7 +22,7 @@ export type Config = {
 interface CleanConfigBase {
     root: string;
     loaders: Loader<any>[];
-    pages: string[];
+    entrypoints: Entrypoint[];
 }
 
 const DEFAULT_LOGGER_CONFIG: log.Config = {
@@ -46,6 +47,7 @@ const DEFAULT_LOGGER_CONFIG: log.Config = {
 export class CleanConfig implements CleanConfigBase {
     private config: Config;
     private importMap: importmap.ImportMap;
+    entrypoints: Entrypoint[];
 
     static async load(config: Config) {
         return new CleanConfig(
@@ -69,6 +71,9 @@ export class CleanConfig implements CleanConfigBase {
     constructor(config: Config, importMap: importmap.ImportMap) {
         this.config = config;
         this.importMap = importMap;
+        this.entrypoints = config.pages.map((page) =>
+            new Entrypoint(page, this.root)
+        );
         this.setupBuildLogging();
     }
 
@@ -126,10 +131,6 @@ export class CleanConfig implements CleanConfigBase {
 
     get loaders() {
         return this.config.loaders ?? [];
-    }
-
-    get pages() {
-        return this.config.pages;
     }
 
     get publicDir() {

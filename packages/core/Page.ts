@@ -61,11 +61,11 @@ export type DynamicPageDescriptor<REQUEST, DATA> = {
     getContent: GetContent<REQUEST, DATA>;
 };
 
-export async function load<REQUEST extends object, DATA>(
+export function getPageFromDescriptor<REQUEST extends object, DATA>(
     path: string,
     hash: string,
-): Promise<Page<REQUEST, DATA>> {
-    const descriptor = await import(path);
+    descriptor: any,
+): Page<REQUEST, DATA> {
     if (isStaticDescriptor<REQUEST, DATA>(path, descriptor)) {
         return new StaticPage(path, hash, descriptor);
     }

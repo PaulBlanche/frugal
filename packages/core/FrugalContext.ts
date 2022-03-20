@@ -1,21 +1,107 @@
-import { Asset } from './loader.ts';
 import { LoaderContext } from './LoaderContext.ts';
 import * as graph from '../dependency_graph/mod.ts';
 import * as path from '../../dep/std/path.ts';
-import { load, Page } from './Page.ts';
+import { Page } from './Page.ts';
 import { Cache } from './Cache.ts';
 import { CleanConfig } from './Config.ts';
 import * as asset from './asset.ts';
-import { assert } from '../../dep/std/asserts.ts';
 import * as log from '../log/mod.ts';
+import { EntrypointLoader } from './EntrypointLoader.ts';
 
 function logger() {
     return log.getLogger('frugal:FrugalContext');
 }
 
 const CACHE_FILENAME = 'cache.json';
-const PAGE_CONTEXT_FILENAME = 'pageContext.json';
 const DEPENDENCY_TREE_FILENAME = 'dependencyTree.json';
+
+export class FrugalContextLoader {
+    private config: CleanConfig;
+    private entrypointLoader: EntrypointLoader;
+
+    constructor(config: CleanConfig, entrypointLoader: EntrypointLoader) {
+        this.config = config;
+        this.entrypointLoader = entrypointLoader;
+    }
+
+    async build() {
+        const cache = await Cache.load(
+            path.resolve(this.config.cacheDir, CACHE_FILENAME),
+        );
+
+        logger().info({
+            op: 'start',
+            msg() {
+                return `${this.op} ${this.logger!.timerStart}`;
+            },
+            logger: {
+                timerStart: 'context build',
+            },
+        });
+
+        const dependencyTree = await graph.build(
+            this.config.entrypoints.map((entrypoint) => entrypoint.url),
+            {
+                resolve: this.config.resolve,
+            },
+        );
+
+        const assets = asset.gather(dependencyTree, this.config.loaders);
+
+        const loaderContext = await LoaderContext.build(
+            this.config,
+            assets,
+            cache,
+        );
+
+        logger().info({
+            op: 'done',
+            msg() {
+                return `${this.logger!.timerEnd} ${this.op}`;
+            },
+            logger: {
+                timerEnd: 'context build',
+            },
+        });
+
+        const pages = await this.entrypointLoader.load(dependencyTree);
+        return new FrugalContext(
+            this.config,
+            loaderContext,
+            dependencyTree,
+            pages,
+            cache,
+        );
+    }
+
+    async load() {
+        const cache = await Cache.load(
+            path.resolve(this.config.cacheDir, CACHE_FILENAME),
+        );
+
+        const loaderContext = await LoaderContext.load(this.config);
+        const dependencyTree = await this.loadDependencyTree(this.config);
+
+        const pages = await this.entrypointLoader.load(dependencyTree);
+        return new FrugalContext(
+            this.config,
+            loaderContext,
+            dependencyTree,
+            pages,
+            cache,
+        );
+    }
+
+    private async loadDependencyTree(
+        config: CleanConfig,
+    ): Promise<graph.DependencyTree> {
+        return JSON.parse(
+            await Deno.readTextFile(
+                path.resolve(config.cacheDir, DEPENDENCY_TREE_FILENAME),
+            ),
+        );
+    }
+}
 
 export class FrugalContext {
     private config: CleanConfig;
@@ -24,43 +110,20 @@ export class FrugalContext {
     readonly cache: Cache;
     readonly dependencyTree: graph.DependencyTree;
 
-    static async build(config: CleanConfig) {
-        const cache = await Cache.load(
-            path.resolve(config.cacheDir, CACHE_FILENAME),
-        );
-        const resolvedPages = resolvePages(config);
-        const { pageContext, dependencyTree } = await buildContext(
+    static async load(config: CleanConfig) {
+        const contextLoader = new FrugalContextLoader(
             config,
-            cache,
-            resolvedPages,
+            new EntrypointLoader(config),
         );
-        const pages = await loadPages(resolvedPages, dependencyTree);
-
-        return new FrugalContext(
-            config,
-            pageContext,
-            dependencyTree,
-            pages,
-            cache,
-        );
+        return await contextLoader.load();
     }
 
-    static async load(config: CleanConfig) {
-        //TODO check that files are there
-        const cache = await Cache.load(
-            path.resolve(config.cacheDir, CACHE_FILENAME),
-        );
-        const resolvedPages = resolvePages(config);
-        const { pageContext, dependencyTree } = await loadContext(config);
-        const pages = await loadPages(resolvedPages, dependencyTree);
-
-        return new FrugalContext(
+    static async build(config: CleanConfig) {
+        const contextLoader = new FrugalContextLoader(
             config,
-            pageContext,
-            dependencyTree,
-            pages,
-            cache,
+            new EntrypointLoader(config),
         );
+        return await contextLoader.build();
     }
 
     constructor(
@@ -103,83 +166,4 @@ export class FrugalContext {
             }),
         );
     }
-}
-
-function resolvePages(config: CleanConfig) {
-    return config.pages.map((pagePath) =>
-        new URL(pagePath, `file:///${config.root}/`)
-    );
-}
-
-export async function buildContext(
-    config: CleanConfig,
-    cache: Cache,
-    resolvedPages: URL[],
-) {
-    logger().info({
-        op: 'start',
-        msg() {
-            return `${this.op} ${this.logger!.timerStart}`;
-        },
-        logger: {
-            timerStart: 'context build',
-        },
-    });
-
-    const dependencyTree = await graph.build(
-        resolvedPages,
-        {
-            resolve: config.resolve,
-        },
-    );
-
-    const assets = asset.gather(dependencyTree, config.loaders);
-
-    const pageContext = await LoaderContext.build(config, assets, cache);
-
-    logger().info({
-        op: 'done',
-        msg() {
-            return `${this.logger!.timerEnd} ${this.op}`;
-        },
-        logger: {
-            timerEnd: 'context build',
-        },
-    });
-
-    return { pageContext, dependencyTree };
-}
-
-async function loadPages(
-    resolvedPages: URL[],
-    dependencyTree: graph.DependencyTree,
-) {
-    return await Promise.all(resolvedPages.map(async (resolvedPage) => {
-        const node = dependencyTree.dependencies.find((node) =>
-            node.url.toString() === resolvedPage.toString()
-        );
-        assert(node !== undefined);
-
-        return await load(
-            String(node.url),
-            node.moduleHash,
-        );
-    }));
-}
-
-async function loadContext(config: CleanConfig) {
-    const pageContext = await LoaderContext.load(config);
-    const dependencyTree = await loadDependencyTree(config);
-
-    return { pageContext, dependencyTree };
-}
-
-async function loadDependencyTree(
-    config: CleanConfig,
-): Promise<graph.DependencyTree> {
-    return JSON.parse(
-        await Deno.readTextFile(
-            path.resolve(config.cacheDir, DEPENDENCY_TREE_FILENAME),
-        ),
-    );
 }
