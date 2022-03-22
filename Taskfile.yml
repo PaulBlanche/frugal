@@ -9,6 +9,7 @@ vars:
   ALLOW_READ: .
   ALLOW_WRITE: .
   ALLOW_NET_REPO: deno.land,esm.sh,cdn.esm.sh,cdn.jsdelivr.net,unpkg.com
+  ALLOW_NET_SERVER: 0.0.0.0:8000
   ALLOW_ENV: NODE_ENV,DENO_DIR
 
 env:
@@ -42,7 +43,7 @@ tasks:
           --import-map={{.IMPORT_MAP}}
           --allow-read={{.ALLOW_READ}}
           --allow-write={{.ALLOW_WRITE}}
-          --allow-net={{.ALLOW_NET_REPO}}
+          --allow-net={{.ALLOW_NET_REPO}},{{.ALLOW_NET_SERVER}}
           --allow-env={{.ALLOW_ENV}}
           --no-check
           {{.CLI_ARGS}}

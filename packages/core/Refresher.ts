@@ -21,7 +21,7 @@ export class Refresher {
         ).map((page) => {
             return new PageRefresher(page, {
                 cache: this.context.cache,
-                context: this.context.pageContext,
+                loaderContext: this.context.loaderContext,
                 publicDir: this.config.publicDir,
             });
         });
@@ -31,7 +31,7 @@ export class Refresher {
         return this.refreshers.map((refresher) => refresher.route);
     }
 
-    async refresh(pathname: string): Promise<boolean> {
+    async refresh(pathname: string): Promise<string | undefined> {
         this.config.setupServerLogging();
 
         logger().info({
@@ -59,10 +59,10 @@ export class Refresher {
                     timerEnd: `refresh of ${pathname}`,
                 },
             });
-            return false;
+            return undefined;
         }
 
-        await pageRefresher.refresh(pathname);
+        const pagePath = await pageRefresher.refresh(pathname);
         await this.context.save();
 
         logger().info({
@@ -76,7 +76,7 @@ export class Refresher {
             },
         });
 
-        return true;
+        return pagePath;
     }
 
     private getMatchingPageRefresher(

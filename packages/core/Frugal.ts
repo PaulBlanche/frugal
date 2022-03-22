@@ -10,6 +10,7 @@ export class Frugal {
     private builder: Builder;
     private refresher: Refresher;
     private generator: Generator;
+    config: CleanConfig;
 
     static async load(config: Config) {
         const cleanConfig = await CleanConfig.load(config);
@@ -44,6 +45,7 @@ export class Frugal {
         );
         this.refresher = new Refresher(config, context);
         this.generator = new Generator(config, context);
+        this.config = config;
     }
 
     // build all registered static pages
@@ -73,4 +75,5 @@ export class Frugal {
 export async function build(config: Config) {
     const frugal = await Frugal.build(config);
     await frugal.build();
+    return frugal;
 }

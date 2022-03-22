@@ -26,7 +26,7 @@ export class PageRefresher<REQUEST extends object, DATA> {
         return Boolean(this.page.match(pathname));
     }
 
-    async refresh(pathname: string): Promise<void> {
+    async refresh(pathname: string): Promise<string> {
         const match = this.page.match(pathname);
         assert(match !== false);
 
@@ -42,7 +42,7 @@ export class PageRefresher<REQUEST extends object, DATA> {
             },
         });
 
-        await this.builder.build(match.params, 'refresh');
+        const pagePath = await this.builder.build(match.params, 'refresh');
 
         logger().info({
             op: 'done',
@@ -55,5 +55,7 @@ export class PageRefresher<REQUEST extends object, DATA> {
                 timerEnd: `refreshing ${this.page.pattern} as ${pathname}`,
             },
         });
+
+        return pagePath;
     }
 }

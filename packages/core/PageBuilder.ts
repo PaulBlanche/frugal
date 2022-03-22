@@ -60,7 +60,7 @@ export class PageBuilder<REQUEST extends object, DATA> {
         });
     }
 
-    async build(request: REQUEST, phase: Phase): Promise<void> {
+    async build(request: REQUEST, phase: Phase): Promise<string> {
         assert(
             this.page instanceof StaticPage,
             `Can't statically build DynamicPage ${this.page.pattern}`,
@@ -90,7 +90,7 @@ export class PageBuilder<REQUEST extends object, DATA> {
             .update(this.page.hash)
             .alphabetic();
 
-        await this.config.cache.memoize({
+        return await this.config.cache.memoize({
             key: pageInstanceHash,
             producer: async () => {
                 const { pagePath, content } = await this.generator
@@ -111,7 +111,7 @@ export class PageBuilder<REQUEST extends object, DATA> {
                     },
                 });
 
-                return pageInstanceHash;
+                return pagePath;
             },
             otherwise: () => {
                 logger().debug({

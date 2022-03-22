@@ -1,7 +1,7 @@
 import { Router } from '../../dep/oak.ts';
 import { Frugal } from '../core/mod.ts';
 
-export function refreshRouter(frugal: Frugal): Router {
+export function getRefreshRouter(frugal: Frugal): Router {
     const router = new Router();
 
     router.get('/refresh', async (context) => {
@@ -15,7 +15,7 @@ export function refreshRouter(frugal: Frugal): Router {
 
         const success = await frugal.refresh(pathname);
 
-        if (!success) {
+        if (success === undefined) {
             context.response.status = 422;
             context.response.body = 'No page matching pathname found';
             return;

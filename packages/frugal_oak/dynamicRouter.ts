@@ -1,7 +1,7 @@
-import { composeMiddleware, Middleware, Router } from '../../dep/oak.ts';
+import { Router } from '../../dep/oak.ts';
 import { Frugal } from '../core/mod.ts';
 
-export function getGenerateMiddleware(frugal: Frugal): Middleware {
+export function getDynamicRouter(frugal: Frugal): Router {
     const router = new Router();
 
     for (const route of frugal.generateRoutes) {
@@ -22,5 +22,5 @@ export function getGenerateMiddleware(frugal: Frugal): Middleware {
         });
     }
 
-    return composeMiddleware([router.routes(), router.allowedMethods()]);
+    return router;
 }
