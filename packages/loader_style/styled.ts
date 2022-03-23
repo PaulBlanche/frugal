@@ -165,6 +165,6 @@ export function output(): string {
         '\n',
     );
     const globalStyles = GLOBAL_STYLES.join('\n');
-    const rules = RULES.map((rule) => rule.toCss());
+    const rules = RULES.map((rule) => rule.toCss()).join('\n');
     return `${keyframes}\n${globalStyles}\n${rules}`;
 }

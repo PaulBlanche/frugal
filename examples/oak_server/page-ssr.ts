@@ -1,24 +1,26 @@
 import type * as frugal from '../../packages/core/mod.ts';
 
-
 type Request = { slug: string };
 
 type Data = {
     title: string;
     content: string;
-    searchParams: string
+    searchParams: string;
 };
 
-
-export function getDynamicData({ request, searchParams }: frugal.GetDynamicDataParams<Request>): Data {
+// For server side pages, we have an extra `searchParams` extracted from the url
+// of the client request. The `request` object contains the url parameters.
+export function getDynamicData(
+    { request, searchParams }: frugal.GetDynamicDataParams<Request>,
+): Data {
     return {
         title: `another article (${request.slug})`,
         content: 'this is another article',
-        searchParams: searchParams.toString()
+        searchParams: searchParams.toString(),
     };
 }
 
-export const pattern = '/ssr/:slug.html'
+export const pattern = '/ssr/:slug.html';
 
 export function getContent({ data }: frugal.GetContentParams<Request, Data>) {
     return `<html>

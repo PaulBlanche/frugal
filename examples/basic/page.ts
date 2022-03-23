@@ -9,11 +9,16 @@ type Data = {
     content: string;
 };
 
+// We will generate two html pages with this page descriptor, with two different
+// slugs.
 export function getRequestList(): Request[] {
     return [{ slug: 'article-1' }, { slug: 'article-2' }];
 }
 
-export function getStaticData({ request }: frugal.GetStaticDataParams<Request>): Data {
+// For each request, we generate the data needed to render the page
+export function getStaticData(
+    { request }: frugal.GetStaticDataParams<Request>,
+): Data {
     if (request.slug === 'article-1') {
         return {
             title: 'first article !',
@@ -26,8 +31,12 @@ export function getStaticData({ request }: frugal.GetStaticDataParams<Request>):
     };
 }
 
-export const pattern = '/:slug.html'
+// the generated pages will have the url `/article-1.html` and `article-2.html`.
+export const pattern = '/:slug.html';
 
+// For each data generated from a request, we generate the html of the page.
+// Here we use template string, but you can use any templating language that
+// can return a html string.
 export function getContent({ data }: frugal.GetContentParams<Request, Data>) {
     return `<html>
         <body>

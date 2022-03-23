@@ -32,7 +32,7 @@ export class Refresher {
     }
 
     async refresh(pathname: string): Promise<string | undefined> {
-        this.config.setupServerLogging();
+        await this.config.setupServerLogging();
 
         logger().info({
             op: 'start',

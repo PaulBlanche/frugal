@@ -1,45 +1,59 @@
 import { build } from '../../packages/core/mod.ts';
 import { script } from '../../packages/loader_script/mod.ts';
-
-const ROOT = new URL(import.meta.url).pathname;
+import * as path from '../../dep/std/path.ts';
 
 build({
-    root: ROOT,
+    // since deno does not have any notion of "root of module", frugal needs to
+    // rely on you giving a root directory. Every relative path in the
+    // configuration will be resolved relative to this directory.
+    root: path.dirname(new URL(import.meta.url).pathname),
+
+    // the directory relative to `root` where to output the result of the build
     outputDir: './dist',
+
+    // registered loaders. We register the script loader withe the name "body",
+    // and configured to catch all import ending in `.script.ts`. The bundles
+    // will be outputed in `esm` format and with code splitting.
+    // You will get a different bundle for each entrypoint, but the code splitting
+    // will be done amongst all entrypoint.
+    // In our case scripts used in both `page1.ts` and `page2.ts` share some code
+    // so this code will be put in a shared chunk
     loaders: [
         script({
             name: 'body',
             test: (url) => /\.script\.ts$/.test(url.toString()),
             outputs: [{
-                format: 'esm'
+                format: 'esm',
             }],
         }),
     ],
+
+    // the pages that need to be built
     pages: [
         './page1.ts',
         './page2.ts',
     ],
+
+    // Logging configuration. In the context of this exemple, all loggers are
+    // set to DEBUG, but by default everything is set to `INFO`.
     logging: {
         type: 'human',
         loggers: {
             'frugal:asset': 'DEBUG',
             'frugal:Builder': 'DEBUG',
-            'frugal:FrugalContext': 'DEBUG',
-            'frugal:PageRegenerator': 'DEBUG',
-            'frugal:PageBuilder': 'DEBUG',
-            'frugal:Regenerator': 'DEBUG',
             'frugal:Cache': 'DEBUG',
+            'frugal:Frugal': 'DEBUG',
+            'frugal:FrugalContext': 'DEBUG',
+            'frugal:Generator': 'DEBUG',
+            'frugal:LoaderContext': 'DEBUG',
+            'frugal:PageBuilder': 'DEBUG',
+            'frugal:PageGenerator': 'DEBUG',
+            'frugal:PageRefresher': 'DEBUG',
+            'frugal:Refresher': 'DEBUG',
             'frugal:dependency_graph': 'DEBUG',
-            'frugal:RegeneratorWorker': 'DEBUG',
             'frugal:loader:jsx_svg': 'DEBUG',
             'frugal:loader:script': 'DEBUG',
-            'frugal:loader:style': 'DEBUG',    
+            'frugal:loader:style': 'DEBUG',
         },
     },
 });
-
-declare global {
-    interface Crypto {
-        randomUUID: () => string;
-    }
-}

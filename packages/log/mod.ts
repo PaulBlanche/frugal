@@ -136,7 +136,7 @@ class HumanHandler extends FrugalHandler {
         scope: string,
         record: FrugalLogRecord,
     ): string {
-        const delta = record.logger.delta
+        const delta = record.logger.delta !== undefined
             ? ` (done in ${record.logger.delta / 1000} s)`
             : '';
 

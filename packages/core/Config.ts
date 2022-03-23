@@ -30,14 +30,16 @@ const DEFAULT_LOGGER_CONFIG: log.Config = {
     loggers: {
         'frugal:asset': 'INFO',
         'frugal:Builder': 'INFO',
-        'frugal:FrugalContext': 'INFO',
-        'frugal:PageRegenerator': 'INFO',
-        'frugal:PageGenerator': 'INFO',
-        'frugal:PageBuilder': 'INFO',
-        'frugal:Regenerator': 'INFO',
         'frugal:Cache': 'INFO',
+        'frugal:Frugal': 'INFO',
+        'frugal:FrugalContext': 'INFO',
+        'frugal:Generator': 'INFO',
+        'frugal:LoaderContext': 'INFO',
+        'frugal:PageBuilder': 'INFO',
+        'frugal:PageGenerator': 'INFO',
+        'frugal:PageRefresher': 'INFO',
+        'frugal:Refresher': 'INFO',
         'frugal:dependency_graph': 'INFO',
-        'frugal:RegeneratorWorker': 'INFO',
         'frugal:loader:jsx_svg': 'INFO',
         'frugal:loader:script': 'INFO',
         'frugal:loader:style': 'INFO',
@@ -48,12 +50,17 @@ export class CleanConfig implements CleanConfigBase {
     private config: Config;
     private importMap: importmap.ImportMap;
     entrypoints: Entrypoint[];
+    loggingMode?: 'build' | 'server';
 
     static async load(config: Config) {
-        return new CleanConfig(
+        const cleanConfig = new CleanConfig(
             config,
             await this.loadImportMap(config),
         );
+
+        await cleanConfig.setupBuildLogging();
+
+        return cleanConfig;
     }
 
     static async loadImportMap(config: Config) {
@@ -74,7 +81,6 @@ export class CleanConfig implements CleanConfigBase {
         this.entrypoints = config.pages.map((page) =>
             new Entrypoint(page, this.root)
         );
-        this.setupBuildLogging();
     }
 
     private getBuildLoggingConfig(config: Config): log.Config | undefined {
@@ -102,31 +108,39 @@ export class CleanConfig implements CleanConfigBase {
     }
 
     async setupServerLogging() {
-        const serverLoggingConfig = this.getServerLoggingConfig(this.config);
+        if (this.loggingMode !== 'server') {
+            this.loggingMode = 'server';
+            const serverLoggingConfig = this.getServerLoggingConfig(
+                this.config,
+            );
 
-        await log.setup({
-            type: serverLoggingConfig?.type ?? DEFAULT_LOGGER_CONFIG.type,
-            loggers: {
-                ...DEFAULT_LOGGER_CONFIG.loggers,
-                ...serverLoggingConfig?.loggers,
-            },
-        });
+            await log.setup({
+                type: serverLoggingConfig?.type ?? DEFAULT_LOGGER_CONFIG.type,
+                loggers: {
+                    ...DEFAULT_LOGGER_CONFIG.loggers,
+                    ...serverLoggingConfig?.loggers,
+                },
+            });
+        }
     }
 
     async setupBuildLogging() {
-        const buildLoggingConfig = this.getBuildLoggingConfig(this.config);
+        if (this.loggingMode !== 'build') {
+            this.loggingMode = 'build';
+            const buildLoggingConfig = this.getBuildLoggingConfig(this.config);
 
-        await log.setup({
-            type: buildLoggingConfig?.type ?? DEFAULT_LOGGER_CONFIG.type,
-            loggers: {
-                ...DEFAULT_LOGGER_CONFIG.loggers,
-                ...buildLoggingConfig?.loggers,
-            },
-        });
+            await log.setup({
+                type: buildLoggingConfig?.type ?? DEFAULT_LOGGER_CONFIG.type,
+                loggers: {
+                    ...DEFAULT_LOGGER_CONFIG.loggers,
+                    ...buildLoggingConfig?.loggers,
+                },
+            });
+        }
     }
 
     get root() {
-        return path.dirname(this.config.root);
+        return this.config.root;
     }
 
     get loaders() {
@@ -156,9 +170,5 @@ export class CleanConfig implements CleanConfigBase {
                 ),
             );
         };
-    }
-
-    get configPath() {
-        return this.config.root;
     }
 }

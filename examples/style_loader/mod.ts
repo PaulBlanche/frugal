@@ -1,6 +1,8 @@
 import { build } from '../../packages/core/mod.ts';
 import * as path from '../../dep/std/path.ts';
 import { script } from '../../packages/loader_script/mod.ts';
+import { style } from '../../packages/loader_style/mod.ts';
+import { style as rollupStylePlugin } from '../../packages/loader_style/rollup-style-plugin.ts';
 import { rollupImportMapPlugin } from '../../dep/rollup-plugin-import-map.ts';
 
 const ROOT = path.dirname(new URL(import.meta.url).pathname);
@@ -25,22 +27,40 @@ build({
     // and configured to catch all import ending in `.script.ts`. The bundles
     // will be outputed in `esm` format and with code splitting.
     // see the `script_loader` example for more info.
-    loaders: [script({
-        name: 'body',
-        test: (url) => /\.script\.ts$/.test(url.toString()),
-        input: {
-            plugins: [
-                // Since we use an import map to resolve bare imports, we need
-                // to make rollup aware of this resolution logic.
-                rollupImportMapPlugin({
-                    maps: IMPORT_MAP,
-                }) as any,
-            ],
-        },
-        outputs: [{
-            format: 'esm',
-        }],
-    })],
+    loaders: [
+        script({
+            name: 'body',
+            test: (url) => /\.script\.ts$/.test(url.toString()),
+            input: {
+                plugins: [
+                    // Since we use an import map to resolve bare imports, we need
+                    // to make rollup aware of this resolution logic.
+                    rollupImportMapPlugin({
+                        maps: IMPORT_MAP,
+                    }) as any,
+                    // We need to make rollup aware of the style bundle, in order
+                    // to have only the classnames in the bundle and not the whole
+                    // style
+                    rollupStylePlugin({
+                        test: (url) => /\.style\.ts$/.test(url.toString()),
+                    }),
+                ],
+            },
+            outputs: [{
+                format: 'esm',
+            }],
+        }),
+        style({
+            test: (url) => /\.style\.ts$/.test(url.toString()),
+
+            // The transform function allows you to use any flavor of css you want.
+            // You can use postcss/less/sass to transform nested selectors, to
+            // auto-prefix properties, etc ...
+            transform: (bundle) => {
+                return `/* comment injected by transform function */\n${bundle}`;
+            },
+        }),
+    ],
 
     // the pages that need to be built
     pages: [

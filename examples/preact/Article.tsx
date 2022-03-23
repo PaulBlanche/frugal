@@ -7,6 +7,7 @@ export type ArticleProps = {
     content: string;
 };
 
+// The _raw_ Article component
 export function Article(props: ArticleProps) {
     return (
         <>

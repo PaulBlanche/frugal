@@ -1,11 +1,12 @@
 import type * as frugal from '../../packages/core/mod.ts';
-import type { Generated } from '../../packages/loader_script/mod.ts';
+import { getContentFrom } from '../../packages/frugal_preact/mod.server.ts';
 
-import './foo.script.ts';
+import { App } from './App.tsx';
+import { Page } from './Page.tsx';
 
 type Request = { slug: string };
 
-type Data = {
+export type Data = {
     title: string;
     content: string;
 };
@@ -29,20 +30,6 @@ export function getStaticData(
     };
 }
 
-export const pattern = '/page2/:slug.html';
+export const pattern = `/:slug.html`;
 
-export function getContent(
-    { data, loaderContext, entrypoint }: frugal.GetContentParams<Request, Data>,
-) {
-    const bodyScriptSrc =
-        loaderContext.get<Generated>('script-body')[entrypoint]['esm'];
-
-    return `<html>
-    <body>
-        <h1>${data.title}</h1>
-        <p>${data.content}</p>    
-        <script module src="${bodyScriptSrc}"></script>
-    </body>
-</html>
-`;
-}
+export const getContent = getContentFrom(Page, { App });

@@ -12,7 +12,7 @@
     "fmt": {
         "files": {
             "exclude": [
-                "./examples",
+                "./examples/**/dist",
                 "./.vscode/",
                 "./.deno_dir",
                 "./cov_profile"

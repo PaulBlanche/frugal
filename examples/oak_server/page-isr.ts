@@ -11,7 +11,9 @@ export function getRequestList(): Request[] {
     return [{ slug: '1' }];
 }
 
-export function getStaticData({ request }: frugal.GetStaticDataParams<Request>): Data {
+export function getStaticData(
+    { request }: frugal.GetStaticDataParams<Request>,
+): Data {
     if (request.slug === '1') {
         return {
             title: 'first article !',
@@ -24,7 +26,7 @@ export function getStaticData({ request }: frugal.GetStaticDataParams<Request>):
     };
 }
 
-export const pattern = '/isr/:slug.html'
+export const pattern = '/isr/:slug.html';
 
 export function getContent({ data }: frugal.GetContentParams<Request, Data>) {
     return `<html>

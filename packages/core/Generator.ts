@@ -32,7 +32,7 @@ export class Generator {
     }
 
     async generate(pathname: string, urlSearchParams: URLSearchParams) {
-        this.config.setupServerLogging();
+        await this.config.setupServerLogging();
 
         logger().info({
             op: 'start',
