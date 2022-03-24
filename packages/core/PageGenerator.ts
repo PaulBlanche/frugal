@@ -1,12 +1,10 @@
 import { LoaderContext } from './LoaderContext.ts';
-import { Cache } from './Cache.ts';
 import { DynamicPage, Page, Phase } from './Page.ts';
 import * as path from '../../dep/std/path.ts';
 import * as log from '../log/mod.ts';
 import { assert } from '../../dep/std/asserts.ts';
 
 export type PageGeneratorConfig = {
-    cache: Cache;
     loaderContext: LoaderContext;
     publicDir: string;
 };
@@ -56,7 +54,6 @@ export class PageGenerator<REQUEST extends object, DATA> {
         const data = await this.page.getDynamicData({
             phase: 'generate',
             request,
-            cache: this.config.cache,
             searchParams,
         });
 
@@ -95,7 +92,6 @@ export class PageGenerator<REQUEST extends object, DATA> {
             data,
             pathname,
             loaderContext: this.config.loaderContext,
-            cache: this.config.cache,
         });
 
         const pagePath = path.join(this.config.publicDir, pathname);

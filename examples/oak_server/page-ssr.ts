@@ -22,6 +22,8 @@ export function getDynamicData(
 
 export const pattern = '/ssr/:slug.html';
 
+export const self = new URL(import.meta.url);
+
 export function getContent({ data }: frugal.GetContentParams<Request, Data>) {
     return `<html>
         <body>

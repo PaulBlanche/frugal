@@ -28,6 +28,8 @@ export function getStaticData(
 
 export const pattern = '/isr/:slug.html';
 
+export const self = new URL(import.meta.url);
+
 export function getContent({ data }: frugal.GetContentParams<Request, Data>) {
     return `<html>
         <body>

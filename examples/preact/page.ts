@@ -32,4 +32,6 @@ export function getStaticData(
 
 export const pattern = `/:slug.html`;
 
+export const self = new URL(import.meta.url);
+
 export const getContent = getContentFrom(Page, { App });

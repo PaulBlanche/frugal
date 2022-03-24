@@ -31,11 +31,13 @@ export function getStaticData(
 
 export const pattern = '/page2/:slug.html';
 
+export const self = new URL(import.meta.url);
+
 export function getContent(
     { data, loaderContext, entrypoint }: frugal.GetContentParams<Request, Data>,
 ) {
     const bodyScriptSrc =
-        loaderContext.get<Generated>('script-body')[entrypoint]['esm'];
+        loaderContext.get<Generated>('script-body')[String(entrypoint)]['esm'];
 
     return `<html>
     <body>

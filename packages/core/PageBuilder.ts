@@ -3,10 +3,13 @@ import * as mumur from '../murmur/mod.ts';
 import * as path from '../../dep/std/path.ts';
 import * as fs from '../../dep/std/fs.ts';
 import * as log from '../log/mod.ts';
-import { PageGenerator, PageGeneratorConfig } from './PageGenerator.ts';
+import { PageGenerator } from './PageGenerator.ts';
 import { assert } from '../../dep/std/asserts.ts';
+import { Cache } from './Cache.ts';
 
-export type PageBuilderConfig = PageGeneratorConfig;
+export type PageBuilderConfig = {
+    cache: Cache;
+};
 
 function logger() {
     return log.getLogger('frugal:PageBuilder');
@@ -15,12 +18,19 @@ function logger() {
 export class PageBuilder<REQUEST extends object, DATA> {
     private generator: PageGenerator<REQUEST, DATA>;
     private page: Page<REQUEST, DATA>;
+    private hash: string;
     private config: PageBuilderConfig;
 
-    constructor(page: Page<REQUEST, DATA>, config: PageBuilderConfig) {
+    constructor(
+        page: Page<REQUEST, DATA>,
+        hash: string,
+        generator: PageGenerator<REQUEST, DATA>,
+        config: PageBuilderConfig,
+    ) {
         this.page = page;
         this.config = config;
-        this.generator = new PageGenerator(page, config);
+        this.hash = hash;
+        this.generator = generator;
     }
 
     async buildAll() {
@@ -82,12 +92,11 @@ export class PageBuilder<REQUEST extends object, DATA> {
         const data = await this.page.getStaticData({
             phase,
             request,
-            cache: this.config.cache,
         });
 
         const pageInstanceHash = new mumur.Hash()
             .update(JSON.stringify(data))
-            .update(this.page.hash)
+            .update(this.hash)
             .alphabetic();
 
         return await this.config.cache.memoize({

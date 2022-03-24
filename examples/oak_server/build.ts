@@ -1,11 +1,13 @@
-import { build } from '../../packages/core/mod.ts';
+import { build, page } from '../../packages/core/mod.ts';
 import {
     getDynamicRouter,
     getRefreshRouter,
     getStaticRouter,
 } from '../../packages/frugal_oak/mod.ts';
 import { Application } from '../../dep/oak.ts';
-import * as path from '../../dep/std/path.ts';
+
+import * as pageISR from './page-isr.ts';
+import * as pageSSR from './page-ssr.ts';
 
 // the `build` function returns a `Frugal` object, thant can be used later on the server.
 // If you want to run the build in a separate process as the server, you can use
@@ -15,15 +17,15 @@ const frugal = await build({
     // since deno does not have any notion of "root of module", frugal needs to
     // rely on you giving a root directory. Every relative path in the
     // configuration will be resolved relative to this directory.
-    root: path.dirname(new URL(import.meta.url).pathname),
+    self: new URL(import.meta.url),
 
     // the directory relative to `root` where to output the result of the build
     outputDir: './dist',
 
     // the pages that need to be built
     pages: [
-        './page-isr.ts',
-        './page-ssr.ts',
+        page(pageISR),
+        page(pageSSR),
     ],
 
     // Logging configuration. In the context of this exemple, all loggers are
