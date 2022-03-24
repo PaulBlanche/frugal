@@ -30,7 +30,7 @@ export type GetContentParams<REQUEST, DATA> = {
 
 export type GetRequestList<REQUEST> = (
     params: GetRequestListParams,
-) => Promise<REQUEST[]>;
+) => Promise<REQUEST[]> | REQUEST[];
 
 export type GetStaticData<REQUEST, DATA> = (
     params: GetStaticDataParams<REQUEST>,

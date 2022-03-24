@@ -3,7 +3,6 @@ import { Asset } from './loader.ts';
 import { CleanConfig } from './Config.ts';
 import { PersistantCache } from './Cache.ts';
 import * as fs from '../../dep/std/fs.ts';
-import * as path from '../../dep/std/path.ts';
 
 function logger() {
     return log.getLogger('frugal:LoaderContext');

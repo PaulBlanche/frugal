@@ -1,9 +1,6 @@
 import * as log from '../log/mod.ts';
 import { PageGenerator } from './PageGenerator.ts';
 import { CleanConfig } from './Config.ts';
-import { LoaderContext } from './LoaderContext.ts';
-import { DynamicPage } from './Page.ts';
-
 function logger() {
     return log.getLogger('frugal:Generator');
 }
@@ -14,14 +11,7 @@ export class Generator {
 
     constructor(config: CleanConfig, generators: PageGenerator<any, any>[]) {
         this.config = config;
-        this.generators = generators; /*config.pages.filter((page) =>
-            page instanceof DynamicPage
-        ).map((page) => {
-            return new PageGenerator(page, {
-                loaderContext: this.loaderContext,
-                publicDir: this.config.publicDir,
-            });
-        });*/
+        this.generators = generators;
     }
 
     get routes() {
