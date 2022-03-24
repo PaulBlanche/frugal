@@ -1,7 +1,7 @@
 import * as log from '../log/mod.ts';
 import { PageGenerator } from './PageGenerator.ts';
 import { CleanConfig } from './Config.ts';
-import { FrugalContext } from './FrugalContext.ts';
+import { LoaderContext } from './LoaderContext.ts';
 import { DynamicPage } from './Page.ts';
 
 function logger() {
@@ -10,21 +10,18 @@ function logger() {
 
 export class Generator {
     private config: CleanConfig;
-    private context: FrugalContext;
     private generators: PageGenerator<any, any>[];
 
-    constructor(config: CleanConfig, context: FrugalContext) {
+    constructor(config: CleanConfig, generators: PageGenerator<any, any>[]) {
         this.config = config;
-        this.context = context;
-        this.generators = this.context.pages.filter((page) =>
+        this.generators = generators; /*config.pages.filter((page) =>
             page instanceof DynamicPage
         ).map((page) => {
             return new PageGenerator(page, {
-                cache: this.context.cache,
-                loaderContext: this.context.loaderContext,
+                loaderContext: this.loaderContext,
                 publicDir: this.config.publicDir,
             });
-        });
+        });*/
     }
 
     get routes() {
@@ -65,7 +62,6 @@ export class Generator {
         }
 
         const result = await pageGenerator.generate(pathname, urlSearchParams);
-        await this.context.save();
 
         logger().info({
             op: 'done',

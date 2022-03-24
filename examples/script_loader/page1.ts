@@ -37,6 +37,8 @@ export function getStaticData(
 // the generated pages will have the url `/page1/article-1.html` and `/page1/article-2.html`.
 export const pattern = '/page1/:slug.html';
 
+export const self = new URL(import.meta.url);
+
 // For each data generated from a request, we generate the html of the page.
 // Here we use template string, but you can use any templating language that
 // can return a html string.
@@ -56,7 +58,7 @@ export function getContent(
     // Each entry in this sub dictionnary is the url of the entrypoint for the
     // bundle
     const bodyScriptSrc =
-        loaderContext.get<Generated>('script-body')[entrypoint]['esm'];
+        loaderContext.get<Generated>('script-body')[String(entrypoint)]['esm'];
 
     return `<html>
     <body>

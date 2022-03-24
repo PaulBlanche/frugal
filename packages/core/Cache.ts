@@ -1,5 +1,4 @@
 import * as fs from '../../dep/std/fs.ts';
-import * as path from '../../dep/std/path.ts';
 import * as log from '../log/mod.ts';
 
 type CacheData = {
@@ -19,22 +18,6 @@ function logger() {
 export class Cache<VALUE = unknown> {
     private previousData: CacheData;
     private nextData: CacheData;
-    private namespace: string;
-
-    static async load(cachePath: string) {
-        logger().info({
-            op: 'loading',
-            msg() {
-                return `${this.op}`;
-            },
-        });
-        try {
-            const data = await Deno.readTextFile(cachePath);
-            return Cache.unserialize(JSON.parse(data));
-        } catch {
-            return Cache.unserialize();
-        }
-    }
 
     static unserialize(data?: CacheData) {
         if (data === undefined) {
@@ -43,25 +26,20 @@ export class Cache<VALUE = unknown> {
         return new Cache(data);
     }
 
-    private constructor(
+    protected constructor(
         previousData: CacheData,
         nextData: CacheData = {},
-        namespace: string = '',
     ) {
-        this.namespace = namespace, this.previousData = previousData;
+        this.previousData = previousData;
         this.nextData = nextData;
     }
 
-    private key(key: string) {
-        return `${this.namespace}${key}`;
-    }
-
     had(key: string) {
-        return this.key(key) in this.previousData;
+        return key in this.previousData;
     }
 
     has(key: string) {
-        return this.key(key) in this.nextData;
+        return key in this.nextData;
     }
 
     async memoize<V = VALUE>(
@@ -93,41 +71,76 @@ export class Cache<VALUE = unknown> {
 
     get<V = VALUE>(key: string): V | undefined {
         if (this.has(key)) {
-            return this.nextData[this.key(key)];
+            return this.nextData[key];
         }
         if (this.had(key)) {
-            return this.previousData[this.key(key)];
+            return this.previousData[key];
         }
         return undefined;
     }
 
     set<V = VALUE>(key: string, value: V) {
-        this.nextData[this.key(key)] = value;
+        this.nextData[key] = value;
     }
 
     propagate(key: string) {
         if (this.had(key) && !this.has(key)) {
-            this.set(key, this.previousData[this.key(key)]);
+            this.set(key, this.previousData[key]);
         }
     }
 
     serialize(): CacheData {
         return this.nextData;
     }
+}
 
-    async save(cachePath: string): Promise<void> {
+export class PersistantCache<VALUE = unknown> extends Cache<VALUE> {
+    private cachePath: string;
+
+    static async load(cachePath: string) {
         logger().info({
-            op: 'saving',
+            cachePath,
             msg() {
-                return `${this.op}`;
+                return `loading ${this.cachePath}`;
+            },
+        });
+        try {
+            const data = await Deno.readTextFile(cachePath);
+            return new PersistantCache(cachePath, JSON.parse(data));
+        } catch {
+            console.log('empty cache');
+            logger().debug({
+                cachePath,
+                msg() {
+                    return `no cache found at ${this.cachePath}, load pristine cache`;
+                },
+            });
+
+            return new PersistantCache(cachePath, {});
+        }
+    }
+
+    constructor(
+        cachePath: string,
+        previousData: CacheData,
+        nextData: CacheData = {},
+    ) {
+        super(previousData, nextData);
+        this.cachePath = cachePath;
+    }
+
+    async save(): Promise<void> {
+        logger().info({
+            cachePath: this.cachePath,
+            msg() {
+                return `saving ${this.cachePath}`;
             },
         });
 
-        await fs.ensureDir(path.dirname(cachePath));
-        await Deno.writeTextFile(cachePath, JSON.stringify(this.serialize()));
-    }
-
-    getNamespace<T>(namespace: string) {
-        return new Cache<T>(this.previousData, this.nextData, namespace);
+        await fs.ensureFile(this.cachePath);
+        await Deno.writeTextFile(
+            this.cachePath,
+            JSON.stringify(this.serialize()),
+        );
     }
 }

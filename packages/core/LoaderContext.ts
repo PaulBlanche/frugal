@@ -1,23 +1,21 @@
 import * as log from '../log/mod.ts';
 import { Asset } from './loader.ts';
 import { CleanConfig } from './Config.ts';
-import { Cache } from './Cache.ts';
+import { PersistantCache } from './Cache.ts';
+import * as fs from '../../dep/std/fs.ts';
 import * as path from '../../dep/std/path.ts';
 
 function logger() {
     return log.getLogger('frugal:LoaderContext');
 }
 
-const LOADER_CONTEXT_FILENAME = 'LoaderContext.json';
-
 export class LoaderContext {
     private context: { [s: string]: any };
-    private config: CleanConfig;
 
     static async build(
         config: CleanConfig,
         assets: Asset[],
-        cache: Cache,
+        getLoaderCache: (name: string) => Promise<PersistantCache>,
     ) {
         logger().info({
             op: 'start',
@@ -32,8 +30,6 @@ export class LoaderContext {
         const context: { [s: string]: any } = {};
 
         await Promise.all((config.loaders ?? []).map(async (loader) => {
-            const loaderCache = cache.getNamespace(loader.name);
-
             const loadedAssets = assets.filter((entry) =>
                 entry.loader === loader.name
             );
@@ -43,12 +39,12 @@ export class LoaderContext {
             }
 
             const result = await loader.generate({
-                cache: loaderCache,
+                getCache: () => getLoaderCache(loader.name),
                 assets: loadedAssets,
                 dir: {
                     public: config.publicDir,
                     cache: config.cacheDir,
-                    root: config.root,
+                    root: String(config.root),
                 },
             });
 
@@ -65,31 +61,27 @@ export class LoaderContext {
             },
         });
 
-        return new LoaderContext(context, config);
+        return new LoaderContext(context);
     }
 
     static async load(
-        config: CleanConfig,
+        filePath: string,
     ) {
-        const context = JSON.parse(
-            await Deno.readTextFile(
-                path.resolve(config.cacheDir, LOADER_CONTEXT_FILENAME),
-            ),
-        );
+        const serializedData = await Deno.readTextFile(filePath);
+        const context = JSON.parse(serializedData);
 
-        return new LoaderContext(context, config);
+        return new LoaderContext(context);
     }
 
-    constructor(context: { [s: string]: any }, config: CleanConfig) {
+    constructor(context: { [s: string]: any }) {
         this.context = context;
-        this.config = config;
     }
 
-    async save() {
-        await Deno.writeTextFile(
-            path.resolve(this.config.cacheDir, LOADER_CONTEXT_FILENAME),
-            JSON.stringify(this.context),
-        );
+    async save(filePath: string) {
+        const serializedData = JSON.stringify(this.context);
+
+        await fs.ensureFile(filePath);
+        await Deno.writeTextFile(filePath, serializedData);
     }
 
     get<VALUE = any>(name: string): VALUE {

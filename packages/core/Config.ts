@@ -2,14 +2,16 @@ import * as log from '../log/mod.ts';
 import { Loader } from './loader.ts';
 import * as importmap from '../../dep/importmap.ts';
 import * as path from '../../dep/std/path.ts';
-import { Entrypoint } from './Entrypoint.ts';
+import { Page } from './Page.ts';
 
+// TODO(PaulBlanche): add config validator
 export type Config = {
-    root: string;
+    self: URL;
+    root?: URL;
     importMap?: string;
     loaders?: Loader<any>[];
     outputDir: string;
-    pages: string[];
+    pages: Page<any, any>[];
     logging?: {
         build: log.Config;
         server?: log.Config;
@@ -19,10 +21,8 @@ export type Config = {
     } | log.Config;
 };
 
-interface CleanConfigBase {
-    root: string;
-    loaders: Loader<any>[];
-    entrypoints: Entrypoint[];
+function configRoot(config: Config) {
+    return new URL(config.root ?? '.', config.self);
 }
 
 const DEFAULT_LOGGER_CONFIG: log.Config = {
@@ -46,10 +46,9 @@ const DEFAULT_LOGGER_CONFIG: log.Config = {
     },
 };
 
-export class CleanConfig implements CleanConfigBase {
+export class CleanConfig {
     private config: Config;
     private importMap: importmap.ImportMap;
-    entrypoints: Entrypoint[];
     loggingMode?: 'build' | 'server';
 
     static async load(config: Config) {
@@ -69,7 +68,10 @@ export class CleanConfig implements CleanConfigBase {
         }
 
         const source = await Deno.readTextFile(
-            new URL(config.importMap, `file:///${config.root}`),
+            new URL(
+                config.importMap,
+                configRoot(config),
+            ),
         );
 
         return JSON.parse(source);
@@ -78,9 +80,6 @@ export class CleanConfig implements CleanConfigBase {
     constructor(config: Config, importMap: importmap.ImportMap) {
         this.config = config;
         this.importMap = importMap;
-        this.entrypoints = config.pages.map((page) =>
-            new Entrypoint(page, this.root)
-        );
     }
 
     private getBuildLoggingConfig(config: Config): log.Config | undefined {
@@ -140,7 +139,15 @@ export class CleanConfig implements CleanConfigBase {
     }
 
     get root() {
-        return this.config.root;
+        return configRoot(this.config);
+    }
+
+    get pages() {
+        return this.config.pages;
+    }
+
+    get self() {
+        return this.config.self;
     }
 
     get loaders() {
@@ -148,15 +155,27 @@ export class CleanConfig implements CleanConfigBase {
     }
 
     get publicDir() {
-        return path.resolve(this.root, this.config.outputDir, 'public');
+        return path.resolve(
+            this.root.pathname,
+            this.config.outputDir,
+            'public',
+        );
     }
 
     get serverDir() {
-        return path.resolve(this.root, this.config.outputDir, 'server');
+        return path.resolve(
+            this.root.pathname,
+            this.config.outputDir,
+            'server',
+        );
     }
 
     get cacheDir() {
-        return path.resolve(this.root, this.config.outputDir, '.cache');
+        return path.resolve(
+            this.root.pathname,
+            this.config.outputDir,
+            '.cache',
+        );
     }
 
     get resolve() {

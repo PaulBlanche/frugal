@@ -14,7 +14,7 @@ type Precursor = {
 
 type Entry = Precursor | tree.Module;
 
-type Config = {
+export type Config = {
     load?: (
         resolvedModuleSpecifier: URL,
     ) => Promise<string | undefined> | undefined;

@@ -1,7 +1,6 @@
 import * as log from '../log/mod.ts';
 import { PageBuilder } from './PageBuilder.ts';
 import { CleanConfig } from './Config.ts';
-import { FrugalContext } from './FrugalContext.ts';
 
 function logger() {
     return log.getLogger('frugal:Builder');
@@ -9,16 +8,13 @@ function logger() {
 
 export class Builder {
     private config: CleanConfig;
-    private context: FrugalContext;
     private builders: PageBuilder<any, any>[];
 
     constructor(
         config: CleanConfig,
-        context: FrugalContext,
         builders: PageBuilder<any, any>[],
     ) {
         this.config = config;
-        this.context = context;
         this.builders = builders;
     }
 
@@ -38,8 +34,6 @@ export class Builder {
         await Promise.all(this.builders.map(async (builder) => {
             await builder.buildAll();
         }));
-
-        await this.context.save();
 
         logger().info({
             op: 'done',

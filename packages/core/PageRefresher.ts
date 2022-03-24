@@ -1,21 +1,22 @@
 import * as log from '../log/mod.ts';
 import { assert } from '../../dep/std/asserts.ts';
-import { PageBuilder, PageBuilderConfig } from './PageBuilder.ts';
+import { PageBuilder } from './PageBuilder.ts';
 import { Page } from './Page.ts';
 
 function logger() {
     return log.getLogger('frugal:PageRefresher');
 }
 
-type PageRefresherConfig = PageBuilderConfig;
-
 export class PageRefresher<REQUEST extends object, DATA> {
     private builder: PageBuilder<REQUEST, DATA>;
     private page: Page<REQUEST, DATA>;
 
-    constructor(page: Page<REQUEST, DATA>, config: PageRefresherConfig) {
+    constructor(
+        page: Page<REQUEST, DATA>,
+        builder: PageBuilder<REQUEST, DATA>,
+    ) {
         this.page = page;
-        this.builder = new PageBuilder(page, config);
+        this.builder = builder;
     }
 
     get route() {

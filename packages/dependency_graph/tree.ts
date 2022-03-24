@@ -14,7 +14,7 @@ export type Module = {
     dependencies: Module[];
 };
 
-type Node = Root | Module;
+export type Node = Root | Module;
 
 export function preOrder(node: Node, callback: (node: Node) => void) {
     const queue: { node: Node; path: string[] }[] = [{ node, path: [] }];

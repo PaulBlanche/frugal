@@ -1,8 +1,6 @@
 import * as log from '../log/mod.ts';
 import { PageRefresher } from './PageRefresher.ts';
 import { CleanConfig } from './Config.ts';
-import { FrugalContext } from './FrugalContext.ts';
-import { StaticPage } from './Page.ts';
 
 function logger() {
     return log.getLogger('frugal:Refresher');
@@ -10,13 +8,11 @@ function logger() {
 
 export class Refresher {
     private config: CleanConfig;
-    private context: FrugalContext;
     private refreshers: PageRefresher<any, any>[];
 
-    constructor(config: CleanConfig, context: FrugalContext) {
+    constructor(config: CleanConfig, refreshers: PageRefresher<any, any>[]) {
         this.config = config;
-        this.context = context;
-        this.refreshers = this.context.pages.filter((page) =>
+        this.refreshers = refreshers; /*this.context.pages.filter((page) =>
             page instanceof StaticPage
         ).map((page) => {
             return new PageRefresher(page, {
@@ -24,7 +20,7 @@ export class Refresher {
                 loaderContext: this.context.loaderContext,
                 publicDir: this.config.publicDir,
             });
-        });
+        });*/
     }
 
     get routes() {
@@ -63,7 +59,6 @@ export class Refresher {
         }
 
         const pagePath = await pageRefresher.refresh(pathname);
-        await this.context.save();
 
         logger().info({
             op: 'done',

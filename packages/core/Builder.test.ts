@@ -1,6 +1,5 @@
 import { CleanConfig } from './Config.ts';
 import { LoaderContext } from './LoaderContext.ts';
-import { FrugalContext } from './FrugalContext.ts';
 import { Cache } from './Cache.ts';
 import { Builder } from './Builder.ts';
 import { PageBuilder } from './PageBuilder.ts';
@@ -9,32 +8,19 @@ import * as asserts from '../../dep/std/asserts.ts';
 
 Deno.test('Builder: setup build logging', async () => {
     const config = fakeConfig();
-    const context = fakeContext();
 
-    const builder = new Builder(config, context, []);
+    const builder = new Builder(config, []);
 
     await builder.build();
 
     asserts.assertEquals(asSpy(config.setupBuildLogging).calls.length, 1);
 });
 
-Deno.test('Builder: save context when done', async () => {
-    const config = fakeConfig();
-    const context = fakeContext();
-
-    const builder = new Builder(config, context, []);
-
-    await builder.build();
-
-    asserts.assertEquals(asSpy(context.save).calls.length, 1);
-});
-
 Deno.test('Builder: delegates to underlying PageBuilders', async () => {
     const config = fakeConfig();
-    const context = fakeContext();
 
     const pageBuilders = [fakePageBuilder(), fakePageBuilder()];
-    const builder = new Builder(config, context, pageBuilders);
+    const builder = new Builder(config, pageBuilders);
 
     await builder.build();
 
@@ -52,7 +38,7 @@ function fakePageBuilder() {
 
 function fakeConfig() {
     const config = new CleanConfig({
-        root: '',
+        self: new URL('file:///'),
         outputDir: '',
         pages: [],
         logging: {
@@ -66,19 +52,4 @@ function fakeConfig() {
     config.setupBuildLogging = spy(setupBuildLogging);
 
     return config;
-}
-
-function fakeContext() {
-    const config = fakeConfig();
-    const context = new FrugalContext(
-        config,
-        new LoaderContext({}, config),
-        { type: 'root', hash: '', dependencies: [] },
-        [],
-        Cache.unserialize(),
-    );
-
-    context.save = spy(() => Promise.resolve());
-
-    return context;
 }

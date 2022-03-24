@@ -1,7 +1,7 @@
 import * as asserts from '../../dep/std/asserts.ts';
 import { spy } from '../test_util/mod.ts';
 
-import { Cache } from './Cache.ts';
+import { Cache, PersistantCache } from './Cache.ts';
 
 Deno.test('Cache: Cached value is preserved in memory', async () => {
     const cache = await Cache.unserialize();
@@ -134,7 +134,7 @@ Deno.test('Cache: memoize keeps call results after serialization', async () => {
 });
 
 Deno.test('Cache: memoize keeps call results after save/load', async () => {
-    const cache = await Cache.unserialize();
+    const cache = await PersistantCache.load('path');
 
     const value = {};
 
@@ -155,9 +155,9 @@ Deno.test('Cache: memoize keeps call results after save/load', async () => {
 
     Deno.readTextFile = (path) => Promise.resolve(fs[String(path)]);
 
-    await cache.save('path');
+    await cache.save();
 
-    const newCache = await Cache.load('path');
+    const newCache = await PersistantCache.load('path');
 
     await Promise.all([
         newCache.memoize({ producer, otherwise, key: 'key' }),
@@ -165,41 +165,4 @@ Deno.test('Cache: memoize keeps call results after save/load', async () => {
 
     asserts.assertEquals(producer.calls, [{ params: [], result: value }]);
     asserts.assertEquals(otherwise.calls, [{ params: [], result: undefined }]);
-});
-
-Deno.test('Cache: load with no valid cache file', async () => {
-    const cache = await Cache.unserialize();
-
-    const value = {};
-
-    const producer = spy(() => {
-        return value;
-    });
-
-    const otherwise = spy(() => {
-    });
-
-    await cache.memoize({ producer, otherwise, key: 'key' });
-
-    const fs: Record<string, string> = {};
-    Deno.writeTextFile = (path, content) => {
-        fs[String(path)] = content;
-        return Promise.resolve();
-    };
-
-    Deno.readTextFile = (path) => Promise.resolve(fs[String(path)]);
-
-    await cache.save('path');
-
-    const newCache = await Cache.load('invalid path');
-
-    await Promise.all([
-        newCache.memoize({ producer, otherwise, key: 'key' }),
-    ]);
-
-    asserts.assertEquals(producer.calls, [{ params: [], result: value }, {
-        params: [],
-        result: value,
-    }]);
-    asserts.assertEquals(otherwise.calls, []);
 });

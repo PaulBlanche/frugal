@@ -2,49 +2,32 @@ import { CleanConfig, Config } from './Config.ts';
 import { Builder } from './Builder.ts';
 import { Refresher } from './Refresher.ts';
 import { Generator } from './Generator.ts';
-import { FrugalContext } from './FrugalContext.ts';
-import { StaticPage } from './Page.ts';
+import { LoaderContext } from './LoaderContext.ts';
+import { DynamicPage, StaticPage } from './Page.ts';
 import { PageBuilder } from './PageBuilder.ts';
+import { PageRefresher } from './PageRefresher.ts';
+import { PageGenerator } from './PageGenerator.ts';
 import * as log from '../log/mod.ts';
+import * as path from '../../dep/std/path.ts';
+import { DependencyTree, ModuleList } from './DependencyTree.ts';
+import { PersistantCache } from './Cache.ts';
 
 function logger() {
     return log.getLogger('frugal:Frugal');
 }
 
+const PAGE_CACHE_FILENAME = 'pages.json';
+const MODULES_FILENAME = 'modules.json';
+const LOADER_CONTEXT_FILENAME = 'loader_context.json';
+
 export class Frugal {
     private builder: Builder;
     private refresher: Refresher;
     private generator: Generator;
-    config: CleanConfig;
-
-    static async load(config: Config) {
-        const cleanConfig = await CleanConfig.load(config);
-
-        logger().info({
-            op: 'start',
-            msg() {
-                return `${this.op} ${this.logger!.timerStart}`;
-            },
-            logger: {
-                timerStart: 'loading frugal context',
-            },
-        });
-
-        const context = await FrugalContext.load(cleanConfig);
-        const frugal = new Frugal(cleanConfig, context);
-
-        logger().info({
-            op: 'done',
-            msg() {
-                return `${this.logger!.timerEnd} ${this.op}`;
-            },
-            logger: {
-                timerEnd: 'loading frugal context',
-            },
-        });
-
-        return frugal;
-    }
+    private config: CleanConfig;
+    private moduleList: ModuleList;
+    private cache: PersistantCache;
+    private loaderContext: LoaderContext;
 
     static async build(config: Config) {
         const cleanConfig = await CleanConfig.load(config);
@@ -59,8 +42,36 @@ export class Frugal {
             },
         });
 
-        const context = await FrugalContext.build(cleanConfig);
-        const frugal = new Frugal(cleanConfig, context);
+        const dependencyTree = await DependencyTree.build(
+            cleanConfig.pages.map((page) => page.self),
+            {
+                resolve: cleanConfig.resolve,
+            },
+        );
+        const cache = await PersistantCache.load(
+            path.resolve(cleanConfig.cacheDir, PAGE_CACHE_FILENAME),
+        );
+        const assets = dependencyTree.gather(cleanConfig.loaders);
+        const loaderContext = await LoaderContext.build(
+            cleanConfig,
+            assets,
+            (name) => {
+                return PersistantCache.load(
+                    path.resolve(
+                        cleanConfig.cacheDir,
+                        'loader',
+                        `${name}.json`,
+                    ),
+                );
+            },
+        );
+
+        const frugal = new Frugal(
+            cleanConfig,
+            dependencyTree.moduleList(),
+            cache,
+            loaderContext,
+        );
 
         logger().info({
             op: 'done',
@@ -75,28 +86,119 @@ export class Frugal {
         return frugal;
     }
 
-    constructor(config: CleanConfig, context: FrugalContext) {
-        const staticPages = context.pages.filter((page) =>
+    static async load(config: Config) {
+        const cleanConfig = await CleanConfig.load(config);
+
+        logger().info({
+            op: 'start',
+            msg() {
+                return `${this.op} ${this.logger!.timerStart}`;
+            },
+            logger: {
+                timerStart: 'loading frugal context',
+            },
+        });
+
+        const moduleList = await ModuleList.load(
+            path.resolve(cleanConfig.cacheDir, MODULES_FILENAME),
+        );
+        const cache = await PersistantCache.load(
+            path.resolve(cleanConfig.cacheDir, PAGE_CACHE_FILENAME),
+        );
+        const loaderContext = await LoaderContext.load(
+            path.resolve(cleanConfig.cacheDir, LOADER_CONTEXT_FILENAME),
+        );
+
+        const frugal = new Frugal(
+            cleanConfig,
+            moduleList,
+            cache,
+            loaderContext,
+        );
+
+        logger().info({
+            op: 'done',
+            msg() {
+                return `${this.logger!.timerEnd} ${this.op}`;
+            },
+            logger: {
+                timerEnd: 'loading frugal context',
+            },
+        });
+
+        return frugal;
+    }
+
+    constructor(
+        config: CleanConfig,
+        moduleList: ModuleList,
+        cache: PersistantCache,
+        loaderContext: LoaderContext,
+    ) {
+        const dynamicPages = config.pages.filter((page) =>
+            page instanceof DynamicPage
+        );
+
+        const generators = dynamicPages.map((page) => {
+            const generator = new PageGenerator(page, {
+                loaderContext,
+                publicDir: config.publicDir,
+            });
+
+            return generator;
+        });
+
+        const staticPages = config.pages.filter((page) =>
             page instanceof StaticPage
         );
 
-        this.builder = new Builder(
-            config,
-            context,
-            staticPages.map((page) => {
-                return new PageBuilder(
+        const { refreshers, builders } = staticPages.reduce(
+            (accumulator, page) => {
+                const generator = new PageGenerator(page, {
+                    loaderContext,
+                    publicDir: config.publicDir,
+                });
+
+                const module = moduleList.get(page.self);
+                const pageHash = module?.moduleHash ?? String(Math.random());
+
+                const builder = new PageBuilder(page, pageHash, generator, {
+                    cache,
+                });
+
+                const refresher = new PageRefresher(
                     page,
-                    {
-                        cache: context.cache,
-                        loaderContext: context.loaderContext,
-                        publicDir: config.publicDir,
-                    },
+                    builder,
                 );
-            }),
+
+                accumulator.builders.push(builder);
+                accumulator.refreshers.push(refresher);
+
+                return accumulator;
+            },
+            { builders: [], refreshers: [] } as {
+                builders: PageBuilder<any, any>[];
+                refreshers: PageRefresher<any, any>[];
+            },
         );
-        this.refresher = new Refresher(config, context);
-        this.generator = new Generator(config, context);
+
+        this.generator = new Generator(config, generators);
+        this.builder = new Builder(config, builders);
+        this.refresher = new Refresher(config, refreshers);
         this.config = config;
+        this.moduleList = moduleList;
+        this.cache = cache;
+        this.loaderContext = loaderContext;
+    }
+
+    async save() {
+        await this.moduleList.save(
+            path.resolve(this.config.cacheDir, MODULES_FILENAME),
+        );
+        await this.cache.save();
+        await this.loaderContext.save(
+            path.resolve(this.config.cacheDir, LOADER_CONTEXT_FILENAME),
+        );
     }
 
     // build all registered static pages
@@ -114,6 +216,7 @@ export class Frugal {
         });
 
         await this.builder.build();
+        await this.save();
 
         logger().info({
             op: 'done',
@@ -142,6 +245,7 @@ export class Frugal {
         });
 
         const result = await this.refresher.refresh(pathname);
+        await this.save();
 
         logger().info({
             op: 'done',

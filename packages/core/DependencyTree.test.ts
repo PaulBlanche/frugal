@@ -1,11 +1,11 @@
 import * as asserts from '../../dep/std/asserts.ts';
 import { Loader } from './loader.ts';
-import * as asset from './asset.ts';
+import { DependencyTree } from './DependencyTree.ts';
 import * as tree from '../dependency_graph/tree.ts';
 import * as murmur from '../murmur/mod.ts';
 
 Deno.test('gather only modules matched by loaders with entrypoint', () => {
-    const tree = root({
+    const tree = dependencyTree({
         dependencies: [{
             url: new URL('file:///entrypoint1.ts'),
             entrypoint: new URL('file:///entrypoint1.ts'),
@@ -60,7 +60,7 @@ Deno.test('gather only modules matched by loaders with entrypoint', () => {
         }),
     ];
 
-    const assets = asset.gather(tree, loaders);
+    const assets = tree.gather(loaders);
 
     asserts.assertObjectMatch(assets[0], {
         loader: 'script',
@@ -109,7 +109,11 @@ function loader(
     };
 }
 
-export function root(
+function dependencyTree(node: PartialRoot) {
+    return new DependencyTree(root(node));
+}
+
+function root(
     node: PartialRoot,
 ): tree.Root {
     const dependencies = (node.dependencies ?? []).map((dependency) => {
@@ -123,7 +127,7 @@ export function root(
     };
 }
 
-export function module(
+function module(
     node: PartialModule,
 ): tree.Module {
     const dependencies = (node.dependencies ?? []).map((dependency) => {

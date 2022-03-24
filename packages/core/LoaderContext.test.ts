@@ -1,7 +1,7 @@
 import { LoaderContext } from './LoaderContext.ts';
 import { CleanConfig } from './Config.ts';
 import { Asset, Loader } from './loader.ts';
-import { Cache } from './Cache.ts';
+import { PersistantCache } from './Cache.ts';
 import { asSpy, spy } from '../test_util/mod.ts';
 import * as asserts from '../../dep/std/asserts.ts';
 
@@ -26,9 +26,9 @@ Deno.test('LoaderContext: build call all loader with correct assets', async () =
         fakeAsset({ loader: 'baz' }),
     ];
 
-    const cache = emptyCache();
-
-    await LoaderContext.build(config, assets, cache);
+    await LoaderContext.build(config, assets, (name) => {
+        return Promise.resolve(new PersistantCache('', {}));
+    });
 
     asserts.assertEquals(asSpy(fooLoader.generate).calls.length, 1);
     asserts.assertEquals(
@@ -51,10 +51,6 @@ Deno.test('LoaderContext: build call all loader with correct assets', async () =
     );
 });
 
-function emptyCache(): Cache {
-    return Cache.unserialize();
-}
-
 function fakeAsset(asset: Partial<Asset>) {
     return {
         loader: asset.loader ?? '',
@@ -66,7 +62,7 @@ function fakeAsset(asset: Partial<Asset>) {
 
 function fakeConfig(config: { loaders: Loader<any, any>[] }) {
     return new CleanConfig({
-        root: '',
+        self: new URL('file:///'),
         outputDir: '',
         pages: [],
         loaders: config.loaders,
