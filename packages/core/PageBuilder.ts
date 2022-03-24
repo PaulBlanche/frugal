@@ -96,6 +96,7 @@ export class PageBuilder<REQUEST extends object, DATA> {
 
         const pageInstanceHash = new mumur.Hash()
             .update(JSON.stringify(data))
+            .update(url)
             .update(this.hash)
             .alphabetic();
 
@@ -105,7 +106,7 @@ export class PageBuilder<REQUEST extends object, DATA> {
                 const { pagePath, content } = await this.generator
                     .generateContentFromData(url, data, request, phase);
 
-                await fs.ensureDir(path.dirname(pagePath));
+                await fs.ensureFile(pagePath);
                 await Deno.writeTextFile(pagePath, content);
 
                 logger().debug({

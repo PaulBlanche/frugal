@@ -1,5 +1,5 @@
 import * as asserts from '../../dep/std/asserts.ts';
-import { spy } from '../test_util/mod.ts';
+import { FakeFileSystem, spy } from '../test_util/mod.ts';
 
 import { Cache, PersistantCache } from './Cache.ts';
 
@@ -134,6 +134,8 @@ Deno.test('Cache: memoize keeps call results after serialization', async () => {
 });
 
 Deno.test('Cache: memoize keeps call results after save/load', async () => {
+    new FakeFileSystem();
+
     const cache = await PersistantCache.load('path');
 
     const value = {};

@@ -1,52 +1,48 @@
 import { PageGenerator } from './PageGenerator.ts';
-import { DynamicPage, StaticPage } from './Page.ts';
+import { fakeDynamicPage, fakeStaticPage } from './__fixtures__/Page.ts';
 import { LoaderContext } from './LoaderContext.ts';
-import { asSpy, spy } from '../test_util/mod.ts';
+import { asSpy } from '../test_util/mod.ts';
 import * as asserts from '../../dep/std/asserts.ts';
 
 Deno.test('PageGenerator: generateContentFromData call page.getContent', async () => {
-    const page = new DynamicPage({
-        self: new URL('file:///'),
-        pattern: '',
-        getDynamicData() {
-            return {};
-        },
-        getContent() {
-            return 'page content';
-        },
+    const page = fakeDynamicPage({
+        pattern: 'foo/:id',
+        data: {},
+        content: 'page content',
     });
 
-    const original = page.getContent;
-    page.getContent = spy(original.bind(page));
-
     const loaderContext = new LoaderContext({});
+    const publicDir = 'public/dir';
 
     const generator = new PageGenerator(
         page,
         {
             loaderContext,
-            publicDir: 'public/dir',
+            publicDir,
         },
     );
 
-    const request = {};
+    const request = { id: '654' };
+    const data = {};
+    const pathName = 'foo/654';
+    const phase = 'generate';
 
     const result = await generator.generateContentFromData(
-        'foo.html',
-        {},
+        pathName,
+        data,
         request,
-        'build',
+        phase,
     );
 
-    asserts.assertEquals(result.pagePath, 'public/dir/foo.html');
+    asserts.assertEquals(result.pagePath, 'public/dir/foo/654');
     asserts.assertEquals(result.content, 'page content');
 
     asserts.assertEquals(asSpy(page.getContent).calls, [{
         params: [{
-            phase: 'build',
-            data: {},
+            phase,
+            data,
             loaderContext,
-            pathname: 'foo.html',
+            pathname: 'foo/654',
             request,
         }],
         result: 'page content',
@@ -54,35 +50,27 @@ Deno.test('PageGenerator: generateContentFromData call page.getContent', async (
 });
 
 Deno.test('PageGenerator: generate orchestrate the generation of DynamicPage', async () => {
-    const page = new DynamicPage({
-        self: new URL('file:///'),
+    const page = fakeDynamicPage({
         pattern: 'foo/:id',
-        getDynamicData() {
-            return {};
-        },
-        getContent() {
-            return 'page content';
-        },
+        data: {},
+        content: 'page content',
     });
 
-    const originalGetContent = page.getContent;
-    page.getContent = spy(originalGetContent.bind(page));
-
-    const originalGetDynamicData = page.getDynamicData;
-    page.getDynamicData = spy(originalGetDynamicData.bind(page));
-
     const loaderContext = new LoaderContext({});
+    const publicDir = 'public/dir';
 
     const generator = new PageGenerator(
         page,
         {
             loaderContext,
-            publicDir: 'public/dir',
+            publicDir,
         },
     );
 
+    const pathName = 'foo/345';
     const searchParams = new URLSearchParams();
-    const result = await generator.generate('foo/345', searchParams);
+
+    const result = await generator.generate(pathName, searchParams);
 
     asserts.assertEquals(result.pagePath, 'public/dir/foo/345');
     asserts.assertEquals(result.content, 'page content');
@@ -113,62 +101,54 @@ Deno.test('PageGenerator: generate orchestrate the generation of DynamicPage', a
 });
 
 Deno.test('PageGenerator: generate throws if pathname does not match', async () => {
-    const page = new DynamicPage({
-        self: new URL('file:///'),
+    const page = fakeDynamicPage({
         pattern: 'foo/:id',
-        getDynamicData() {
-            return {};
-        },
-        getContent() {
-            return 'page content';
-        },
+        data: {},
+        content: 'page content',
     });
 
     const loaderContext = new LoaderContext({});
+    const publicDir = 'public/dir';
 
     const generator = new PageGenerator(
         page,
         {
             loaderContext,
-            publicDir: 'public/dir',
+            publicDir,
         },
     );
 
     const searchParams = new URLSearchParams();
+    const pathName = 'bar/345';
 
     await asserts.assertRejects(async () => {
-        await generator.generate('bar/345', searchParams);
+        await generator.generate(pathName, searchParams);
     });
 });
 
 Deno.test('PageGenerator: generate throws for StaticPage', async () => {
-    const page = new StaticPage({
-        self: new URL('file:///'),
+    const page = fakeStaticPage({
         pattern: 'foo/:id',
-        getRequestList() {
-            return [{}];
-        },
-        getStaticData() {
-            return {};
-        },
-        getContent() {
-            return 'page content';
-        },
+        data: {},
+        content: 'page content',
+        requestList: [{}],
     });
 
     const loaderContext = new LoaderContext({});
+    const publicDir = 'public/dir';
 
     const generator = new PageGenerator(
         page,
         {
             loaderContext,
-            publicDir: 'public/dir',
+            publicDir,
         },
     );
 
     const searchParams = new URLSearchParams();
+    const pathName = 'foo/345';
 
     await asserts.assertRejects(async () => {
-        await generator.generate('bar/345', searchParams);
+        await generator.generate(pathName, searchParams);
     });
 });

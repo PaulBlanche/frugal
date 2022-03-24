@@ -5,72 +5,6 @@ import { asSpy, decycle, spy } from '../test_util/mod.ts';
 import * as dependency from './mod.ts';
 import * as tree from './tree.ts';
 
-class FakeEnvironment {
-    env: Map<string, string>;
-
-    constructor(fs: { [s: string]: string } = {}) {
-        this.env = new Map<string, string>(Object.entries(fs));
-        Deno.readTextFile = spy((path) => this.fakeReadFileText(path));
-        Deno.writeTextFile = spy((path, content) =>
-            this.fakeWriteFileText(path, content)
-        );
-        globalThis.fetch = spy((url) => this.fakeFetch(url));
-    }
-
-    set(path: string, content: string) {
-        this.env.set(path, content);
-    }
-
-    get(path: string) {
-        const content = this.env.get(path);
-        if (content === undefined) {
-            throw Error(`path ${path} not found`);
-        }
-        return content;
-    }
-
-    hash(path: string) {
-        if (path.startsWith('http')) {
-            return new murmur.Hash().update(`//${path}`).alphabetic();
-        }
-        return new murmur.Hash().update(this.get(path)).alphabetic();
-    }
-
-    fakeReadFileText(path: string | URL) {
-        if (typeof path === 'string') {
-            try {
-                new URL(path);
-                throw Error('no no no');
-            } catch {
-                return Promise.resolve(this.get(`file://${path}`));
-            }
-        }
-        return Promise.resolve(this.get(path.toString()));
-    }
-
-    fakeWriteFileText(path: string | URL, content: string) {
-        if (typeof path === 'string') {
-            try {
-                new URL(path);
-                throw Error('no no no');
-            } catch {
-                return Promise.resolve(this.set(`file://${path}`, content));
-            }
-        }
-        return Promise.resolve(this.set(path.toString(), content));
-    }
-
-    fakeFetch(url: string | URL | Request) {
-        if (url instanceof URL) {
-            return Promise.resolve(new Response(this.get(url.toString())));
-        }
-        if (url instanceof Request) {
-            return Promise.resolve(new Response(this.get(url.url)));
-        }
-        return Promise.resolve(new Response(this.get(url)));
-    }
-}
-
 Deno.test('dependency_graph: file without dependencies', async () => {
     const ffs = new FakeEnvironment({
         'file:///entrypoint1.ts': `
@@ -499,6 +433,72 @@ Deno.test('dependency_graph: handling all kind of imports', async () => {
         }),
     );
 });
+
+class FakeEnvironment {
+    env: Map<string, string>;
+
+    constructor(fs: { [s: string]: string } = {}) {
+        this.env = new Map<string, string>(Object.entries(fs));
+        Deno.readTextFile = spy((path) => this.fakeReadFileText(path));
+        Deno.writeTextFile = spy((path, content) =>
+            this.fakeWriteFileText(path, content)
+        );
+        globalThis.fetch = spy((url) => this.fakeFetch(url));
+    }
+
+    set(path: string, content: string) {
+        this.env.set(path, content);
+    }
+
+    get(path: string) {
+        const content = this.env.get(path);
+        if (content === undefined) {
+            throw Error(`path ${path} not found`);
+        }
+        return content;
+    }
+
+    hash(path: string) {
+        if (path.startsWith('http')) {
+            return new murmur.Hash().update(`//${path}`).alphabetic();
+        }
+        return new murmur.Hash().update(this.get(path)).alphabetic();
+    }
+
+    fakeReadFileText(path: string | URL) {
+        if (typeof path === 'string') {
+            try {
+                new URL(path);
+                throw Error('no no no');
+            } catch {
+                return Promise.resolve(this.get(`file://${path}`));
+            }
+        }
+        return Promise.resolve(this.get(path.toString()));
+    }
+
+    fakeWriteFileText(path: string | URL, content: string) {
+        if (typeof path === 'string') {
+            try {
+                new URL(path);
+                throw Error('no no no');
+            } catch {
+                return Promise.resolve(this.set(`file://${path}`, content));
+            }
+        }
+        return Promise.resolve(this.set(path.toString(), content));
+    }
+
+    fakeFetch(url: string | URL | Request) {
+        if (url instanceof URL) {
+            return Promise.resolve(new Response(this.get(url.toString())));
+        }
+        if (url instanceof Request) {
+            return Promise.resolve(new Response(this.get(url.url)));
+        }
+        return Promise.resolve(new Response(this.get(url)));
+    }
+}
 
 type LightRoot = {
     dependencies: ((LightModule & { entrypoint: URL }) | tree.Module)[];
