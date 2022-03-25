@@ -1,6 +1,7 @@
 export type { Asset, GenerateParams, Loader } from './loader.ts';
 export type { LoaderContext } from './LoaderContext.ts';
 export type { Config } from './Config.ts';
+export { DEFAULT_LOGGER_CONFIG, OFF_LOGGER_CONFIG } from './Config.ts';
 export type {
     DynamicPageDescriptor,
     GetContent,

@@ -108,7 +108,6 @@ export class PersistantCache<VALUE = unknown> extends Cache<VALUE> {
             const data = await Deno.readTextFile(cachePath);
             return new PersistantCache(cachePath, JSON.parse(data));
         } catch {
-            console.log('empty cache');
             logger().debug({
                 cachePath,
                 msg() {

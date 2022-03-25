@@ -24,7 +24,7 @@ export class Frugal {
     private builder: Builder;
     private refresher: Refresher;
     private generator: Generator;
-    private config: CleanConfig;
+    config: CleanConfig;
     private moduleList: ModuleList;
     private cache: PersistantCache;
     private loaderContext: LoaderContext;
@@ -294,6 +294,13 @@ export class Frugal {
         });
 
         return result;
+    }
+
+    async clean({ justCache = false }: { justCache?: boolean } = {}) {
+        if (justCache) {
+            await Deno.remove(this.config.cacheDir, { recursive: true });
+        }
+        await Deno.remove(this.config.outputDir, { recursive: true });
     }
 
     get refreshRoutes() {
