@@ -37,7 +37,7 @@ export function getContent(
     { data, loaderContext, entrypoint }: frugal.GetContentParams<Request, Data>,
 ) {
     const bodyScriptSrc =
-        loaderContext.get<Generated>('script-body')[String(entrypoint)]['esm'];
+        loaderContext.get<Generated>('script_body')[String(entrypoint)]['esm'];
 
     return `<html>
     <body>

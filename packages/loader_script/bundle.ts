@@ -11,7 +11,7 @@ function logger() {
 }
 
 type BundleConfig = {
-    cache: frugal.Cache<any>;
+    cache: frugal.PersistantCache<any>;
     input?: Omit<rollup.InputOptions, 'input' | 'cache'>;
     outputs?: rollup.OutputOptions[];
     inline?: boolean;

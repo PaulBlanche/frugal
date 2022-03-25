@@ -8,7 +8,7 @@ import type { Generated } from '../../packages/loader_script/mod.ts';
 // insert data from the `loaderContext`. This component will only ever render
 // server side.
 export function App({ entrypoint, loaderContext, children }: AppProps) {
-    const scriptGenerated = loaderContext.get<Generated>('script-body');
+    const scriptGenerated = loaderContext.get<Generated>('script_body');
     const esmBundleUrl = scriptGenerated[entrypoint]['esm'];
     return (
         <>

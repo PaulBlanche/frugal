@@ -16,3 +16,4 @@ export type {
 } from './Page.ts';
 export { page } from './Page.ts';
 export { build, Frugal } from './Frugal.ts';
+export { PersistantCache } from './Cache.ts';

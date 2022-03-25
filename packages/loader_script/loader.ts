@@ -42,7 +42,7 @@ export function script(
             return hash.update(asset.hash);
         }, new murmur.Hash()).alphabetic();
 
-        const result = cache.memoize({
+        const result = await cache.memoize({
             key: bundleHash,
             producer: async () => {
                 logger().debug({

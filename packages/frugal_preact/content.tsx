@@ -10,7 +10,6 @@ import { DataProvider } from './dataContext.tsx';
 
 export type PageProps = {
     entrypoint: string;
-    cache: frugal.Cache;
     loaderContext: frugal.LoaderContext;
 };
 
@@ -24,7 +23,6 @@ export type AppProps = {
     entrypoint: string;
     loaderContext: frugal.LoaderContext;
     children: preact.ComponentChildren;
-    cache: frugal.Cache;
 };
 
 export type Document = preact.ComponentType<DocumentProps>;
@@ -68,7 +66,6 @@ export function getContentFrom<REQUEST, DATA>(
         pathname,
         entrypoint,
         loaderContext,
-        cache,
     }) => {
         let head: preact.VNode[] = [];
 
@@ -79,17 +76,15 @@ export function getContentFrom<REQUEST, DATA>(
                 }}
             >
                 <App
-                    entrypoint={entrypoint}
+                    entrypoint={String(entrypoint)}
                     loaderContext={loaderContext}
-                    cache={cache}
                 >
                     <DataProvider
                         context={{ data, pathname, timestamp: Date.now() }}
                     >
                         <Page
-                            entrypoint={entrypoint}
+                            entrypoint={String(entrypoint)}
                             loaderContext={loaderContext}
-                            cache={cache}
                         />
                     </DataProvider>
                 </App>
@@ -99,7 +94,7 @@ export function getContentFrom<REQUEST, DATA>(
         return `<!DOCTYPE html>${
             server.render(
                 <Document
-                    entrypoint={entrypoint}
+                    entrypoint={String(entrypoint)}
                     loaderContext={loaderContext}
                     head={head}
                     dangerouslySetInnerHTML={{ __html: html }}
