@@ -1,17 +1,17 @@
 import { PageGenerator } from './PageGenerator.ts';
 import { fakeDynamicPage, fakeStaticPage } from './__fixtures__/Page.ts';
-import { LoaderContext } from './LoaderContext.ts';
+import { fakeLoaderContext } from './__fixtures__/LoaderContext.ts';
 import { asSpy } from '../test_util/mod.ts';
 import * as asserts from '../../dep/std/asserts.ts';
 
 Deno.test('PageGenerator: generateContentFromData call page.getContent', async () => {
+    const content = 'page content';
     const page = fakeDynamicPage({
         pattern: 'foo/:id',
-        data: {},
-        content: 'page content',
+        getContent: () => content,
     });
 
-    const loaderContext = new LoaderContext({});
+    const loaderContext = fakeLoaderContext();
     const publicDir = 'public/dir';
 
     const generator = new PageGenerator(
@@ -35,7 +35,7 @@ Deno.test('PageGenerator: generateContentFromData call page.getContent', async (
     );
 
     asserts.assertEquals(result.pagePath, 'public/dir/foo/654');
-    asserts.assertEquals(result.content, 'page content');
+    asserts.assertEquals(result.content, content);
 
     asserts.assertEquals(asSpy(page.getContent).calls, [{
         params: [{
@@ -45,18 +45,20 @@ Deno.test('PageGenerator: generateContentFromData call page.getContent', async (
             pathname: 'foo/654',
             request,
         }],
-        result: 'page content',
+        result: content,
     }]);
 });
 
 Deno.test('PageGenerator: generate orchestrate the generation of DynamicPage', async () => {
+    const content = 'page content';
+    const data = { foo: 'bar' };
     const page = fakeDynamicPage({
         pattern: 'foo/:id',
-        data: {},
-        content: 'page content',
+        getDynamicData: () => data,
+        getContent: () => content,
     });
 
-    const loaderContext = new LoaderContext({});
+    const loaderContext = fakeLoaderContext();
     const publicDir = 'public/dir';
 
     const generator = new PageGenerator(
@@ -73,7 +75,7 @@ Deno.test('PageGenerator: generate orchestrate the generation of DynamicPage', a
     const result = await generator.generate(pathName, searchParams);
 
     asserts.assertEquals(result.pagePath, 'public/dir/foo/345');
-    asserts.assertEquals(result.content, 'page content');
+    asserts.assertEquals(result.content, content);
 
     asserts.assertEquals(asSpy(page.getDynamicData).calls, [{
         params: [{
@@ -83,31 +85,27 @@ Deno.test('PageGenerator: generate orchestrate the generation of DynamicPage', a
             },
             searchParams,
         }],
-        result: {},
+        result: data,
     }]);
 
     asserts.assertEquals(asSpy(page.getContent).calls, [{
         params: [{
             phase: 'generate',
-            data: {},
+            data: data,
             loaderContext,
             pathname: 'foo/345',
             request: {
                 id: '345',
             },
         }],
-        result: 'page content',
+        result: content,
     }]);
 });
 
 Deno.test('PageGenerator: generate throws if pathname does not match', async () => {
-    const page = fakeDynamicPage({
-        pattern: 'foo/:id',
-        data: {},
-        content: 'page content',
-    });
+    const page = fakeDynamicPage({});
 
-    const loaderContext = new LoaderContext({});
+    const loaderContext = fakeLoaderContext();
     const publicDir = 'public/dir';
 
     const generator = new PageGenerator(
@@ -127,14 +125,9 @@ Deno.test('PageGenerator: generate throws if pathname does not match', async () 
 });
 
 Deno.test('PageGenerator: generate throws for StaticPage', async () => {
-    const page = fakeStaticPage({
-        pattern: 'foo/:id',
-        data: {},
-        content: 'page content',
-        requestList: [{}],
-    });
+    const page = fakeStaticPage({});
 
-    const loaderContext = new LoaderContext({});
+    const loaderContext = fakeLoaderContext();
     const publicDir = 'public/dir';
 
     const generator = new PageGenerator(

@@ -26,8 +26,9 @@ tasks:
           --config {{.CONFIG_FILE}}
           --import-map={{.IMPORT_MAP}}
           --allow-read={{.ALLOW_READ}}
-          --allow-write={{.ALLOW_WRITE}}
           --coverage={{.COVERAGE_DIR}}
+          --jobs
+          --shuffle
           {{.CLI_ARGS}}
   coverage:
     cmds:

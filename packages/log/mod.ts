@@ -120,12 +120,16 @@ class HumanHandler extends FrugalHandler {
             case 'WARNING': {
                 return colors.yellow(this.message(time, level, scope, record));
             }
-            default: {
+            case 'INFO':
+            case 'DEBUG': {
                 const coloredScope = colors.rgb8(
                     scope,
                     this.scopeColorIndex(scope),
                 );
                 return this.message(time, level, coloredScope, record);
+            }
+            default: {
+                return this.message(time, level, scope, record);
             }
         }
     }
@@ -179,6 +183,9 @@ export class FrugalLogger {
         entry: T,
     ): Omit<T, 'msg'> & { msg?: string } {
         const msg = typeof entry.msg === 'function' ? entry.msg() : entry.msg;
+        if (this.logger.level === 0) {
+            return { ...entry, msg };
+        }
         return this.logger[level]<T>({ ...entry, msg } as any) as any;
     }
 

@@ -24,8 +24,28 @@ export type Config = {
 function configRoot(config: Config) {
     return new URL(config.root ?? '.', config.self);
 }
+export const OFF_LOGGER_CONFIG: log.Config = {
+    type: 'human',
+    loggers: {
+        'frugal:asset': 'NOTSET',
+        'frugal:Builder': 'NOTSET',
+        'frugal:Cache': 'NOTSET',
+        'frugal:Frugal': 'NOTSET',
+        'frugal:FrugalContext': 'NOTSET',
+        'frugal:Generator': 'NOTSET',
+        'frugal:LoaderContext': 'NOTSET',
+        'frugal:PageBuilder': 'NOTSET',
+        'frugal:PageGenerator': 'NOTSET',
+        'frugal:PageRefresher': 'NOTSET',
+        'frugal:Refresher': 'NOTSET',
+        'frugal:dependency_graph': 'NOTSET',
+        'frugal:loader:jsx_svg': 'NOTSET',
+        'frugal:loader:script': 'NOTSET',
+        'frugal:loader:style': 'NOTSET',
+    },
+};
 
-const DEFAULT_LOGGER_CONFIG: log.Config = {
+export const DEFAULT_LOGGER_CONFIG: log.Config = {
     type: 'human',
     loggers: {
         'frugal:asset': 'INFO',

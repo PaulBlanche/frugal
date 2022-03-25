@@ -1,9 +1,7 @@
-import { CleanConfig } from './Config.ts';
-import { LoaderContext } from './LoaderContext.ts';
-import { Cache } from './Cache.ts';
+import { fakeConfig } from './__fixtures__/Config.ts';
 import { Builder } from './Builder.ts';
-import { PageBuilder } from './PageBuilder.ts';
-import { asSpy, spy } from '../test_util/mod.ts';
+import { fakePageBuilder } from './__fixtures__/PageBuilder.ts';
+import { asSpy } from '../test_util/mod.ts';
 import * as asserts from '../../dep/std/asserts.ts';
 
 Deno.test('Builder: setup build logging', async () => {
@@ -19,7 +17,18 @@ Deno.test('Builder: setup build logging', async () => {
 Deno.test('Builder: delegates to underlying PageBuilders', async () => {
     const config = fakeConfig();
 
-    const pageBuilders = [fakePageBuilder(), fakePageBuilder()];
+    const pageBuilders = [
+        fakePageBuilder({
+            mock: {
+                buildAll: () => Promise.resolve(),
+            },
+        }),
+        fakePageBuilder({
+            mock: {
+                buildAll: () => Promise.resolve(),
+            },
+        }),
+    ];
     const builder = new Builder(config, pageBuilders);
 
     await builder.build();
@@ -27,29 +36,3 @@ Deno.test('Builder: delegates to underlying PageBuilders', async () => {
     asserts.assertEquals(asSpy(pageBuilders[0].buildAll).calls.length, 1);
     asserts.assertEquals(asSpy(pageBuilders[0].buildAll).calls.length, 1);
 });
-
-function fakePageBuilder() {
-    return {
-        buildAll: spy(() => {
-            return Promise.resolve();
-        }),
-    } as unknown as PageBuilder<any, any>;
-}
-
-function fakeConfig() {
-    const config = new CleanConfig({
-        self: new URL('file:///'),
-        outputDir: '',
-        pages: [],
-        logging: {
-            loggers: {
-                'frugal:Builder': 'CRITICAL',
-            },
-        },
-    }, {});
-
-    const setupBuildLogging = config.setupBuildLogging.bind(config);
-    config.setupBuildLogging = spy(setupBuildLogging);
-
-    return config;
-}

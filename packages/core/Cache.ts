@@ -1,7 +1,7 @@
 import * as fs from '../../dep/std/fs.ts';
 import * as log from '../log/mod.ts';
 
-type CacheData = {
+export type CacheData = {
     [s: string]: any;
 };
 
@@ -26,7 +26,7 @@ export class Cache<VALUE = unknown> {
         return new Cache(data);
     }
 
-    protected constructor(
+    constructor(
         previousData: CacheData,
         nextData: CacheData = {},
     ) {

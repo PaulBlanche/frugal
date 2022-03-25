@@ -1,100 +1,132 @@
-import { PageBuilder } from './PageBuilder.ts';
-import { PageGenerator } from './PageGenerator.ts';
+import { fakePageGenerator } from './__fixtures__/PageGenerator.ts';
 import { fakeDynamicPage, fakeStaticPage } from './__fixtures__/Page.ts';
-import { LoaderContext } from './LoaderContext.ts';
-import { Cache } from './Cache.ts';
+import { fakeCache } from './__fixtures__/Cache.ts';
 import { asSpy, FakeFileSystem } from '../test_util/mod.ts';
 import * as asserts from '../../dep/std/asserts.ts';
 
-Deno.test('PageBuilder: build query data, generate content and write file', async () => {
+import { PageBuilder } from './PageBuilder.ts';
+
+Deno.test('PageBuilder: build  without cache hit query data, generate content and write file', async () => {
     new FakeFileSystem();
 
-    const page = fakeStaticPage({
+    const data = { foo: 'bar' };
+
+    const page = fakeStaticPage<{ id: string }, { foo: string }>({
         pattern: 'foo/:id',
-        requestList: [{}],
-        data: {},
-        content: 'page content',
+        getStaticData: () => data,
     });
 
-    const loaderContext = new LoaderContext({});
-    const publicDir = 'public/dir';
-    const cache = Cache.unserialize({});
-
-    const builder = new PageBuilder(
-        page,
-        'hash',
-        new PageGenerator(page, {
-            loaderContext,
-            publicDir,
-        }),
-        {
-            cache,
+    const cache = fakeCache({
+        mock: {
+            memoize: ({ producer }) => Promise.resolve(producer()),
         },
-    );
+    });
 
-    const request = {
-        id: '776',
-    };
+    const generated = { pagePath: 'pagePath', content: 'content' };
+    const generator = fakePageGenerator<{ id: string }, { foo: string }>({
+        mock: {
+            generateContentFromData: () => Promise.resolve(generated),
+        },
+    });
+
+    const builder = new PageBuilder(page, '', generator, {
+        cache,
+    });
+
+    const request = { id: '776' };
     const phase = 'build';
 
     const result = await builder.build(request, phase);
 
-    asserts.assertEquals(result, 'public/dir/foo/776');
+    asserts.assertEquals(result, generated.pagePath);
 
-    asserts.assertEquals(asSpy(page.getStaticData).calls, [{
-        params: [{
-            phase,
-            request,
-        }],
-        result: {},
-    }]);
+    asserts.assertEquals(
+        asSpy(page.getStaticData).calls.map((call) => call.params),
+        [
+            [{ phase, request }],
+        ],
+    );
 
-    asserts.assertEquals(asSpy(page.getContent).calls, [{
-        params: [{
-            phase,
-            data: {},
-            loaderContext,
-            pathname: 'foo/776',
-            request: {
-                id: '776',
-            },
-        }],
-        result: 'page content',
-    }]);
+    asserts.assertEquals(
+        asSpy(generator.generateContentFromData).calls.map((call) =>
+            call.params
+        ),
+        [
+            ['foo/776', data, request, phase],
+        ],
+    );
 
     asserts.assertEquals(
         asSpy(Deno.writeTextFile).calls.map((call) => call.params),
         [
-            ['public/dir/foo/776', 'page content'],
+            [generated.pagePath, generated.content],
         ],
     );
 });
 
-Deno.test('PageBuilder: build will throw on non matching request', async () => {
-    new FakeFileSystem();
+Deno.test('PageBuilder: build with cache hit query data and return path from cache', async () => {
+    const data = { foo: 'bar' };
 
-    const page = fakeStaticPage({
+    const page = fakeStaticPage<{ id: string }, { foo: string }>({
         pattern: 'foo/:id',
-        requestList: [{}],
-        data: {},
-        content: 'page content',
+        getStaticData: () => data,
     });
 
-    const loaderContext = new LoaderContext({});
-    const publicDir = 'public/dir';
-    const cache = Cache.unserialize({});
-
-    const builder = new PageBuilder(
-        page,
-        'hash',
-        new PageGenerator(page, {
-            loaderContext,
-            publicDir,
-        }),
-        {
-            cache,
+    const cached = 'pagePath';
+    const cache = fakeCache({
+        mock: {
+            memoize: ({ otherwise }) => {
+                if (otherwise) {
+                    otherwise();
+                }
+                return Promise.resolve(cached as any);
+            },
         },
+    });
+
+    const generator = fakePageGenerator<{ id: string }, { foo: string }>();
+
+    const builder = new PageBuilder(page, '', generator, {
+        cache,
+    });
+
+    const request = { id: '776' };
+    const phase = 'build';
+
+    const result = await builder.build(request, phase);
+
+    asserts.assertEquals(result, cached);
+
+    asserts.assertEquals(
+        asSpy(page.getStaticData).calls.map((call) => call.params),
+        [
+            [{ phase, request }],
+        ],
     );
+
+    asserts.assertEquals(
+        asSpy(generator.generateContentFromData).calls.length,
+        0,
+    );
+});
+
+Deno.test('PageBuilder: build will throw on non matching request', async () => {
+    const data = { foo: 'bar' };
+    const content = 'page content';
+
+    const page = fakeStaticPage<object, { foo: string }>({
+        pattern: 'foo/:id',
+        getStaticData: () => data,
+        getContent: () => content,
+    });
+
+    const cache = fakeCache();
+
+    const generator = fakePageGenerator<object, { foo: string }>();
+
+    const builder = new PageBuilder(page, '', generator, {
+        cache,
+    });
 
     const phase = 'build';
 
@@ -106,109 +138,102 @@ Deno.test('PageBuilder: build will throw on non matching request', async () => {
 Deno.test('PageBuilder: buildAll orchestrate the generation of StaticPage', async () => {
     new FakeFileSystem();
 
-    const page = fakeStaticPage({
+    const requestList = [{ id: '1' }, { id: '3' }];
+    const data = {
+        [requestList[0].id]: { foo: 'bar' },
+        [requestList[1].id]: { foo: 'baz' },
+    };
+    const generated = {
+        [requestList[0].id]: { pagePath: '1', content: 'page content bar' },
+        [requestList[1].id]: { pagePath: '3', content: 'page content bar' },
+    };
+
+    const page = fakeStaticPage<{ id: string }, { foo: string }>({
         pattern: 'foo/:id',
-        requestList: [{ id: '1' }, { id: '3' }],
-        data: {},
-        content: 'page content',
+        getRequestList: () => requestList,
+        getStaticData: ({ request }) => data[request.id],
     });
 
-    const loaderContext = new LoaderContext({});
-    const publicDir = 'public/dir';
-    const cache = Cache.unserialize({});
-
-    const builder = new PageBuilder(
-        page,
-        'hash',
-        new PageGenerator(page, {
-            loaderContext,
-            publicDir,
-        }),
-        {
-            cache,
+    const cache = fakeCache({
+        mock: {
+            memoize: ({ producer }) => Promise.resolve(producer()),
         },
-    );
+    });
+
+    const generator = fakePageGenerator<{ id: string }, { foo: string }>({
+        mock: {
+            generateContentFromData: (_0, _1, request, _2) => {
+                return Promise.resolve(generated[request.id]);
+            },
+        },
+    });
+
+    const builder = new PageBuilder(page, '', generator, {
+        cache,
+    });
 
     await builder.buildAll();
 
-    asserts.assertEquals(asSpy(page.getRequestList).calls, [{
-        params: [{
-            phase: 'build',
-        }],
-        result: [{ id: '1' }, { id: '3' }],
-    }]);
+    asserts.assertEquals(
+        asSpy(page.getRequestList).calls.map((call) => call.params),
+        [
+            [{ phase: 'build' }],
+        ],
+    );
 
-    asserts.assertEquals(asSpy(page.getStaticData).calls, [{
-        params: [{
-            phase: 'build',
-            request: { id: '1' },
-        }],
-        result: {},
-    }, {
-        params: [{
-            phase: 'build',
-            request: { id: '3' },
-        }],
-        result: {},
-    }]);
+    asserts.assertEquals(
+        asSpy(page.getStaticData).calls.map((call) => call.params),
+        [
+            [{ phase: 'build', request: requestList[0] }],
+            [{ phase: 'build', request: requestList[1] }],
+        ],
+    );
 
-    asserts.assertEquals(asSpy(page.getContent).calls, [{
-        params: [{
-            phase: 'build',
-            data: {},
-            loaderContext,
-            pathname: 'foo/1',
-            request: {
-                id: '1',
-            },
-        }],
-        result: 'page content',
-    }, {
-        params: [{
-            phase: 'build',
-            data: {},
-            loaderContext,
-            pathname: 'foo/3',
-            request: {
-                id: '3',
-            },
-        }],
-        result: 'page content',
-    }]);
+    asserts.assertEquals(
+        asSpy(generator.generateContentFromData).calls.map((call) =>
+            call.params
+        ),
+        [
+            [
+                'foo/1',
+                data[requestList[0].id],
+                requestList[0],
+                'build',
+            ],
+            [
+                'foo/3',
+                data[requestList[1].id],
+                requestList[1],
+                'build',
+            ],
+        ],
+    );
 
     asserts.assertEquals(
         asSpy(Deno.writeTextFile).calls.map((call) => call.params),
         [
-            ['public/dir/foo/1', 'page content'],
-            ['public/dir/foo/3', 'page content'],
+            [
+                generated[requestList[0].id].pagePath,
+                generated[requestList[0].id].content,
+            ],
+            [
+                generated[requestList[1].id].pagePath,
+                generated[requestList[1].id].content,
+            ],
         ],
     );
 });
 
 Deno.test('PageBuilder: buildAll and build throws on DynamicPage', async () => {
-    new FakeFileSystem();
+    const page = fakeDynamicPage();
 
-    const page = fakeDynamicPage({
-        pattern: 'foo/:id',
-        data: {},
-        content: 'page content',
+    const cache = fakeCache();
+
+    const generator = fakePageGenerator();
+
+    const builder = new PageBuilder(page, '', generator, {
+        cache,
     });
-
-    const loaderContext = new LoaderContext({});
-    const publicDir = 'public/dir';
-    const cache = Cache.unserialize({});
-
-    const builder = new PageBuilder(
-        page,
-        'hash',
-        new PageGenerator(page, {
-            loaderContext,
-            publicDir,
-        }),
-        {
-            cache,
-        },
-    );
 
     await asserts.assertRejects(async () => {
         await builder.buildAll();
@@ -219,310 +244,119 @@ Deno.test('PageBuilder: buildAll and build throws on DynamicPage', async () => {
     });
 });
 
-Deno.test('PageBuilder: build memoize content generation and file writing', async () => {
-    new FakeFileSystem();
+Deno.test('PageBuilder: build memoize key depends on page hash', async () => {
+    const page = fakeStaticPage();
 
-    const page = fakeStaticPage({
-        pattern: 'foo/:id',
-        requestList: [{}],
-        data: {},
-        content: 'page content',
+    const cache = fakeCache({
+        mock: {
+            memoize: () => Promise.resolve('pagePath' as any),
+        },
     });
 
-    const loaderContext = new LoaderContext({});
-    const publicDir = 'public/dir';
-    const cache = Cache.unserialize({});
+    const generator = fakePageGenerator();
 
-    const builder = new PageBuilder(
-        page,
-        'hash',
-        new PageGenerator(page, {
-            loaderContext,
-            publicDir,
-        }),
-        {
-            cache,
+    const firstPageHash = 'first-hash';
+    const firstBuilder = new PageBuilder(page, firstPageHash, generator, {
+        cache,
+    });
+
+    const request = { id: '776' };
+    const phase = 'build';
+
+    await firstBuilder.build(request, phase);
+
+    const secondPageHash = 'second-hash';
+    const secondBuilder = new PageBuilder(page, secondPageHash, generator, {
+        cache,
+    });
+
+    await secondBuilder.build(request, phase);
+
+    const thirdBuilder = new PageBuilder(page, firstPageHash, generator, {
+        cache,
+    });
+
+    await thirdBuilder.build(request, phase);
+
+    const firstKey = asSpy(cache.memoize).calls[0].params[0].key;
+    const secondKey = asSpy(cache.memoize).calls[1].params[0].key;
+    const thirdKey = asSpy(cache.memoize).calls[2].params[0].key;
+    asserts.assertEquals(firstKey, thirdKey);
+    asserts.assertNotEquals(firstKey, secondKey);
+});
+
+Deno.test('PageBuilder: build memoize key depends on data', async () => {
+    const firstData = { foo: 'bar' };
+    const data = { current: firstData };
+
+    const page = fakeStaticPage<{ id: string }, { foo: string }>({
+        pattern: 'foo/:id',
+        getStaticData: () => data.current,
+    });
+
+    const cache = fakeCache({
+        mock: {
+            memoize: () => Promise.resolve('pagePath' as any),
         },
-    );
+    });
 
-    const request = {
-        id: '776',
-    };
+    const generator = fakePageGenerator<{ id: string }, { foo: string }>();
+
+    const builder = new PageBuilder(page, '', generator, {
+        cache,
+    });
+
+    const request = { id: '776' };
     const phase = 'build';
 
     await builder.build(request, phase);
 
-    const newbuilder = new PageBuilder(
-        page,
-        'hash',
-        new PageGenerator(page, {
-            loaderContext,
-            publicDir,
-        }),
-        {
-            cache,
-        },
-    );
-
-    await newbuilder.build(request, phase);
-
-    asserts.assertEquals(asSpy(page.getContent).calls, [{
-        params: [{
-            phase,
-            data: {},
-            loaderContext,
-            pathname: 'foo/776',
-            request: {
-                id: '776',
-            },
-        }],
-        result: 'page content',
-    }]);
-
-    asserts.assertEquals(
-        asSpy(Deno.writeTextFile).calls.map((call) => call.params),
-        [
-            ['public/dir/foo/776', 'page content'],
-        ],
-    );
-});
-
-Deno.test('PageBuilder: build memoize is invalidated on page hash change', async () => {
-    new FakeFileSystem();
-
-    const page = fakeStaticPage({
-        pattern: 'foo/:id',
-        requestList: [{}],
-        data: {},
-        content: 'page content',
-    });
-
-    const loaderContext = new LoaderContext({});
-    const publicDir = 'public/dir';
-    const cache = Cache.unserialize({});
-
-    const builder = new PageBuilder(
-        page,
-        'hash',
-        new PageGenerator(page, {
-            loaderContext,
-            publicDir,
-        }),
-        {
-            cache,
-        },
-    );
-
-    const request = {
-        id: '776',
-    };
-    const phase = 'build';
+    const secondData = { foo: 'baz' };
+    data.current = secondData;
 
     await builder.build(request, phase);
 
-    const newbuilder = new PageBuilder(
-        page,
-        'new-hash',
-        new PageGenerator(page, {
-            loaderContext,
-            publicDir,
-        }),
-        {
-            cache,
-        },
-    );
-
-    await newbuilder.build(request, phase);
-
-    asserts.assertEquals(asSpy(page.getContent).calls, [{
-        params: [{
-            phase,
-            data: {},
-            loaderContext,
-            pathname: 'foo/776',
-            request: {
-                id: '776',
-            },
-        }],
-        result: 'page content',
-    }, {
-        params: [{
-            phase,
-            data: {},
-            loaderContext,
-            pathname: 'foo/776',
-            request: {
-                id: '776',
-            },
-        }],
-        result: 'page content',
-    }]);
-
-    asserts.assertEquals(
-        asSpy(Deno.writeTextFile).calls.map((call) => call.params),
-        [
-            ['public/dir/foo/776', 'page content'],
-            ['public/dir/foo/776', 'page content'],
-        ],
-    );
-});
-
-Deno.test('PageBuilder: build memoize is invalidated on data change', async () => {
-    new FakeFileSystem();
-
-    const data = { current: { foo: 1 } };
-
-    const page = fakeStaticPage({
-        pattern: 'foo/:id',
-        requestList: [{}],
-        data: () => data.current,
-        content: 'page content',
-    });
-
-    const loaderContext = new LoaderContext({});
-    const publicDir = 'public/dir';
-    const cache = Cache.unserialize({});
-
-    const builder = new PageBuilder(
-        page,
-        'hash',
-        new PageGenerator(page, {
-            loaderContext,
-            publicDir,
-        }),
-        {
-            cache,
-        },
-    );
-
-    const request = {
-        id: '776',
-    };
-    const phase = 'build';
+    data.current = firstData;
 
     await builder.build(request, phase);
 
-    data.current = { foo: 2 };
-    const newbuilder = new PageBuilder(
-        page,
-        'hash',
-        new PageGenerator(page, {
-            loaderContext,
-            publicDir,
-        }),
-        {
-            cache,
-        },
-    );
-
-    await newbuilder.build(request, phase);
-
-    asserts.assertEquals(asSpy(page.getContent).calls, [{
-        params: [{
-            phase,
-            data: { foo: 1 },
-            loaderContext,
-            pathname: 'foo/776',
-            request: {
-                id: '776',
-            },
-        }],
-        result: 'page content',
-    }, {
-        params: [{
-            phase,
-            data: { foo: 2 },
-            loaderContext,
-            pathname: 'foo/776',
-            request: {
-                id: '776',
-            },
-        }],
-        result: 'page content',
-    }]);
-
-    asserts.assertEquals(
-        asSpy(Deno.writeTextFile).calls.map((call) => call.params),
-        [
-            ['public/dir/foo/776', 'page content'],
-            ['public/dir/foo/776', 'page content'],
-        ],
-    );
+    const firstKey = asSpy(cache.memoize).calls[0].params[0].key;
+    const secondKey = asSpy(cache.memoize).calls[1].params[0].key;
+    const thirdKey = asSpy(cache.memoize).calls[2].params[0].key;
+    asserts.assertEquals(firstKey, thirdKey);
+    asserts.assertNotEquals(firstKey, secondKey);
 });
 
-Deno.test('PageBuilder: build memoize is invalidated on url change', async () => {
-    new FakeFileSystem();
-
-    const page = fakeStaticPage({
+Deno.test('PageBuilder: build memoize key depends on url', async () => {
+    const page = fakeStaticPage<{ id: string }, { foo: string }>({
         pattern: 'foo/:id',
-        requestList: [{}],
-        data: {},
-        content: 'page content',
     });
 
-    const loaderContext = new LoaderContext({});
-    const publicDir = 'public/dir';
-    const cache = Cache.unserialize({});
-
-    const builder = new PageBuilder(
-        page,
-        'hash',
-        new PageGenerator(page, {
-            loaderContext,
-            publicDir,
-        }),
-        {
-            cache,
+    const cache = fakeCache({
+        mock: {
+            memoize: () => Promise.resolve('pagePath' as any),
         },
-    );
+    });
 
+    const generator = fakePageGenerator<{ id: string }, { foo: string }>();
+
+    const builder = new PageBuilder(page, '', generator, {
+        cache,
+    });
+
+    const firstRequest = { id: '776' };
     const phase = 'build';
 
-    await builder.build({ id: '776' }, phase);
+    await builder.build(firstRequest, phase);
 
-    const newbuilder = new PageBuilder(
-        page,
-        'hash',
-        new PageGenerator(page, {
-            loaderContext,
-            publicDir,
-        }),
-        {
-            cache,
-        },
-    );
+    const secondRequest = { id: '123' };
+    await builder.build(secondRequest, phase);
 
-    await newbuilder.build({ id: '123' }, phase);
+    await builder.build(firstRequest, phase);
 
-    asserts.assertEquals(asSpy(page.getContent).calls, [{
-        params: [{
-            phase,
-            data: {},
-            loaderContext,
-            pathname: 'foo/776',
-            request: {
-                id: '776',
-            },
-        }],
-        result: 'page content',
-    }, {
-        params: [{
-            phase,
-            data: {},
-            loaderContext,
-            pathname: 'foo/123',
-            request: {
-                id: '123',
-            },
-        }],
-        result: 'page content',
-    }]);
-
-    asserts.assertEquals(
-        asSpy(Deno.writeTextFile).calls.map((call) => call.params),
-        [
-            ['public/dir/foo/776', 'page content'],
-            ['public/dir/foo/123', 'page content'],
-        ],
-    );
+    const firstKey = asSpy(cache.memoize).calls[0].params[0].key;
+    const secondKey = asSpy(cache.memoize).calls[1].params[0].key;
+    const thirdKey = asSpy(cache.memoize).calls[2].params[0].key;
+    asserts.assertEquals(firstKey, thirdKey);
+    asserts.assertNotEquals(firstKey, secondKey);
 });
