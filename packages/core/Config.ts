@@ -174,28 +174,20 @@ export class CleanConfig {
         return this.config.loaders ?? [];
     }
 
+    get outputDir() {
+        return path.resolve(this.root.pathname, this.config.outputDir);
+    }
+
     get publicDir() {
-        return path.resolve(
-            this.root.pathname,
-            this.config.outputDir,
-            'public',
-        );
+        return path.resolve(this.outputDir, 'public');
     }
 
     get serverDir() {
-        return path.resolve(
-            this.root.pathname,
-            this.config.outputDir,
-            'server',
-        );
+        return path.resolve(this.outputDir, 'server');
     }
 
     get cacheDir() {
-        return path.resolve(
-            this.root.pathname,
-            this.config.outputDir,
-            '.cache',
-        );
+        return path.resolve(this.outputDir, '.cache');
     }
 
     get resolve() {

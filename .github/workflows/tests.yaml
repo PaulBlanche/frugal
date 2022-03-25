@@ -19,17 +19,25 @@ jobs:
     steps:
     - name: checkout project
       uses: actions/checkout@v2
+
     - name: install task
       uses: arduino/setup-task@v1
+
     - name: install deno ${{ matrix.deno-version }}
       uses: denoland/setup-deno@v1
       with:
         deno-version: ${{ matrix.deno-version }}
+
     - name: run test
       run: task test
+
+    - name: run integration test
+      run: task integration-test
+
     - name: generate coverage report
       if: matrix.deno-version == '1.20.x'
       run: task coverage
+      
     - name: code coverage
       if: matrix.deno-version == '1.20.x'
       uses: codecov/codecov-action@v2
