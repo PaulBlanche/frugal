@@ -1,12 +1,9 @@
-import { PageGenerator } from './PageGenerator.ts';
 import { fakePageBuilder } from './__fixtures__/PageBuilder.ts';
-import { fakeDynamicPage, fakeStaticPage } from './__fixtures__/Page.ts';
-import { LoaderContext } from './LoaderContext.ts';
-import { asSpy, spy } from '../test_util/mod.ts';
-import * as asserts from '../../dep/std/asserts.ts';
-import { Cache } from './Cache.ts';
+import { fakeStaticPage } from './__fixtures__/Page.ts';
+import { asSpy } from '../../test_util/mod.ts';
+import * as asserts from '../../../dep/std/asserts.ts';
 
-import { PageRefresher } from './PageRefresher.ts';
+import { PageRefresher } from '../../../packages/core/PageRefresher.ts';
 
 Deno.test('PageRefresher: refresh call builder.build with parsed request', async () => {
     const page = fakeStaticPage({

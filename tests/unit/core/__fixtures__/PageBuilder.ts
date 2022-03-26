@@ -1,10 +1,13 @@
-import { PageBuilder, PageBuilderConfig } from '../PageBuilder.ts';
-import { Page } from '../Page.ts';
-import { PageGenerator } from '../PageGenerator.ts';
+import {
+    PageBuilder,
+    PageBuilderConfig,
+} from '../../../../packages/core/PageBuilder.ts';
+import { Page } from '../../../../packages/core/Page.ts';
+import { PageGenerator } from '../../../../packages/core/PageGenerator.ts';
 import { fakePageGenerator } from './PageGenerator.ts';
 import { fakeStaticPage } from './Page.ts';
 import { fakeCache } from './Cache.ts';
-import { spy } from '../../test_util/mod.ts';
+import { spy } from '../../../test_util/mod.ts';
 
 type FakePageBuilderConfig<REQUEST extends object, DATA> = {
     page?: Page<REQUEST, DATA>;

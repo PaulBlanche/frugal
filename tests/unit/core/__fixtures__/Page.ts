@@ -5,8 +5,8 @@ import {
     GetRequestList,
     GetStaticData,
     StaticPage,
-} from '../Page.ts';
-import { spy } from '../../test_util/mod.ts';
+} from '../../../../packages/core/Page.ts';
+import { spy } from '../../../test_util/mod.ts';
 
 type FakeDynamicPageConfig<REQUEST extends object, DATA> = {
     self?: URL;

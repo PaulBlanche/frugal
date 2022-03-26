@@ -15,6 +15,9 @@ jobs:
     strategy:
       matrix:
         deno-version: [1.20.x, 1.19.x, 1.18.x, 1.17.x]
+        include:
+          - deno-version: 1.20.x
+            coverage: true
 
     steps:
     - name: checkout project
@@ -31,15 +34,20 @@ jobs:
     - name: run test
       run: task test
 
-    - name: run integration test
-      run: task integration-test
-
     - name: generate coverage report
-      if: matrix.deno-version == '1.20.x'
+      if: matrix.coverage
       run: task coverage
       
-    - name: code coverage
-      if: matrix.deno-version == '1.20.x'
+    - name: unit test code coverage
+      if: matrix.coverage
       uses: codecov/codecov-action@v2
       with: 
-        files: ./cov_profile/cov_profile.lcov
+        files: ./tests/cov_profile/unit/cov_profile.lcov
+        flags: unit
+
+    - name: integration test code coverage
+      if: matrix.coverage
+      uses: codecov/codecov-action@v2
+      with: 
+        files: ./tests/cov_profile/unit/cov_profile.lcov
+        flags: integration

@@ -4,7 +4,7 @@ vars:
   CONFIG_FILE: ./deno.json
   IMPORT_MAP: ./import_map.json
   LOCK_FILE: ./.lock.json
-  COVERAGE_DIR: ./cov_profile
+  COVERAGE_DIR: ./tests/cov_profile
   #authorizations
   ALLOW_READ: .
   ALLOW_WRITE: .
@@ -20,17 +20,24 @@ tasks:
     cmds:
       - deno fmt 
           --config {{.CONFIG_FILE}}
+
   test:
+    deps: 
+      - unit-test
+      - integration-test
+
+  unit-test:
     cmds:
       - deno --unstable test
           --config {{.CONFIG_FILE}}
           --import-map={{.IMPORT_MAP}}
           --allow-read={{.ALLOW_READ}}
-          --coverage={{.COVERAGE_DIR}}
+          --coverage={{.COVERAGE_DIR}}/unit
           --jobs
           --shuffle
-          --filter="/^(?!Integration:)/"
           {{.CLI_ARGS}}
+          tests/unit/*
+
   integration-test:
     cmds:
       - deno --unstable test
@@ -38,17 +45,25 @@ tasks:
           --import-map={{.IMPORT_MAP}}
           --allow-read={{.ALLOW_READ}}
           --allow-write={{.ALLOW_WRITE}}
+          --coverage={{.COVERAGE_DIR}}/integration
           --jobs
           --shuffle
-          --filter="/^Integration:/"
           {{.CLI_ARGS}}
+          tests/integration/*
+
   coverage:
     cmds:
       - deno --unstable coverage
           {{.COVERAGE_DIR}}
           --lcov 
           --include=packages
-          --output={{.COVERAGE_DIR}}/cov_profile.lcov
+          --output={{.COVERAGE_DIR}}/unit/cov_profile.lcov
+      - deno --unstable coverage
+          {{.COVERAGE_DIR}}
+          --lcov 
+          --include=packages
+          --output={{.COVERAGE_DIR}}/integration/cov_profile.lcov
+
   example:
     cmds:
       - deno --unstable run

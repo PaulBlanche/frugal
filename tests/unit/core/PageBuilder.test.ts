@@ -1,10 +1,10 @@
 import { fakePageGenerator } from './__fixtures__/PageGenerator.ts';
 import { fakeDynamicPage, fakeStaticPage } from './__fixtures__/Page.ts';
 import { fakeCache } from './__fixtures__/Cache.ts';
-import { asSpy, FakeFileSystem } from '../test_util/mod.ts';
-import * as asserts from '../../dep/std/asserts.ts';
+import { asSpy, FakeFileSystem } from '../../test_util/mod.ts';
+import * as asserts from '../../../dep/std/asserts.ts';
 
-import { PageBuilder } from './PageBuilder.ts';
+import { PageBuilder } from '../../../packages/core/PageBuilder.ts';
 
 Deno.test('PageBuilder: build  without cache hit query data, generate content and write file', async () => {
     new FakeFileSystem();

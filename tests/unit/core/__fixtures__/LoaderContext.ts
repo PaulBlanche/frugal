@@ -1,5 +1,5 @@
-import { LoaderContext } from '../LoaderContext.ts';
-import { spy } from '../../test_util/mod.ts';
+import { LoaderContext } from '../../../../packages/core/LoaderContext.ts';
+import { spy } from '../../../test_util/mod.ts';
 
 type FakeLoaderContextConfig = {
     context?: Record<string, any>;

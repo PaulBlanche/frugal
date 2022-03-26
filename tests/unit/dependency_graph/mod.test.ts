@@ -1,9 +1,9 @@
-import * as asserts from '../../dep/std/asserts.ts';
-import * as murmur from '../murmur/mod.ts';
-import { asSpy, decycle, spy } from '../test_util/mod.ts';
+import * as asserts from '../../../dep/std/asserts.ts';
+import * as murmur from '../../../packages/murmur/mod.ts';
+import { asSpy, decycle, spy } from '../../test_util/mod.ts';
 
-import * as dependency from './mod.ts';
-import * as tree from './tree.ts';
+import * as dependency from '../../../packages/dependency_graph/mod.ts';
+import * as tree from '../../../packages/dependency_graph/tree.ts';
 
 Deno.test('dependency_graph: file without dependencies', async () => {
     const ffs = new FakeEnvironment({

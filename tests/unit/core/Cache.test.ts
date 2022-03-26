@@ -1,7 +1,7 @@
-import * as asserts from '../../dep/std/asserts.ts';
-import { FakeFileSystem, spy } from '../test_util/mod.ts';
+import * as asserts from '../../../dep/std/asserts.ts';
+import { FakeFileSystem, spy } from '../../test_util/mod.ts';
 
-import { Cache, PersistantCache } from './Cache.ts';
+import { Cache, PersistantCache } from '../../../packages/core/Cache.ts';
 
 Deno.test('Cache: Cached value is preserved in memory', async () => {
     const cache = await Cache.unserialize();
