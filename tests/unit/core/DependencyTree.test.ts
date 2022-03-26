@@ -1,8 +1,8 @@
-import * as asserts from '../../dep/std/asserts.ts';
-import { Loader } from './loader.ts';
-import { DependencyTree } from './DependencyTree.ts';
-import * as tree from '../dependency_graph/tree.ts';
-import * as murmur from '../murmur/mod.ts';
+import * as asserts from '../../../dep/std/asserts.ts';
+import { Loader } from '../../../packages/core/loader.ts';
+import { DependencyTree } from '../../../packages/core/DependencyTree.ts';
+import * as tree from '../../../packages/dependency_graph/tree.ts';
+import * as murmur from '../../../packages/murmur/mod.ts';
 
 Deno.test('gather only modules matched by loaders with entrypoint', () => {
     const tree = dependencyTree({

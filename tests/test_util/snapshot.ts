@@ -1,7 +1,7 @@
 import * as fs from '../../dep/std/fs.ts';
 import * as path from '../../dep/std/path.ts';
 import * as asserts from '../../dep/std/asserts.ts';
-import * as murmur from '../murmur/mod.ts';
+import * as murmur from '../../packages/murmur/mod.ts';
 
 export function snapshot(testfileMeta: string) {
     const dir = path.dirname(new URL(testfileMeta).pathname);

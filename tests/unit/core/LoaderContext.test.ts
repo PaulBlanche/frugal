@@ -1,9 +1,9 @@
-import { LoaderContext } from './LoaderContext.ts';
-import { CleanConfig } from './Config.ts';
-import { Asset, Loader } from './loader.ts';
-import { PersistantCache } from './Cache.ts';
-import { asSpy, spy } from '../test_util/mod.ts';
-import * as asserts from '../../dep/std/asserts.ts';
+import { LoaderContext } from '../../../packages/core/LoaderContext.ts';
+import { CleanConfig } from '../../../packages/core/Config.ts';
+import { Asset, Loader } from '../../../packages/core/loader.ts';
+import { PersistantCache } from '../../../packages/core/Cache.ts';
+import { asSpy, spy } from '../../test_util/mod.ts';
+import * as asserts from '../../../dep/std/asserts.ts';
 
 Deno.test('LoaderContext: build call all loader with correct assets', async () => {
     const fooLoader = fakeLoader({

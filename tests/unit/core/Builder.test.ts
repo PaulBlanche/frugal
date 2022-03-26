@@ -1,8 +1,8 @@
 import { fakeConfig } from './__fixtures__/Config.ts';
-import { Builder } from './Builder.ts';
+import { Builder } from '../../../packages/core/Builder.ts';
 import { fakePageBuilder } from './__fixtures__/PageBuilder.ts';
-import { asSpy } from '../test_util/mod.ts';
-import * as asserts from '../../dep/std/asserts.ts';
+import { asSpy } from '../../test_util/mod.ts';
+import * as asserts from '../../../dep/std/asserts.ts';
 
 Deno.test('Builder: setup build logging', async () => {
     const config = fakeConfig();

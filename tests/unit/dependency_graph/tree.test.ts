@@ -1,6 +1,6 @@
-import * as asserts from '../../dep/std/asserts.ts';
-import * as tree from './tree.ts';
-import * as murmur from '../murmur/mod.ts';
+import * as asserts from '../../../dep/std/asserts.ts';
+import * as tree from '../../../packages/dependency_graph/tree.ts';
+import * as murmur from '../../../packages/murmur/mod.ts';
 
 const myRoot: tree.Root = root({
     dependencies: [{

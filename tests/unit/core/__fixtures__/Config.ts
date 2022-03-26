@@ -1,6 +1,10 @@
-import { CleanConfig, Config, OFF_LOGGER_CONFIG } from '../Config.ts';
-import * as importmap from '../../../dep/importmap.ts';
-import { spy } from '../../test_util/mod.ts';
+import {
+    CleanConfig,
+    Config,
+    OFF_LOGGER_CONFIG,
+} from '../../../../packages/core/Config.ts';
+import * as importmap from '../../../../dep/importmap.ts';
+import { spy } from '../../../test_util/mod.ts';
 
 type FakeCleanConfigConfig = {
     config?: Partial<

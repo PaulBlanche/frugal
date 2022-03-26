@@ -1,5 +1,5 @@
-import { Cache, CacheData } from '../Cache.ts';
-import { spy } from '../../test_util/mod.ts';
+import { Cache, CacheData } from '../../../../packages/core/Cache.ts';
+import { spy } from '../../../test_util/mod.ts';
 
 type FakeCacheConfig = {
     previousData?: CacheData;

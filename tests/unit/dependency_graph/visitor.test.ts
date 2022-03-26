@@ -1,5 +1,5 @@
-import * as asserts from '../../dep/std/asserts.ts';
-import { visit, Visitor } from './visitor.ts';
+import * as asserts from '../../../dep/std/asserts.ts';
+import { visit, Visitor } from '../../../packages/dependency_graph/visitor.ts';
 
 type Node =
     & ({

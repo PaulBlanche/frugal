@@ -1,8 +1,11 @@
-import { PageGenerator, PageGeneratorConfig } from '../PageGenerator.ts';
-import { Page } from '../Page.ts';
+import {
+    PageGenerator,
+    PageGeneratorConfig,
+} from '../../../../packages/core/PageGenerator.ts';
+import { Page } from '../../../../packages/core/Page.ts';
 import { fakeDynamicPage } from './Page.ts';
 import { fakeLoaderContext } from './LoaderContext.ts';
-import { spy } from '../../test_util/mod.ts';
+import { spy } from '../../../test_util/mod.ts';
 
 type FakePageGeneratorConfig<REQUEST extends object, DATA> = {
     page?: Page<REQUEST, DATA>;
