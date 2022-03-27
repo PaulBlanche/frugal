@@ -32,6 +32,7 @@ tasks:
           --config {{.CONFIG_FILE}}
           --import-map={{.IMPORT_MAP}}
           --allow-read={{.ALLOW_READ}}
+          --no-check
           --coverage={{.COVERAGE_DIR}}/unit
           --jobs
           --shuffle
@@ -45,6 +46,8 @@ tasks:
           --import-map={{.IMPORT_MAP}}
           --allow-read={{.ALLOW_READ}}
           --allow-write={{.ALLOW_WRITE}}
+          --allow-env={{.ALLOW_ENV}}
+          --no-check
           --coverage={{.COVERAGE_DIR}}/integration
           --jobs
           --shuffle

@@ -1,4 +1,4 @@
-import type * as frugal from '../../packages/core/mod.ts';
+import type * as frugal from '../../../packages/core/mod.ts';
 
 import { article } from './article.ts';
 
@@ -13,7 +13,7 @@ async function getData() {
     const data = await Deno.readTextFile(
         new URL('./data.json', import.meta.url),
     );
-    return JSON.parse(data);
+    return JSON.parse(data)['bar'];
 }
 
 export async function getRequestList(): Promise<Request[]> {
@@ -33,12 +33,15 @@ export async function getStaticData(
     return data[request.slug];
 }
 
-export const pattern = '/:slug.html';
+export const pattern = 'bar/:slug.html';
 
 export const self = new URL(import.meta.url);
 
 export function getContent({ data }: frugal.GetContentParams<Request, Data>) {
     return `<html>
+        <head>
+            <title>bar</title>
+        </head>
         <body>
             ${article(data.title, data.content)}
         </body>

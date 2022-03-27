@@ -1,6 +1,9 @@
 import type * as frugal from '../../../packages/core/mod.ts';
+import type { Generated } from '../../../packages/loader_script/mod.ts';
 
-import { article } from './article.ts';
+import './scripts/shared.script.ts';
+import './scripts/bar.script.ts';
+import './component.ts';
 
 type Request = { slug: string };
 
@@ -13,7 +16,7 @@ async function getData() {
     const data = await Deno.readTextFile(
         new URL('./data.json', import.meta.url),
     );
-    return JSON.parse(data);
+    return JSON.parse(data)['bar'];
 }
 
 export async function getRequestList(): Promise<Request[]> {
@@ -33,14 +36,24 @@ export async function getStaticData(
     return data[request.slug];
 }
 
-export const pattern = '/:slug.html';
+export const pattern = 'bar/:slug.html';
 
 export const self = new URL(import.meta.url);
 
-export function getContent({ data }: frugal.GetContentParams<Request, Data>) {
+export function getContent(
+    { loaderContext, entrypoint }: frugal.GetContentParams<Request, Data>,
+) {
+    const scriptBodyGenerated = loaderContext.get<Generated>('script_body');
+
+    const esmScriptSrc = scriptBodyGenerated[String(entrypoint)]['esm'];
+
     return `<html>
-        <body>
-            ${article(data.title, data.content)}
-        </body>
-    </html>`;
+    <head>
+        <title>bar</title>
+    </head>
+    <body>
+        <div id="log"></div>
+        <script module src="${esmScriptSrc}"></script>
+    </body>
+</html>`;
 }
