@@ -9,7 +9,7 @@ vars:
   ALLOW_READ: .
   ALLOW_WRITE: .
   ALLOW_NET_REPO: deno.land,esm.sh,cdn.esm.sh,cdn.jsdelivr.net,unpkg.com
-  ALLOW_NET_SERVER: 0.0.0.0:8000
+  ALLOW_NET_SERVER: 0.0.0.0:8000,eu1-intense-kodiak-36255.upstash.io
   ALLOW_ENV: NODE_ENV,DENO_DIR
 
 env:
