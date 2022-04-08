@@ -196,14 +196,16 @@ export class Frugal {
         this.loaderContext = loaderContext;
     }
 
-    async save() {
-        await this.moduleList.save(
-            path.resolve(this.config.cacheDir, MODULES_FILENAME),
-        );
+    async save(options: { runtime?: boolean } = {}) {
+        if (options.runtime !== true) {
+            await this.moduleList.save(
+                path.resolve(this.config.cacheDir, MODULES_FILENAME),
+            );
+            await this.loaderContext.save(
+                path.resolve(this.config.cacheDir, LOADER_CONTEXT_FILENAME),
+            );
+        }
         await this.cache.save();
-        await this.loaderContext.save(
-            path.resolve(this.config.cacheDir, LOADER_CONTEXT_FILENAME),
-        );
     }
 
     // build all registered static pages
@@ -250,7 +252,7 @@ export class Frugal {
         });
 
         const result = await this.refresher.refresh(pathname);
-        await this.save();
+        await this.save({ runtime: true });
 
         logger().info({
             op: 'done',
@@ -284,6 +286,7 @@ export class Frugal {
         });
 
         const result = await this.generator.generate(pathname, context);
+        await this.save({ runtime: true });
 
         logger().info({
             op: 'done',
