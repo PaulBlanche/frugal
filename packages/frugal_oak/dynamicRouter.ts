@@ -8,7 +8,7 @@ export function getDynamicRouter(frugal: Frugal): Router {
     const router = new Router();
 
     for (const route of frugal.generateRoutes) {
-        console.log('register', route);
+        console.log('register dynamic', route);
 
         if (route.get) {
             router.get(route.pattern, async (context) => {

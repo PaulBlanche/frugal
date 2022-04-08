@@ -8,7 +8,7 @@ export function getStaticRouter(frugal: Frugal): Router {
     const router = new Router();
 
     for (const route of frugal.refreshRoutes) {
-        console.log('register', route);
+        console.log('register static get', route);
         if (route.get) {
             router.get(route.pattern, async (context) => {
                 const pagePath = context.request.url.pathname;
@@ -40,7 +40,7 @@ export function getStaticRouter(frugal: Frugal): Router {
     }
 
     for (const route of frugal.buildRoutes) {
-        console.log('register', route);
+        console.log('register static post', route);
         if (route.post) {
             router.post(route.pattern, async (context) => {
                 const url = context.request.url;
