@@ -6,7 +6,7 @@ import * as asserts from '../../../dep/std/asserts.ts';
 
 import { PageBuilder } from '../../../packages/core/PageBuilder.ts';
 
-Deno.test('PageBuilder: build  without cache hit query data, generate content and write file', async () => {
+Deno.test('PageBuilder: build without cache hit query data, generate content and write file', async () => {
     new FakeFileSystem();
 
     const data = { foo: 'bar' };
@@ -23,7 +23,11 @@ Deno.test('PageBuilder: build  without cache hit query data, generate content an
     });
 
     const generated = { pagePath: 'pagePath', content: 'content' };
-    const generator = fakePageGenerator<{ id: string }, { foo: string }>({
+    const generator = fakePageGenerator<
+        { id: string },
+        { foo: string },
+        unknown
+    >({
         mock: {
             generateContentFromData: () => Promise.resolve(generated),
         },
@@ -52,7 +56,7 @@ Deno.test('PageBuilder: build  without cache hit query data, generate content an
             call.params
         ),
         [
-            ['foo/776', data, request, phase],
+            ['foo/776', { data, request, phase, method: 'GET' }],
         ],
     );
 
@@ -84,7 +88,11 @@ Deno.test('PageBuilder: build with cache hit query data and return path from cac
         },
     });
 
-    const generator = fakePageGenerator<{ id: string }, { foo: string }>();
+    const generator = fakePageGenerator<
+        { id: string },
+        { foo: string },
+        unknown
+    >();
 
     const builder = new PageBuilder(page, '', generator, {
         cache,
@@ -122,7 +130,7 @@ Deno.test('PageBuilder: build will throw on non matching request', async () => {
 
     const cache = fakeCache();
 
-    const generator = fakePageGenerator<object, { foo: string }>();
+    const generator = fakePageGenerator<object, { foo: string }, unknown>();
 
     const builder = new PageBuilder(page, '', generator, {
         cache,
@@ -160,9 +168,13 @@ Deno.test('PageBuilder: buildAll orchestrate the generation of StaticPage', asyn
         },
     });
 
-    const generator = fakePageGenerator<{ id: string }, { foo: string }>({
+    const generator = fakePageGenerator<
+        { id: string },
+        { foo: string },
+        unknown
+    >({
         mock: {
-            generateContentFromData: (_0, _1, request, _2) => {
+            generateContentFromData: (_0, { request }) => {
                 return Promise.resolve(generated[request.id]);
             },
         },
@@ -196,15 +208,21 @@ Deno.test('PageBuilder: buildAll orchestrate the generation of StaticPage', asyn
         [
             [
                 'foo/1',
-                data[requestList[0].id],
-                requestList[0],
-                'build',
+                {
+                    data: data[requestList[0].id],
+                    method: 'GET',
+                    request: requestList[0],
+                    phase: 'build',
+                },
             ],
             [
                 'foo/3',
-                data[requestList[1].id],
-                requestList[1],
-                'build',
+                {
+                    data: data[requestList[1].id],
+                    method: 'GET',
+                    request: requestList[1],
+                    phase: 'build',
+                },
             ],
         ],
     );
@@ -300,7 +318,11 @@ Deno.test('PageBuilder: build memoize key depends on data', async () => {
         },
     });
 
-    const generator = fakePageGenerator<{ id: string }, { foo: string }>();
+    const generator = fakePageGenerator<
+        { id: string },
+        { foo: string },
+        unknown
+    >();
 
     const builder = new PageBuilder(page, '', generator, {
         cache,
@@ -338,7 +360,11 @@ Deno.test('PageBuilder: build memoize key depends on url', async () => {
         },
     });
 
-    const generator = fakePageGenerator<{ id: string }, { foo: string }>();
+    const generator = fakePageGenerator<
+        { id: string },
+        { foo: string },
+        unknown
+    >();
 
     const builder = new PageBuilder(page, '', generator, {
         cache,

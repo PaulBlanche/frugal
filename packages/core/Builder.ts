@@ -8,14 +8,18 @@ function logger() {
 
 export class Builder {
     private config: CleanConfig;
-    private builders: PageBuilder<any, any>[];
+    private builders: PageBuilder<any, any, any>[];
 
     constructor(
         config: CleanConfig,
-        builders: PageBuilder<any, any>[],
+        builders: PageBuilder<any, any, any>[],
     ) {
         this.config = config;
         this.builders = builders;
+    }
+
+    get routes() {
+        return this.builders.map((builder) => builder.route);
     }
 
     async build() {

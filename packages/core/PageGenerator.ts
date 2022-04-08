@@ -13,17 +13,36 @@ function logger() {
     return log.getLogger('frugal:PageGenerator');
 }
 
-export class PageGenerator<REQUEST extends object, DATA> {
-    private page: Page<REQUEST, DATA>;
+export type GenerationContext<POST_BODY> =
+    & { searchParams: URLSearchParams }
+    & ({
+        method: 'GET';
+    } | { method: 'POST'; body: POST_BODY });
+
+type ContentGenerationContext<DATA, REQUEST> = {
+    method: 'POST' | 'GET';
+    data: DATA;
+    request: REQUEST;
+    phase: Phase;
+};
+export class PageGenerator<REQUEST extends object, DATA, POST_BODY> {
+    private page: Page<REQUEST, DATA, POST_BODY>;
     private config: PageGeneratorConfig;
 
-    constructor(page: Page<REQUEST, DATA>, config: PageGeneratorConfig) {
+    constructor(
+        page: Page<REQUEST, DATA, POST_BODY>,
+        config: PageGeneratorConfig,
+    ) {
         this.page = page;
         this.config = config;
     }
 
-    get route() {
-        return this.page.pattern;
+    get route(): { pattern: string; post: boolean; get: boolean } {
+        return {
+            pattern: this.page.pattern,
+            post: this.page.canPostDynamicData,
+            get: true,
+        };
     }
 
     match(url: string): boolean {
@@ -32,13 +51,8 @@ export class PageGenerator<REQUEST extends object, DATA> {
 
     async generate(
         pathname: string,
-        searchParams: URLSearchParams,
+        context: GenerationContext<POST_BODY>,
     ): Promise<{ pagePath: string; content: string }> {
-        assert(
-            this.page instanceof DynamicPage,
-            `Can't dynamically generate StaticPage ${this.page.pattern}`,
-        );
-
         const match = this.page.match(pathname);
         assert(match !== false);
         const request = match.params;
@@ -51,27 +65,47 @@ export class PageGenerator<REQUEST extends object, DATA> {
             },
         });
 
-        const data = await this.page.getDynamicData({
-            phase: 'generate',
-            request,
-            searchParams,
-        });
+        const data = await this._getData(request, context);
 
         const result = await this.generateContentFromData(
             pathname,
-            data,
-            request,
-            'generate',
+            { data, request, phase: 'generate', method: context.method },
         );
 
         return result;
     }
 
+    private async _getData(
+        request: REQUEST,
+        context: GenerationContext<POST_BODY>,
+    ) {
+        if (context.method === 'GET') {
+            assert(
+                this.page instanceof DynamicPage,
+                `Can't dynamically generate StaticPage ${this.page.pattern}`,
+            );
+
+            return await this.page.getDynamicData({
+                phase: 'generate',
+                request,
+                searchParams: context.searchParams,
+            });
+        }
+
+        return await this.page.postDynamicData({
+            phase: 'generate',
+            request,
+            searchParams: context.searchParams,
+            body: context.body,
+        });
+    }
+
     async generateContentFromData(
         pathname: string,
-        data: DATA,
-        request: REQUEST,
-        phase: Phase,
+        { data, request, phase, method }: ContentGenerationContext<
+            DATA,
+            REQUEST
+        >,
     ): Promise<{ pagePath: string; content: string }> {
         logger().debug({
             op: 'start',
@@ -87,6 +121,7 @@ export class PageGenerator<REQUEST extends object, DATA> {
         });
 
         const content = await this.page.getContent({
+            method,
             phase,
             request,
             data,

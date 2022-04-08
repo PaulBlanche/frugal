@@ -6,10 +6,11 @@ import { LoaderContext } from './LoaderContext.ts';
 import { DynamicPage, StaticPage } from './Page.ts';
 import { PageBuilder } from './PageBuilder.ts';
 import { PageRefresher } from './PageRefresher.ts';
-import { PageGenerator } from './PageGenerator.ts';
+import { GenerationContext, PageGenerator } from './PageGenerator.ts';
 import * as log from '../log/mod.ts';
 import * as path from '../../dep/std/path.ts';
 import { DependencyTree, ModuleList } from './DependencyTree.ts';
+import { FilesystemPersistanceDriver } from './PersistanceDriver.ts';
 import { PersistantCache } from './Cache.ts';
 
 function logger() {
@@ -49,6 +50,7 @@ export class Frugal {
             },
         );
         const cache = await PersistantCache.load(
+            cleanConfig.cachePersistanceDriver,
             path.resolve(cleanConfig.cacheDir, PAGE_CACHE_FILENAME),
         );
         const assets = dependencyTree.gather(cleanConfig.loaders);
@@ -57,6 +59,7 @@ export class Frugal {
             assets,
             (name) => {
                 return PersistantCache.load(
+                    new FilesystemPersistanceDriver(),
                     path.resolve(
                         cleanConfig.cacheDir,
                         'loader',
@@ -103,6 +106,7 @@ export class Frugal {
             path.resolve(cleanConfig.cacheDir, MODULES_FILENAME),
         );
         const cache = await PersistantCache.load(
+            cleanConfig.cachePersistanceDriver,
             path.resolve(cleanConfig.cacheDir, PAGE_CACHE_FILENAME),
         );
         const loaderContext = await LoaderContext.load(
@@ -164,6 +168,7 @@ export class Frugal {
 
                 const builder = new PageBuilder(page, pageHash, generator, {
                     cache,
+                    persistanceDriver: config.pagePersistanceDriver,
                 });
 
                 const refresher = new PageRefresher(
@@ -177,8 +182,8 @@ export class Frugal {
                 return accumulator;
             },
             { builders: [], refreshers: [] } as {
-                builders: PageBuilder<any, any>[];
-                refreshers: PageRefresher<any, any>[];
+                builders: PageBuilder<any, any, any>[];
+                refreshers: PageRefresher<any, any, any>[];
             },
         );
 
@@ -262,34 +267,34 @@ export class Frugal {
     }
 
     // generate a specific dynamic page (allways generate even if nothing changed)
-    async generate(pathname: string, urlSearchParams: URLSearchParams) {
+    async generate(pathname: string, context: GenerationContext<any>) {
         await this.config.setupServerLogging();
 
         logger().info({
             op: 'start',
             pathname,
-            searchParams: urlSearchParams.toString(),
+            context,
             msg() {
                 return `${this.op} ${this.logger!.timerStart}`;
             },
             logger: {
                 timerStart:
-                    `generating ${pathname}?${urlSearchParams.toString()}`,
+                    `generating ${pathname}?${context.searchParams.toString()}`,
             },
         });
 
-        const result = await this.generator.generate(pathname, urlSearchParams);
+        const result = await this.generator.generate(pathname, context);
 
         logger().info({
             op: 'done',
             pathname,
-            searchParams: urlSearchParams.toString(),
+            context,
             msg() {
                 return `${this.logger!.timerEnd} ${this.op}`;
             },
             logger: {
                 timerEnd:
-                    `generating ${pathname}?${urlSearchParams.toString()}`,
+                    `generating ${pathname}?${context.searchParams.toString()}`,
             },
         });
 
@@ -305,6 +310,10 @@ export class Frugal {
 
     get refreshRoutes() {
         return this.refresher.routes;
+    }
+
+    get buildRoutes() {
+        return this.builder.routes;
     }
 
     get generateRoutes() {

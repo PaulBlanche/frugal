@@ -1,5 +1,5 @@
 import * as log from '../log/mod.ts';
-import { PageGenerator } from './PageGenerator.ts';
+import { GenerationContext, PageGenerator } from './PageGenerator.ts';
 import { CleanConfig } from './Config.ts';
 function logger() {
     return log.getLogger('frugal:Generator');
@@ -7,9 +7,12 @@ function logger() {
 
 export class Generator {
     private config: CleanConfig;
-    private generators: PageGenerator<any, any>[];
+    private generators: PageGenerator<any, any, any>[];
 
-    constructor(config: CleanConfig, generators: PageGenerator<any, any>[]) {
+    constructor(
+        config: CleanConfig,
+        generators: PageGenerator<any, any, any>[],
+    ) {
         this.config = config;
         this.generators = generators;
     }
@@ -18,19 +21,22 @@ export class Generator {
         return this.generators.map((generator) => generator.route);
     }
 
-    async generate(pathname: string, urlSearchParams: URLSearchParams) {
+    async generate(
+        pathname: string,
+        context: GenerationContext<any>,
+    ) {
         await this.config.setupServerLogging();
 
         logger().info({
             op: 'start',
             pathname,
-            urlSearchParams,
+            context,
             msg() {
                 return `${this.op} ${this.logger!.timerStart}`;
             },
             logger: {
                 timerStart:
-                    `generation of ${pathname}?${urlSearchParams.toString()}`,
+                    `generation of ${pathname}?${context.searchParams.toString()}`,
             },
         });
 
@@ -39,19 +45,19 @@ export class Generator {
         if (pageGenerator === undefined) {
             logger().info({
                 pathname,
-                urlSearchParams,
+                context,
                 msg() {
                     return `no match found for ${this.pathname}`;
                 },
                 logger: {
                     timerEnd:
-                        `generation of ${pathname}?${urlSearchParams.toString()}`,
+                        `generation of ${pathname}?${context.searchParams.toString()}`,
                 },
             });
             return undefined;
         }
 
-        const result = await pageGenerator.generate(pathname, urlSearchParams);
+        const result = await pageGenerator.generate(pathname, context);
 
         logger().info({
             op: 'done',
@@ -61,7 +67,7 @@ export class Generator {
             },
             logger: {
                 timerEnd:
-                    `generation of ${pathname}?${urlSearchParams.toString()}`,
+                    `generation of ${pathname}?${context.searchParams.toString()}`,
             },
         });
 
@@ -70,7 +76,7 @@ export class Generator {
 
     private getMatchingGenerator(
         pathname: string,
-    ): PageGenerator<any, any> | undefined {
+    ): PageGenerator<any, any, any> | undefined {
         for (const pageGenerator of this.generators) {
             if (pageGenerator.match(pathname)) {
                 return pageGenerator;

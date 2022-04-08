@@ -1,8 +1,8 @@
-import { PageGenerator } from './PageGenerator.ts';
+import { PageGenerator } from '../../../packages/core/PageGenerator.ts';
 import { fakeDynamicPage, fakeStaticPage } from './__fixtures__/Page.ts';
 import { fakeLoaderContext } from './__fixtures__/LoaderContext.ts';
-import { asSpy } from '../test_util/mod.ts';
-import * as asserts from '../../dep/std/asserts.ts';
+import { asSpy } from '../../test_util/mod.ts';
+import * as asserts from '../../../dep/std/asserts.ts';
 
 Deno.test('PageGenerator: generateContentFromData call page.getContent', async () => {
     const content = 'page content';
@@ -26,12 +26,16 @@ Deno.test('PageGenerator: generateContentFromData call page.getContent', async (
     const data = {};
     const pathName = 'foo/654';
     const phase = 'generate';
+    const method = 'GET';
 
     const result = await generator.generateContentFromData(
         pathName,
-        data,
-        request,
-        phase,
+        {
+            method,
+            data,
+            request,
+            phase,
+        },
     );
 
     asserts.assertEquals(result.pagePath, 'public/dir/foo/654');
@@ -39,6 +43,7 @@ Deno.test('PageGenerator: generateContentFromData call page.getContent', async (
 
     asserts.assertEquals(asSpy(page.getContent).calls, [{
         params: [{
+            method,
             phase,
             data,
             loaderContext,
@@ -71,8 +76,12 @@ Deno.test('PageGenerator: generate orchestrate the generation of DynamicPage', a
 
     const pathName = 'foo/345';
     const searchParams = new URLSearchParams();
+    const method = 'GET';
 
-    const result = await generator.generate(pathName, searchParams);
+    const result = await generator.generate(pathName, {
+        method,
+        searchParams,
+    });
 
     asserts.assertEquals(result.pagePath, 'public/dir/foo/345');
     asserts.assertEquals(result.content, content);
@@ -90,6 +99,7 @@ Deno.test('PageGenerator: generate orchestrate the generation of DynamicPage', a
 
     asserts.assertEquals(asSpy(page.getContent).calls, [{
         params: [{
+            method,
             phase: 'generate',
             data: data,
             loaderContext,
@@ -120,7 +130,10 @@ Deno.test('PageGenerator: generate throws if pathname does not match', async () 
     const pathName = 'bar/345';
 
     await asserts.assertRejects(async () => {
-        await generator.generate(pathName, searchParams);
+        await generator.generate(pathName, {
+            method: 'GET',
+            searchParams,
+        });
     });
 });
 
@@ -142,6 +155,9 @@ Deno.test('PageGenerator: generate throws for StaticPage', async () => {
     const pathName = 'foo/345';
 
     await asserts.assertRejects(async () => {
-        await generator.generate(pathName, searchParams);
+        await generator.generate(pathName, {
+            method: 'GET',
+            searchParams,
+        });
     });
 });

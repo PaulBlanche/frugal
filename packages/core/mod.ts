@@ -13,8 +13,11 @@ export type {
     GetStaticData,
     GetStaticDataParams,
     Phase,
+    PostDynamicData,
+    PostDynamicDataParams,
     StaticPageDescriptor,
 } from './Page.ts';
-export { page } from './Page.ts';
+export { DynamicPage, page, StaticPage } from './Page.ts';
 export { build, Frugal } from './Frugal.ts';
 export { PersistantCache } from './Cache.ts';
+export * from './PersistanceDriver.ts';

@@ -1,4 +1,8 @@
-import { build, page } from '../../packages/core/mod.ts';
+import {
+    build,
+    page,
+    UpstashPersistanceDriver,
+} from '../../packages/core/mod.ts';
 import {
     getDynamicRouter,
     getRefreshRouter,
@@ -8,6 +12,12 @@ import { Application } from '../../dep/oak.ts';
 
 import * as pageISR from './page-isr.ts';
 import * as pageSSR from './page-ssr.ts';
+import * as pageForm from './form.ts';
+
+const upstashDriver = new UpstashPersistanceDriver(
+    'https://eu1-intense-kodiak-36255.upstash.io',
+    'AY2fACQgMDUyZDkwZjktMWMwZS00NDdiLWFmOTktODIzOTVkZmY3YzQxZDliOTkxNWJjNmFhNDZkZWFiNjEwODc5ZDU3N2MwZDM=',
+);
 
 // the `build` function returns a `Frugal` object, thant can be used later on the server.
 // If you want to run the build in a separate process as the server, you can use
@@ -26,6 +36,7 @@ const frugal = await build({
     pages: [
         page(pageISR),
         page(pageSSR),
+        page(pageForm),
     ],
 
     // Logging configuration. In the context of this exemple, all loggers are
@@ -50,6 +61,9 @@ const frugal = await build({
             'frugal:loader:style': 'DEBUG',
         },
     },
+
+    cachePersistanceDriver: upstashDriver,
+    pagePersistanceDriver: upstashDriver,
 });
 
 const application = new Application();

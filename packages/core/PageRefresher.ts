@@ -7,20 +7,24 @@ function logger() {
     return log.getLogger('frugal:PageRefresher');
 }
 
-export class PageRefresher<REQUEST extends object, DATA> {
-    private builder: PageBuilder<REQUEST, DATA>;
-    private page: Page<REQUEST, DATA>;
+export class PageRefresher<REQUEST extends object, DATA, POST_BODY> {
+    private builder: PageBuilder<REQUEST, DATA, POST_BODY>;
+    private page: Page<REQUEST, DATA, POST_BODY>;
 
     constructor(
-        page: Page<REQUEST, DATA>,
-        builder: PageBuilder<REQUEST, DATA>,
+        page: Page<REQUEST, DATA, POST_BODY>,
+        builder: PageBuilder<REQUEST, DATA, POST_BODY>,
     ) {
         this.page = page;
         this.builder = builder;
     }
 
-    get route() {
-        return this.page.pattern;
+    get route(): { pattern: string; post: boolean; get: boolean } {
+        return {
+            pattern: this.page.pattern,
+            post: false,
+            get: true,
+        };
     }
 
     match(pathname: string): boolean {
