@@ -163,6 +163,8 @@ export class Frugal {
                     publicDir: config.publicDir,
                 });
 
+                generators.push(generator);
+
                 const module = moduleList.get(page.self);
                 const pageHash = module?.moduleHash ?? String(Math.random());
 

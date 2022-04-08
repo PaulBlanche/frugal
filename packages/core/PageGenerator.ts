@@ -41,7 +41,7 @@ export class PageGenerator<REQUEST extends object, DATA, POST_BODY> {
         return {
             pattern: this.page.pattern,
             post: this.page.canPostDynamicData,
-            get: true,
+            get: this.page instanceof DynamicPage,
         };
     }
 
