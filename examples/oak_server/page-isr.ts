@@ -40,10 +40,10 @@ export function getContent(
 
     return `<html>
         <head>
-            <link rel="stylesheet" href="${styleUrl}" />
+            <link rel="stylesheet" href="${styleUrl}"></link>
         </head>
         <body>
-            <p className=${cx(red)}>${method}</p>
+            <p class=${cx(red)}>${method}</p>
             <h1>${data.title}</h1>
             <p>${data.content}</p>
         </body>
