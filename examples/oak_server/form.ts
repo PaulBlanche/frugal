@@ -38,9 +38,14 @@ export async function postDynamicData(
 }
 
 export function getContent(
-    { data, method }: frugal.GetContentParams<Request, Data>,
+    { data, method, loaderContext }: frugal.GetContentParams<Request, Data>,
 ) {
+    const styleUrl = loaderContext.get('style');
+
     return `<html>
+        <head>
+            <link rel="stylesheet" href="${styleUrl}" />
+        </head>
         <body>
             <p className=${cx(red)}>${method}</p>
             <h1>${data.title}</h1>
