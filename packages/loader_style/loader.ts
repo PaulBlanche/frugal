@@ -21,10 +21,12 @@ export function style(config: Config): frugal.Loader<string, string> {
         generate,
     };
 
-    function generate({ assets, cache, dir }: frugal.GenerateParams) {
+    async function generate({ assets, getCache, dir }: frugal.GenerateParams) {
         logger().debug({
             msg: 'generate',
         });
+
+        const cache = await getCache();
 
         const bundleHash = assets.reduce((hash, asset) => {
             return hash.update(asset.hash);
