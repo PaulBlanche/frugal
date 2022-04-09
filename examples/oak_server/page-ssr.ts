@@ -1,4 +1,7 @@
 import type * as frugal from '../../packages/core/mod.ts';
+import { cx } from '../../packages/loader_style/styled.ts';
+
+import { red } from './main.style.ts';
 
 type Request = { slug: string };
 
@@ -24,9 +27,12 @@ export const pattern = '/ssr/:slug.html';
 
 export const self = new URL(import.meta.url);
 
-export function getContent({ data }: frugal.GetContentParams<Request, Data>) {
+export function getContent(
+    { data, method }: frugal.GetContentParams<Request, Data>,
+) {
     return `<html>
         <body>
+            <p className=${cx(red)}>${method}</p>
             <h1>${data.title}</h1>
             <p>${data.content}</p>
             <p>${data.searchParams}</p>

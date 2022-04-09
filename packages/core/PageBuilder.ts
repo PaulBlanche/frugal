@@ -4,10 +4,10 @@ import * as log from '../log/mod.ts';
 import { PageGenerator } from './PageGenerator.ts';
 import { assert } from '../../dep/std/asserts.ts';
 import { Cache } from './Cache.ts';
-import { PersistanceDriver } from './PersistanceDriver.ts';
+import { Persistance } from './Persistance.ts';
 
 export type PageBuilderConfig = {
-    persistanceDriver: PersistanceDriver;
+    persistance: Persistance;
     cache: Cache;
 };
 
@@ -119,7 +119,7 @@ export class PageBuilder<REQUEST extends object, DATA, POST_BODY> {
                         phase,
                     });
 
-                await this.config.persistanceDriver.set(pagePath, content);
+                await this.config.persistance.set(pagePath, content);
 
                 logger().debug({
                     op: 'done',

@@ -2,13 +2,13 @@ import * as fs from '../../dep/std/fs.ts';
 
 export class NotFound extends Error {}
 
-export interface PersistanceDriver {
+export interface Persistance {
     set(path: string, content: string): Promise<void>;
     get(path: string): Promise<string>;
     delete(path: string): Promise<void>;
 }
 
-export class FilesystemPersistanceDriver implements PersistanceDriver {
+export class FilesystemPersistance implements Persistance {
     constructor() {}
 
     async set(path: string, content: string) {
@@ -32,7 +32,7 @@ export class FilesystemPersistanceDriver implements PersistanceDriver {
     }
 }
 
-export class UpstashPersistanceDriver implements PersistanceDriver {
+export class UpstashPersistance implements Persistance {
     url: string;
     token: string;
 

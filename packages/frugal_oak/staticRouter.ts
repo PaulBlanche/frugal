@@ -15,7 +15,7 @@ export function getStaticRouter(frugal: Frugal): Router {
                 try {
                     context.response.status = 200;
                     context.response.body = await frugal.config
-                        .pagePersistanceDriver
+                        .pagePersistance
                         .get(path.join(frugal.config.publicDir, pagePath));
                     return;
                 } catch (error: any) {
@@ -28,7 +28,7 @@ export function getStaticRouter(frugal: Frugal): Router {
 
                         context.response.status = 200;
                         context.response.body = await frugal.config
-                            .pagePersistanceDriver
+                            .pagePersistance
                             .get(path.join(frugal.config.publicDir, pagePath));
                         return;
                     }

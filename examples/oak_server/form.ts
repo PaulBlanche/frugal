@@ -1,5 +1,8 @@
 import * as frugal from '../../packages/core/mod.ts';
 import * as oak from '../../dep/oak.ts';
+import { cx } from '../../packages/loader_style/styled.ts';
+
+import { red } from './main.style.ts';
 
 type Request = {};
 
@@ -39,7 +42,7 @@ export function getContent(
 ) {
     return `<html>
         <body>
-            <p>${method}</p>
+            <p className=${cx(red)}>${method}</p>
             <h1>${data.title}</h1>
             <p>${data.content}</p>
             <form method="POST">

@@ -1,14 +1,11 @@
-import {
-    Config,
-    page,
-    UpstashPersistanceDriver,
-} from '../../packages/core/mod.ts';
+import { Config, page, UpstashPersistance } from '../../packages/core/mod.ts';
 
 import * as pageISR from './page-isr.ts';
 import * as pageSSR from './page-ssr.ts';
 import * as pageForm from './form.ts';
+import { style } from '../../packages/loader_style/mod.ts';
 
-const upstashDriver = new UpstashPersistanceDriver(
+const upstash = new UpstashPersistance(
     'https://eu1-intense-kodiak-36255.upstash.io',
     'AY2fACQgMDUyZDkwZjktMWMwZS00NDdiLWFmOTktODIzOTVkZmY3YzQxZDliOTkxNWJjNmFhNDZkZWFiNjEwODc5ZDU3N2MwZDM=',
 );
@@ -52,6 +49,12 @@ export const CONFIG: Config = {
         },
     },
 
-    cachePersistanceDriver: upstashDriver,
-    pagePersistanceDriver: upstashDriver,
+    cachePersistance: upstash,
+    pagePersistance: upstash,
+
+    loaders: [
+        style({
+            test: (url) => /\.style\.ts$/.test(url.toString()),
+        }),
+    ],
 };

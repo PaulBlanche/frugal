@@ -20,4 +20,4 @@ export type {
 export { DynamicPage, page, StaticPage } from './Page.ts';
 export { build, Frugal } from './Frugal.ts';
 export { PersistantCache } from './Cache.ts';
-export * from './PersistanceDriver.ts';
+export * from './Persistance.ts';

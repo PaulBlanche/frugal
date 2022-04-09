@@ -10,7 +10,7 @@ import { GenerationContext, PageGenerator } from './PageGenerator.ts';
 import * as log from '../log/mod.ts';
 import * as path from '../../dep/std/path.ts';
 import { DependencyTree, ModuleList } from './DependencyTree.ts';
-import { FilesystemPersistanceDriver } from './PersistanceDriver.ts';
+import { FilesystemPersistance } from './Persistance.ts';
 import { PersistantCache } from './Cache.ts';
 
 function logger() {
@@ -50,7 +50,7 @@ export class Frugal {
             },
         );
         const cache = await PersistantCache.load(
-            cleanConfig.cachePersistanceDriver,
+            cleanConfig.cachePersistance,
             path.resolve(cleanConfig.cacheDir, PAGE_CACHE_FILENAME),
         );
         const assets = dependencyTree.gather(cleanConfig.loaders);
@@ -59,7 +59,7 @@ export class Frugal {
             assets,
             (name) => {
                 return PersistantCache.load(
-                    new FilesystemPersistanceDriver(),
+                    new FilesystemPersistance(),
                     path.resolve(
                         cleanConfig.cacheDir,
                         'loader',
@@ -106,7 +106,7 @@ export class Frugal {
             path.resolve(cleanConfig.cacheDir, MODULES_FILENAME),
         );
         const cache = await PersistantCache.load(
-            cleanConfig.cachePersistanceDriver,
+            cleanConfig.cachePersistance,
             path.resolve(cleanConfig.cacheDir, PAGE_CACHE_FILENAME),
         );
         const loaderContext = await LoaderContext.load(
@@ -170,7 +170,7 @@ export class Frugal {
 
                 const builder = new PageBuilder(page, pageHash, generator, {
                     cache,
-                    persistanceDriver: config.pagePersistanceDriver,
+                    persistance: config.pagePersistance,
                 });
 
                 const refresher = new PageRefresher(
@@ -283,7 +283,7 @@ export class Frugal {
             },
             logger: {
                 timerStart:
-                    `generating ${pathname}?${context.searchParams.toString()}`,
+                    `generating ${context.method} ${pathname}?${context.searchParams.toString()}`,
             },
         });
 
@@ -299,7 +299,7 @@ export class Frugal {
             },
             logger: {
                 timerEnd:
-                    `generating ${pathname}?${context.searchParams.toString()}`,
+                    `generating ${context.method} ${pathname}?${context.searchParams.toString()}`,
             },
         });
 

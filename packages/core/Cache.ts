@@ -1,6 +1,6 @@
 import * as fs from '../../dep/std/fs.ts';
 import * as log from '../log/mod.ts';
-import { PersistanceDriver } from './PersistanceDriver.ts';
+import { Persistance } from './Persistance.ts';
 
 export type CacheData = {
     [s: string]: any;
@@ -97,9 +97,9 @@ export class Cache<VALUE = unknown> {
 
 export class PersistantCache<VALUE = unknown> extends Cache<VALUE> {
     private cachePath: string;
-    private persistanceDriver: PersistanceDriver;
+    private persistance: Persistance;
 
-    static async load(persistanceDriver: PersistanceDriver, cachePath: string) {
+    static async load(persistance: Persistance, cachePath: string) {
         logger().info({
             cachePath,
             msg() {
@@ -107,10 +107,10 @@ export class PersistantCache<VALUE = unknown> extends Cache<VALUE> {
             },
         });
         try {
-            const data = await persistanceDriver.get(cachePath);
+            const data = await persistance.get(cachePath);
             console.log(data);
             return new PersistantCache(
-                persistanceDriver,
+                persistance,
                 cachePath,
                 JSON.parse(data),
             );
@@ -122,19 +122,19 @@ export class PersistantCache<VALUE = unknown> extends Cache<VALUE> {
                 },
             });
 
-            return new PersistantCache(persistanceDriver, cachePath, {});
+            return new PersistantCache(persistance, cachePath, {});
         }
     }
 
     constructor(
-        persistanceDriver: PersistanceDriver,
+        persistance: Persistance,
         cachePath: string,
         previousData: CacheData,
         nextData: CacheData = {},
     ) {
         super(previousData, nextData);
         this.cachePath = cachePath;
-        this.persistanceDriver = persistanceDriver;
+        this.persistance = persistance;
     }
 
     async save(): Promise<void> {
@@ -145,7 +145,7 @@ export class PersistantCache<VALUE = unknown> extends Cache<VALUE> {
             },
         });
 
-        await this.persistanceDriver.set(
+        await this.persistance.set(
             this.cachePath,
             JSON.stringify(this.serialize()),
         );

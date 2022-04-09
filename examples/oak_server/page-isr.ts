@@ -1,5 +1,7 @@
 import type * as frugal from '../../packages/core/mod.ts';
-import * as oak from '../../dep/oak.ts';
+import { cx } from '../../packages/loader_style/styled.ts';
+
+import { red } from './main.style.ts';
 
 type Request = { slug: string };
 
@@ -7,8 +9,6 @@ type Data = {
     title: string;
     content: string;
 };
-
-type PostBody = oak.BodyForm;
 
 export function getRequestList(): Request[] {
     return [{ slug: '1' }];
@@ -38,13 +38,9 @@ export function getContent(
 ) {
     return `<html>
         <body>
-            <p>${method}</p>
+            <p className=${cx(red)}>${method}</p>
             <h1>${data.title}</h1>
             <p>${data.content}</p>
-            <form method="POST">
-                <input type="text" name="content">
-                 <button>Submit</button>
-            </form>
         </body>
     </html>`;
 }

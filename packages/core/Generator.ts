@@ -51,7 +51,7 @@ export class Generator {
                 },
                 logger: {
                     timerEnd:
-                        `generation of ${pathname}?${context.searchParams.toString()}`,
+                        `generation of ${context.method} ${pathname}?${context.searchParams.toString()}`,
                 },
             });
             return undefined;
@@ -67,7 +67,7 @@ export class Generator {
             },
             logger: {
                 timerEnd:
-                    `generation of ${pathname}?${context.searchParams.toString()}`,
+                    `generation of ${context.method} ${pathname}?${context.searchParams.toString()}`,
             },
         });
 

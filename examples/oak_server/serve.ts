@@ -25,6 +25,15 @@ application.use(
     staticRouter.allowedMethods(),
     refreshRouter.allowedMethods(),
     dynamicRouter.allowedMethods(),
+    async (context, next) => {
+        try {
+            await context.send({
+                root: frugal.config.publicDir,
+            });
+        } catch {
+            next();
+        }
+    },
 );
 
 application.addEventListener('listen', ({ hostname, port, secure }) => {
