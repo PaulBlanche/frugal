@@ -19,7 +19,15 @@ export type GetDynamicDataParams<REQUEST> = {
     searchParams: URLSearchParams;
 };
 
+export type PostDynamicDataParams<REQUEST, POST_BODY> = {
+    phase: 'generate';
+    request: REQUEST;
+    searchParams: URLSearchParams;
+    body: POST_BODY;
+};
+
 export type GetContentParams<REQUEST, DATA> = {
+    method: 'POST' | 'GET';
     phase: Phase;
     request: REQUEST;
     data: DATA;
@@ -40,32 +48,38 @@ export type GetDynamicData<REQUEST, DATA> = (
     params: GetDynamicDataParams<REQUEST>,
 ) => Promise<DATA> | DATA;
 
+export type PostDynamicData<REQUEST, DATA, POST_BODY> = (
+    params: PostDynamicDataParams<REQUEST, POST_BODY>,
+) => Promise<DATA> | DATA;
+
 export type GetContent<REQUEST, DATA> = (
     params: GetContentParams<REQUEST, DATA>,
 ) => Promise<string> | string;
 
-export type StaticPageDescriptor<REQUEST, DATA> = {
+export type StaticPageDescriptor<REQUEST, DATA, POST_BODY> = {
     self: URL;
     pattern: string;
     getRequestList: GetRequestList<REQUEST>;
+    postDynamicData?: PostDynamicData<REQUEST, DATA, POST_BODY>;
     getStaticData: GetStaticData<REQUEST, DATA>;
     getContent: GetContent<REQUEST, DATA>;
 };
 
-export type DynamicPageDescriptor<REQUEST, DATA> = {
+export type DynamicPageDescriptor<REQUEST, DATA, POST_BODY> = {
     self: URL;
     pattern: string;
     getDynamicData: GetDynamicData<REQUEST, DATA>;
+    postDynamicData?: PostDynamicData<REQUEST, DATA, POST_BODY>;
     getContent: GetContent<REQUEST, DATA>;
 };
 
-export function page<REQUEST extends object, DATA>(
+export function page<REQUEST extends object, DATA, POST_BODY>(
     descriptor: any,
-): Page<REQUEST, DATA> {
-    if (isStaticDescriptor<REQUEST, DATA>(descriptor)) {
+): Page<REQUEST, DATA, POST_BODY> {
+    if (isStaticDescriptor<REQUEST, DATA, POST_BODY>(descriptor)) {
         return new StaticPage(descriptor);
     }
-    if (isDynamicDescriptor<REQUEST, DATA>(descriptor)) {
+    if (isDynamicDescriptor<REQUEST, DATA, POST_BODY>(descriptor)) {
         return new DynamicPage(descriptor);
     }
 
@@ -77,9 +91,9 @@ export function page<REQUEST extends object, DATA>(
     );
 }
 
-function isDynamicDescriptor<REQUEST extends object, DATA>(
+function isDynamicDescriptor<REQUEST extends object, DATA, POST_BODY>(
     descriptor: any,
-): descriptor is DynamicPageDescriptor<REQUEST, DATA> {
+): descriptor is DynamicPageDescriptor<REQUEST, DATA, POST_BODY> {
     if (typeof descriptor === 'object' && descriptor !== null) {
         if ('getDynamicData' in descriptor) {
             validateDynamicDescriptor(descriptor);
@@ -89,9 +103,9 @@ function isDynamicDescriptor<REQUEST extends object, DATA>(
     return false;
 }
 
-function isStaticDescriptor<REQUEST extends object, DATA>(
+function isStaticDescriptor<REQUEST extends object, DATA, POST_BODY>(
     descriptor: any,
-): descriptor is StaticPageDescriptor<REQUEST, DATA> {
+): descriptor is StaticPageDescriptor<REQUEST, DATA, POST_BODY> {
     if (typeof descriptor === 'object' && descriptor !== null) {
         if ('getStaticData' in descriptor) {
             validateStaticDescriptor(descriptor);
@@ -101,8 +115,8 @@ function isStaticDescriptor<REQUEST extends object, DATA>(
     return false;
 }
 
-function validateStaticDescriptor<REQUEST extends object, DATA>(
-    descriptor: StaticPageDescriptor<REQUEST, DATA>,
+function validateStaticDescriptor<REQUEST extends object, DATA, POST_BODY>(
+    descriptor: StaticPageDescriptor<REQUEST, DATA, POST_BODY>,
 ): void {
     assert(
         descriptor.self instanceof URL,
@@ -126,8 +140,8 @@ function validateStaticDescriptor<REQUEST extends object, DATA>(
     );
 }
 
-function validateDynamicDescriptor<REQUEST extends object, DATA>(
-    descriptor: DynamicPageDescriptor<REQUEST, DATA>,
+function validateDynamicDescriptor<REQUEST extends object, DATA, POST_BODY>(
+    descriptor: DynamicPageDescriptor<REQUEST, DATA, POST_BODY>,
 ): void {
     assert(
         descriptor.self instanceof URL,
@@ -147,16 +161,17 @@ function validateDynamicDescriptor<REQUEST extends object, DATA>(
     );
 }
 
-export type Page<REQUEST extends object, DATA> =
-    | StaticPage<REQUEST, DATA>
-    | DynamicPage<REQUEST, DATA>;
+export type Page<REQUEST extends object, DATA, POST_BODY> =
+    | StaticPage<REQUEST, DATA, POST_BODY>
+    | DynamicPage<REQUEST, DATA, POST_BODY>;
 
 export class BasePage<
     REQUEST extends object,
     DATA,
+    POST_BODY,
     DESCRIPTOR extends
-        | StaticPageDescriptor<REQUEST, DATA>
-        | DynamicPageDescriptor<REQUEST, DATA>,
+        | StaticPageDescriptor<REQUEST, DATA, POST_BODY>
+        | DynamicPageDescriptor<REQUEST, DATA, POST_BODY>,
 > {
     protected descriptor: DESCRIPTOR;
     private urlCompiler: pathToRegexp.PathFunction<REQUEST>;
@@ -192,13 +207,32 @@ export class BasePage<
     match(path: string) {
         return this.urlMatcher(path);
     }
+
+    get canPostDynamicData() {
+        return this.descriptor.postDynamicData !== undefined;
+    }
+
+    postDynamicData(params: PostDynamicDataParams<REQUEST, POST_BODY>) {
+        if (this.descriptor.postDynamicData === undefined) {
+            throw Error(
+                `Unable to handle post, descriptor ${this.descriptor.pattern} has no postDynamicData`,
+            );
+        }
+
+        return this.descriptor.postDynamicData(params);
+    }
 }
 
-export class StaticPage<REQUEST extends object, DATA>
-    extends BasePage<REQUEST, DATA, StaticPageDescriptor<REQUEST, DATA>>
-    implements StaticPageDescriptor<REQUEST, DATA> {
+export class StaticPage<REQUEST extends object, DATA, POST_BODY>
+    extends BasePage<
+        REQUEST,
+        DATA,
+        POST_BODY,
+        StaticPageDescriptor<REQUEST, DATA, POST_BODY>
+    >
+    implements StaticPageDescriptor<REQUEST, DATA, POST_BODY> {
     constructor(
-        descriptor: StaticPageDescriptor<REQUEST, DATA>,
+        descriptor: StaticPageDescriptor<REQUEST, DATA, POST_BODY>,
     ) {
         super(descriptor);
     }
@@ -212,11 +246,16 @@ export class StaticPage<REQUEST extends object, DATA>
     }
 }
 
-export class DynamicPage<REQUEST extends object, DATA>
-    extends BasePage<REQUEST, DATA, DynamicPageDescriptor<REQUEST, DATA>>
-    implements DynamicPageDescriptor<REQUEST, DATA> {
+export class DynamicPage<REQUEST extends object, DATA, POST_BODY>
+    extends BasePage<
+        REQUEST,
+        DATA,
+        POST_BODY,
+        DynamicPageDescriptor<REQUEST, DATA, POST_BODY>
+    >
+    implements DynamicPageDescriptor<REQUEST, DATA, POST_BODY> {
     constructor(
-        descriptor: DynamicPageDescriptor<REQUEST, DATA>,
+        descriptor: DynamicPageDescriptor<REQUEST, DATA, POST_BODY>,
     ) {
         super(descriptor);
     }

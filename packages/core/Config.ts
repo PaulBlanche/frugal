@@ -3,6 +3,7 @@ import { Loader } from './loader.ts';
 import * as importmap from '../../dep/importmap.ts';
 import * as path from '../../dep/std/path.ts';
 import { Page } from './Page.ts';
+import { FilesystemPersistance, Persistance } from './Persistance.ts';
 
 // TODO(PaulBlanche): add config validator
 export type Config = {
@@ -11,7 +12,9 @@ export type Config = {
     importMap?: string;
     loaders?: Loader<any>[];
     outputDir: string;
-    pages: Page<any, any>[];
+    pages: Page<any, any, any>[];
+    pagePersistance?: Persistance;
+    cachePersistance?: Persistance;
     logging?: {
         build: log.Config;
         server?: log.Config;
@@ -156,6 +159,16 @@ export class CleanConfig {
                 },
             });
         }
+    }
+
+    get pagePersistance() {
+        return this.config.pagePersistance ??
+            new FilesystemPersistance();
+    }
+
+    get cachePersistance() {
+        return this.config.cachePersistance ??
+            new FilesystemPersistance();
     }
 
     get root() {

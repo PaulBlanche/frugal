@@ -1,13 +1,13 @@
 import { Page, Phase, StaticPage } from './Page.ts';
 import * as mumur from '../murmur/mod.ts';
-import * as path from '../../dep/std/path.ts';
-import * as fs from '../../dep/std/fs.ts';
 import * as log from '../log/mod.ts';
 import { PageGenerator } from './PageGenerator.ts';
 import { assert } from '../../dep/std/asserts.ts';
 import { Cache } from './Cache.ts';
+import { Persistance } from './Persistance.ts';
 
 export type PageBuilderConfig = {
+    persistance: Persistance;
     cache: Cache;
 };
 
@@ -15,16 +15,16 @@ function logger() {
     return log.getLogger('frugal:PageBuilder');
 }
 
-export class PageBuilder<REQUEST extends object, DATA> {
-    private generator: PageGenerator<REQUEST, DATA>;
-    private page: Page<REQUEST, DATA>;
+export class PageBuilder<REQUEST extends object, DATA, POST_BODY> {
+    private generator: PageGenerator<REQUEST, DATA, POST_BODY>;
+    private page: Page<REQUEST, DATA, POST_BODY>;
     private hash: string;
     private config: PageBuilderConfig;
 
     constructor(
-        page: Page<REQUEST, DATA>,
+        page: Page<REQUEST, DATA, POST_BODY>,
         hash: string,
-        generator: PageGenerator<REQUEST, DATA>,
+        generator: PageGenerator<REQUEST, DATA, POST_BODY>,
         config: PageBuilderConfig,
     ) {
         this.page = page;
@@ -104,10 +104,14 @@ export class PageBuilder<REQUEST extends object, DATA> {
             key: pageInstanceHash,
             producer: async () => {
                 const { pagePath, content } = await this.generator
-                    .generateContentFromData(url, data, request, phase);
+                    .generateContentFromData(url, {
+                        method: 'GET',
+                        data,
+                        request,
+                        phase,
+                    });
 
-                await fs.ensureFile(pagePath);
-                await Deno.writeTextFile(pagePath, content);
+                await this.config.persistance.set(pagePath, content);
 
                 logger().debug({
                     op: 'done',

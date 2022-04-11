@@ -8,23 +8,14 @@ function logger() {
 
 export class Refresher {
     private config: CleanConfig;
-    private refreshers: PageRefresher<any, any>[];
+    refreshers: PageRefresher<any, any, any>[];
 
-    constructor(config: CleanConfig, refreshers: PageRefresher<any, any>[]) {
+    constructor(
+        config: CleanConfig,
+        refreshers: PageRefresher<any, any, any>[],
+    ) {
         this.config = config;
-        this.refreshers = refreshers; /*this.context.pages.filter((page) =>
-            page instanceof StaticPage
-        ).map((page) => {
-            return new PageRefresher(page, {
-                cache: this.context.cache,
-                loaderContext: this.context.loaderContext,
-                publicDir: this.config.publicDir,
-            });
-        });*/
-    }
-
-    get routes() {
-        return this.refreshers.map((refresher) => refresher.route);
+        this.refreshers = refreshers;
     }
 
     async refresh(pathname: string): Promise<string | undefined> {
@@ -76,7 +67,7 @@ export class Refresher {
 
     private getMatchingPageRefresher(
         pathname: string,
-    ): PageRefresher<any, any> | undefined {
+    ): PageRefresher<any, any, any> | undefined {
         for (const pageRefresher of this.refreshers) {
             if (pageRefresher.match(pathname)) {
                 return pageRefresher;

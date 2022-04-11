@@ -1,0 +1,29 @@
+name: deploy
+on: [push]
+
+jobs:
+  deploy:
+    name: Deploy
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write # Needed for auth with Deno Deploy
+      contents: read # Needed to clone the repository
+
+    steps:
+      - name: Clone repository
+        uses: actions/checkout@v2
+
+      - name: install task
+        uses: arduino/setup-task@v1
+
+      - name: install latest deno
+        uses: denoland/setup-deno@v1
+
+      - name: run build
+        run: task example -- examples/oak_server/build.ts
+
+      - name: Upload to Deno Deploy
+        uses: denoland/deployctl@v1
+        with:
+          project: frugal-test
+          entrypoint: examples/oak_server/serve.ts

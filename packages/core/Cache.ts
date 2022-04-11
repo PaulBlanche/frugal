@@ -1,5 +1,6 @@
 import * as fs from '../../dep/std/fs.ts';
 import * as log from '../log/mod.ts';
+import { Persistance } from './Persistance.ts';
 
 export type CacheData = {
     [s: string]: any;
@@ -96,8 +97,9 @@ export class Cache<VALUE = unknown> {
 
 export class PersistantCache<VALUE = unknown> extends Cache<VALUE> {
     private cachePath: string;
+    private persistance: Persistance;
 
-    static async load(cachePath: string) {
+    static async load(persistance: Persistance, cachePath: string) {
         logger().info({
             cachePath,
             msg() {
@@ -105,8 +107,13 @@ export class PersistantCache<VALUE = unknown> extends Cache<VALUE> {
             },
         });
         try {
-            const data = await Deno.readTextFile(cachePath);
-            return new PersistantCache(cachePath, JSON.parse(data));
+            const data = await persistance.get(cachePath);
+            console.log(data);
+            return new PersistantCache(
+                persistance,
+                cachePath,
+                JSON.parse(data),
+            );
         } catch {
             logger().debug({
                 cachePath,
@@ -115,17 +122,19 @@ export class PersistantCache<VALUE = unknown> extends Cache<VALUE> {
                 },
             });
 
-            return new PersistantCache(cachePath, {});
+            return new PersistantCache(persistance, cachePath, {});
         }
     }
 
     constructor(
+        persistance: Persistance,
         cachePath: string,
         previousData: CacheData,
         nextData: CacheData = {},
     ) {
         super(previousData, nextData);
         this.cachePath = cachePath;
+        this.persistance = persistance;
     }
 
     async save(): Promise<void> {
@@ -136,8 +145,7 @@ export class PersistantCache<VALUE = unknown> extends Cache<VALUE> {
             },
         });
 
-        await fs.ensureFile(this.cachePath);
-        await Deno.writeTextFile(
+        await this.persistance.set(
             this.cachePath,
             JSON.stringify(this.serialize()),
         );
