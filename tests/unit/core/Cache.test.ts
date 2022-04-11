@@ -1,5 +1,6 @@
 import * as asserts from '../../../dep/std/asserts.ts';
-import { FakeFileSystem, spy } from '../../test_util/mod.ts';
+import { spy } from '../../test_util/mod.ts';
+import { fakePersistance } from './__fixtures__/Persistance.ts';
 
 import { Cache, PersistantCache } from '../../../packages/core/Cache.ts';
 
@@ -134,9 +135,9 @@ Deno.test('Cache: memoize keeps call results after serialization', async () => {
 });
 
 Deno.test('Cache: memoize keeps call results after save/load', async () => {
-    new FakeFileSystem();
+    const persistance = fakePersistance();
 
-    const cache = await PersistantCache.load('path');
+    const cache = await PersistantCache.load(persistance, 'path');
 
     const value = {};
 
@@ -149,17 +150,9 @@ Deno.test('Cache: memoize keeps call results after save/load', async () => {
 
     await cache.memoize({ producer, otherwise, key: 'key' });
 
-    const fs: Record<string, string> = {};
-    Deno.writeTextFile = (path, content) => {
-        fs[String(path)] = content;
-        return Promise.resolve();
-    };
-
-    Deno.readTextFile = (path) => Promise.resolve(fs[String(path)]);
-
     await cache.save();
 
-    const newCache = await PersistantCache.load('path');
+    const newCache = await PersistantCache.load(persistance, 'path');
 
     await Promise.all([
         newCache.memoize({ producer, otherwise, key: 'key' }),
