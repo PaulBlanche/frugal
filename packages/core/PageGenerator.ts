@@ -37,14 +37,6 @@ export class PageGenerator<REQUEST extends object, DATA, POST_BODY> {
         this.config = config;
     }
 
-    get route(): { pattern: string; post: boolean; get: boolean } {
-        return {
-            pattern: this.page.pattern,
-            post: this.page.canPostDynamicData,
-            get: this.page instanceof DynamicPage,
-        };
-    }
-
     match(url: string): boolean {
         return Boolean(this.page.match(url));
     }

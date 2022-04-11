@@ -33,14 +33,6 @@ export class PageBuilder<REQUEST extends object, DATA, POST_BODY> {
         this.generator = generator;
     }
 
-    get route(): { pattern: string; post: boolean; get: boolean } {
-        return {
-            pattern: this.page.pattern,
-            post: this.page.canPostDynamicData,
-            get: false,
-        };
-    }
-
     async buildAll() {
         assert(
             this.page instanceof StaticPage,

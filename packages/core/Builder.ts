@@ -8,7 +8,7 @@ function logger() {
 
 export class Builder {
     private config: CleanConfig;
-    private builders: PageBuilder<any, any, any>[];
+    builders: PageBuilder<any, any, any>[];
 
     constructor(
         config: CleanConfig,
@@ -16,10 +16,6 @@ export class Builder {
     ) {
         this.config = config;
         this.builders = builders;
-    }
-
-    get routes() {
-        return this.builders.map((builder) => builder.route);
     }
 
     async build() {

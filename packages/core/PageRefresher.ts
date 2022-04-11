@@ -19,14 +19,6 @@ export class PageRefresher<REQUEST extends object, DATA, POST_BODY> {
         this.builder = builder;
     }
 
-    get route(): { pattern: string; post: boolean; get: boolean } {
-        return {
-            pattern: this.page.pattern,
-            post: false,
-            get: true,
-        };
-    }
-
     match(pathname: string): boolean {
         return Boolean(this.page.match(pathname));
     }
@@ -34,6 +26,7 @@ export class PageRefresher<REQUEST extends object, DATA, POST_BODY> {
     async refresh(pathname: string): Promise<string> {
         const match = this.page.match(pathname);
         assert(match !== false);
+        const request = match.params;
 
         logger().info({
             op: 'start',
@@ -47,7 +40,7 @@ export class PageRefresher<REQUEST extends object, DATA, POST_BODY> {
             },
         });
 
-        const pagePath = await this.builder.build(match.params, 'refresh');
+        const pagePath = await this.builder.build(request, 'refresh');
 
         logger().info({
             op: 'done',

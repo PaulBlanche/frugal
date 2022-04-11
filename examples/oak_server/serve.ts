@@ -1,10 +1,11 @@
 import { Frugal } from '../../packages/core/mod.ts';
-import { CONFIG } from './config.ts';
+import { CONFIG, upstash } from './config.ts';
 
 import {
-    getDynamicRouter,
-    getRefreshRouter,
-    getStaticRouter,
+    DynamicRouter,
+    PrgOrchestrator,
+    SessionManager,
+    StaticRouter,
 } from '../../packages/frugal_oak/mod.ts';
 import { Application } from '../../dep/oak.ts';
 
@@ -12,18 +13,23 @@ const frugal = await Frugal.load(CONFIG);
 
 const application = new Application();
 
-const staticRouter = getStaticRouter(frugal);
+const prgOrchestrator = new PrgOrchestrator(
+    frugal,
+    new SessionManager(upstash, frugal),
+);
 
-const refreshRouter = getRefreshRouter(frugal);
+const staticRouter = new StaticRouter(
+    frugal,
+    prgOrchestrator,
+    'refresh_key',
+);
 
-const dynamicRouter = getDynamicRouter(frugal);
+const dynamicRouter = new DynamicRouter(frugal, prgOrchestrator);
 
 application.use(
     staticRouter.routes(),
-    refreshRouter.routes(),
     dynamicRouter.routes(),
     staticRouter.allowedMethods(),
-    refreshRouter.allowedMethods(),
     dynamicRouter.allowedMethods(),
     async (context, next) => {
         try {

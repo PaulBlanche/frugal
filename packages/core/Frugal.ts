@@ -9,6 +9,7 @@ import { PageRefresher } from './PageRefresher.ts';
 import { GenerationContext, PageGenerator } from './PageGenerator.ts';
 import * as log from '../log/mod.ts';
 import * as path from '../../dep/std/path.ts';
+import { assert } from '../../dep/std/asserts.ts';
 import { DependencyTree, ModuleList } from './DependencyTree.ts';
 import { FilesystemPersistance } from './Persistance.ts';
 import { PersistantCache } from './Cache.ts';
@@ -29,6 +30,19 @@ export class Frugal {
     private moduleList: ModuleList;
     private cache: PersistantCache;
     private loaderContext: LoaderContext;
+    routes: {
+        [pattern: string]: {
+            type: 'static';
+            page: StaticPage<any, any, any>;
+            builder: PageBuilder<any, any, any>;
+            refresher: PageRefresher<any, any, any>;
+            generator: PageGenerator<any, any, any>;
+        } | {
+            type: 'dynamic';
+            page: DynamicPage<any, any, any>;
+            generator: PageGenerator<any, any, any>;
+        };
+    };
 
     static async build(config: Config) {
         const cleanConfig = await CleanConfig.load(config);
@@ -139,9 +153,11 @@ export class Frugal {
         cache: PersistantCache,
         loaderContext: LoaderContext,
     ) {
-        const dynamicPages = config.pages.filter((page) =>
-            page instanceof DynamicPage
-        );
+        this.routes = {};
+
+        const dynamicPages = config.pages.filter((
+            page,
+        ): page is DynamicPage<any, any, any> => page instanceof DynamicPage);
 
         const generators = dynamicPages.map((page) => {
             const generator = new PageGenerator(page, {
@@ -149,12 +165,15 @@ export class Frugal {
                 publicDir: config.publicDir,
             });
 
+            assert(!(page.pattern in this.routes));
+            this.routes[page.pattern] = { type: 'dynamic', page, generator };
+
             return generator;
         });
 
-        const staticPages = config.pages.filter((page) =>
-            page instanceof StaticPage
-        );
+        const staticPages = config.pages.filter((
+            page,
+        ): page is StaticPage<any, any, any> => page instanceof StaticPage);
 
         const { refreshers, builders } = staticPages.reduce(
             (accumulator, page) => {
@@ -180,6 +199,15 @@ export class Frugal {
 
                 accumulator.builders.push(builder);
                 accumulator.refreshers.push(refresher);
+
+                assert(!(page.pattern in this.routes));
+                this.routes[page.pattern] = {
+                    type: 'static',
+                    page,
+                    generator,
+                    builder,
+                    refresher,
+                };
 
                 return accumulator;
             },
@@ -311,18 +339,6 @@ export class Frugal {
             await Deno.remove(this.config.cacheDir, { recursive: true });
         }
         await Deno.remove(this.config.outputDir, { recursive: true });
-    }
-
-    get refreshRoutes() {
-        return this.refresher.routes;
-    }
-
-    get buildRoutes() {
-        return this.builder.routes;
-    }
-
-    get generateRoutes() {
-        return this.generator.routes;
     }
 }
 

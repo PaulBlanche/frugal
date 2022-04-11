@@ -7,7 +7,7 @@ function logger() {
 
 export class Generator {
     private config: CleanConfig;
-    private generators: PageGenerator<any, any, any>[];
+    generators: PageGenerator<any, any, any>[];
 
     constructor(
         config: CleanConfig,
@@ -15,10 +15,6 @@ export class Generator {
     ) {
         this.config = config;
         this.generators = generators;
-    }
-
-    get routes() {
-        return this.generators.map((generator) => generator.route);
     }
 
     async generate(

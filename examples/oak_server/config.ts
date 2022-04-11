@@ -5,7 +5,7 @@ import * as pageSSR from './page-ssr.ts';
 import * as pageForm from './form.ts';
 import { style } from '../../packages/loader_style/mod.ts';
 
-const upstash = new UpstashPersistance(
+export const upstash = new UpstashPersistance(
     'https://eu1-intense-kodiak-36255.upstash.io',
     'AY2fACQgMDUyZDkwZjktMWMwZS00NDdiLWFmOTktODIzOTVkZmY3YzQxZDliOTkxNWJjNmFhNDZkZWFiNjEwODc5ZDU3N2MwZDM=',
 );

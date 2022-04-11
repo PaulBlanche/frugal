@@ -8,7 +8,7 @@ function logger() {
 
 export class Refresher {
     private config: CleanConfig;
-    private refreshers: PageRefresher<any, any, any>[];
+    refreshers: PageRefresher<any, any, any>[];
 
     constructor(
         config: CleanConfig,
@@ -16,10 +16,6 @@ export class Refresher {
     ) {
         this.config = config;
         this.refreshers = refreshers;
-    }
-
-    get routes() {
-        return this.refreshers.map((refresher) => refresher.route);
     }
 
     async refresh(pathname: string): Promise<string | undefined> {
