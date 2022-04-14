@@ -1,6 +1,6 @@
 import { Config, page } from './dep/frugal/core.ts';
 import { script } from './dep/frugal/loader_script.ts';
-import { style } from './dep/frugal/loader_style.ts';
+import { style, styleTransformer } from './dep/frugal/loader_style.ts';
 import * as stylis from './dep/stylis.ts';
 import { svg } from './dep/frugal/loader_jsx_svg.ts';
 import * as home from './pages/home/mod.ts';
@@ -19,7 +19,10 @@ export const config: Config = {
         script({
             name: 'body',
             test: IS_SCRIPT_FILE,
-            transformers: [],
+            transformers: [{
+                test: IS_STYLE_FILE,
+                transformer: styleTransformer,
+            }],
             /*input: {
                 plugins: [
                     rollupStylePlugin({
@@ -30,9 +33,7 @@ export const config: Config = {
                     }) as any,
                 ],
             },*/
-            outputs: [{
-                format: 'esm',
-            }],
+            formats: ['esm'],
         }),
         style({
             test: IS_STYLE_FILE,
