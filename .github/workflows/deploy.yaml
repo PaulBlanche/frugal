@@ -25,5 +25,5 @@ jobs:
       - name: Upload to Deno Deploy
         uses: denoland/deployctl@v1
         with:
-          project: frugal
-          entrypoint: docs/serve.ts
+          project: "frugal"
+          entrypoint: "./docs/serve.ts"
