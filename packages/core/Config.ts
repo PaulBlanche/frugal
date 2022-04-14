@@ -7,6 +7,7 @@ import { FilesystemPersistance, Persistance } from './Persistance.ts';
 
 // TODO(PaulBlanche): add config validator
 export type Config = {
+    devMode?: boolean;
     self: URL;
     root?: URL;
     importMap?: string;
@@ -201,6 +202,10 @@ export class CleanConfig {
 
     get cacheDir() {
         return path.resolve(this.outputDir, '.cache');
+    }
+
+    get devMode() {
+        return this.config.devMode;
     }
 
     get resolve() {

@@ -20,10 +20,10 @@ jobs:
         uses: denoland/setup-deno@v1
 
       - name: run build
-        run: task example -- examples/oak_server/build.ts
+        run: task build-doc
 
       - name: Upload to Deno Deploy
         uses: denoland/deployctl@v1
         with:
-          project: frugal-test
-          entrypoint: examples/oak_server/serve.ts
+          project: frugal
+          entrypoint: docs/serve.ts

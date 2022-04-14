@@ -108,7 +108,6 @@ export class PersistantCache<VALUE = unknown> extends Cache<VALUE> {
         });
         try {
             const data = await persistance.get(cachePath);
-            console.log(data);
             return new PersistantCache(
                 persistance,
                 cachePath,

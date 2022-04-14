@@ -46,9 +46,11 @@ export class DynamicRouter {
 
         for (const pattern in this.frugal.routes) {
             const route = this.frugal.routes[pattern];
-            if (route.type === 'static') {
+            if (route.type === 'static' && !this.frugal.config.devMode) {
                 continue;
             }
+
+            console.log('register dynamic', route.page.pattern);
 
             router.get(route.page.pattern, async (context, next) => {
                 const ctx = context as DynamicContext;
@@ -82,6 +84,7 @@ export class DynamicRouter {
                 return;
             }
 
+            console.log('generate', url.pathname);
             context.response.status = 200;
             context.response.body = result.content;
         };

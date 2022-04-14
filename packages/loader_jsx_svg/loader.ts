@@ -23,12 +23,14 @@ export function svg(config: Config): frugal.Loader<string, void> {
         generate,
     };
 
-    function generate(
-        { cache, assets, dir }: frugal.GenerateParams<void>,
+    async function generate(
+        { getCache, assets, dir }: frugal.GenerateParams<void>,
     ): Promise<string> {
         logger().debug({
             msg: 'generate',
         });
+
+        const cache = await getCache();
 
         const bundleHash = assets.reduce((hash, asset) => {
             return hash.update(asset.hash);

@@ -83,7 +83,7 @@ export class LoaderContext {
         await Deno.writeTextFile(filePath, serializedData);
     }
 
-    get<VALUE = any>(name: string): VALUE {
+    get<VALUE = any>(name: string): VALUE | undefined {
         return this.context[name];
     }
 }

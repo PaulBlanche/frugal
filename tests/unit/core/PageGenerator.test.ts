@@ -38,7 +38,7 @@ Deno.test('PageGenerator: generateContentFromData call page.getContent', async (
         },
     );
 
-    asserts.assertEquals(result.pagePath, 'public/dir/foo/654');
+    asserts.assertEquals(result.pagePath, 'public/dir/foo/654/index.html');
     asserts.assertEquals(result.content, content);
 
     asserts.assertEquals(asSpy(page.getContent).calls, [{
@@ -83,7 +83,7 @@ Deno.test('PageGenerator: generate orchestrate the generation of DynamicPage', a
         searchParams,
     });
 
-    asserts.assertEquals(result.pagePath, 'public/dir/foo/345');
+    asserts.assertEquals(result.pagePath, 'public/dir/foo/345/index.html');
     asserts.assertEquals(result.content, content);
 
     asserts.assertEquals(asSpy(page.getDynamicData).calls, [{

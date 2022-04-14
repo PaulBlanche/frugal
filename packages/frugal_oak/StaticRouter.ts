@@ -9,12 +9,12 @@ export class StaticRouter {
     router: Router;
     frugal: Frugal;
     prgOrchestrator: PrgOrchestrator;
-    refreshKey: string;
+    refreshKey?: string;
 
     constructor(
         frugal: Frugal,
         prgOrchestrator: PrgOrchestrator,
-        refreshKey: string,
+        refreshKey?: string,
     ) {
         this.router = new Router();
         this.frugal = frugal;
@@ -33,23 +33,29 @@ export class StaticRouter {
     }
 
     private _register(router: Router) {
+        if (this.frugal.config.devMode) {
+            return;
+        }
+
         const prgRedirectionMiddleware = this.prgOrchestrator.getRedirection();
         const prgPostMiddleware = this.prgOrchestrator.post();
         const forceRefreshMiddleware = this._forceRefreshMiddleware();
         const cachedMiddleware = this._cachedMiddleware();
         const refreshJitMiddleware = this._refreshJitMiddleware();
 
-        const getMiddleware = composeMiddleware([
-            // handle force refresh first if needed (usually webhook,
-            // outside of "user flow")
-            forceRefreshMiddleware,
-            // start of "user flow", first try PRG if needed
-            prgRedirectionMiddleware,
-            // then try to serve cached page
-            cachedMiddleware,
-            // then try to refresh to populate cache, and serve cached page
-            refreshJitMiddleware,
-        ]);
+        const getMiddleware = composeMiddleware(
+            [
+                // handle force refresh first if needed (usually webhook,
+                // outside of "user flow")
+                forceRefreshMiddleware,
+                // start of "user flow", first try PRG if needed
+                prgRedirectionMiddleware,
+                // then try to serve cached page
+                cachedMiddleware,
+                // then try to refresh to populate cache, and serve cached page
+                refreshJitMiddleware,
+            ],
+        );
 
         const postMiddleware = composeMiddleware([
             prgPostMiddleware,
@@ -83,6 +89,10 @@ export class StaticRouter {
 
     private _forceRefreshMiddleware() {
         return async (context: Context, next: () => Promise<unknown>) => {
+            if (this.refreshKey === undefined) {
+                return await next();
+            }
+
             const ctx = context as StaticContext;
             assert(ctx.refresher);
 

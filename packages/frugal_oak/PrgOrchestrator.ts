@@ -27,6 +27,8 @@ export class PrgOrchestrator {
 
             const sessionId = await this.sessionManager.set(result.content);
 
+            console.log('prg post generate', url.pathname);
+
             await context.cookies.set('prg_session', sessionId);
             context.response.status = 303;
             context.response.headers.set('Location', url.pathname);
@@ -42,6 +44,8 @@ export class PrgOrchestrator {
             if (sessionId === undefined) {
                 return await next();
             }
+
+            console.log('prg get redirect', context.request.url.pathname);
 
             await context.cookies.delete('prg_session');
 

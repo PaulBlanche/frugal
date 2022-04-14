@@ -1,5 +1,5 @@
 import { LoaderContext } from './LoaderContext.ts';
-import { DynamicPage, Page, Phase } from './Page.ts';
+import { DynamicPage, Page, Phase, StaticPage } from './Page.ts';
 import * as path from '../../dep/std/path.ts';
 import * as log from '../log/mod.ts';
 import { assert } from '../../dep/std/asserts.ts';
@@ -7,6 +7,7 @@ import { assert } from '../../dep/std/asserts.ts';
 export type PageGeneratorConfig = {
     loaderContext: LoaderContext;
     publicDir: string;
+    devMode?: boolean;
 };
 
 function logger() {
@@ -72,6 +73,13 @@ export class PageGenerator<REQUEST extends object, DATA, POST_BODY> {
         context: GenerationContext<POST_BODY>,
     ) {
         if (context.method === 'GET') {
+            if (this.config.devMode && this.page instanceof StaticPage) {
+                return await this.page.getStaticData({
+                    phase: 'build',
+                    request,
+                });
+            }
+
             assert(
                 this.page instanceof DynamicPage,
                 `Can't dynamically generate StaticPage ${this.page.pattern}`,
@@ -121,7 +129,9 @@ export class PageGenerator<REQUEST extends object, DATA, POST_BODY> {
             loaderContext: this.config.loaderContext,
         });
 
-        const pagePath = path.join(this.config.publicDir, pathname);
+        const pagePath = pathname.endsWith('.html')
+            ? path.join(this.config.publicDir, pathname)
+            : path.join(this.config.publicDir, pathname, 'index.html');
 
         logger().debug({
             op: 'done',

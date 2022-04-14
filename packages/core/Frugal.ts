@@ -180,6 +180,7 @@ export class Frugal {
                 const generator = new PageGenerator(page, {
                     loaderContext,
                     publicDir: config.publicDir,
+                    devMode: config.devMode,
                 });
 
                 generators.push(generator);
