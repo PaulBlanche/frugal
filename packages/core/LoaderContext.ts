@@ -50,6 +50,12 @@ export class LoaderContext {
             context[loader.name] = result;
         }));
 
+        config.loaders.map((loader) => {
+            if (loader.end) {
+                loader.end();
+            }
+        });
+
         logger().info({
             op: 'done',
             msg() {

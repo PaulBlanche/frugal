@@ -1,4 +1,4 @@
-import { createGlobalStyle } from '../../packages/loader_style/styled.ts';
+import { createGlobalStyle } from '../dep/frugal/styled.ts';
 
 createGlobalStyle`
     body {

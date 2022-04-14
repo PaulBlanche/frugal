@@ -1,5 +1,5 @@
 /** @jsxImportSource preact */
-import { cx } from '../../packages/loader_style/styled.ts';
+import { cx } from '../dep/frugal/styled.ts';
 import * as s from './HeroHeader.style.ts';
 
 type HeroHeader = {

@@ -1,5 +1,5 @@
 /** @jsxImportSource preact */
-import * as svg from '../../packages/loader_jsx_svg/svg-sprite.ts';
+import * as svg from '../dep/frugal/svg-sprite.ts';
 
 const NAME = 'svg';
 const ID = 'carret';

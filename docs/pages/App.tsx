@@ -1,6 +1,6 @@
 /** @jsxImportSource preact */
-import { AppProps, Head } from '../../packages/frugal_preact/mod.server.ts';
-import type { Generated } from '../../packages/loader_script/mod.ts';
+import { AppProps, Head } from '../dep/frugal/frugal_preact.server.ts';
+import type { Generated } from '../dep/frugal/loader_script.ts';
 
 import './App.style.ts';
 

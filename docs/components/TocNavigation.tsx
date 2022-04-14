@@ -1,5 +1,5 @@
 /** @jsxImportSource preact */
-import { cx } from '../../packages/loader_style/styled.ts';
+import { cx } from '../dep/frugal/styled.ts';
 import {
     flattenToc,
     FlatTocNode,
@@ -8,7 +8,7 @@ import {
     nodeMatchHref,
     Toc,
 } from '../toc.ts';
-import { usePathname } from '../../packages/frugal_preact/mod.server.ts';
+import { usePathname } from '../dep/frugal/frugal_preact.server.ts';
 import { Carret } from '../svg/Carret.svg.tsx';
 
 import * as s from './TocNavigation.style.ts';

@@ -11,6 +11,8 @@ vars:
   ALLOW_NET_REPO: deno.land,esm.sh,cdn.esm.sh,cdn.jsdelivr.net,unpkg.com
   ALLOW_NET_SERVER: 0.0.0.0:8000,eu1-intense-kodiak-36255.upstash.io
   ALLOW_ENV: NODE_ENV,DENO_DIR,FRUGAL_REFRESH_KEY,FRUGAL_DEV
+  ALLOW_ENV_ESBUILD: ESBUILD_BINARY_PATH,XDG_CACHE_HOME,HOME
+  ALLOW_NET_ESBUILD: registry.npmjs.org
 
 env:
   DENO_DIR: ./.deno_dir
@@ -44,9 +46,11 @@ tasks:
       - deno --unstable test
           --config {{.CONFIG_FILE}}
           --import-map={{.IMPORT_MAP}}
-          --allow-read={{.ALLOW_READ}}
-          --allow-write={{.ALLOW_WRITE}}
-          --allow-env={{.ALLOW_ENV}}
+          --allow-read
+          --allow-write
+          --allow-run
+          --allow-env={{.ALLOW_ENV}},{{.ALLOW_ENV_ESBUILD}}
+          --allow-net={{.ALLOW_NET_ESBUILD}}
           --no-check
           --coverage={{.COVERAGE_DIR}}/integration
           --jobs

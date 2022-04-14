@@ -1,6 +1,6 @@
 /** @jsxImportSource preact */
-import { cx } from '../../../packages/loader_style/styled.ts';
-import { useData } from '../../../packages/frugal_preact/mod.server.ts';
+import { cx } from '../../dep/frugal/styled.ts';
+import { useData } from '../../dep/frugal/frugal_preact.server.ts';
 import { Data } from './type.ts';
 import { Navigation } from '../../components/Navigation.tsx';
 

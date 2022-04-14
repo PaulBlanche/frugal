@@ -1,9 +1,6 @@
-import {
-    createGlobalStyle,
-    styled,
-} from '../../packages/loader_style/styled.ts';
+import { createGlobalStyle, styled } from '../dep/frugal/styled.ts';
 import { link } from '../styles/link.style.ts';
-import * as gmf from '../../dep/gmf.ts';
+import * as gmf from '../dep/gmf.ts';
 
 createGlobalStyle`
     ${gmf.CSS}

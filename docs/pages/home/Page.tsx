@@ -1,6 +1,6 @@
 /** @jsxImportSource preact */
 //import * as preact from 'preact';
-import { cx } from '../../../packages/loader_style/styled.ts';
+import { cx } from '../../dep/frugal/styled.ts';
 import { HeroHeader } from '../../components/HeroHeader.tsx';
 import { Navigation } from '../../components/Navigation.tsx';
 

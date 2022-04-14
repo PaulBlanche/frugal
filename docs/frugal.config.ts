@@ -1,17 +1,15 @@
-import { Config, page } from '../packages/core/mod.ts';
-import { script } from '../packages/loader_script/mod.ts';
-import { rollupImportMapPlugin } from '../dep/rollup-plugin-import-map.ts';
-import { style } from '../packages/loader_style/mod.ts';
-import { style as rollupStylePlugin } from '../packages/loader_style/rollup-style-plugin.ts';
-import * as stylis from '../dep/stylis.ts';
-import { svg } from '../packages/loader_jsx_svg/mod.ts';
+import { Config, page } from './dep/frugal/core.ts';
+import { script } from './dep/frugal/loader_script.ts';
+import { style } from './dep/frugal/loader_style.ts';
+import * as stylis from './dep/stylis.ts';
+import { svg } from './dep/frugal/loader_jsx_svg.ts';
 import * as home from './pages/home/mod.ts';
 import * as docs from './pages/docs/mod.ts';
 import * as preact from 'preact';
 import { render } from 'preact-render-to-string';
 
 const self = new URL(import.meta.url);
-const importMap = new URL('../import_map.json', self).pathname;
+const importMap = new URL('./import_map.json', self).pathname;
 
 export const config: Config = {
     self: new URL(import.meta.url),
@@ -21,7 +19,8 @@ export const config: Config = {
         script({
             name: 'body',
             test: IS_SCRIPT_FILE,
-            input: {
+            transformers: [],
+            /*input: {
                 plugins: [
                     rollupStylePlugin({
                         test: IS_STYLE_FILE,
@@ -30,7 +29,7 @@ export const config: Config = {
                         maps: importMap,
                     }) as any,
                 ],
-            },
+            },*/
             outputs: [{
                 format: 'esm',
             }],

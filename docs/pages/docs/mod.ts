@@ -1,5 +1,5 @@
-import * as frugal from '../../../packages/core/mod.ts';
-import { getContentFrom } from '../../../packages/frugal_preact/mod.server.ts';
+import * as frugal from '../../dep/frugal/core.ts';
+import { getContentFrom } from '../../dep/frugal/frugal_preact.server.ts';
 
 import { flattenToc, Toc } from '../../toc.ts';
 import { Data, Request } from './type.ts';

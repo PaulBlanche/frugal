@@ -1,6 +1,6 @@
 /** @jsxImportSource preact */
-import { cx } from '../../packages/loader_style/styled.ts';
-import { usePathname } from '../../packages/frugal_preact/mod.server.ts';
+import { cx } from '../dep/frugal/styled.ts';
+import { usePathname } from '../dep/frugal/frugal_preact.server.ts';
 import { nodeHref, nodeMatchHref, Toc, TocNode } from '../toc.ts';
 
 import * as s from './Toc.style.ts';

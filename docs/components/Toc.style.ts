@@ -1,4 +1,4 @@
-import { styled } from '../../packages/loader_style/styled.ts';
+import { styled } from '../dep/frugal/styled.ts';
 import { activeLink, link } from '../styles/link.style.ts';
 
 export const tocLink = styled('toc-link', link)`

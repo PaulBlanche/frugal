@@ -1,4 +1,4 @@
-import { styled } from '../../packages/loader_style/styled.ts';
+import { styled } from '../dep/frugal/styled.ts';
 import { container } from '../styles/container.style.ts';
 import { baseLink } from '../styles/link.style.ts';
 

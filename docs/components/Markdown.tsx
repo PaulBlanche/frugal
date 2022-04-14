@@ -1,6 +1,6 @@
 import * as preact from 'preact';
-import * as gmf from '../../dep/gmf.ts';
-import { cx } from '../../packages/loader_style/styled.ts';
+import * as gmf from '../dep/gmf.ts';
+import { cx } from '../dep/frugal/styled.ts';
 
 import * as s from './Markdown.style.ts';
 

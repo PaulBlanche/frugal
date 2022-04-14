@@ -1,4 +1,4 @@
-import { styled } from '../../packages/loader_style/styled.ts';
+import { styled } from '../dep/frugal/styled.ts';
 
 export const heroHeader = styled('hero-header')`
     display: flex;

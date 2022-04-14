@@ -1,9 +1,10 @@
-import * as rollup from '../../dep/rollup.ts';
+import * as esbuild from '../../dep/esbuild.ts';
 import * as frugal from '../core/mod.ts';
 import * as murmur from '../murmur/mod.ts';
 import * as log from '../log/mod.ts';
 
-import { bundle, CODE_SPLIT_CACHE_KEY, INLINE_CACHE_KEY } from './bundle.ts';
+import { bundle } from './bundle.ts';
+import { Transformer } from './frugalPlugin.ts';
 
 function logger() {
     return log.getLogger('frugal:loader:script');
@@ -13,10 +14,11 @@ type Config = {
     test: (url: URL) => boolean;
     name: string;
     order?(modules: string[]): string[];
-    input?: Omit<rollup.InputOptions, 'input'>;
-    outputs?: rollup.OutputOptions[];
+    formats: esbuild.Format[];
     inline?: boolean;
     end?: () => void;
+    transformers?: Transformer[];
+    importMapFile?: string;
 };
 
 export type Generated = Record<string, Record<string, string>>;
@@ -28,7 +30,12 @@ export function script(
         name: `script_${config.name}`,
         test: config.test,
         generate,
-        end: config.end,
+        end: () => {
+            esbuild.stop();
+            if (config.end) {
+                config.end();
+            }
+        },
     };
 
     async function generate({ assets, getCache, dir }: frugal.GenerateParams) {
@@ -87,12 +94,13 @@ export function script(
                 }, []);
 
                 const result = await bundle({
-                    cache,
-                    input: config.input,
-                    inline: config.inline,
-                    outputs: config.outputs,
+                    //inline: config.inline,
+                    formats: config.formats,
                     publicDir: dir.public,
-                    scripts: facades,
+                    cacheDir: dir.cache,
+                    facades,
+                    transformers: config.transformers,
+                    importMapFile: config.importMapFile,
                 });
 
                 logger().debug({
@@ -114,15 +122,6 @@ export function script(
                 logger().debug({
                     msg: 'nothing new to generate',
                 });
-
-                cache.propagate(CODE_SPLIT_CACHE_KEY);
-                const entrypoints = [
-                    ...new Set(assets.map((asset) => asset.entrypoint)),
-                ];
-
-                for (const entrypoint of entrypoints) {
-                    cache.propagate(INLINE_CACHE_KEY(entrypoint));
-                }
             },
         });
 
