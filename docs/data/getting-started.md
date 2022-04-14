@@ -66,7 +66,7 @@ Running this file will build your project. You might need the following permissi
 - `allow-read` at least on the root of your project. If your pages need to read file outside your project, you'll need permission there too.
 - `allow-write` on the root of your project. Strictly speaking, frugal will only write in the `outputDir` defined in the configuration.
 - `allow-net` for each dependency CDN
-- `allow-env` for some env variables (for now : `NODE_ENV`, `DENO_DIR`,`FRUGAL_REFRESH_KEY`)
+- `allow-env` for some env variables (for now : `NODE_ENV`, `DENO_DIR`)
 
 Create a file `/serve.ts` :
 
@@ -89,4 +89,4 @@ Running this file will serve your project. Is your project contains static pages
 - `allow-read` at least on the root of your project. If your pages need to read file outside your project, you'll need permission there too.
 - `allow-write` on the root of your project. Strictly speaking, frugal will only write in the `outputDir` defined in the configuration.
 - `allow-net` for each dependency CDN, and `0.0.0.0:8000` or the hostname and port you choose to serve your project.
-- `allow-env` for some env variables (for now : `NODE_ENV`, `DENO_DIR`,`FRUGAL_REFRESH_KEY`)
+- `allow-env` for some env variables (for now : `NODE_ENV`, `DENO_DIR`)
