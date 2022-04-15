@@ -23,6 +23,7 @@ export const config: Config = {
                 test: IS_STYLE_FILE,
                 transformer: styleTransformer,
             }],
+            importMapFile: importMap,
             /*input: {
                 plugins: [
                     rollupStylePlugin({

@@ -30,10 +30,10 @@ export function frugalMiddleware(
     return composeMiddleware([
         trailingSlashMiddleware(),
         dynamicRouter.routes(),
+        staticRouter.routes(),
         staticFileMiddleware({
             frugal,
         }),
-        staticRouter.routes(),
         dynamicRouter.allowedMethods(),
         staticRouter.allowedMethods(),
     ]);

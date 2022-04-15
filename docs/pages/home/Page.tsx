@@ -1,13 +1,17 @@
 /** @jsxImportSource preact */
-//import * as preact from 'preact';
 import { cx } from '../../dep/frugal/styled.ts';
 import { HeroHeader } from '../../components/HeroHeader.tsx';
 import { Navigation } from '../../components/Navigation.tsx';
+import { useData } from '../../dep/frugal/frugal_preact.server.ts';
+
+import { Form } from './Form.server.tsx';
 
 import * as s from './Page.style.ts';
 import { link } from '../../styles/link.style.ts';
+import { Data } from './type.ts';
 
 export function Page() {
+    const data = useData<Data>();
     return (
         <>
             <Navigation />
@@ -62,6 +66,8 @@ export function Page() {
                         the philosophy frugal embraces
                     </a>
                 </p>
+
+                <Form initialForm={data.form} />
             </main>
         </>
     );

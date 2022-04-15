@@ -60,6 +60,8 @@ async function bundleCodeSplit(config: BundleConfig) {
             write: false,
             metafile: true,
             outdir: path.join(config.publicDir, 'js', format),
+            jsxFactory: 'preact.h',
+            jsxFragment: 'preact.Fragment',
             plugins: [frugalPlugin({
                 importMapFile: config.importMapFile,
                 transformers: config.transformers,
