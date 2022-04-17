@@ -19,8 +19,6 @@ export class Builder {
     }
 
     async build() {
-        await this.config.setupBuildLogging();
-
         logger().info({
             op: 'start',
             msg() {

@@ -55,13 +55,12 @@ async function bundleCodeSplit(config: BundleConfig) {
         const result = await esbuild.build({
             entryPoints,
             bundle: true,
-            splitting: true,
+            splitting: true, //
             format,
             write: false,
             metafile: true,
+            minify: true, //
             outdir: path.join(config.publicDir, 'js', format),
-            jsxFactory: 'preact.h',
-            jsxFragment: 'preact.Fragment',
             plugins: [frugalPlugin({
                 importMapFile: config.importMapFile,
                 transformers: config.transformers,

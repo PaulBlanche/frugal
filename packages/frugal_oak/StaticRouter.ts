@@ -4,6 +4,14 @@ import { StaticContext } from './FrugalContext.ts';
 import * as path from '../../dep/std/path.ts';
 import { assert } from '../../dep/std/asserts.ts';
 import { PrgOrchestrator } from './PrgOrchestrator.ts';
+import * as log from '../log/mod.ts';
+
+function logger(middleware?: string) {
+    if (middleware === undefined) {
+        return log.getLogger('frugal_oak:StaticRouter');
+    }
+    return log.getLogger(`frugal_oak:StaticRouter:${middleware}`);
+}
 
 export class StaticRouter {
     router: Router;
@@ -67,6 +75,14 @@ export class StaticRouter {
                 continue;
             }
 
+            logger().debug({
+                canPostDynamicData: route.page.canPostDynamicData,
+                pattern: route.page.pattern,
+                msg() {
+                    return `registering route ${this.pattern}`;
+                },
+            });
+
             router.get(route.page.pattern, async (context, next) => {
                 const ctx = context as StaticContext;
                 ctx.generator = route.generator;
@@ -90,6 +106,12 @@ export class StaticRouter {
     private _forceRefreshMiddleware() {
         return async (context: Context, next: () => Promise<unknown>) => {
             if (this.refreshKey === undefined) {
+                logger('forceRefreshMiddleware').debug({
+                    msg() {
+                        return `no refresh key, skip middleware`;
+                    },
+                });
+
                 return await next();
             }
 
@@ -97,7 +119,23 @@ export class StaticRouter {
             assert(ctx.refresher);
 
             const url = context.request.url;
+
+            logger('forceRefreshMiddleware').debug({
+                method: context.request.method,
+                pathname: url.pathname,
+                msg() {
+                    return `handle ${this.method} ${this.pathname}`;
+                },
+            });
+
             if (!url.searchParams.has('force_refresh')) {
+                logger('forceRefreshMiddleware').debug({
+                    method: context.request.method,
+                    pathname: url.pathname,
+                    msg() {
+                        return `no refresh key in request for ${this.method} ${this.pathname}, skip middleware`;
+                    },
+                });
                 return await next();
             }
 
@@ -107,11 +145,27 @@ export class StaticRouter {
                 match === null || match === undefined ||
                 match[1] !== this.refreshKey
             ) {
+                logger('forceRefreshMiddleware').debug({
+                    method: context.request.method,
+                    pathname: url.pathname,
+                    msg() {
+                        return `refresh key not matching, handle failure for ${this.method} ${this.pathname}`;
+                    },
+                });
                 context.response.status = 401;
                 return;
             }
 
             await ctx.refresher.refresh(url.pathname);
+
+            logger('forceRefreshMiddleware').debug({
+                method: context.request.method,
+                pathname: url.pathname,
+                msg() {
+                    return `handle successful for ${this.method} ${this.pathname}, refresh done, delegate to next middleware`;
+                },
+            });
+
             return await next();
         };
     }
@@ -119,10 +173,49 @@ export class StaticRouter {
     private _cachedMiddleware() {
         return async (context: Context, next: () => Promise<unknown>) => {
             const url = context.request.url;
+
+            logger('cachedMiddleware').debug({
+                method: context.request.method,
+                pathname: url.pathname,
+                msg() {
+                    return `handle ${this.method} ${this.pathname}`;
+                },
+            });
+
             try {
-                return await this._sendFromCache(context, url.pathname);
+                if (url.pathname.endsWith('.html')) {
+                    const filename = url.pathname;
+                    logger('cachedMiddleware').debug({
+                        method: context.request.method,
+                        pathname: url.pathname,
+                        filename,
+                        msg() {
+                            return `try to respond to ${this.method} ${this.pathname} with ${this.filename}`;
+                        },
+                    });
+                    return await this._sendFromCache(context, filename);
+                } else {
+                    const filename = path.join(url.pathname, 'index.html');
+                    logger('cachedMiddleware').debug({
+                        method: context.request.method,
+                        pathname: url.pathname,
+                        filename,
+                        msg() {
+                            return `try to respond to ${this.method} ${this.pathname} with ${this.filename}`;
+                        },
+                    });
+                    return await this._sendFromCache(context, filename);
+                }
             } catch (error: unknown) {
                 if (error instanceof NotFound) {
+                    logger('cachedMiddleware').debug({
+                        method: context.request.method,
+                        pathname: url.pathname,
+                        msg() {
+                            return `No cached response found for ${this.method} ${this.pathname}, delegate to next middleware`;
+                        },
+                    });
+
                     return await next();
                 }
                 throw error;
@@ -146,6 +239,15 @@ export class StaticRouter {
             assert(ctx.refresher);
 
             const url = context.request.url;
+
+            logger('refreshJitMiddleware').debug({
+                method: context.request.method,
+                pathname: url.pathname,
+                msg() {
+                    return `handle ${this.method} ${this.pathname}`;
+                },
+            });
+
             await ctx.refresher.refresh(url.pathname);
 
             return await this._sendFromCache(context, url.pathname);

@@ -1,5 +1,13 @@
 import { composeMiddleware, Middleware } from '../../dep/oak.ts';
 import { Frugal } from '../core/mod.ts';
+import * as log from '../log/mod.ts';
+
+function logger(middleware?: string) {
+    if (middleware === undefined) {
+        return log.getLogger('frugal_oak:staticFileMiddleware');
+    }
+    return log.getLogger(`frugal_oak:staticFileMiddleware:${middleware}`);
+}
 
 type Config = {
     frugal: Frugal;
@@ -7,7 +15,13 @@ type Config = {
 
 export function staticFileMiddleware({ frugal }: Config): Middleware {
     return (context, next) => {
-        console.log('static file', context.request.url.pathname);
+        logger().debug({
+            method: context.request.method,
+            pathname: context.request.url.pathname,
+            msg() {
+                return `handle ${this.method} ${this.pathname}`;
+            },
+        });
         return composeMiddleware([
             _filesystemMiddleware(frugal),
             _autoIndexMiddleware(frugal),
@@ -19,11 +33,27 @@ function _filesystemMiddleware(frugal: Frugal): Middleware {
     return async (context, next) => {
         // try to serve the file as is from the filesystem
         try {
+            logger('filesystemMiddleware').debug({
+                method: context.request.method,
+                pathname: context.request.url.pathname,
+                msg() {
+                    return `try to respond to ${this.method} ${this.pathname} with static file`;
+                },
+            });
+
             return await context.send({
                 root: frugal.config.publicDir,
                 index: 'index.html',
             });
         } catch {
+            logger('filesystemMiddleware').debug({
+                method: context.request.method,
+                pathname: context.request.url.pathname,
+                msg() {
+                    return `No static file found for ${this.method} ${this.pathname}, delegate to next middleware`;
+                },
+            });
+
             return await next();
         }
     };
@@ -33,14 +63,32 @@ function _autoIndexMiddleware(frugal: Frugal): Middleware {
     return async (context, next) => {
         const url = context.request.url;
 
+        const filename = `${url.pathname}/index.html`;
         // try to serve the file `[pathname]/index.html`
         try {
-            console.log('static file try', `${url.pathname}/index.html`);
+            logger('autoIndexMiddleware').debug({
+                method: context.request.method,
+                pathname: context.request.url.pathname,
+                filename,
+                msg() {
+                    return `try to respond to ${this.method} ${this.pathname} with ${this.filename}`;
+                },
+            });
+
             return await context.send({
                 root: frugal.config.publicDir,
-                path: `${url.pathname}/index.html`,
+                path: filename,
             });
         } catch {
+            logger('autoIndexMiddleware').debug({
+                method: context.request.method,
+                pathname: context.request.url.pathname,
+                filename,
+                msg() {
+                    return `file ${this.filename} not found for ${this.method} ${this.pathname}, delegate to next middleware`;
+                },
+            });
+
             return await next();
         }
     };

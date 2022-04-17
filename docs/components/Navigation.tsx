@@ -8,6 +8,7 @@ export function Navigation() {
 
     const isHome = pathname === '/index.html';
     const isDocs = pathname.startsWith('/docs');
+    const isExample = pathname.startsWith('/example');
 
     return (
         <div class={cx(s.wrapper)}>
@@ -18,14 +19,15 @@ export function Navigation() {
                 <NavigationEntry active={isDocs} href='/docs'>
                     Docs
                 </NavigationEntry>
-                {
-                    /*<NavigationEntry active={false}>
-                        Examples
-                    </NavigationEntry>
-                    <NavigationEntry active={false}>
-                        Blog
-                    </NavigationEntry>*/
-                }
+                <NavigationEntry active={isExample} href='/example'>
+                    Example
+                </NavigationEntry>
+                <NavigationEntry
+                    active={false}
+                    href='https://github.com/PaulBlanche/frugal'
+                >
+                    Github ⧉
+                </NavigationEntry>
             </nav>
         </div>
     );

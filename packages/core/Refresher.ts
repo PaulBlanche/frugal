@@ -19,8 +19,6 @@ export class Refresher {
     }
 
     async refresh(pathname: string): Promise<string | undefined> {
-        await this.config.setupServerLogging();
-
         logger().info({
             op: 'start',
             pathname,

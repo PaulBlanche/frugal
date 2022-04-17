@@ -2,7 +2,7 @@
 import { cx } from '../../dep/frugal/styled.ts';
 import { useData } from '../../dep/frugal/frugal_preact.server.ts';
 import { Data } from './type.ts';
-import { Navigation } from '../../components/Navigation.tsx';
+import { Layout } from '../../components/Layout.tsx';
 
 import { Markdown } from '../../components/Markdown.tsx';
 import { Toc } from '../../components/Toc.tsx';
@@ -14,8 +14,7 @@ import * as s from './Page.style.ts';
 export function Page() {
     const { markup, toc } = useData<Data>();
     return (
-        <>
-            <Navigation />
+        <Layout>
             <div class={cx(s.wrapper)}>
                 <div class={cx(s.navigation)}>
                     <HeroHeader compact children={'Docs'} />
@@ -26,6 +25,6 @@ export function Page() {
                     <TocNavigation toc={toc} />
                 </main>
             </div>
-        </>
+        </Layout>
     );
 }

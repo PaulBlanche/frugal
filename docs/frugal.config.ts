@@ -3,10 +3,12 @@ import { script } from './dep/frugal/loader_script.ts';
 import { style, styleTransformer } from './dep/frugal/loader_style.ts';
 import * as stylis from './dep/stylis.ts';
 import { svg } from './dep/frugal/loader_jsx_svg.ts';
-import * as home from './pages/home/mod.ts';
-import * as docs from './pages/docs/mod.ts';
 import * as preact from 'preact';
 import { render } from 'preact-render-to-string';
+
+import * as home from './pages/home/mod.ts';
+import * as docs from './pages/docs/mod.ts';
+import * as example from './pages/example/mod.ts';
 
 const self = new URL(import.meta.url);
 const importMap = new URL('./import_map.json', self).pathname;
@@ -21,19 +23,9 @@ export const config: Config = {
             test: IS_SCRIPT_FILE,
             transformers: [{
                 test: IS_STYLE_FILE,
-                transformer: styleTransformer,
+                transform: styleTransformer,
             }],
             importMapFile: importMap,
-            /*input: {
-                plugins: [
-                    rollupStylePlugin({
-                        test: IS_STYLE_FILE,
-                    }),
-                    rollupImportMapPlugin({
-                        maps: importMap,
-                    }) as any,
-                ],
-            },*/
             formats: ['esm'],
         }),
         style({
@@ -55,6 +47,7 @@ export const config: Config = {
     pages: [
         page(home),
         page(docs),
+        page(example),
     ],
 
     logging: {

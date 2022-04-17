@@ -16,13 +16,7 @@ export type Config = {
     pages: Page<any, any, any>[];
     pagePersistance?: Persistance;
     cachePersistance?: Persistance;
-    logging?: {
-        build: log.Config;
-        server?: log.Config;
-    } | {
-        build?: log.Config;
-        server: log.Config;
-    } | log.Config;
+    logging?: log.Config;
 };
 
 function configRoot(config: Config) {
@@ -73,15 +67,12 @@ export const DEFAULT_LOGGER_CONFIG: log.Config = {
 export class CleanConfig {
     private config: Config;
     private importMap: importmap.ImportMap;
-    loggingMode?: 'build' | 'server';
 
     static async load(config: Config) {
         const cleanConfig = new CleanConfig(
             config,
             await this.loadImportMap(config),
         );
-
-        await cleanConfig.setupBuildLogging();
 
         return cleanConfig;
     }
@@ -106,60 +97,15 @@ export class CleanConfig {
         this.importMap = importMap;
     }
 
-    private getBuildLoggingConfig(config: Config): log.Config | undefined {
-        if (config.logging === undefined) {
-            return undefined;
-        }
-
-        if ('build' in config.logging || 'server' in config.logging) {
-            return config.logging.build;
-        }
-
-        return config.logging;
-    }
-
-    private getServerLoggingConfig(config: Config): log.Config | undefined {
-        if (config.logging === undefined) {
-            return undefined;
-        }
-
-        if ('build' in config.logging || 'server' in config.logging) {
-            return config.logging.server;
-        }
-
-        return config.logging;
-    }
-
-    async setupServerLogging() {
-        if (this.loggingMode !== 'server') {
-            this.loggingMode = 'server';
-            const serverLoggingConfig = this.getServerLoggingConfig(
-                this.config,
-            );
-
-            await log.setup({
-                type: serverLoggingConfig?.type ?? DEFAULT_LOGGER_CONFIG.type,
-                loggers: {
-                    ...DEFAULT_LOGGER_CONFIG.loggers,
-                    ...serverLoggingConfig?.loggers,
-                },
-            });
-        }
-    }
-
-    async setupBuildLogging() {
-        if (this.loggingMode !== 'build') {
-            this.loggingMode = 'build';
-            const buildLoggingConfig = this.getBuildLoggingConfig(this.config);
-
-            await log.setup({
-                type: buildLoggingConfig?.type ?? DEFAULT_LOGGER_CONFIG.type,
-                loggers: {
-                    ...DEFAULT_LOGGER_CONFIG.loggers,
-                    ...buildLoggingConfig?.loggers,
-                },
-            });
-        }
+    get loggingConfig() {
+        const config = this.config.logging;
+        return {
+            type: config?.type ?? DEFAULT_LOGGER_CONFIG.type,
+            loggers: {
+                ...DEFAULT_LOGGER_CONFIG.loggers,
+                ...config?.loggers,
+            },
+        };
     }
 
     get pagePersistance() {

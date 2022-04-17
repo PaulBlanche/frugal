@@ -46,6 +46,7 @@ export class Frugal {
 
     static async build(config: Config) {
         const cleanConfig = await CleanConfig.load(config);
+        await log.setup(cleanConfig.loggingConfig);
 
         logger().info({
             op: 'start',
@@ -105,6 +106,7 @@ export class Frugal {
 
     static async load(config: Config) {
         const cleanConfig = await CleanConfig.load(config);
+        await log.setup(cleanConfig.loggingConfig);
 
         logger().info({
             op: 'start',
@@ -241,8 +243,6 @@ export class Frugal {
 
     // build all registered static pages
     async build() {
-        this.config.setupBuildLogging();
-
         logger().info({
             op: 'start',
             msg() {
@@ -269,8 +269,6 @@ export class Frugal {
 
     // refresh a specific static page (might do nothing if nothing changed)
     async refresh(pathname: string) {
-        await this.config.setupServerLogging();
-
         logger().info({
             op: 'start',
             pathname,
@@ -301,8 +299,6 @@ export class Frugal {
 
     // generate a specific dynamic page (allways generate even if nothing changed)
     async generate(pathname: string, context: GenerationContext<any>) {
-        await this.config.setupServerLogging();
-
         logger().info({
             op: 'start',
             pathname,
