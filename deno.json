@@ -12,11 +12,11 @@
     "fmt": {
         "files": {
             "exclude": [
-                "./examples/**/dist",
-                "./docs/dist",
-                "./.vscode/",
-                "./.deno_dir",
-                "./cov_profile"
+                "examples",
+                "tests",
+                "docs/dist",
+                ".vscode/",
+                ".deno_dir"
             ]
         },
         "options": {

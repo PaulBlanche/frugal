@@ -15,6 +15,11 @@ tasks:
       - deno fmt 
           --config {{.CONFIG_FILE}}
 
+  lint:
+    cmds:
+      - deno lint 
+          --config {{.CONFIG_FILE}}
+
   test:
     deps: 
       - unit-test
