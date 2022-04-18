@@ -27,6 +27,9 @@ export const config: Config = {
             }],
             importMapFile: importMap,
             formats: ['esm'],
+            minify: true,
+            bundle: true,
+            splitting: true,
         }),
         style({
             test: IS_STYLE_FILE,
