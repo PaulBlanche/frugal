@@ -11,7 +11,7 @@ import * as docs from './pages/docs/mod.ts';
 import * as example from './pages/example/mod.ts';
 
 const self = new URL(import.meta.url);
-const importMap = new URL('./import_map.json', self).pathname;
+const importMap = new URL('../import_map.json', self).pathname;
 
 export const config: Config = {
     self: new URL(import.meta.url),

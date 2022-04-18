@@ -81,7 +81,7 @@ tasks:
     cmds:
       - deno --unstable run
           --config {{.CONFIG_FILE}}
-          --import-map=docs/import_map.json
+          --import-map={{.IMPORT_MAP}}
           --allow-all
           --no-check
           {{.CLI_ARGS}}

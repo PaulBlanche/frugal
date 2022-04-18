@@ -24,10 +24,17 @@ jobs:
       - name: run build
         run: task build-doc
 
-      - name: Upload to Deno Deploy
-        uses: denoland/deployctl@v1
-        with:
-          project: frugal
-          entrypoint: serve.ts
-          root: docs
-          import-map: import_map.json
+      # can't use deno deploy action, because i need exclude/include (https://github.com/denoland/deployctl/issues/100)
+      #- name: Upload to Deno Deploy
+      #  uses: denoland/deployctl@v1
+      #  with:
+      #    project: frugal
+      #    entrypoint: serve.ts
+      #    root: docs
+      #    import-map: import_map.json
+
+      - name: install Deno Deploy
+        run: deno install --allow-read --allow-write --allow-env --allow-net --allow-run --no-check -r -f https://deno.land/x/deploy/deployctl.ts
+
+      - name: ghetto deploy
+        run: deployctl deploy --token=${{ secrets.DENO_DEPLOY_TOKEN }} --project=frugal --import-map=import_map.json --include=docs,dep,packages,import_map.json docs/serve.ts

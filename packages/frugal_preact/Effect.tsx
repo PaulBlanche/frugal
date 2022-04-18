@@ -39,7 +39,7 @@ export class Effect extends preact.Component<SideEffectProps> {
         this.emitChange();
     }
     componentWillUnmount() {
-        this._pushToStack();
+        this._popFromStack();
         this.emitChange();
     }
 
@@ -48,6 +48,11 @@ export class Effect extends preact.Component<SideEffectProps> {
     }
 
     private _pushToStack() {
+        // deno-lint-ignore no-explicit-any
+        this.props.manager.instanceStack.add(this as any);
+    }
+
+    private _popFromStack() {
         // deno-lint-ignore no-explicit-any
         this.props.manager.instanceStack.delete(this as any);
     }
