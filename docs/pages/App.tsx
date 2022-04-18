@@ -6,7 +6,6 @@ import './App.style.ts';
 
 export function App({ entrypoint, loaderContext, children }: AppProps) {
     const scriptGenerated = loaderContext.get<Generated>('script_body');
-    console.log(scriptGenerated, entrypoint);
     const esmBundleUrl = scriptGenerated?.[entrypoint]?.['esm'];
     const styleUrl = loaderContext.get<string>('style');
     return (

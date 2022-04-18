@@ -1,2 +1,1 @@
-//export * from 'https://cdn.jsdelivr.net/gh/PaulBlanche/frugal@doc/packages/frugal_preact/mod.server.ts';
-export * from '../../../packages/frugal_preact/mod.server.ts';
+export * from 'https://deno.land/x/frugal@0.0.18/packages/frugal_preact/mod.server.ts';

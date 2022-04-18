@@ -20,8 +20,6 @@ export function Form() {
         username: initialForm.username.value,
     });
 
-    console.log(state, submitted);
-
     const now = new Date();
 
     return (

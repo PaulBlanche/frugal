@@ -56,8 +56,6 @@ export class PrgOrchestrator {
             await context.cookies.set('prg_session', sessionId);
             context.response.status = 303;
             context.response.headers.set('Location', url.pathname);
-
-            console.log(result.content);
         };
     }
 
@@ -90,8 +88,6 @@ export class PrgOrchestrator {
                 });
 
                 const content = await this.sessionManager.get(sessionId);
-
-                console.log(content);
 
                 context.response.status = 200;
                 context.response.body = content;
