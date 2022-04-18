@@ -39,9 +39,20 @@ async function bundleCodeSplit(config: BundleConfig) {
     const entryPoints = await Promise.all(config.facades.map(async (facade) => {
         const facadeName = new murmur.Hash().update(path.relative(
             config.rootDir,
-            new URL(facade.entrypoint).pathname,
+            facade.entrypoint,
         ))
             .alphabetic();
+
+        console.log(
+            config.rootDir,
+            facade.entrypoint,
+            path.relative(
+                config.rootDir,
+                facade.entrypoint,
+            ),
+            facadeName,
+        );
+
         const facadePath = path.join(
             config.cacheDir,
             'script_loader',
