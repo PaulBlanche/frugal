@@ -12,6 +12,14 @@ export function App({ entrypoint, loaderContext, children }: AppProps) {
         <>
             <Head>
                 <meta charSet='utf-8' />
+                <meta
+                    name='viewport'
+                    content='width=device-width, initial-scale=1'
+                />
+                <meta
+                    name='description'
+                    content='Frugal web developpment with a framework that does not waste resources. Do the same, but send less'
+                />
                 <title>toto</title>
                 <link
                     rel='stylesheet'
@@ -19,6 +27,7 @@ export function App({ entrypoint, loaderContext, children }: AppProps) {
                     href='https://fontlibrary.org//face/cooper-hewitt'
                     type='text/css'
                 />
+                <html lang='en' />
                 {styleUrl && <link rel='stylesheet' href={styleUrl} />}
             </Head>
             {children}

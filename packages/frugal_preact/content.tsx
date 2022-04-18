@@ -47,8 +47,16 @@ const DEFAULT_APP: App = ({ children }) => {
 const DEFAULT_DOCUMENT: Document = (
     { head, dangerouslySetInnerHTML }: DocumentProps,
 ) => {
+    const htmlIndex = head.findIndex((node) => node.type === 'html');
+
+    const htmlProps = {};
+    if (htmlIndex !== -1) {
+        const [html] = head.splice(htmlIndex, 1);
+        Object.assign(htmlProps, html.props);
+    }
+
     return (
-        <html>
+        <html {...htmlProps}>
             <head>
                 {head}
             </head>

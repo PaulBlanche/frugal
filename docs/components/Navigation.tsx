@@ -42,12 +42,8 @@ type NavigationEntryProps = {
 function NavigationEntry(
     { active = false, children, href }: NavigationEntryProps,
 ) {
-    return (
-        <a
-            class={cx(s.entry, active && s.entryActive)}
-            href={active ? undefined : href}
-        >
-            {children}
-        </a>
-    );
+    if (active) {
+        return <span class={cx(s.entry, s.entryActive)}>{children}</span>;
+    }
+    return <a class={cx(s.entry)} href={href}>{children}</a>;
 }

@@ -5,7 +5,7 @@ export const footer = styled('footer')`
     display: block;
     background: #F8F8F8;
     border-top: 2px solid #F0F0F0;
-    color: #888;
+    color: #7B7070;
 `;
 
 export const footerContainer = styled('footer-container', container)`
