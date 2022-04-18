@@ -7,8 +7,8 @@ import type { Generated } from '../../packages/loader_script/mod.ts';
 import './App.style.ts';
 
 export function App({ entrypoint, loaderContext, children }: AppProps) {
-    const scriptGenerated = loaderContext.get<Generated>('script-body');
-    const esmBundleUrl = scriptGenerated[entrypoint]['esm'];
+    const scriptGenerated = loaderContext.get<Generated>('script_body');
+    const esmBundleUrl = scriptGenerated?.[entrypoint]['esm'];
     const styleUrl = loaderContext.get('style');
     return (
         <>
@@ -18,7 +18,7 @@ export function App({ entrypoint, loaderContext, children }: AppProps) {
                 <link rel='stylesheet' href={styleUrl} />
             </Head>
             {children}
-            <script src={esmBundleUrl}></script>
+            {esmBundleUrl && <script src={esmBundleUrl}></script>}
         </>
     );
 }

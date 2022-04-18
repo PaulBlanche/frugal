@@ -1,15 +1,131 @@
 import * as path from '../../dep/std/path.ts';
 import * as fs from '../../dep/std/fs.ts';
-import * as rollup from '../../dep/rollup.ts';
-import { denoResolver } from '../../dep/rollup-plugin-deno-resolver.ts';
 import * as murmur from '../murmur/mod.ts';
-import * as frugal from '../core/mod.ts';
 import * as log from '../log/mod.ts';
+
+import * as esbuild from '../../dep/esbuild.ts';
+import { frugalPlugin, Transformer } from './frugalPlugin.ts';
 
 function logger() {
     return log.getLogger('frugal:loader:script');
 }
 
+export function bundle(config: BundleConfig) {
+    return bundleCodeSplit(config);
+}
+
+export type BundleConfig =
+    & {
+        cacheDir: string;
+        publicDir: string;
+        rootDir: string;
+        facades: {
+            entrypoint: string;
+            content: string;
+        }[];
+        formats: esbuild.Format[];
+        transformers?: Transformer[];
+        importMapFile?: string;
+    }
+    & Omit<
+        esbuild.BuildOptions,
+        | 'format'
+        | 'entryPoints'
+        | 'write'
+        | 'metafile'
+        | 'outdir'
+        | 'plugins'
+        | 'outfile'
+        | 'outbase'
+        | 'platform'
+        | 'outExtension'
+        | 'publicPath'
+        | 'incremental'
+        | 'stdin'
+        | 'plugins'
+        | 'absWorkingDir'
+        | 'watch'
+    >;
+
+async function bundleCodeSplit(
+    {
+        cacheDir,
+        publicDir,
+        rootDir,
+        facades,
+        formats,
+        transformers,
+        importMapFile,
+        ...esbuildConfig
+    }: BundleConfig,
+) {
+    const url: Record<string, Record<string, string>> = {};
+
+    const facadeToEntrypoint: Record<string, string> = {};
+
+    const entryPoints = await Promise.all(facades.map(async (facade) => {
+        const facadeName = new murmur.Hash().update(
+            path.relative(rootDir, facade.entrypoint),
+        ).alphabetic();
+
+        const facadePath = path.join(
+            cacheDir,
+            'script_loader',
+            `${facadeName}.ts`,
+        );
+
+        facadeToEntrypoint[`deno:file://${facadePath}`] = facade.entrypoint;
+
+        await fs.ensureFile(facadePath);
+        await Deno.writeTextFile(facadePath, facade.content);
+        return facadePath;
+    }));
+
+    await Promise.all(formats.map(async (format) => {
+        const result = await esbuild.build({
+            ...esbuildConfig,
+            entryPoints,
+            format,
+            write: false,
+            metafile: true,
+            platform: 'neutral',
+            incremental: false,
+            outdir: path.join(publicDir, 'js', format),
+            plugins: [frugalPlugin({
+                importMapFile,
+                transformers,
+            })],
+        });
+
+        await Promise.all(result.outputFiles.map(async (outputFile) => {
+            const output = result.metafile
+                ?.outputs[path.relative(Deno.cwd(), outputFile.path)];
+            if (output?.entryPoint) {
+                const entrypoint = facadeToEntrypoint[output.entryPoint];
+                url[entrypoint] = url[entrypoint] ?? {};
+                url[entrypoint][format] = `/${
+                    path.relative(publicDir, outputFile.path)
+                }`;
+
+                logger().debug({
+                    url: url[entrypoint][format],
+                    format: format,
+                    page: entrypoint,
+                    msg() {
+                        return `add bundle script ${this.url} for ${this.page} (${this.format} format)`;
+                    },
+                });
+            }
+
+            await fs.ensureFile(outputFile.path);
+            await Deno.writeFile(outputFile.path, outputFile.contents);
+        }));
+    }));
+
+    return url;
+}
+
+/*
 type BundleConfig = {
     cache: frugal.PersistantCache<any>;
     input?: Omit<rollup.InputOptions, 'input' | 'cache'>;
@@ -29,6 +145,7 @@ export function bundle(config: BundleConfig) {
 
     return bundleCodeSplit(config);
 }
+
 
 export function INLINE_CACHE_KEY(entrypoint: string) {
     return `rollup-inline-${entrypoint}`;
@@ -219,3 +336,4 @@ function multiple(
         },
     };
 }
+*/

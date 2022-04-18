@@ -1,8 +1,7 @@
 import { build, page } from '../../packages/core/mod.ts';
 import { script } from '../../packages/loader_script/mod.ts';
 import { style } from '../../packages/loader_style/mod.ts';
-import { style as rollupStylePlugin } from '../../packages/loader_style/rollup-style-plugin.ts';
-import { rollupImportMapPlugin } from '../../dep/rollup-plugin-import-map.ts';
+import { styleTransformer } from '../../packages/loader_style/transformer.ts';
 
 import * as myPage from './page.ts';
 
@@ -30,23 +29,11 @@ build({
         script({
             name: 'body',
             test: (url) => /\.script\.ts$/.test(url.toString()),
-            input: {
-                plugins: [
-                    // Since we use an import map to resolve bare imports, we need
-                    // to make rollup aware of this resolution logic.
-                    rollupImportMapPlugin({
-                        maps: IMPORT_MAP,
-                    }) as any,
-                    // We need to make rollup aware of the style bundle, in order
-                    // to have only the classnames in the bundle and not the whole
-                    // style
-                    rollupStylePlugin({
-                        test: (url) => /\.style\.ts$/.test(url.toString()),
-                    }),
-                ],
-            },
-            outputs: [{
-                format: 'esm',
+            formats: ['esm'],
+            importMapFile: IMPORT_MAP,
+            transformers: [{
+                test: (url) => /\.style\.ts$/.test(url.toString()),
+                transform: styleTransformer,
             }],
         }),
         style({

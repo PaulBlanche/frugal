@@ -10,10 +10,7 @@ type FakeCleanConfigConfig = {
     config?: Partial<
         Omit<Config, 'importMap'> & { importMap: importmap.ImportMap }
     >;
-    mock?: {
-        setupServerLogging?: CleanConfig['setupServerLogging'];
-        setupBuildLogging?: CleanConfig['setupBuildLogging'];
-    };
+    mock?: {};
 };
 
 export function fakeConfig(
@@ -38,16 +35,6 @@ export function fakeConfig(
         pages,
         logging,
     }, importMap);
-
-    const originalSetupServerLogging = config.setupServerLogging;
-    config.setupServerLogging = spy(
-        mock.setupServerLogging ?? originalSetupServerLogging.bind(config),
-    );
-
-    const originalSetupBuildLogging = config.setupBuildLogging;
-    config.setupBuildLogging = spy(
-        mock.setupBuildLogging ?? originalSetupBuildLogging.bind(config),
-    );
 
     return config;
 }

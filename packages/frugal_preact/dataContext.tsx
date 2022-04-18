@@ -38,15 +38,18 @@ export function useCreationTimestamp(): number {
 }
 
 type DataProviderProps = {
+    embedData: boolean;
     context?: DataContext;
     children: preact.ComponentChildren;
 };
 
-export function DataProvider({ context, children }: DataProviderProps) {
+export function DataProvider(
+    { embedData, context, children }: DataProviderProps,
+) {
     if (typeof document === 'undefined') {
         return (
             <>
-                {context && (
+                {context && embedData && (
                     <script
                         dangerouslySetInnerHTML={{
                             __html:

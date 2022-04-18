@@ -37,6 +37,7 @@ export type DocumentProps = {
 type ContentConfig = {
     App: App;
     Document: Document;
+    embedData: boolean;
 };
 
 const DEFAULT_APP: App = ({ children }) => {
@@ -58,8 +59,10 @@ const DEFAULT_DOCUMENT: Document = (
 
 export function getContentFrom<REQUEST, DATA>(
     Page: Page,
-    { App = DEFAULT_APP, Document = DEFAULT_DOCUMENT }: Partial<ContentConfig> =
-        {},
+    { App = DEFAULT_APP, Document = DEFAULT_DOCUMENT, embedData = true }:
+        Partial<
+            ContentConfig
+        > = {},
 ): frugal.GetContent<REQUEST, DATA> {
     return ({
         data,
@@ -80,6 +83,7 @@ export function getContentFrom<REQUEST, DATA>(
                     loaderContext={loaderContext}
                 >
                     <DataProvider
+                        embedData={embedData}
                         context={{ data, pathname, timestamp: Date.now() }}
                     >
                         <Page

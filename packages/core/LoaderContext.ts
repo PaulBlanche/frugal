@@ -50,6 +50,12 @@ export class LoaderContext {
             context[loader.name] = result;
         }));
 
+        config.loaders.map((loader) => {
+            if (loader.end) {
+                loader.end();
+            }
+        });
+
         logger().info({
             op: 'done',
             msg() {
@@ -83,7 +89,7 @@ export class LoaderContext {
         await Deno.writeTextFile(filePath, serializedData);
     }
 
-    get<VALUE = any>(name: string): VALUE {
+    get<VALUE = any>(name: string): VALUE | undefined {
         return this.context[name];
     }
 }

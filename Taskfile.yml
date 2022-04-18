@@ -5,12 +5,6 @@ vars:
   IMPORT_MAP: ./import_map.json
   LOCK_FILE: ./.lock.json
   COVERAGE_DIR: ./tests/cov_profile
-  #authorizations
-  ALLOW_READ: .
-  ALLOW_WRITE: .
-  ALLOW_NET_REPO: deno.land,esm.sh,cdn.esm.sh,cdn.jsdelivr.net,unpkg.com
-  ALLOW_NET_SERVER: 0.0.0.0:8000,eu1-intense-kodiak-36255.upstash.io
-  ALLOW_ENV: NODE_ENV,DENO_DIR
 
 env:
   DENO_DIR: ./.deno_dir
@@ -31,7 +25,7 @@ tasks:
       - deno --unstable test
           --config {{.CONFIG_FILE}}
           --import-map={{.IMPORT_MAP}}
-          --allow-read={{.ALLOW_READ}}
+          --allow-all
           --no-check
           --coverage={{.COVERAGE_DIR}}/unit
           --jobs
@@ -44,9 +38,7 @@ tasks:
       - deno --unstable test
           --config {{.CONFIG_FILE}}
           --import-map={{.IMPORT_MAP}}
-          --allow-read={{.ALLOW_READ}}
-          --allow-write={{.ALLOW_WRITE}}
-          --allow-env={{.ALLOW_ENV}}
+          --allow-all
           --no-check
           --coverage={{.COVERAGE_DIR}}/integration
           --jobs
@@ -67,14 +59,44 @@ tasks:
           --include=packages
           --output={{.COVERAGE_DIR}}/integration/cov_profile.lcov
 
+  dev-doc:
+    env:
+      FRUGAL_DEV: true
+    cmds:
+      - deno --unstable run
+          --config {{.CONFIG_FILE}}
+          --import-map={{.IMPORT_MAP}}
+          --allow-all
+          --no-check
+          --watch=docs/data
+          {{.CLI_ARGS}}
+          docs/serve.ts
+
+  build-doc:
+    cmds:
+      - deno --unstable run
+          --config {{.CONFIG_FILE}}
+          --import-map=docs/import_map.json
+          --allow-all
+          --no-check
+          {{.CLI_ARGS}}
+          docs/build.ts
+
+  serve-doc:
+    cmds:
+      - deno --unstable run
+          --config {{.CONFIG_FILE}}
+          --import-map={{.IMPORT_MAP}}
+          --allow-all
+          --no-check
+          {{.CLI_ARGS}}
+          docs/serve.ts
+
   example:
     cmds:
       - deno --unstable run
           --config {{.CONFIG_FILE}}
           --import-map={{.IMPORT_MAP}}
-          --allow-read={{.ALLOW_READ}}
-          --allow-write={{.ALLOW_WRITE}}
-          --allow-net={{.ALLOW_NET_REPO}},{{.ALLOW_NET_SERVER}}
-          --allow-env={{.ALLOW_ENV}}
+          --allow-all
           --no-check
           {{.CLI_ARGS}}

@@ -4,16 +4,6 @@ import { fakePageBuilder } from './__fixtures__/PageBuilder.ts';
 import { asSpy } from '../../test_util/mod.ts';
 import * as asserts from '../../../dep/std/asserts.ts';
 
-Deno.test('Builder: setup build logging', async () => {
-    const config = fakeConfig();
-
-    const builder = new Builder(config, []);
-
-    await builder.build();
-
-    asserts.assertEquals(asSpy(config.setupBuildLogging).calls.length, 1);
-});
-
 Deno.test('Builder: delegates to underlying PageBuilders', async () => {
     const config = fakeConfig();
 

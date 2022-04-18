@@ -21,8 +21,6 @@ export class Generator {
         pathname: string,
         context: GenerationContext<any>,
     ) {
-        await this.config.setupServerLogging();
-
         logger().info({
             op: 'start',
             pathname,
