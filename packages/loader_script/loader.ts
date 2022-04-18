@@ -98,6 +98,7 @@ export function script(
                     formats: config.formats,
                     publicDir: dir.public,
                     cacheDir: dir.cache,
+                    rootDir: dir.root,
                     facades,
                     transformers: config.transformers,
                     importMapFile: config.importMapFile,

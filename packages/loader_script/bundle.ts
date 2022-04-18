@@ -21,6 +21,7 @@ export function bundle(config: BundleConfig) {
 type BundleConfig = {
     cacheDir: string;
     publicDir: string;
+    rootDir: string;
     facades: {
         entrypoint: string;
         content: string;
@@ -36,7 +37,10 @@ async function bundleCodeSplit(config: BundleConfig) {
     const facadeToEntrypoint: Record<string, string> = {};
 
     const entryPoints = await Promise.all(config.facades.map(async (facade) => {
-        const facadeName = new murmur.Hash().update(facade.entrypoint)
+        const facadeName = new murmur.Hash().update(path.relative(
+            config.rootDir,
+            new URL(facade.entrypoint).pathname,
+        ))
             .alphabetic();
         const facadePath = path.join(
             config.cacheDir,
@@ -80,10 +84,6 @@ async function bundleCodeSplit(config: BundleConfig) {
                     )
                 }`;
             }
-
-            console.log('###', outputFile.path);
-            console.log(outputFile.text);
-            console.log('###');
 
             await fs.ensureFile(outputFile.path);
             await Deno.writeFile(outputFile.path, outputFile.contents);
