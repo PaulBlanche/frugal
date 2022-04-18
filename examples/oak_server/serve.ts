@@ -1,45 +1,32 @@
 import { Frugal } from '../../packages/core/mod.ts';
-import { CONFIG, upstash } from './config.ts';
+import { CONFIG } from './config.ts';
 
-import {
-    DynamicRouter,
-    PrgOrchestrator,
-    SessionManager,
-    StaticRouter,
-} from '../../packages/frugal_oak/mod.ts';
+import { frugalMiddleware } from '../../packages/frugal_oak/mod.ts';
 import { Application } from '../../dep/oak.ts';
 
 const frugal = await Frugal.load(CONFIG);
 
 const application = new Application();
 
-const prgOrchestrator = new PrgOrchestrator(
-    frugal,
-    new SessionManager(upstash, frugal),
-);
-
-const staticRouter = new StaticRouter(
-    frugal,
-    prgOrchestrator,
-    'refresh_key',
-);
-
-const dynamicRouter = new DynamicRouter(frugal, prgOrchestrator);
-
 application.use(
-    staticRouter.routes(),
-    dynamicRouter.routes(),
-    staticRouter.allowedMethods(),
-    dynamicRouter.allowedMethods(),
-    async (context, next) => {
-        try {
-            await context.send({
-                root: frugal.config.publicDir,
-            });
-        } catch {
-            next();
-        }
-    },
+    await frugalMiddleware(frugal, {
+        // Logging configuration. In the context of this exemple, all loggers are
+        // set to DEBUG, but by default everything is set to `INFO`.
+        loggers: {
+            'frugal_oak:DynamicRouter': 'DEBUG',
+            'frugal_oak:DynamicRouter:generateMiddleware': 'DEBUG',
+            'frugal_oak:PrgOrchestrator': 'DEBUG',
+            'frugal_oak:PrgOrchestrator:postMiddleware': 'DEBUG',
+            'frugal_oak:PrgOrchestrator:getRedirectionMiddleware': 'DEBUG',
+            'frugal_oak:staticFileMiddleware': 'DEBUG',
+            'frugal_oak:staticFileMiddleware:filesystemMiddleware': 'DEBUG',
+            'frugal_oak:staticFileMiddleware:autoIndexMiddleware': 'DEBUG',
+            'frugal_oak:StaticRouter': 'DEBUG',
+            'frugal_oak:StaticRouter:forceRefreshMiddleware': 'DEBUG',
+            'frugal_oak:StaticRouter:cachedMiddleware': 'DEBUG',
+            'frugal_oak:StaticRouter:refreshJitMiddleware': 'DEBUG',
+        },
+    }),
 );
 
 application.addEventListener('listen', ({ hostname, port, secure }) => {

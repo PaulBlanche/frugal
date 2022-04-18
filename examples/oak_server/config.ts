@@ -1,14 +1,8 @@
-import { Config, page, UpstashPersistance } from '../../packages/core/mod.ts';
+import { Config, page } from '../../packages/core/mod.ts';
 
 import * as pageISR from './page-isr.ts';
 import * as pageSSR from './page-ssr.ts';
-import * as pageForm from './form.ts';
 import { style } from '../../packages/loader_style/mod.ts';
-
-export const upstash = new UpstashPersistance(
-    'https://eu1-intense-kodiak-36255.upstash.io',
-    'AY2fACQgMDUyZDkwZjktMWMwZS00NDdiLWFmOTktODIzOTVkZmY3YzQxZDliOTkxNWJjNmFhNDZkZWFiNjEwODc5ZDU3N2MwZDM=',
-);
 
 export const CONFIG: Config = {
     // since deno does not have any notion of "root of module", frugal needs to
@@ -23,7 +17,6 @@ export const CONFIG: Config = {
     pages: [
         page(pageISR),
         page(pageSSR),
-        page(pageForm),
     ],
 
     // Logging configuration. In the context of this exemple, all loggers are
@@ -48,9 +41,6 @@ export const CONFIG: Config = {
             'frugal:loader:style': 'DEBUG',
         },
     },
-
-    cachePersistance: upstash,
-    pagePersistance: upstash,
 
     loaders: [
         style({

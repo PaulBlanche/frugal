@@ -13,6 +13,7 @@
         "files": {
             "exclude": [
                 "./examples/**/dist",
+                "./docs/dist",
                 "./.vscode/",
                 "./.deno_dir",
                 "./cov_profile"
@@ -24,6 +25,17 @@
             "indentWidth": 4,
             "singleQuote": true,
             "proseWrap": "preserve"
+        }
+    },
+    "lint": {
+        "files": {
+            "exclude": [
+                "examples",
+                "docs/dist",
+                "tests",
+                ".vscode",
+                ".deno_dir"
+            ]
         }
     }
 }

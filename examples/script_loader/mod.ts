@@ -24,9 +24,9 @@ build({
         script({
             name: 'body',
             test: (url) => /\.script\.ts$/.test(url.toString()),
-            outputs: [{
-                format: 'esm',
-            }],
+            formats: ['esm'],
+            bundle: true,
+            splitting: true,
         }),
     ],
 

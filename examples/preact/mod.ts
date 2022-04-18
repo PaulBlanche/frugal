@@ -1,6 +1,5 @@
 import { build, page } from '../../packages/core/mod.ts';
 import { script } from '../../packages/loader_script/mod.ts';
-import { rollupImportMapPlugin } from '../../dep/rollup-plugin-import-map.ts';
 
 import * as myPage from './page.ts';
 
@@ -20,25 +19,18 @@ build({
     // module use bare imports `preact`, `preact/hooks` and `preact-render-to-string`.
     importMap: IMPORT_MAP,
 
-    // registered loaders. We register the script loader withe the name "body",
+    // registered loaders. We register the script loader with the name "body",
     // and configured to catch all import ending in `.script.ts`. The bundles
     // will be outputed in `esm` format and with code splitting.
     // see the `script_loader` example for more info.
     loaders: [script({
         name: 'body',
         test: (url) => /\.script\.ts$/.test(url.toString()),
-        input: {
-            plugins: [
-                // Since we use an import map to resolve bare imports, we need
-                // to make rollup aware of this resolution logic.
-                rollupImportMapPlugin({
-                    maps: IMPORT_MAP,
-                }) as any,
-            ],
-        },
-        outputs: [{
-            format: 'esm',
-        }],
+        formats: ['esm'],
+        splitting: true,
+        bundle: true,
+        minify: true,
+        importMapFile: IMPORT_MAP,
     })],
 
     // the pages that need to be built
