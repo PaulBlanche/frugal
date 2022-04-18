@@ -1,6 +1,6 @@
 name: lighthouse
 
-on: [deployment_status]
+on: workflow_dispatch
 
 jobs:
   lighthouse:
