@@ -80,6 +80,11 @@ async function bundleCodeSplit(config: BundleConfig) {
                     )
                 }`;
             }
+
+            console.log('###', outputFile.path);
+            console.log(outputFile.text);
+            console.log('###');
+
             await fs.ensureFile(outputFile.path);
             await Deno.writeFile(outputFile.path, outputFile.contents);
         }));
