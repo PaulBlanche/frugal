@@ -3,8 +3,7 @@ import * as frugal from '../core/mod.ts';
 import * as murmur from '../murmur/mod.ts';
 import * as log from '../log/mod.ts';
 
-import { bundle } from './bundle.ts';
-import { Transformer } from './frugalPlugin.ts';
+import { bundle, BundleConfig } from './bundle.ts';
 
 function logger() {
     return log.getLogger('frugal:loader:script');
@@ -14,26 +13,22 @@ type Config = {
     test: (url: URL) => boolean;
     name: string;
     order?(modules: string[]): string[];
-    formats: esbuild.Format[];
-    inline?: boolean;
     end?: () => void;
-    transformers?: Transformer[];
-    importMapFile?: string;
-};
+} & Omit<BundleConfig, 'cacheDir' | 'publicDir' | 'rootDir' | 'facades'>;
 
 export type Generated = Record<string, Record<string, string>>;
 
 export function script(
-    config: Config,
+    { test, name, order, end, ...bundlConfig }: Config,
 ): frugal.Loader<Record<string, Record<string, string>>> {
     return {
-        name: `script_${config.name}`,
-        test: config.test,
+        name: `script_${name}`,
+        test: test,
         generate,
         end: () => {
             esbuild.stop();
-            if (config.end) {
-                config.end();
+            if (end) {
+                end();
             }
         },
     };
@@ -54,14 +49,11 @@ export function script(
             producer: async () => {
                 logger().debug({
                     op: 'start',
-                    inline: config.inline,
                     msg() {
                         return `${this.op} ${this.logger!.timerStart}`;
                     },
                     logger: {
-                        timerStart: `real generation${
-                            config.inline ? ' (inline)' : ''
-                        }`,
+                        timerStart: `real generation`,
                     },
                 });
 
@@ -77,9 +69,7 @@ export function script(
                 const facades = Object.entries(scriptLists).reduce<
                     { entrypoint: string; content: string }[]
                 >((facades, [entrypoint, modules]) => {
-                    const orderedModules = config.order
-                        ? config.order(modules)
-                        : modules;
+                    const orderedModules = order ? order(modules) : modules;
 
                     facades.push({
                         entrypoint,
@@ -94,26 +84,20 @@ export function script(
                 }, []);
 
                 const result = await bundle({
-                    //inline: config.inline,
-                    formats: config.formats,
+                    ...bundlConfig,
                     publicDir: dir.public,
                     cacheDir: dir.cache,
                     rootDir: dir.root,
                     facades,
-                    transformers: config.transformers,
-                    importMapFile: config.importMapFile,
                 });
 
                 logger().debug({
                     op: 'done',
-                    inline: config.inline,
                     msg() {
                         return `${this.logger!.timerEnd} ${this.op}`;
                     },
                     logger: {
-                        timerEnd: `real generation${
-                            config.inline ? ' (inline)' : ''
-                        }`,
+                        timerEnd: `real generation`,
                     },
                 });
 

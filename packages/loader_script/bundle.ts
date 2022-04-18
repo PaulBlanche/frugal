@@ -11,50 +11,65 @@ function logger() {
 }
 
 export function bundle(config: BundleConfig) {
-    /*if (config.inline) {
-        return bundleInline(config);
-    }*/
-
     return bundleCodeSplit(config);
 }
 
-type BundleConfig = {
-    cacheDir: string;
-    publicDir: string;
-    rootDir: string;
-    facades: {
-        entrypoint: string;
-        content: string;
-    }[];
-    formats: esbuild.Format[];
-    transformers?: Transformer[];
-    importMapFile?: string;
-};
+export type BundleConfig =
+    & {
+        cacheDir: string;
+        publicDir: string;
+        rootDir: string;
+        facades: {
+            entrypoint: string;
+            content: string;
+        }[];
+        formats: esbuild.Format[];
+        transformers?: Transformer[];
+        importMapFile?: string;
+    }
+    & Omit<
+        esbuild.BuildOptions,
+        | 'format'
+        | 'entryPoints'
+        | 'write'
+        | 'metafile'
+        | 'outdir'
+        | 'plugins'
+        | 'outfile'
+        | 'outbase'
+        | 'platform'
+        | 'outExtension'
+        | 'publicPath'
+        | 'incremental'
+        | 'stdin'
+        | 'plugins'
+        | 'absWorkingDir'
+        | 'watch'
+    >;
 
-async function bundleCodeSplit(config: BundleConfig) {
+async function bundleCodeSplit(
+    {
+        cacheDir,
+        publicDir,
+        rootDir,
+        facades,
+        formats,
+        transformers,
+        importMapFile,
+        ...esbuildConfig
+    }: BundleConfig,
+) {
     const url: Record<string, Record<string, string>> = {};
 
     const facadeToEntrypoint: Record<string, string> = {};
 
-    const entryPoints = await Promise.all(config.facades.map(async (facade) => {
-        const facadeName = new murmur.Hash().update(path.relative(
-            config.rootDir,
-            facade.entrypoint,
-        ))
-            .alphabetic();
-
-        console.log(
-            config.rootDir,
-            facade.entrypoint,
-            path.relative(
-                config.rootDir,
-                facade.entrypoint,
-            ),
-            facadeName,
-        );
+    const entryPoints = await Promise.all(facades.map(async (facade) => {
+        const facadeName = new murmur.Hash().update(
+            path.relative(rootDir, facade.entrypoint),
+        ).alphabetic();
 
         const facadePath = path.join(
-            config.cacheDir,
+            cacheDir,
             'script_loader',
             `${facadeName}.ts`,
         );
@@ -66,19 +81,19 @@ async function bundleCodeSplit(config: BundleConfig) {
         return facadePath;
     }));
 
-    await Promise.all(config.formats.map(async (format) => {
+    await Promise.all(formats.map(async (format) => {
         const result = await esbuild.build({
+            ...esbuildConfig,
             entryPoints,
-            bundle: true,
-            splitting: true, //
             format,
             write: false,
             metafile: true,
-            minify: true, //
-            outdir: path.join(config.publicDir, 'js', format),
+            platform: 'neutral',
+            incremental: false,
+            outdir: path.join(publicDir, 'js', format),
             plugins: [frugalPlugin({
-                importMapFile: config.importMapFile,
-                transformers: config.transformers,
+                importMapFile,
+                transformers,
             })],
         });
 
@@ -89,11 +104,17 @@ async function bundleCodeSplit(config: BundleConfig) {
                 const entrypoint = facadeToEntrypoint[output.entryPoint];
                 url[entrypoint] = url[entrypoint] ?? {};
                 url[entrypoint][format] = `/${
-                    path.relative(
-                        config.publicDir,
-                        outputFile.path,
-                    )
+                    path.relative(publicDir, outputFile.path)
                 }`;
+
+                logger().debug({
+                    url: url[entrypoint][format],
+                    format: format,
+                    page: entrypoint,
+                    msg() {
+                        return `add bundle script ${this.url} for ${this.page} (${this.format} format)`;
+                    },
+                });
             }
 
             await fs.ensureFile(outputFile.path);
