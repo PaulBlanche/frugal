@@ -20,7 +20,7 @@ export function App({ entrypoint, loaderContext, children }: AppProps) {
                     name='description'
                     content='Frugal web developpment with a framework that does not waste resources. Do the same, but send less'
                 />
-                <title>toto</title>
+                <title>Frugal</title>
                 <link
                     rel='stylesheet'
                     media='screen'
