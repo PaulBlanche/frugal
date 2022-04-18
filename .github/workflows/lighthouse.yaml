@@ -1,0 +1,31 @@
+name: lighthouse
+
+on: [deployment_status]
+
+jobs:
+  lighthouse:
+    name: run lighthouse
+
+    runs-on: ubuntu-latest
+
+    if: github.event.deployment_status.state == 'success'
+
+    env:
+      BASE_URL: ${{ github.event.deployment_status.environment_url }}
+
+    steps:
+      - name: Clone repository
+        uses: actions/checkout@v2
+
+      - name: install node 16.x
+        uses: actions/setup-node@v1
+        with:
+          node-version: 16.x
+
+      - name: install Lighthouse CLI
+        run: npm install -g @lhci/cli@0.9.x
+
+      - name: run Lighthouse CLI
+        run: lhci autorun --collect.url="$BASE_URL" --collect.url="$BASE_URL/docs" --collect.url="$BASE_URL/example" --upload.target="temporary-public-storage"
+        env:
+          LHCI_GITHUB_APP_TOKEN: ${{ secrets.LHCI_GITHUB_APP_TOKEN }}
