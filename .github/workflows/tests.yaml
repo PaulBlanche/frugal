@@ -9,15 +9,16 @@ on:
 
 jobs:
   test:
-    runs-on: ubuntu-latest
     name: run tests
 
     strategy:
       matrix:
-        deno-version: [1.20.x, 1.19.x, 1.18.x, 1.17.x]
+        deno-version: [1.x, canary]
         include:
-          - deno-version: 1.20.x
+          - deno-version: canary
             coverage: true
+
+    runs-on: ubuntu-latest
 
     steps:
     - name: checkout project
@@ -30,6 +31,9 @@ jobs:
       uses: denoland/setup-deno@v1
       with:
         deno-version: ${{ matrix.deno-version }}
+
+    - name: run lint
+      run: task lint
 
     - name: run test
       run: task test

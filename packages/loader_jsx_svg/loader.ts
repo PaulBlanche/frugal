@@ -12,7 +12,9 @@ function logger() {
 
 type Config = {
     test: (url: URL) => boolean;
+    // deno-lint-ignore ban-types
     jsx: Function;
+    // deno-lint-ignore ban-types
     render: Function;
 };
 
@@ -96,7 +98,9 @@ export const output = svg.output()`;
 export async function write(
     svgFiles: Record<string, SVGFile>,
     publicDir: string,
+    // deno-lint-ignore ban-types
     jsx: Function,
+    // deno-lint-ignore ban-types
     render: Function,
 ) {
     await Promise.all(
@@ -130,7 +134,7 @@ export async function write(
                     sprites: svgFile.sprites.map((sprite) => sprite.id),
                     msg() {
                         return `output ${this.path} containing ${
-                            this.sprites.join(',')
+                            (this.sprites as string[]).join(',')
                         }`;
                     },
                 });

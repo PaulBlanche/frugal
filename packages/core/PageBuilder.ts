@@ -15,6 +15,7 @@ function logger() {
     return log.getLogger('frugal:PageBuilder');
 }
 
+// deno-lint-ignore ban-types
 export class PageBuilder<REQUEST extends object, DATA, POST_BODY> {
     private generator: PageGenerator<REQUEST, DATA, POST_BODY>;
     private page: Page<REQUEST, DATA, POST_BODY>;

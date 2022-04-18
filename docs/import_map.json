@@ -1,9 +1,0 @@
-{
-    "imports": {
-        "preact": "https://esm.sh/preact@10.6.5?pin=v66",
-        "preact/jsx-runtime": "https://esm.sh/preact@10.6.5/jsx-runtime?pin=v66",
-        "preact/jsx-dev-runtime": "https://esm.sh/preact@10.6.5/jsx-dev-runtime?pin=v66",
-        "preact/hooks": "https://esm.sh/preact@10.6.5/hooks?pin=v66",
-        "preact-render-to-string": "https://esm.sh/preact-render-to-string@5.1.19?pin=v66"
-    }
-}

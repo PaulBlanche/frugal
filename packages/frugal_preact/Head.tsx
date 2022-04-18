@@ -78,6 +78,8 @@ function unique() {
     const metaTypes = new Set();
     const metaCategories: { [metatype: string]: Set<string> } = {};
 
+    // any because it can be any node with any props
+    // deno-lint-ignore no-explicit-any
     return (node: preact.VNode<any>) => {
         let isUnique = true;
 

@@ -6,7 +6,7 @@ type FrugalLogRecord = {
     msg?: string;
     logger: {
         level: number;
-        levelName: log.LevelName;
+        levelName: string;
         scope: string;
         datetime: Date;
         timerStart?: string;
@@ -50,7 +50,7 @@ class FrugalFormatter {
     format(logRecord: log.LogRecord): FrugalLogRecord {
         const data = this.parseData(logRecord);
 
-        const record = {
+        const record: FrugalLogRecord = {
             ...data,
             logger: {
                 ...data.logger,
@@ -66,7 +66,7 @@ class FrugalFormatter {
         return record;
     }
 
-    private parseData(logRecord: log.LogRecord): any {
+    private parseData(logRecord: log.LogRecord): Partial<FrugalLogRecord> {
         try {
             return JSON.parse(logRecord.msg);
         } catch {
@@ -169,7 +169,7 @@ type FrugalLogEntry = {
         timerEnd?: string;
         delta?: number;
     };
-} & Record<string, any>;
+} & Record<string, unknown>;
 
 export class FrugalLogger {
     logger: log.Logger;
@@ -186,6 +186,8 @@ export class FrugalLogger {
         if (this.logger.level === 0) {
             return { ...entry, msg };
         }
+
+        // deno-lint-ignore no-explicit-any
         return this.logger[level]<T>({ ...entry, msg } as any) as any;
     }
 

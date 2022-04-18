@@ -7,6 +7,7 @@ function logger() {
     return log.getLogger('frugal:PageRefresher');
 }
 
+// deno-lint-ignore ban-types
 export class PageRefresher<REQUEST extends object, DATA, POST_BODY> {
     private builder: PageBuilder<REQUEST, DATA, POST_BODY>;
     private page: Page<REQUEST, DATA, POST_BODY>;

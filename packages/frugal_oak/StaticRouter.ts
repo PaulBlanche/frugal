@@ -234,7 +234,7 @@ export class StaticRouter {
     }
 
     private _refreshJitMiddleware() {
-        return async (context: Context, next: () => Promise<unknown>) => {
+        return async (context: Context, _next: () => Promise<unknown>) => {
             const ctx = context as StaticContext;
             assert(ctx.refresher);
 

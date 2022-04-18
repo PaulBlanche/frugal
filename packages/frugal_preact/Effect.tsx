@@ -4,12 +4,12 @@ const isServer = typeof document === 'undefined';
 
 export type Manager = {
     update(state: preact.VNode[]): void;
-    instanceStack: Set<preact.VNode<any>>;
+    instanceStack: Set<preact.VNode<unknown>>;
 };
 
 type SideEffectProps = {
     reduceComponentsToState: (
-        components: preact.VNode<any>[],
+        components: preact.VNode<unknown>[],
     ) => preact.VNode[];
     manager: Manager;
 };
@@ -27,23 +27,33 @@ export class Effect extends preact.Component<SideEffectProps> {
         super(props);
 
         if (isServer) {
-            this.props.manager.instanceStack.add(this as any);
+            this._pushToStack();
             this.emitChange();
         }
     }
     componentDidMount() {
-        this.props.manager.instanceStack.add(this as any);
+        this._pushToStack();
         this.emitChange();
     }
     componentDidUpdate() {
         this.emitChange();
     }
     componentWillUnmount() {
-        this.props.manager.instanceStack.delete(this as any);
+        this._popFromStack();
         this.emitChange();
     }
 
     render() {
         return null;
+    }
+
+    private _pushToStack() {
+        // deno-lint-ignore no-explicit-any
+        this.props.manager.instanceStack.add(this as any);
+    }
+
+    private _popFromStack() {
+        // deno-lint-ignore no-explicit-any
+        this.props.manager.instanceStack.delete(this as any);
     }
 }

@@ -1,1 +1,1 @@
-export * from 'https://deno.land/x/frugal@0.0.18/packages/loader_jsx_svg/mod.ts';
+export * from '../../../packages/loader_jsx_svg/mod.ts';

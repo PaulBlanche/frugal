@@ -1,10 +1,8 @@
-import { Transformer } from '../loader_script/frugalPlugin.ts';
 import * as styled from './styled.ts';
 
-export const styleTransformer: Transformer['transform'] = async (
-    url,
-    content,
-) => {
+export async function styleTransformer(
+    url: string,
+) {
     const stylesheet: { [s: string]: styled.Rules } = await import(url);
     const script = Object.entries(stylesheet).map(
         ([name, rules]) => {
@@ -13,4 +11,4 @@ export const styleTransformer: Transformer['transform'] = async (
     ).join('\n');
 
     return script;
-};
+}
