@@ -7,10 +7,12 @@ function logger() {
 
 export class Generator {
     private config: CleanConfig;
+    // deno-lint-ignore no-explicit-any
     generators: PageGenerator<any, any, any>[];
 
     constructor(
         config: CleanConfig,
+        // deno-lint-ignore no-explicit-any
         generators: PageGenerator<any, any, any>[],
     ) {
         this.config = config;
@@ -19,7 +21,7 @@ export class Generator {
 
     async generate(
         pathname: string,
-        context: GenerationContext<any>,
+        context: GenerationContext<unknown>,
     ) {
         logger().info({
             op: 'start',
@@ -70,6 +72,7 @@ export class Generator {
 
     private getMatchingGenerator(
         pathname: string,
+        // deno-lint-ignore no-explicit-any
     ): PageGenerator<any, any, any> | undefined {
         for (const pageGenerator of this.generators) {
             if (pageGenerator.match(pathname)) {

@@ -4,7 +4,7 @@ const SVG_FILES: Record<string, SVGFile> = {};
 
 export type Sprite = {
     id: string;
-    children: any;
+    children: unknown;
 };
 
 export function svgUrl(name: string) {

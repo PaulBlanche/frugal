@@ -73,7 +73,9 @@ export type DynamicPageDescriptor<REQUEST, DATA, POST_BODY> = {
     getContent: GetContent<REQUEST, DATA>;
 };
 
+// deno-lint-ignore ban-types
 export function page<REQUEST extends object, DATA, POST_BODY>(
+    // deno-lint-ignore no-explicit-any
     descriptor: any,
 ): Page<REQUEST, DATA, POST_BODY> {
     if (isStaticDescriptor<REQUEST, DATA, POST_BODY>(descriptor)) {
@@ -91,7 +93,9 @@ export function page<REQUEST extends object, DATA, POST_BODY>(
     );
 }
 
+// deno-lint-ignore ban-types
 function isDynamicDescriptor<REQUEST extends object, DATA, POST_BODY>(
+    // deno-lint-ignore no-explicit-any
     descriptor: any,
 ): descriptor is DynamicPageDescriptor<REQUEST, DATA, POST_BODY> {
     if (typeof descriptor === 'object' && descriptor !== null) {
@@ -103,7 +107,9 @@ function isDynamicDescriptor<REQUEST extends object, DATA, POST_BODY>(
     return false;
 }
 
+// deno-lint-ignore ban-types
 function isStaticDescriptor<REQUEST extends object, DATA, POST_BODY>(
+    // deno-lint-ignore no-explicit-any
     descriptor: any,
 ): descriptor is StaticPageDescriptor<REQUEST, DATA, POST_BODY> {
     if (typeof descriptor === 'object' && descriptor !== null) {
@@ -115,6 +121,7 @@ function isStaticDescriptor<REQUEST extends object, DATA, POST_BODY>(
     return false;
 }
 
+// deno-lint-ignore ban-types
 function validateStaticDescriptor<REQUEST extends object, DATA, POST_BODY>(
     descriptor: StaticPageDescriptor<REQUEST, DATA, POST_BODY>,
 ): void {
@@ -140,6 +147,7 @@ function validateStaticDescriptor<REQUEST extends object, DATA, POST_BODY>(
     );
 }
 
+// deno-lint-ignore ban-types
 function validateDynamicDescriptor<REQUEST extends object, DATA, POST_BODY>(
     descriptor: DynamicPageDescriptor<REQUEST, DATA, POST_BODY>,
 ): void {
@@ -161,11 +169,13 @@ function validateDynamicDescriptor<REQUEST extends object, DATA, POST_BODY>(
     );
 }
 
+// deno-lint-ignore ban-types
 export type Page<REQUEST extends object, DATA, POST_BODY> =
     | StaticPage<REQUEST, DATA, POST_BODY>
     | DynamicPage<REQUEST, DATA, POST_BODY>;
 
 export class BasePage<
+    // deno-lint-ignore ban-types
     REQUEST extends object,
     DATA,
     POST_BODY,
@@ -223,6 +233,7 @@ export class BasePage<
     }
 }
 
+// deno-lint-ignore ban-types
 export class StaticPage<REQUEST extends object, DATA, POST_BODY>
     extends BasePage<
         REQUEST,
@@ -246,6 +257,7 @@ export class StaticPage<REQUEST extends object, DATA, POST_BODY>
     }
 }
 
+// deno-lint-ignore ban-types
 export class DynamicPage<REQUEST extends object, DATA, POST_BODY>
     extends BasePage<
         REQUEST,

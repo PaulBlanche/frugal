@@ -8,8 +8,11 @@ function logger() {
     return log.getLogger('frugal:LoaderContext');
 }
 
+// deno-lint-ignore no-explicit-any
+type Context = { [s: string]: any };
+
 export class LoaderContext {
-    private context: { [s: string]: any };
+    private context: Context;
 
     static async build(
         config: CleanConfig,
@@ -26,7 +29,7 @@ export class LoaderContext {
             },
         });
 
-        const context: { [s: string]: any } = {};
+        const context: Context = {};
 
         await Promise.all((config.loaders ?? []).map(async (loader) => {
             const loadedAssets = assets.filter((entry) =>
@@ -78,7 +81,7 @@ export class LoaderContext {
         return new LoaderContext(context);
     }
 
-    constructor(context: { [s: string]: any }) {
+    constructor(context: Context) {
         this.context = context;
     }
 
@@ -89,6 +92,7 @@ export class LoaderContext {
         await Deno.writeTextFile(filePath, serializedData);
     }
 
+    // deno-lint-ignore no-explicit-any
     get<VALUE = any>(name: string): VALUE | undefined {
         return this.context[name];
     }

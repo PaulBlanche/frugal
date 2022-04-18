@@ -1,8 +1,8 @@
-import * as fs from '../../dep/std/fs.ts';
 import * as log from '../log/mod.ts';
 import { Persistance } from './Persistance.ts';
 
 export type CacheData = {
+    // deno-lint-ignore no-explicit-any
     [s: string]: any;
 };
 

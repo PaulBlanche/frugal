@@ -8,10 +8,12 @@ function logger() {
 
 export class Refresher {
     private config: CleanConfig;
+    // deno-lint-ignore no-explicit-any
     refreshers: PageRefresher<any, any, any>[];
 
     constructor(
         config: CleanConfig,
+        // deno-lint-ignore no-explicit-any
         refreshers: PageRefresher<any, any, any>[],
     ) {
         this.config = config;
@@ -65,6 +67,7 @@ export class Refresher {
 
     private getMatchingPageRefresher(
         pathname: string,
+        // deno-lint-ignore no-explicit-any
     ): PageRefresher<any, any, any> | undefined {
         for (const pageRefresher of this.refreshers) {
             if (pageRefresher.match(pathname)) {

@@ -26,6 +26,7 @@ type ContentGenerationContext<DATA, REQUEST> = {
     request: REQUEST;
     phase: Phase;
 };
+// deno-lint-ignore ban-types
 export class PageGenerator<REQUEST extends object, DATA, POST_BODY> {
     private page: Page<REQUEST, DATA, POST_BODY>;
     private config: PageGeneratorConfig;

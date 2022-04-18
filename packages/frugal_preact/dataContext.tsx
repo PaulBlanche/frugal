@@ -4,7 +4,7 @@ import * as preact from 'preact';
 import * as hooks from 'preact/hooks';
 import './types.ts';
 
-type DataContext = { data: any; pathname: string; timestamp: number };
+type DataContext = { data: unknown; pathname: string; timestamp: number };
 
 const dataContext = preact.createContext<
     DataContext | undefined
@@ -16,7 +16,7 @@ export function useData<DATA>(): DATA {
         throw Error('wrap in DataProvider');
     }
 
-    return context.data;
+    return context.data as DATA;
 }
 
 export function usePathname(): string {

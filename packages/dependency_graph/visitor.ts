@@ -27,8 +27,10 @@ function visitNode<NODE extends VisitableNode>(
     const nodes = [];
 
     const method = `visit${node.type}`;
-    if ((visitor as any)[method] !== undefined) {
-        (visitor as any)[method](node);
+    // deno-lint-ignore no-explicit-any
+    const anyVisitor = (visitor as any);
+    if (anyVisitor[method] !== undefined) {
+        anyVisitor[method](node);
     }
     if (visitor.all !== undefined) {
         visitor.all(node);
@@ -49,5 +51,6 @@ function visitNode<NODE extends VisitableNode>(
 
 function isNode(object: unknown): object is VisitableNode {
     return typeof object === 'object' && object !== null && 'type' in object &&
+        // deno-lint-ignore no-explicit-any
         typeof (object as any).type === 'string';
 }

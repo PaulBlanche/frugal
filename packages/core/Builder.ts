@@ -8,10 +8,12 @@ function logger() {
 
 export class Builder {
     private config: CleanConfig;
+    // deno-lint-ignore no-explicit-any
     builders: PageBuilder<any, any, any>[];
 
     constructor(
         config: CleanConfig,
+        // deno-lint-ignore no-explicit-any
         builders: PageBuilder<any, any, any>[],
     ) {
         this.config = config;

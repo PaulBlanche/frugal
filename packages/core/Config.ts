@@ -11,8 +11,9 @@ export type Config = {
     self: URL;
     root?: URL;
     importMap?: string;
-    loaders?: Loader<any>[];
+    loaders?: Loader<unknown>[];
     outputDir: string;
+    // deno-lint-ignore no-explicit-any
     pages: Page<any, any, any>[];
     pagePersistance?: Persistance;
     cachePersistance?: Persistance;
