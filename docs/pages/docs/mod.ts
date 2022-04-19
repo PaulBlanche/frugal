@@ -21,12 +21,32 @@ const TOC: Toc = {
             name: 'concepts',
             children: [
                 {
-                    slug: '/concepts/static-page',
-                    name: 'static page',
+                    slug: '/concepts/page-descriptor',
+                    name: 'page descriptor',
+                    children: [
+                        {
+                            slug: '/concepts/page-descriptor/static-page',
+                            name: 'static page',
+                        },
+                        {
+                            slug: '/concepts/page-descriptor/dynamic-page',
+                            name: 'dynamic page',
+                        },
+                    ],
                 },
                 {
-                    slug: '/concepts/dynamic-page',
-                    name: 'dynamic page',
+                    slug: '/concepts/loaders',
+                    name: 'loaders',
+                    children: [
+                        {
+                            slug: '/concepts/loaders/style-loader',
+                            name: 'style loader',
+                        },
+                        {
+                            slug: '/concepts/loaders/script-loader',
+                            name: 'script loader',
+                        },
+                    ],
                 },
             ],
         },

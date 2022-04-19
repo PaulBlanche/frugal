@@ -2,7 +2,7 @@
 
 A dynamic page descriptor is an object with some properties and method :
 
-- a `pattern` string, that will be used for routing. For static pages, this `pattern` will be used to generate the server route and to extract the _request object_ from the url.
+- a `pattern` string, that will be used for routing. For dynamic pages, this `pattern` will be used to generate the server route and to extract the _request object_ from the url.
 - a `getDynamicData` function that will return the _data object_ necessary to render the page for a given _request object_. In spirit, this is similar to `getStaticData` in Next.js
 - a `getContent` function that will return the rendered page as a string given a _data object_. This is similar to the exported component in Next.js
 - a `self` URL of the module. Unless you know what you are doing, it should always be `new URL(import.meta.url)`

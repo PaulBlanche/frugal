@@ -29,6 +29,7 @@ export type BundleConfig =
     }
     & Omit<
         esbuild.BuildOptions,
+        | 'bundle'
         | 'format'
         | 'entryPoints'
         | 'write'
@@ -86,6 +87,7 @@ async function bundleCodeSplit(
             ...esbuildConfig,
             entryPoints,
             format,
+            bundle: true,
             write: false,
             metafile: true,
             platform: 'neutral',

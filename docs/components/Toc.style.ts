@@ -22,7 +22,7 @@ export const tocItem = styled('toc-item')`
 export const tocList = styled('toc-list')`
     counter-reset: section;
     list-style: none;
-    padding-left: 2rem;
+    padding-left: 1rem;
 `;
 
 export const toc = styled('toc')``;

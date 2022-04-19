@@ -50,8 +50,10 @@ export function nodeMatchHref(node: TocNode, href: string) {
 
 export function nodeFullLabel(node: FlatTocNode) {
     if (node.parent === undefined) {
-        return node.name;
+        return node.name[0].toUpperCase() + node.name.slice(1);
     } else {
-        return `${node.parent.name} : ${node.name}`;
+        return `${
+            node.parent.name[0].toUpperCase() + node.parent.name.slice(1)
+        } : ${node.name[0].toUpperCase() + node.name.slice(1)}`;
     }
 }
