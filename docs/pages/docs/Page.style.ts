@@ -8,6 +8,7 @@ export const wrapper = styled('wrapper', container)`
 
 export const navigation = styled('navigation')`
   flex: 0 0 300px;
+  margin-top: 1rem;
 `;
 
 export const main = styled('main')`

@@ -17,7 +17,7 @@ export function Page() {
         <Layout>
             <div class={cx(s.wrapper)}>
                 <div class={cx(s.navigation)}>
-                    <HeroHeader compact children={'Docs'} />
+                    {/*<HeroHeader compact children={'Docs'} />*/}
                     <Toc toc={toc} />
                 </div>
                 <main class={cx(s.main)}>
