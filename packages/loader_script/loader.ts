@@ -11,7 +11,6 @@ function logger() {
 
 type Config = {
     test: (url: URL) => boolean;
-    name: string;
     order?(modules: string[]): string[];
     end?: () => void;
 } & Omit<BundleConfig, 'cacheDir' | 'publicDir' | 'rootDir' | 'facades'>;
@@ -19,10 +18,10 @@ type Config = {
 export type Generated = Record<string, Record<string, string>>;
 
 export function script(
-    { test, name, order, end, ...bundlConfig }: Config,
+    { test, order, end, ...bundlConfig }: Config,
 ): frugal.Loader<Record<string, Record<string, string>>> {
     return {
-        name: `script_${name}`,
+        name: `script`,
         test: test,
         generate,
         end: () => {

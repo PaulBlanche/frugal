@@ -31,6 +31,18 @@ the `style` loader will generate unique classnames. You can control the prefix o
 - within the same module, classnames declared first are outputed first
 - amongst modules, classnames from modules imported first are outputed first.
 
+The `style` loader will provide to the `loaderContext` a string containing the url of the generated css file. You can therefore get the url of the css file in the `getContent` function of your [page descriptor](/docs/concepts/page-descriptor) :
+
+```ts
+export function getContent(
+    { loaderContext, entrypoint }: frugal.GetContentParams<Request, Data>,
+) {
+    const cssFileUrl = loaderContext.get('style');
+
+    // ...
+}
+```
+
 ## Transformer
 
 The `style` loader has no notion of css syntax, it simply aggregates what is given to him. This means that you can "customize" the flavor of css you want, via the `transform` function. Here for example, we use the `stylis` preprocessor :

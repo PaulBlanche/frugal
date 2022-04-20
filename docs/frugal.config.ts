@@ -19,7 +19,6 @@ export const config: Config = {
     importMap,
     loaders: [
         script({
-            name: 'body',
             test: IS_SCRIPT_FILE,
             transformers: [{
                 test: IS_STYLE_FILE,

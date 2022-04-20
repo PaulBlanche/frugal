@@ -1,7 +1,7 @@
 /* @jsx preact.h */
 /* @jsxFrag preact.Fragment */
 import * as preact from 'preact';
-import { Article } from './Article.iso.tsx';
+import { Article } from './Article.island.tsx';
 import { useData } from '../../packages/frugal_preact/mod.client.ts';
 import { Data } from './page.ts';
 

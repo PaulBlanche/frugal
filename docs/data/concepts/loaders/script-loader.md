@@ -56,13 +56,24 @@ export const config: Config = {
         page(myPage),
     ],
     loader: [script({
-        name: 'body',
         test: (url) => /\.script\.ts$/.test(url.toString()),
         formats: ['esm'],
         minify: true,
         splitting: true,
     })],
 };
+```
+
+The `script` loader will provide to the `loaderContext` an object with this shape : `{ [entrypoint]: { [format]: src } }`. You can therefore get the url of a bundle in the `getContent` function of your [page descriptor](/docs/concepts/page-descriptor) :
+
+```ts
+export function getContent(
+    { loaderContext, entrypoint }: frugal.GetContentParams<Request, Data>,
+) {
+    const esmBundleUrl = loaderContext.get('script')?.[entrypoint]?.['esm'];
+
+    // ...
+}
 ```
 
 ## Import map
@@ -73,7 +84,6 @@ If you use an import map, you have to pass it to the `script` loader. The loader
 const importMapFile = new URL('./import_map.json', import.meta.url).pathname;
 
 script({
-    name: 'body',
     test: (url) => /\.script\.ts$/.test(url.toString()),
     formats: ['esm'],
     minify: true,
@@ -124,7 +134,6 @@ const config = {
             test: isStyleModule,
         })
         script({
-            name: 'body',
             test: (url) => /\.script\.ts$/.test(url.toString()),
             formats: ['esm'],
             transformers: [{

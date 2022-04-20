@@ -58,7 +58,7 @@ export function getContent(
     // Each entry in this sub dictionnary is the url of the entrypoint for the
     // bundle
     const bodyScriptSrc =
-        loaderContext.get<Generated>('script_body')[String(entrypoint)]['esm'];
+        loaderContext.get<Generated>('script')?.[String(entrypoint)]?.['esm'];
 
     return `<html>
     <body>

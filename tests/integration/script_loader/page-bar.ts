@@ -43,9 +43,9 @@ export const self = new URL(import.meta.url);
 export function getContent(
     { loaderContext, entrypoint }: frugal.GetContentParams<Request, Data>,
 ) {
-    const scriptBodyGenerated = loaderContext.get<Generated>('script_body');
+    const scriptBodyGenerated = loaderContext.get<Generated>('script');
 
-    const esmScriptSrc = scriptBodyGenerated[String(entrypoint)]['esm'];
+    const esmScriptSrc = scriptBodyGenerated?.[String(entrypoint)]?.['esm'];
 
     return `<html>
     <head>

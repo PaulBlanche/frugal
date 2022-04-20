@@ -6,7 +6,7 @@ import { cx } from '../loader_style/styled.ts';
 
 import type { HydrationStrategy } from './types.ts';
 
-export type HostProps<PROPS> = {
+export type IslandProps<PROPS> = {
     className?: string;
     strategy?: HydrationStrategy;
     clientOnly?: boolean;
@@ -16,9 +16,9 @@ export type HostProps<PROPS> = {
     props: PROPS;
 };
 
-export function Host<PROPS>(
+export function Island<PROPS>(
     { className, name, clientOnly = false, Component, props, ...rest }:
-        HostProps<
+        IslandProps<
             PROPS
         >,
 ) {

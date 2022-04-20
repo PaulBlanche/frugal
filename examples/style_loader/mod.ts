@@ -27,7 +27,6 @@ build({
     // see the `script_loader` example for more info.
     loaders: [
         script({
-            name: 'body',
             test: (url) => /\.script\.ts$/.test(url.toString()),
             formats: ['esm'],
             importMapFile: IMPORT_MAP,

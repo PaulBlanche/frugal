@@ -24,11 +24,9 @@ build({
     // will be outputed in `esm` format and with code splitting.
     // see the `script_loader` example for more info.
     loaders: [script({
-        name: 'body',
         test: (url) => /\.script\.ts$/.test(url.toString()),
         formats: ['esm'],
         splitting: true,
-        bundle: true,
         minify: true,
         importMapFile: IMPORT_MAP,
     })],

@@ -30,3 +30,13 @@ export const config: Config = {
 frugal will find in `./pages/myPage.ts` or in any of its dependencies any modules ending with `.style.ts`, and provide them to the `style` loader.
 
 Then the loader, according to its own logic, will generate some static assets from those modules.
+
+Each loader will give you access to some result object you can access via the `loaderContext` object, in the `getContent` function :
+
+```ts
+function getContent({ loaderContext }) {
+    const styleUrl = loaderContext.get('style');
+
+    //...
+}
+```

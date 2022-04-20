@@ -7,7 +7,7 @@ import type { Generated } from '../../packages/loader_script/mod.ts';
 import './App.style.ts';
 
 export function App({ entrypoint, loaderContext, children }: AppProps) {
-    const scriptGenerated = loaderContext.get<Generated>('script_body');
+    const scriptGenerated = loaderContext.get<Generated>('script');
     const esmBundleUrl = scriptGenerated?.[entrypoint]['esm'];
     const styleUrl = loaderContext.get('style');
     return (

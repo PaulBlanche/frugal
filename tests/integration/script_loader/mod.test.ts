@@ -24,7 +24,6 @@ Deno.test('script_loader: file structure', async () => {
                 test: (url) => {
                     return url.toString().endsWith('.script.ts');
                 },
-                name: 'body',
                 formats: ['esm'],
             }),
         ],
@@ -69,7 +68,6 @@ Deno.test('script_loader: script execution and order', async (t) => {
                 test: (url) => {
                     return url.toString().endsWith('.script.ts');
                 },
-                name: 'body',
                 formats: ['esm'],
             }),
         ],

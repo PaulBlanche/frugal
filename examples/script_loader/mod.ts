@@ -22,10 +22,8 @@ build({
     // so this code will be put in a shared chunk
     loaders: [
         script({
-            name: 'body',
             test: (url) => /\.script\.ts$/.test(url.toString()),
             formats: ['esm'],
-            bundle: true,
             splitting: true,
         }),
     ],
