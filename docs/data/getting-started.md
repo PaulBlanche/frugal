@@ -118,7 +118,7 @@ Create a file `/build.ts` :
 
 ```ts
 import { config } from './frugal.config.ts';
-import { Frugal } from '../core/mod.ts';
+import { Frugal } from 'https://deno.land/x/frugal/packages/core/mod.ts';
 
 const frugal = await Frugal.build(config);
 await frugal.build();
@@ -136,14 +136,14 @@ Create a file `/serve.ts` :
 
 ```ts
 import { config } from './frugal.config.ts';
-import { Frugal } from '../core/mod.ts';
-import { frugalMiddleware } from '../frugal_oak/mod.ts';
+import { Frugal } from 'https://deno.land/x/frugal/packages/core/mod.ts';
+import { frugalMiddleware } from 'https://deno.land/x/frugal/packages/frugal_oak/mod.ts';
 
 const frugal = await Frugal.load(config);
 
 const application = new Application();
 
-application.use(frugalMiddleware(frugal));
+application.use(await frugalMiddleware(frugal));
 
 await application.listen({ port: 8000 });
 ```

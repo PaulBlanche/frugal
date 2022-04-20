@@ -51,12 +51,16 @@ const TOC: Toc = {
             ],
         },
         {
-            slug: '/other-modules',
-            name: 'other modules',
+            slug: '/integration',
+            name: 'integration',
             children: [
                 {
-                    slug: '/other-modules/preact-integration',
+                    slug: '/integration/preact-integration',
                     name: 'preact integration',
+                },
+                {
+                    slug: '/integration/oak-integration',
+                    name: 'oak integration',
                 },
             ],
         },
