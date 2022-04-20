@@ -3,7 +3,7 @@ import { cx } from '../../dep/frugal/styled.ts';
 import { Layout } from '../../components/Layout.tsx';
 
 import * as s from './Page.style.ts';
-import { Form } from './Form.server.tsx';
+import { Form } from './Form.island.tsx';
 
 export function Page() {
     const now = new Date();
