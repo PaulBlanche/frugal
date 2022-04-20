@@ -19,7 +19,7 @@ export function flattenToc(toc: Toc): FlatToc {
     while ((current = queue.shift()) !== undefined) {
         nodes.push(current);
         if (current.children) {
-            queue.push(
+            queue.unshift(
                 ...current.children.map((node) => ({
                     ...node,
                     parent: current,
