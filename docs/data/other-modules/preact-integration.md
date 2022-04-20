@@ -55,7 +55,7 @@ export function App({ entrypoint, loaderContext, children }: AppProps) {
 }
 ```
 
-With this, your are set to write any JSX you want in the `App` component. It will be rendered to html in the `getContentFrom`. The renderer does not handle `<Suspense>` for now, but it could be done using [`preact-ssr-prepass`](https://github.com/preactjs/preact-ssr-prepass).
+With this, your are set to write any JSX you want in the `Page` component. It will be rendered to html in the `getContentFrom`. The renderer does not handle `<Suspense>`.
 
 ## Preact client-side
 
@@ -75,7 +75,7 @@ export function MyComponentIsland(props: MyComponentProps) {
 
 When the `<Island>` component is rendered in the server or during the build, the `props` object is serialized and embeded in the generated html markup, to be picked up when the javascript client-side kicks in. This means the `props` object needs to be a JSON object.
 
-You need to create a script module (a module matching the [`script` loader](/docs/concepts/loader/script-loader) pattern) that `hydrate` your module (the `./myComponent.script.ts` module in the previous code block) :
+You need to create a script module (a module matching the [`script` loader](/docs/concepts/loaders/script-loader) pattern) that `hydrate` your module (the `./myComponent.script.ts` module in the previous code block) :
 
 ```ts
 import { MyComponent } from './MyComponent.tsx';
@@ -90,7 +90,7 @@ export function main() {
 
 The `NAME` export is the unique identifier for your component. It will be used by the `<Island>` component to uniquely identify the generated DOM node as "hydratable with the component MyComponent". The `hydrate` function will use the name to query all DOM nodes that need to be hydrated with `MyComponent`.
 
-The `hydrate` function takes as parameter a function returning the component `() => MyComponent`, and not directly the component. This function can be async, leaving you the importunity to dynamically import your component :
+The `hydrate` function takes as parameter a function returning the component `() => MyComponent`, and not directly the component. This function can be async, leaving you the ability to dynamically import your component :
 
 ```ts
 import { hydrate } from 'https://deno.land/x/frugal/packages/frugal_preact/mod.client.ts';
@@ -104,7 +104,7 @@ export function main() {
 
 ## Hydration strategy
 
-By default an `Island` is hydrated on load. But you can instruc frugal to use another startegy.
+By default an `Island` is hydrated on load. But you can instruct frugal to use another startegy.
 
 ### `idle` hydration strategy
 
@@ -168,4 +168,27 @@ export function MyComponentIsland(props: MyComponentProps) {
         />
     );
 }
+```
+
+## Hooks
+
+Preact integration comes with two hooks : `usePathname` and `useData`.
+
+### `usePathname`
+
+This hook will return the `pathname` of the current page. This is the compiled `pattern` of your page descriptor, with each paramater replaced with the value in the _request object_ used to generate the page.
+
+For a page with the pattern `/:foo/:bar` that was rendered with the request object `{{ foo: 'hello', bar: 'world' }`, the `pathname` will be `/hello/world`.
+
+### `useData`
+
+This hook will return the `data` used to generate the current page. To be passed to the _islands_, the `data` is serialized and embeded in the html as JSON. If you want to use `useData`, your `data` muste be serializable.
+
+If you don't need access to the `data` in any of your _islands_ and don't want the extra weight of a serialized JSON in your html pages, you can disabled `data` embeding in the `getContentFrom` function :
+
+```ts
+export const getContent = getContentFrom(Page, {
+    App,
+    embedData: false,
+});
 ```
