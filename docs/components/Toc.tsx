@@ -1,7 +1,13 @@
 /** @jsxImportSource preact */
 import { cx } from '../dep/frugal/styled.ts';
-import { usePathname } from '../dep/frugal/frugal_preact.server.ts';
-import { nodeHref, nodeMatchHref, Toc, TocNode } from '../toc.ts';
+import { Head, usePathname } from '../dep/frugal/frugal_preact.client.ts';
+import {
+    nodeFullLabel,
+    nodeHref,
+    nodeMatchHref,
+    Toc,
+    TocNode,
+} from '../toc.ts';
 
 import * as s from './Toc.style.ts';
 
@@ -34,6 +40,11 @@ function TocNode({ node }: TocNodeProps) {
     const pathname = usePathname();
     return (
         <>
+            {isActive() && (
+                <Head>
+                    <title>{nodeFullLabel(node)}</title>
+                </Head>
+            )}
             {node.slug
                 ? (
                     <a

@@ -1,12 +1,11 @@
 /** @jsxImportSource preact */
 import { cx } from '../../dep/frugal/styled.ts';
-import { useData } from '../../dep/frugal/frugal_preact.server.ts';
+import { useData } from '../../dep/frugal/frugal_preact.client.ts';
 import { Data } from './type.ts';
 import { Layout } from '../../components/Layout.tsx';
 
 import { Markdown } from '../../components/Markdown.tsx';
 import { Toc } from '../../components/Toc.tsx';
-import { HeroHeader } from '../../components/HeroHeader.tsx';
 import { TocNavigation } from '../../components/TocNavigation.tsx';
 
 import * as s from './Page.style.ts';
