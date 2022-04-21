@@ -94,6 +94,7 @@ async function bundleCodeSplit(
             incremental: false,
             outdir: path.join(publicDir, 'js', format),
             plugins: [frugalPlugin({
+                loader: 'portable',
                 importMapFile,
                 transformers,
             })],
