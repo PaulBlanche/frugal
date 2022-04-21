@@ -1,4 +1,4 @@
-import { composeMiddleware, Context, Router } from '../../dep/oak.ts';
+import { composeMiddleware, Context, Router } from 'oak';
 import { Frugal, NotFound } from '../core/mod.ts';
 import { StaticContext } from './FrugalContext.ts';
 import * as path from '../../dep/std/path.ts';

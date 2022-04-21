@@ -21,7 +21,6 @@ export function TocNavigation({ toc }: TocNavigationProps) {
     const pathname = usePathname();
 
     const flatToc = flattenToc(toc);
-    console.log(flatToc);
     const currentNodeIndex = flatToc.findIndex((node) =>
         nodeMatchHref(node, pathname)
     );

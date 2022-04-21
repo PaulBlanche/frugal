@@ -1,6 +1,6 @@
 import { config } from './frugal.config.ts';
 import { Frugal, UpstashPersistance } from './dep/frugal/core.ts';
-import { Application } from './dep/oak.ts';
+import { Application } from 'oak';
 import { frugalMiddleware } from './dep/frugal/frugal_oak.ts';
 
 const devMode = Deno.env.get('FRUGAL_DEV') !== undefined;

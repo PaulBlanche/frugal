@@ -1,4 +1,4 @@
-import * as oak from '../../dep/oak.ts';
+import * as oak from 'oak';
 
 type Field<VALUE> = {
     value: VALUE;

@@ -78,24 +78,24 @@ export class CleanConfig {
         return cleanConfig;
     }
 
-    static async loadImportMap(config: Config) {
+    static async loadImportMap(config: Config): Promise<importmap.ImportMap> {
         if (config.importMap === undefined) {
-            return undefined;
+            return {};
         }
 
-        const source = await Deno.readTextFile(
-            new URL(
-                config.importMap,
-                configRoot(config),
-            ),
+        const importMapUrl = new URL(
+            config.importMap,
+            configRoot(config),
         );
 
-        return JSON.parse(source);
+        const source = await Deno.readTextFile(importMapUrl);
+
+        return importmap.resolveImportMap(JSON.parse(source), importMapUrl);
     }
 
     constructor(config: Config, importMap: importmap.ImportMap) {
         this.config = config;
-        this.importMap = importMap;
+        this.importMap = importmap.resolveImportMap(importMap, this.root);
     }
 
     get loggingConfig() {
@@ -159,10 +159,10 @@ export class CleanConfig {
         if (this.importMap === undefined) return undefined;
         return (specifier: string, referer: URL) => {
             return new URL(
-                importmap.resolve(
+                importmap.resolveModuleSpecifier(
                     specifier,
                     this.importMap,
-                    referer.toString(),
+                    referer,
                 ),
             );
         };

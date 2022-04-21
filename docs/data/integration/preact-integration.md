@@ -1,5 +1,17 @@
 # Preact integration
 
+Preact integration rely on you providing the preact version you want via an [import map](https://deno.land/manual/linking_to_external_code/import_maps) :
+
+```json
+{
+    "imports": {
+        "preact": "https://esm.sh/preact@10.6.5?pin=v66",
+        "preact/hooks": "https://esm.sh/preact@10.6.5/hooks?pin=v66",
+        "preact-render-to-string": "https://esm.sh/preact-render-to-string@5.1.19?pin=v66&deps=preact@10.6.5"
+    }
+}
+```
+
 ## Preact server-side
 
 To use preact at build time or on the server, you only need to use the `getContentFrom` function in your page descriptor :

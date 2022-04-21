@@ -1,6 +1,6 @@
 import { getContentFrom } from '../../dep/frugal/frugal_preact.server.ts';
 import * as frugal from '../../dep/frugal/core.ts';
-import * as oak from '../../dep/oak.ts';
+import * as oak from 'oak';
 
 import { App } from '../App.tsx';
 import { Page } from './Page.tsx';

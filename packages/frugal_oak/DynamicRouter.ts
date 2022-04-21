@@ -1,4 +1,4 @@
-import { composeMiddleware, Context, Router } from '../../dep/oak.ts';
+import { composeMiddleware, Context, Router } from 'oak';
 import { Frugal } from '../core/mod.ts';
 import * as log from '../log/mod.ts';
 import { PrgOrchestrator } from './PrgOrchestrator.ts';

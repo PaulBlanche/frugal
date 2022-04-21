@@ -1,4 +1,4 @@
-import { composeMiddleware, Middleware } from '../../dep/oak.ts';
+import { composeMiddleware, Middleware } from 'oak';
 import { Frugal } from '../core/mod.ts';
 import * as log from '../log/mod.ts';
 

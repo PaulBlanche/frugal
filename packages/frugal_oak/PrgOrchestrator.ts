@@ -1,6 +1,6 @@
 import { SessionManager } from './SessionManager.ts';
 import { Frugal, NotFound } from '../core/mod.ts';
-import { Context } from '../../dep/oak.ts';
+import { Context } from 'oak';
 import { FrugalContext } from './FrugalContext.ts';
 import { assert } from '../../dep/std/asserts.ts';
 import * as log from '../log/mod.ts';

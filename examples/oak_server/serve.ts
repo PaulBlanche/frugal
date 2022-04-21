@@ -2,7 +2,7 @@ import { Frugal } from '../../packages/core/mod.ts';
 import { CONFIG } from './config.ts';
 
 import { frugalMiddleware } from '../../packages/frugal_oak/mod.ts';
-import { Application } from '../../dep/oak.ts';
+import { Application } from 'oak';
 
 const frugal = await Frugal.load(CONFIG);
 

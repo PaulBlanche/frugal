@@ -1,4 +1,4 @@
-import { Middleware } from '../../dep/oak.ts';
+import { Middleware } from 'oak';
 import * as log from '../log/mod.ts';
 
 function logger() {

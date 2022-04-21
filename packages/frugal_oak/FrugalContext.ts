@@ -1,4 +1,4 @@
-import { Context } from '../../dep/oak.ts';
+import { Context } from 'oak';
 import { PageBuilder, PageGenerator, PageRefresher } from '../core/mod.ts';
 
 export type StaticContext = Context & {

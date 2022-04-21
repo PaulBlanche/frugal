@@ -1,4 +1,4 @@
-import { composeMiddleware, Middleware } from '../../dep/oak.ts';
+import { composeMiddleware, Middleware } from 'oak';
 import { StaticRouter } from './StaticRouter.ts';
 import { FilesystemPersistance, Frugal, Persistance } from '../core/mod.ts';
 import { DynamicRouter } from './DynamicRouter.ts';
