@@ -15,14 +15,11 @@ jobs:
       - name: Clone repository
         uses: actions/checkout@v2
 
-      - name: install task
-        uses: arduino/setup-task@v1
-
       - name: install latest deno
         uses: denoland/setup-deno@v1
 
       - name: run build
-        run: task build-doc
+        run: deno task doc:build
 
       # can't use deno deploy action, because i need exclude/include (https://github.com/denoland/deployctl/issues/100)
       #- name: Upload to Deno Deploy

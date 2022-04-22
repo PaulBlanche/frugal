@@ -24,23 +24,20 @@ jobs:
     - name: checkout project
       uses: actions/checkout@v2
 
-    - name: install task
-      uses: arduino/setup-task@v1
-
     - name: install deno ${{ matrix.deno-version }}
       uses: denoland/setup-deno@v1
       with:
         deno-version: ${{ matrix.deno-version }}
 
     - name: run lint
-      run: task lint
+      run: deno lint
 
     - name: run test
-      run: task test
+      run: deno task test
 
     - name: generate coverage report
       if: matrix.coverage
-      run: task coverage
+      run: deno task coverage
       
     - name: unit test code coverage
       if: matrix.coverage
