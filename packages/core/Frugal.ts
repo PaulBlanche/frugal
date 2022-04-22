@@ -54,6 +54,12 @@ export class Frugal {
         const cleanConfig = await CleanConfig.load(config);
         await log.setup(cleanConfig.loggingConfig);
 
+        if (cleanConfig.devMode) {
+            logger().warning({
+                msg: 'running frugal in dev mode, all pages will be treated as dynamic pages',
+            });
+        }
+
         logger().info({
             op: 'start',
             msg() {
