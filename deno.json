@@ -43,7 +43,7 @@
         "test:unit": "DENO_FUTURE_CHECK=1 deno test --no-check --allow-all --coverage=tests/cov_profile/unit --jobs --shuffle tests/unit",
         "test:integration": "DENO_FUTURE_CHECK=1 deno test --no-check --allow-all --coverage=tests/cov_profile/integration --jobs --shuffle tests/integration",
         "test": "deno task test:unit && deno task test:integration",
-        "test:coverage": "DENO_FUTURE_CHECK=1 deno coverage tests/cov_profile/unit --lcov --include=packages --output=tests/cov_profile/unit/cov_profile.lcov && DENO_FUTURE_CHECK=1 deno coverage tests/cov_profile/integration --lcov --include=packages --output=tests/cov_profile/integration/cov_profile.lcov",
+        "coverage": "DENO_FUTURE_CHECK=1 deno coverage tests/cov_profile/unit --lcov --include=packages --output=tests/cov_profile/unit/cov_profile.lcov && DENO_FUTURE_CHECK=1 deno coverage tests/cov_profile/integration --lcov --include=packages --output=tests/cov_profile/integration/cov_profile.lcov",
         "doc:dev": "DENO_FUTURE_CHECK=1 FRUGAL_DEV=1 deno run --no-check --allow-all --watch=docs/data docs/serve.ts",
         "doc:build": "DENO_FUTURE_CHECK=1 deno run --no-check --allow-all docs/build.ts",
         "doc:serve": "DENO_FUTURE_CHECK=1 deno run --no-check --allow-all docs/serve.ts",
