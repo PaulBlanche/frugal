@@ -14,39 +14,40 @@ export function bundle(config: BundleConfig) {
     return bundleCodeSplit(config);
 }
 
+export type EsbuildConfig = Omit<
+    esbuild.BuildOptions,
+    | 'bundle'
+    | 'entryPoints'
+    | 'write'
+    | 'metafile'
+    | 'outdir'
+    | 'plugins'
+    | 'outfile'
+    | 'outbase'
+    | 'platform'
+    | 'outExtension'
+    | 'publicPath'
+    | 'incremental'
+    | 'stdin'
+    | 'plugins'
+    | 'absWorkingDir'
+    | 'watch'
+>;
+
 export type BundleConfig =
     & {
         cacheDir: string;
         publicDir: string;
         rootDir: string;
         facades: {
+            bundle: string;
             entrypoint: string;
             content: string;
         }[];
-        formats: esbuild.Format[];
         transformers?: Transformer[];
         importMapFile?: string;
     }
-    & Omit<
-        esbuild.BuildOptions,
-        | 'bundle'
-        | 'format'
-        | 'entryPoints'
-        | 'write'
-        | 'metafile'
-        | 'outdir'
-        | 'plugins'
-        | 'outfile'
-        | 'outbase'
-        | 'platform'
-        | 'outExtension'
-        | 'publicPath'
-        | 'incremental'
-        | 'stdin'
-        | 'plugins'
-        | 'absWorkingDir'
-        | 'watch'
-    >;
+    & EsbuildConfig;
 
 async function bundleCodeSplit(
     {
@@ -54,7 +55,6 @@ async function bundleCodeSplit(
         publicDir,
         rootDir,
         facades,
-        formats,
         transformers,
         importMapFile,
         ...esbuildConfig
@@ -62,67 +62,81 @@ async function bundleCodeSplit(
 ) {
     const url: Record<string, Record<string, string>> = {};
 
-    const facadeToEntrypoint: Record<string, string> = {};
+    const facadeToEntrypoint: Record<
+        string,
+        { entrypoint: string; bundle: string }[]
+    > = {};
 
     const entryPoints = await Promise.all(facades.map(async (facade) => {
-        const facadeName = new murmur.Hash().update(
-            path.relative(rootDir, facade.entrypoint),
+        const facadeId = new murmur.Hash().update(
+            facade.content,
         ).alphabetic();
 
         const facadePath = path.join(
             cacheDir,
             'script_loader',
-            `${facadeName}.ts`,
+            `${facadeId}.ts`,
         );
 
-        facadeToEntrypoint[`deno:file://${facadePath}`] = facade.entrypoint;
+        facadeToEntrypoint[`deno:file://${facadePath}`] =
+            facadeToEntrypoint[`deno:file://${facadePath}`] ?? [];
+        facadeToEntrypoint[`deno:file://${facadePath}`].push({
+            entrypoint: facade.entrypoint,
+            bundle: facade.bundle,
+        });
 
         await fs.ensureFile(facadePath);
         await Deno.writeTextFile(facadePath, facade.content);
         return facadePath;
     }));
 
-    await Promise.all(formats.map(async (format) => {
-        const result = await esbuild.build({
-            ...esbuildConfig,
-            entryPoints,
-            format,
-            bundle: true,
-            write: false,
-            metafile: true,
-            platform: 'neutral',
-            incremental: false,
-            outdir: path.join(publicDir, 'js', format),
-            plugins: [frugalPlugin({
-                loader: 'portable',
-                importMapFile,
-                transformers,
-            })],
-        });
+    const result = await esbuild.build({
+        ...esbuildConfig,
+        entryPoints,
+        bundle: true,
+        write: false,
+        metafile: true,
+        platform: 'neutral',
+        incremental: false,
+        outdir: path.join(publicDir, 'js'),
+        plugins: [frugalPlugin({
+            loader: 'portable',
+            importMapFile,
+            transformers,
+        })],
+    });
 
-        await Promise.all(result.outputFiles.map(async (outputFile) => {
-            const output = result.metafile
-                ?.outputs[path.relative(Deno.cwd(), outputFile.path)];
-            if (output?.entryPoint) {
-                const entrypoint = facadeToEntrypoint[output.entryPoint];
-                url[entrypoint] = url[entrypoint] ?? {};
-                url[entrypoint][format] = `/${
-                    path.relative(publicDir, outputFile.path)
-                }`;
+    console.log(result.metafile);
 
-                logger().debug({
-                    url: url[entrypoint][format],
-                    format: format,
-                    page: entrypoint,
-                    msg() {
-                        return `add bundle script ${this.url} for ${this.page} (${this.format} format)`;
-                    },
-                });
+    await Promise.all(result.outputFiles.map(async (outputFile) => {
+        const output = result.metafile
+            ?.outputs[path.relative(Deno.cwd(), outputFile.path)];
+
+        // if the outputed file is an entry point
+        if (output?.entryPoint) {
+            const facades = facadeToEntrypoint[output.entryPoint];
+            // if there is a matching facade (so if the outputed file is not a dynamic entrypoint)
+            if (facades !== undefined) {
+                for (const { entrypoint, bundle } of facades) {
+                    url[entrypoint] = url[entrypoint] ?? {};
+                    url[entrypoint][bundle] = `/${
+                        path.relative(publicDir, outputFile.path)
+                    }`;
+
+                    logger().debug({
+                        url: url[entrypoint][bundle],
+                        bundle,
+                        page: entrypoint,
+                        msg() {
+                            return `add ${this.url} for ${this.page} to bundle ${this.bundle}`;
+                        },
+                    });
+                }
             }
+        }
 
-            await fs.ensureFile(outputFile.path);
-            await Deno.writeFile(outputFile.path, outputFile.contents);
-        }));
+        await fs.ensureFile(outputFile.path);
+        await Deno.writeFile(outputFile.path, outputFile.contents);
     }));
 
     return url;

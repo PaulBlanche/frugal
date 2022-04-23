@@ -19,15 +19,19 @@ export const config: Config = {
     importMap,
     loaders: [
         script({
-            test: IS_SCRIPT_FILE,
+            bundles: [{
+                name: 'body',
+                test: IS_SCRIPT_FILE,
+            }],
             transformers: [{
                 test: IS_STYLE_FILE,
                 transform: styleTransformer,
             }],
             importMapFile: importMap,
-            formats: ['esm'],
+            format: 'esm',
             minify: true,
             splitting: true,
+            entryNames: '[dir]/[name]-[hash]',
         }),
         style({
             test: IS_STYLE_FILE,
