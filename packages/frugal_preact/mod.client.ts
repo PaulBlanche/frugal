@@ -1,4 +1,4 @@
-export { useCreationTimestamp, useData, usePathname } from './dataContext.tsx';
+export { useData, usePathname } from './dataContext.tsx';
 export type { AppProps } from './content.tsx';
 export { Island } from './Island.tsx';
 export type { IslandProps } from './Island.tsx';

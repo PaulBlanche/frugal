@@ -6,7 +6,6 @@ declare global {
             // deno-lint-ignore no-explicit-any
             data: any;
             pathname: string;
-            timestamp: number;
         };
     }
 
