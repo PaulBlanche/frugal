@@ -24,7 +24,7 @@ export function staticFileMiddleware({ frugal }: Config): Middleware {
         });
         return composeMiddleware([
             _filesystemMiddleware(frugal),
-            _autoIndexMiddleware(frugal),
+            //_autoIndexMiddleware(frugal),
         ])(context, next);
     };
 }
@@ -59,7 +59,7 @@ function _filesystemMiddleware(frugal: Frugal): Middleware {
     };
 }
 
-function _autoIndexMiddleware(frugal: Frugal): Middleware {
+/*function _autoIndexMiddleware(frugal: Frugal): Middleware {
     return async (context, next) => {
         const url = context.request.url;
 
@@ -92,4 +92,4 @@ function _autoIndexMiddleware(frugal: Frugal): Middleware {
             return await next();
         }
     };
-}
+}*/

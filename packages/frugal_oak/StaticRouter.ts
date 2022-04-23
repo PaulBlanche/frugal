@@ -223,16 +223,6 @@ export class StaticRouter {
         };
     }
 
-    private async _sendFromCache(context: Context, pathname: string) {
-        const config = this.frugal.config;
-
-        const pagePath = path.join(config.publicDir, pathname);
-        const content = await config.pagePersistance.get(pagePath);
-
-        context.response.status = 200;
-        context.response.body = content;
-    }
-
     private _refreshJitMiddleware() {
         return async (context: Context, _next: () => Promise<unknown>) => {
             const ctx = context as StaticContext;
@@ -252,5 +242,19 @@ export class StaticRouter {
 
             return await this._sendFromCache(context, url.pathname);
         };
+    }
+
+    private async _sendFromCache(context: Context, pathname: string) {
+        const config = this.frugal.config;
+
+        const pagePath = path.join(config.publicDir, pathname);
+        const content = await config.pagePersistance.get(pagePath);
+
+        context.response.status = 200;
+        context.response.body = content;
+        context.response.headers.set(
+            'Cache-Control',
+            'public, max-age=0, must-revalidate',
+        );
     }
 }

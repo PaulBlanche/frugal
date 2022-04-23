@@ -91,6 +91,10 @@ export class PrgOrchestrator {
 
                 context.response.status = 200;
                 context.response.body = content;
+                context.response.headers.set(
+                    'Cache-Control',
+                    'no-store',
+                );
 
                 await this.sessionManager.delete(sessionId);
             } catch (error: unknown) {
