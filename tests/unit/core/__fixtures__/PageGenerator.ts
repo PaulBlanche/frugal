@@ -5,7 +5,7 @@ import {
 import { Page } from '../../../../packages/core/Page.ts';
 import { fakeDynamicPage } from './Page.ts';
 import { fakeLoaderContext } from './LoaderContext.ts';
-import { spy } from '../../../test_util/mod.ts';
+import { spy } from '../../../../dep/std/mock.ts';
 
 type FakePageGeneratorConfig<REQUEST extends object, DATA, POST_BODY> = {
     page?: Page<REQUEST, DATA, POST_BODY>;

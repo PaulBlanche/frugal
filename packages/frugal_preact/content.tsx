@@ -92,7 +92,7 @@ export function getContentFrom<REQUEST, DATA>(
                 >
                     <DataProvider
                         embedData={embedData}
-                        context={{ data, pathname, timestamp: Date.now() }}
+                        context={{ data, pathname }}
                     >
                         <Page
                             entrypoint={String(entrypoint)}

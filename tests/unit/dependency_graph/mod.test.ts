@@ -1,6 +1,7 @@
 import * as asserts from '../../../dep/std/asserts.ts';
 import * as murmur from '../../../packages/murmur/mod.ts';
-import { asSpy, decycle, spy } from '../../test_util/mod.ts';
+import { asSpy, decycle } from '../../test_util/mod.ts';
+import { spy } from '../../../dep/std/mock.ts';
 
 import * as dependency from '../../../packages/dependency_graph/mod.ts';
 import * as tree from '../../../packages/dependency_graph/tree.ts';
@@ -25,7 +26,7 @@ Deno.test('dependency_graph: file without dependencies', async () => {
     ]);
 
     asserts.assertEquals(
-        asSpy(Deno.readTextFile).calls.map((call) => call.params[0].toString()),
+        asSpy(Deno.readTextFile).calls.map((call) => call.args[0].toString()),
         [
             'file:///entrypoint1.ts',
             'file:///entrypoint2.ts',
@@ -74,7 +75,7 @@ Deno.test('dependency_graph: files with basic tree dependency', async () => {
     const tree = await dependency.build([new URL('file:///entrypoint1.ts')]);
 
     asserts.assertEquals(
-        asSpy(Deno.readTextFile).calls.map((call) => call.params[0].toString()),
+        asSpy(Deno.readTextFile).calls.map((call) => call.args[0].toString()),
         [
             'file:///entrypoint1.ts',
             'file:///module1.ts',
@@ -135,7 +136,7 @@ Deno.test('dependency_graph: files with acyclic graph dependency', async () => {
     const tree = await dependency.build([new URL('file:///entrypoint1.ts')]);
 
     asserts.assertEquals(
-        asSpy(Deno.readTextFile).calls.map((call) => call.params[0].toString()),
+        asSpy(Deno.readTextFile).calls.map((call) => call.args[0].toString()),
         [
             'file:///entrypoint1.ts',
             'file:///foo.ts',
@@ -195,7 +196,7 @@ Deno.test('dependency_graph: files with cyclic graph dependency', async () => {
     const tree = await dependency.build([new URL('file:///entrypoint1.ts')]);
 
     asserts.assertEquals(
-        asSpy(Deno.readTextFile).calls.map((call) => call.params.toString()),
+        asSpy(Deno.readTextFile).calls.map((call) => call.args.toString()),
         [
             'file:///entrypoint1.ts',
             'file:///module1.ts',
@@ -262,7 +263,7 @@ Deno.test('dependency_graph: multiple entrypoints sharing dependencies', async (
     ]);
 
     asserts.assertEquals(
-        asSpy(Deno.readTextFile).calls.map((call) => call.params[0].toString()),
+        asSpy(Deno.readTextFile).calls.map((call) => call.args[0].toString()),
         [
             'file:///entrypoint1.ts',
             'file:///entrypoint2.ts',
@@ -333,7 +334,7 @@ Deno.test('dependency_graph: custom resolution/loading', async () => {
     ], { resolve, load });
 
     asserts.assertEquals(
-        asSpy(Deno.readTextFile).calls.map((call) => call.params[0].toString()),
+        asSpy(Deno.readTextFile).calls.map((call) => call.args[0].toString()),
         [
             'file:///entrypoint1.ts',
             'file:///foo.ts',
@@ -344,16 +345,16 @@ Deno.test('dependency_graph: custom resolution/loading', async () => {
     asserts.assertEquals(
         await Promise.all(
             asSpy(load).calls.map(async (call) => ({
-                params: call.params[0].toString(),
-                result: await call.result,
+                args: call.args[0].toString(),
+                returned: await call.returned,
             })),
         ),
         [
-            { params: 'file:///entrypoint1.ts', result: undefined },
-            { params: 'file:///foo.ts', result: undefined },
+            { args: 'file:///entrypoint1.ts', returned: undefined },
+            { args: 'file:///foo.ts', returned: undefined },
             {
-                params: 'virtual:///bar.ts',
-                result: '\n        // bar.ts\n    ',
+                args: 'virtual:///bar.ts',
+                returned: '\n        // bar.ts\n    ',
             },
         ],
     );

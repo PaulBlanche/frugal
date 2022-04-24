@@ -45,7 +45,7 @@ export function getContent(
 ) {
     const scriptBodyGenerated = loaderContext.get<Generated>('script');
 
-    const esmScriptSrc = scriptBodyGenerated?.[String(entrypoint)]?.['esm'];
+    const esmScriptSrc = scriptBodyGenerated?.[String(entrypoint)]?.['body'];
 
     return `<html>
     <head>
@@ -53,7 +53,7 @@ export function getContent(
     </head>
     <body>
         <div id="log"></div>
-        <script module src="${esmScriptSrc}"></script>
+        <script type="module" src="${esmScriptSrc}"></script>
     </body>
 </html>`;
 }

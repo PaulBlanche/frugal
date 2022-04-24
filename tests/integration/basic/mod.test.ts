@@ -7,14 +7,12 @@ import {
 import * as path from '../../../dep/std/path.ts';
 import * as asserts from '../../../dep/std/asserts.ts';
 import { Hash } from '../../../packages/murmur/mod.ts';
-import { snapshot } from '../../test_util/snapshot.ts';
+import { assertSnapshot } from '../../../dep/std/snapshot.ts';
 
 import * as pageFoo from './page-foo.ts';
 import * as pageBar from './page-bar.ts';
 
-const { assertSnapshot } = snapshot(import.meta.url);
-
-Deno.test('Basic usage: file structure', async () => {
+Deno.test('Basic usage: file structure', async (t) => {
     const config = {
         outputDir: dist(),
         pages: [
@@ -42,10 +40,10 @@ Deno.test('Basic usage: file structure', async () => {
     );
 
     // assert file content
-    assertSnapshot('Basic usage: file structure:pageFoo1', pageFoo1);
-    assertSnapshot('Basic usage: file structure:pageFoo2', pageFoo2);
-    assertSnapshot('Basic usage: file structure:pageBar1', pageBar1);
-    assertSnapshot('Basic usage: file structure:pageBar2', pageBar2);
+    await assertSnapshot(t, pageFoo1);
+    await assertSnapshot(t, pageFoo2);
+    await assertSnapshot(t, pageBar1);
+    await assertSnapshot(t, pageBar2);
 
     await frugal.clean();
 });

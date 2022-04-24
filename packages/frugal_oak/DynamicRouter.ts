@@ -125,6 +125,10 @@ export class DynamicRouter {
 
             context.response.status = 200;
             context.response.body = result.content;
+            context.response.headers.set(
+                'Cache-Control',
+                'public, max-age=0, must-revalidate',
+            );
         };
     }
 }

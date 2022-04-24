@@ -2,9 +2,8 @@ import { Config, page } from './dep/frugal/core.ts';
 import { script } from './dep/frugal/loader_script.ts';
 import { style, styleTransformer } from './dep/frugal/loader_style.ts';
 import * as stylis from './dep/stylis.ts';
-import { svg } from './dep/frugal/loader_jsx_svg.ts';
+import { svg, svgTransformer } from './dep/frugal/loader_jsx_svg.ts';
 import * as preact from 'preact';
-import { render } from 'preact-render-to-string';
 
 import * as home from './pages/home/mod.ts';
 import * as docs from './pages/docs/mod.ts';
@@ -19,15 +18,22 @@ export const config: Config = {
     importMap,
     loaders: [
         script({
-            test: IS_SCRIPT_FILE,
+            bundles: [{
+                name: 'body',
+                test: IS_SCRIPT_FILE,
+            }],
             transformers: [{
                 test: IS_STYLE_FILE,
                 transform: styleTransformer,
+            }, {
+                test: IS_SVG,
+                transform: svgTransformer,
             }],
             importMapFile: importMap,
-            formats: ['esm'],
+            format: 'esm',
             minify: true,
             splitting: true,
+            entryNames: '[dir]/[name]-[hash]',
         }),
         style({
             test: IS_STYLE_FILE,
@@ -41,7 +47,6 @@ export const config: Config = {
         svg({
             test: IS_SVG,
             jsx: preact.h,
-            render,
         }),
     ],
 

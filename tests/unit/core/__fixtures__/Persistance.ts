@@ -2,7 +2,7 @@ import {
     NotFound,
     Persistance,
 } from '../../../../packages/core/Persistance.ts';
-import { spy } from '../../../test_util/mod.ts';
+import { spy } from '../../../../dep/std/mock.ts';
 
 class MemoryPersistance implements Persistance {
     memory: Map<string, string>;

@@ -1,0 +1,9 @@
+export const snapshot = {};
+
+snapshot[`Basic usage: file structure 1`] = `"<html>\\n        <head>\\n            <title>foo</title>\\n        </head> \\n        <body>\\n            \\n        <h1>foo title 1</h1>\\n        <p>foo content 1</p>\\n    \\n        </body>\\n    </html>"`;
+
+snapshot[`Basic usage: file structure 2`] = `"<html>\\n        <head>\\n            <title>foo</title>\\n        </head> \\n        <body>\\n            \\n        <h1>foo title 2</h1>\\n        <p>foo title 2</p>\\n    \\n        </body>\\n    </html>"`;
+
+snapshot[`Basic usage: file structure 3`] = `"<html>\\n        <head>\\n            <title>bar</title>\\n        </head>\\n        <body>\\n            \\n        <h1>bar title 1</h1>\\n        <p>bar content 1</p>\\n    \\n        </body>\\n    </html>"`;
+
+snapshot[`Basic usage: file structure 4`] = `"<html>\\n        <head>\\n            <title>bar</title>\\n        </head>\\n        <body>\\n            \\n        <h1>bar title 2</h1>\\n        <p>bar title 2</p>\\n    \\n        </body>\\n    </html>"`;

@@ -2,6 +2,7 @@ import * as esbuild from '../../dep/esbuild.ts';
 import * as frugal from '../core/mod.ts';
 import * as murmur from '../murmur/mod.ts';
 import * as log from '../log/mod.ts';
+import { assert } from '../../dep/std/asserts.ts';
 
 import { bundle, BundleConfig } from './bundle.ts';
 
@@ -10,25 +11,23 @@ function logger() {
 }
 
 type Config = {
-    test: (url: URL) => boolean;
-    order?(modules: string[]): string[];
-    end?: () => void;
+    bundles: {
+        test: (url: URL | string) => boolean;
+        name: string;
+    }[];
 } & Omit<BundleConfig, 'cacheDir' | 'publicDir' | 'rootDir' | 'facades'>;
 
 export type Generated = Record<string, Record<string, string>>;
 
 export function script(
-    { test, order, end, ...bundlConfig }: Config,
+    { bundles, ...bundlConfig }: Config,
 ): frugal.Loader<Record<string, Record<string, string>>> {
     return {
         name: `script`,
-        test: test,
+        test,
         generate,
         end: () => {
             esbuild.stop();
-            if (end) {
-                end();
-            }
         },
     };
 
@@ -56,28 +55,38 @@ export function script(
                     },
                 });
 
-                const scriptLists = assets.reduce<{ [s: string]: string[] }>(
-                    (scriptLists, { module, entrypoint }) => {
-                        scriptLists[entrypoint] = scriptLists[entrypoint] ?? [];
-                        scriptLists[entrypoint].push(module);
+                const scriptLists = assets.reduce<
+                    { [s: string]: { [s: string]: string[] } }
+                >(
+                    (scriptLists, asset) => {
+                        const bundle = getBundle(asset);
+                        assert(bundle !== undefined);
+                        scriptLists[asset.entrypoint] =
+                            scriptLists[asset.entrypoint] ?? {};
+                        scriptLists[asset.entrypoint][bundle] =
+                            scriptLists[asset.entrypoint][bundle] ?? [];
+                        scriptLists[asset.entrypoint][bundle].push(
+                            asset.module,
+                        );
                         return scriptLists;
                     },
                     {},
                 );
 
                 const facades = Object.entries(scriptLists).reduce<
-                    { entrypoint: string; content: string }[]
-                >((facades, [entrypoint, modules]) => {
-                    const orderedModules = order ? order(modules) : modules;
-
-                    facades.push({
-                        entrypoint,
-                        content: orderedModules.map((path, i) => {
-                            const name = `import${i}`;
-                            return `import { main as ${name} } from "${path}";
-                            ${name}();`;
-                        }).join('\n'),
-                    });
+                    { entrypoint: string; bundle: string; content: string }[]
+                >((facades, [entrypoint, bundles]) => {
+                    for (const bundle in bundles) {
+                        facades.push({
+                            entrypoint,
+                            bundle,
+                            content: bundles[bundle].map((path, i) => {
+                                const name = `import${i}`;
+                                return `import { main as ${name} } from "${path}";
+                                ${name}();`;
+                            }).join('\n'),
+                        });
+                    }
 
                     return facades;
                 }, []);
@@ -86,7 +95,6 @@ export function script(
                     ...bundlConfig,
                     publicDir: dir.public,
                     cacheDir: dir.cache,
-                    rootDir: dir.root,
                     facades,
                 });
 
@@ -112,5 +120,14 @@ export function script(
         await cache.save();
 
         return result;
+    }
+
+    function test(url: URL) {
+        return bundles.some((bundle) => bundle.test(url));
+    }
+
+    function getBundle(asset: frugal.Asset): string | undefined {
+        const bundle = bundles.find((bundle) => bundle.test(asset.module));
+        return bundle?.name;
     }
 }

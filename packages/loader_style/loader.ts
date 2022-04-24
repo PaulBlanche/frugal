@@ -73,7 +73,7 @@ export const output = style.output()`;
                     .update(bundle)
                     .alphabetic();
 
-                const bundleName = `style-${bundleHash}`;
+                const bundleName = `style-${bundleHash.toUpperCase()}`;
                 const bundleUrl = `/style/${bundleName}.css`;
                 const bundlePath = path.join(dir.public, bundleUrl);
 

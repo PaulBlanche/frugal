@@ -41,10 +41,14 @@ function _filesystemMiddleware(frugal: Frugal): Middleware {
                 },
             });
 
-            return await context.send({
+            await context.send({
                 root: frugal.config.publicDir,
-                index: 'index.html',
             });
+
+            context.response.headers.set(
+                'Cache-Control',
+                'max-age=31536000, immutable',
+            );
         } catch {
             logger('filesystemMiddleware').debug({
                 method: context.request.method,
@@ -54,7 +58,7 @@ function _filesystemMiddleware(frugal: Frugal): Middleware {
                 },
             });
 
-            return await next();
+            await next();
         }
     };
 }
@@ -75,10 +79,15 @@ function _autoIndexMiddleware(frugal: Frugal): Middleware {
                 },
             });
 
-            return await context.send({
+            await context.send({
                 root: frugal.config.publicDir,
                 path: filename,
             });
+
+            context.response.headers.set(
+                'Cache-Control',
+                'max-age=31536000, immutable',
+            );
         } catch {
             logger('autoIndexMiddleware').debug({
                 method: context.request.method,

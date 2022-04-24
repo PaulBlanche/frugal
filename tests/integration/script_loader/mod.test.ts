@@ -7,24 +7,30 @@ import {
 import * as path from '../../../dep/std/path.ts';
 import * as asserts from '../../../dep/std/asserts.ts';
 import { Hash } from '../../../packages/murmur/mod.ts';
-import { snapshot } from '../../test_util/snapshot.ts';
 import { script } from '../../../packages/loader_script/mod.ts';
 import { DOMParser } from '../../../dep/dom.ts';
+import { assertSnapshot } from '../../../dep/std/snapshot.ts';
 
 import * as pageFoo from './page-foo.ts';
 import * as pageBar from './page-bar.ts';
 
-const { assertSnapshot } = snapshot(import.meta.url);
-
-Deno.test('script_loader: file structure', async () => {
+Deno.test('script_loader: file structure', async (t) => {
     const config = {
         outputDir: dist(),
         loaders: [
             script({
-                test: (url) => {
-                    return url.toString().endsWith('.script.ts');
-                },
-                formats: ['esm'],
+                bundles: [{
+                    name: 'body',
+                    test: (url) => {
+                        return url.toString().endsWith('.script.ts');
+                    },
+                }],
+                /* Esbuild will inline full path of each bundled file. Since
+                this path contains a random string from the `dist` folder, this
+                made the snapshot testing fail. The minification removes those
+                comments */
+                minify: true,
+                format: 'esm',
             }),
         ],
         pages: [
@@ -52,10 +58,10 @@ Deno.test('script_loader: file structure', async () => {
     );
 
     // assert file content
-    assertSnapshot('Basic usage: file structure:pageFoo1', pageFoo1);
-    assertSnapshot('Basic usage: file structure:pageFoo2', pageFoo2);
-    assertSnapshot('Basic usage: file structure:pageBar1', pageBar1);
-    assertSnapshot('Basic usage: file structure:pageBar2', pageBar2);
+    await assertSnapshot(t, pageFoo1);
+    await assertSnapshot(t, pageFoo2);
+    await assertSnapshot(t, pageBar1);
+    await assertSnapshot(t, pageBar2);
 
     await frugal.clean();
 });
@@ -65,10 +71,14 @@ Deno.test('script_loader: script execution and order', async (t) => {
         outputDir: dist(),
         loaders: [
             script({
-                test: (url) => {
-                    return url.toString().endsWith('.script.ts');
-                },
-                formats: ['esm'],
+                bundles: [{
+                    name: 'body',
+                    test: (url) => {
+                        return url.toString().endsWith('.script.ts');
+                    },
+                }],
+                minify: true,
+                format: 'esm',
             }),
         ],
         pages: [
@@ -87,7 +97,7 @@ Deno.test('script_loader: script execution and order', async (t) => {
         );
 
         const [_, scriptSrc] = pageFoo1.match(
-            /<script module src="(.*)"><\/script>/,
+            /<script type="module" src="(.*)"><\/script>/,
         )!;
 
         window.document = new DOMParser().parseFromString(
@@ -108,7 +118,7 @@ Deno.test('script_loader: script execution and order', async (t) => {
         );
 
         const [_, scriptSrc] = pageBar1.match(
-            /<script module src="(.*)"><\/script>/,
+            /<script type="module" src="(.*)"><\/script>/,
         )!;
 
         window.document = new DOMParser().parseFromString(
