@@ -9,4 +9,6 @@ const CarretSprite = spritesheet.sprite(
     'carret',
 );
 
+spritesheet.collect();
+
 export const carretUrl = CarretSprite.url();

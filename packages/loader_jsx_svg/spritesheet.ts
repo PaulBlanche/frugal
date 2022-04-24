@@ -32,15 +32,23 @@ export class SpriteSheet<NODE> {
     name?: string;
     sprites: Sprite<NODE>[];
     render: (node: NODE) => string;
+    private collected: boolean;
 
     constructor({ render, name = 'spritesheet' }: SpriteSheetConfig<NODE>) {
         this.name = name;
         this.sprites = [];
         this.render = render;
+        this.collected = false;
         SPRITESHEETS.push(this);
     }
 
     sprite(children: NODE, name = 'sprite') {
+        if (this.collected) {
+            throw Error(
+                'could not register a sprite to a collected spritesheet',
+            );
+        }
+
         const hash = new murmur.Hash().update(this.render(children)).update(
             name ?? '',
         ).alphabetic();
@@ -53,7 +61,16 @@ export class SpriteSheet<NODE> {
         return sprite;
     }
 
+    collect() {
+        this.collected = true;
+    }
+
     url() {
+        if (!this.collected) {
+            throw Error(
+                'could not get a sprite url before collecting the spritesheet',
+            );
+        }
         const hash = this.sprites.reduce((hash, sprite) => {
             return hash.update(sprite.id);
         }, new murmur.Hash()).alphabetic();
