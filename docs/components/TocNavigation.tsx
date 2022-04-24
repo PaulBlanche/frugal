@@ -9,7 +9,7 @@ import {
     Toc,
 } from '../toc.ts';
 import { usePathname } from '../dep/frugal/frugal_preact.server.ts';
-import { Carret } from '../svg/Carret.svg.tsx';
+import { Carret } from '../svg/Carret.tsx';
 
 import * as s from './TocNavigation.style.ts';
 

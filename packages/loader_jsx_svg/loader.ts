@@ -4,7 +4,7 @@ import * as murmur from '../murmur/mod.ts';
 import * as log from '../log/mod.ts';
 
 import * as frugal from '../core/mod.ts';
-import { SVGFile } from './svg-sprite.ts';
+import { SpriteSheet } from './spritesheet.ts';
 
 function logger() {
     return log.getLogger('frugal:loader:jsx_svg');
@@ -12,10 +12,8 @@ function logger() {
 
 type Config = {
     test: (url: URL) => boolean;
-    // deno-lint-ignore ban-types
-    jsx: Function;
-    // deno-lint-ignore ban-types
-    render: Function;
+    // deno-lint-ignore no-explicit-any
+    jsx: (name: string, props: any) => any;
 };
 
 export function svg(config: Config): frugal.Loader<string, void> {
@@ -51,28 +49,22 @@ export function svg(config: Config): frugal.Loader<string, void> {
                     },
                 });
 
-                const svgModule = new URL(
-                    path.resolve(
-                        path.dirname(new URL(import.meta.url).pathname),
-                        './svg-sprite.ts',
-                    ),
-                    import.meta.url,
-                );
+                const svgModule = new URL('./spritesheet.ts', import.meta.url);
 
                 const svgGeneratorScript = `
-import * as svg from "${svgModule}";
+export { SPRITESHEETS as spritesheets } from "${svgModule}";
 ${
                     assets.map(({ module }) =>
                         `import "${module}";`
                     ).join('\n')
                 }
-export const output = svg.output()`;
+`;
 
-                const { output } = await import(
+                const { spritesheets } = await import(
                     URL.createObjectURL(new Blob([svgGeneratorScript]))
                 );
 
-                await write(output, dir.public, config.jsx, config.render);
+                await write(spritesheets, dir.public, config.jsx);
 
                 logger().debug({
                     op: 'done',
@@ -95,43 +87,25 @@ export const output = svg.output()`;
     }
 }
 
-export async function write(
-    svgFiles: Record<string, SVGFile>,
+export async function write<NODE>(
+    // deno-lint-ignore no-explicit-any
+    spritesheets: SpriteSheet<NODE>[],
     publicDir: string,
-    // deno-lint-ignore ban-types
-    jsx: Function,
-    // deno-lint-ignore ban-types
-    render: Function,
+    // deno-lint-ignore no-explicit-any
+    jsx: (name: string, props: any) => NODE,
 ) {
     await Promise.all(
-        Object.values(svgFiles).map(async (svgFile) => {
+        spritesheets.map(async (spritesheet) => {
             try {
-                const svgContent = render(jsx(
-                    'svg',
-                    { xmlns: 'http://www.w3.org/2000/svg' },
-                    jsx(
-                        'defs',
-                        {
-                            children: svgFile.sprites.map((sprite) => {
-                                return jsx(
-                                    'g',
-                                    {
-                                        key: sprite.id,
-                                        id: sprite.id,
-                                        children: sprite.children,
-                                    },
-                                );
-                            }),
-                        },
-                    ),
-                ));
+                const svgContent = spritesheet.output(jsx);
+                const url = spritesheet.url();
 
-                const svgPath = path.join(publicDir, svgFile.url);
+                const svgPath = path.join(publicDir, url);
                 await fs.ensureDir(path.dirname(svgPath));
 
                 logger().debug({
                     path: svgPath,
-                    sprites: svgFile.sprites.map((sprite) => sprite.id),
+                    sprites: spritesheet.sprites.map((sprite) => sprite.id),
                     msg() {
                         return `output ${this.path} containing ${
                             (this.sprites as string[]).join(',')
