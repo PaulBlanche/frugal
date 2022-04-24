@@ -1,6 +1,5 @@
 /* @jsx preact.h */
 /* @jsxFrag preact.Fragment */
-
 import * as preact from 'preact';
 import { cx } from '../loader_style/styled.ts';
 

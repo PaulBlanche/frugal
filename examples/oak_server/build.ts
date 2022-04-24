@@ -1,5 +1,5 @@
 import { build } from '../../packages/core/mod.ts';
 
-import { CONFIG } from './config.ts';
+import { config } from './frugal.config.ts';
 
-await build(CONFIG);
+await build(config);

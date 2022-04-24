@@ -1,6 +1,7 @@
 /* @jsx preact.h */
 /* @jsxFrag preact.Fragment */
 import * as preact from 'preact';
+import * as preact from 'preact';
 import * as hooks from 'preact/hooks';
 import { Form, submitForm, validateForm } from './Form.ts';
 import { cx } from '../../dep/frugal/styled.ts';

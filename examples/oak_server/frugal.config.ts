@@ -4,7 +4,7 @@ import * as pageISR from './page-isr.ts';
 import * as pageSSR from './page-ssr.ts';
 import { style } from '../../packages/loader_style/mod.ts';
 
-export const CONFIG: Config = {
+export const config: Config = {
     // since deno does not have any notion of "root of module", frugal needs to
     // rely on you giving a root directory. Every relative path in the
     // configuration will be resolved relative to this directory.

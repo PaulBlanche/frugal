@@ -8,6 +8,16 @@ But with the `oak` integration, you can have a server that uses frugal in order 
 - refresh static pages on demand
 - handle POST request with a POST-redirect-GET pattern
 
+Oak integration rely on you providing the preact version you want via an [import map](https://deno.land/manual/linking_to_external_code/import_maps) :
+
+```json
+{
+    "imports": {
+        "oak": "https://deno.land/x/oak@v10.4.0/mod.ts"
+    }
+}
+```
+
 ## Setup a server
 
 Create a file `/serve.ts` :

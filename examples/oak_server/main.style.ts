@@ -4,7 +4,7 @@ import {
 } from '../../packages/loader_style/styled.ts';
 
 createGlobalStyle`
-    body: {
+    body {
         margin: 0;
     }
 `;

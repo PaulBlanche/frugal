@@ -43,6 +43,7 @@ The `getContentFrom` will return a `getContent` function of a [page descriptor]
 /* @jsx preact.h */
 /* @jsxFrag preact.Fragment */
 import * as preact from 'preact';
+import * as preact from 'preact';
 import {
     AppProps,
     Head,

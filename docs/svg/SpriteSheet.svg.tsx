@@ -1,4 +1,6 @@
-/** @jsxImportSource preact */
+/* @jsx preact.h */
+/* @jsxFrag preact.Fragment */
+import * as preact from 'preact';
 import { SpriteSheet } from '../dep/frugal/spritesheet.ts';
 import { render } from 'preact-render-to-string';
 

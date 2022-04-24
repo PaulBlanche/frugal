@@ -46,19 +46,18 @@ export function getContent(
     { data, entrypoint, loaderContext }: frugal.GetContentParams<Request, Data>,
 ) {
     // since we registered a loader, the result of its work is available in the
-    // `loaderContext`. Since we gave the script loader the name `body`, the
-    // generated data will be available under the key `script-body`.
+    // `loaderContext`.
     // The generated data for the script loader is a dictionnary with an entry
     // for each `entrypoint`, meaning an entry for each page descriptor. That
     // way you can have different bundle for different pages.
     // Each entry in this dictionnary is another dictionnary, with an entry for
-    // each format that was generated. In the case of this example, only `esm` was
-    // used, but you might want both `esm` for modern navigator and `systemjs`
-    // for older navigators.
+    // each bundle that was generated. In the case of this example, only `body` was
+    // generated, but you might want a different bundle for code in the `head` 
+    // of the document.
     // Each entry in this sub dictionnary is the url of the entrypoint for the
     // bundle
     const bodyScriptSrc =
-        loaderContext.get<Generated>('script')?.[String(entrypoint)]?.['esm'];
+        loaderContext.get<Generated>('script')?.[String(entrypoint)]?.['body'];
 
     return `<html>
     <body>

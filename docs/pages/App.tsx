@@ -1,4 +1,6 @@
-/** @jsxImportSource preact */
+/* @jsx preact.h */
+/* @jsxFrag preact.Fragment */
+import * as preact from 'preact';
 import { AppProps, Head } from '../dep/frugal/frugal_preact.server.ts';
 import type { Generated } from '../dep/frugal/loader_script.ts';
 

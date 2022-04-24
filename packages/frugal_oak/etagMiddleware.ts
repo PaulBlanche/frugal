@@ -13,16 +13,19 @@ export function etagMiddleware(): Middleware {
         const ifNoneMatch = context.request.headers.get('If-None-Match');
         if (ifNoneMatch) {
             const entity = await etag.getEntity(context);
-            if (entity && !etag.ifNoneMatch(ifNoneMatch, entity)) {
-                logger().debug({
-                    pathname: context.request.url.pathname,
-                    msg() {
-                        return `No Etag change for ${this.pathname}, send empty 304`;
-                    },
-                });
+            if (entity) {
+                const sameEntity = await etag.ifNoneMatch(ifNoneMatch, entity);
+                if (sameEntity) {
+                    logger().debug({
+                        pathname: context.request.url.pathname,
+                        msg() {
+                            return `No Etag change for ${this.pathname}, send empty 304`;
+                        },
+                    });
 
-                context.response.status = 304;
-                context.response.body = '';
+                    context.response.body = null;
+                    context.response.status = 304;
+                }
             }
         }
     };

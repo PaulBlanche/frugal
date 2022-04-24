@@ -21,20 +21,27 @@ build({
     // module use bare imports `preact`, `preact/hooks` and `preact-render-to-string`.
     importMap: IMPORT_MAP,
 
-    // registered loaders. We register the script loader withe the name "body",
-    // and configured to catch all import ending in `.script.ts`. The bundles
-    // will be outputed in `esm` format and with code splitting.
-    // see the `script_loader` example for more info.
+    // registered loaders. 
     loaders: [
+        // We register the script loader with a bundle "body",
+        // and configured to catch all import ending in `.script.ts`. The bundles
+        // will be outputed in `esm` format and with code splitting.
+        // see the `script_loader` example for more info.
         script({
-            test: (url) => /\.script\.ts$/.test(url.toString()),
-            formats: ['esm'],
+            bundles: [{
+                name: 'body',
+                test: (url) => /\.script\.ts$/.test(url.toString()),
+            }],
+            format: 'esm',
             importMapFile: IMPORT_MAP,
+            // we register a transformer to catch all `.style.ts` module and remove css
+            // code and just keep classnames, for lighter modules
             transformers: [{
                 test: (url) => /\.style\.ts$/.test(url.toString()),
                 transform: styleTransformer,
             }],
         }),
+        // We register a style loader to catch all import ending in `.style.ts`
         style({
             test: (url) => /\.style\.ts$/.test(url.toString()),
 

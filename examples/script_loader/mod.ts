@@ -13,8 +13,8 @@ build({
     // the directory relative to `root` where to output the result of the build
     outputDir: './dist',
 
-    // registered loaders. We register the script loader withe the name "body",
-    // and configured to catch all import ending in `.script.ts`. The bundles
+    // registered loaders. We register the script loader, that will bundle all 
+    // import ending in `.script.ts` in a bundle called "body". The bundles
     // will be outputed in `esm` format and with code splitting.
     // You will get a different bundle for each entrypoint, but the code splitting
     // will be done amongst all entrypoint.
@@ -22,8 +22,11 @@ build({
     // so this code will be put in a shared chunk
     loaders: [
         script({
-            test: (url) => /\.script\.ts$/.test(url.toString()),
-            formats: ['esm'],
+            bundles: [{
+                name: 'body',                
+                test: (url) => /\.script\.ts$/.test(url.toString()),
+            }],
+            format: 'esm',
             splitting: true,
         }),
     ],

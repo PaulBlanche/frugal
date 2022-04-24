@@ -9,7 +9,7 @@ import type { Generated } from '../../packages/loader_script/mod.ts';
 // server side.
 export function App({ entrypoint, loaderContext, children }: AppProps) {
     const scriptGenerated = loaderContext.get<Generated>('script');
-    const esmBundleUrl = scriptGenerated?.[entrypoint]?.['esm'];
+    const esmBundleUrl = scriptGenerated?.[entrypoint]?.['body'];
     return (
         <>
             <Head>

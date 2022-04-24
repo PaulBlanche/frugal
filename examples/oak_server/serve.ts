@@ -1,13 +1,15 @@
 import { Frugal } from '../../packages/core/mod.ts';
-import { CONFIG } from './config.ts';
+import { config } from './frugal.config.ts';
 
 import { frugalMiddleware } from '../../packages/frugal_oak/mod.ts';
 import { Application } from 'oak';
 
-const frugal = await Frugal.load(CONFIG);
+// We load the frugal object that was build with `build.ts`. 
+const frugal = await Frugal.load(config);
 
 const application = new Application();
 
+// We register the `frugalMiddleware` to the oak application
 application.use(
     await frugalMiddleware(frugal, {
         // Logging configuration. In the context of this exemple, all loggers are

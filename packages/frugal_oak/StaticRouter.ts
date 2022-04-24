@@ -193,7 +193,7 @@ export class StaticRouter {
                             return `try to respond to ${this.method} ${this.pathname} with ${this.filename}`;
                         },
                     });
-                    return await this._sendFromCache(context, filename);
+                    await this._sendFromCache(context, filename);
                 } else {
                     const filename = path.join(url.pathname, 'index.html');
                     logger('cachedMiddleware').debug({
@@ -204,7 +204,7 @@ export class StaticRouter {
                             return `try to respond to ${this.method} ${this.pathname} with ${this.filename}`;
                         },
                     });
-                    return await this._sendFromCache(context, filename);
+                    await this._sendFromCache(context, filename);
                 }
             } catch (error: unknown) {
                 if (error instanceof NotFound) {
@@ -220,6 +220,7 @@ export class StaticRouter {
                 }
                 throw error;
             }
+            console.log('AFTER CACHED', context.response);
         };
     }
 
@@ -245,10 +246,13 @@ export class StaticRouter {
     }
 
     private async _sendFromCache(context: Context, pathname: string) {
+        console.log('send from cache');
         const config = this.frugal.config;
 
         const pagePath = path.join(config.publicDir, pathname);
         const content = await config.pagePersistance.get(pagePath);
+
+        console.log('send from cache', content);
 
         context.response.status = 200;
         context.response.body = content;
