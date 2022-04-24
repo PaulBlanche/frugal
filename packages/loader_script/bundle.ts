@@ -38,7 +38,6 @@ export type BundleConfig =
     & {
         cacheDir: string;
         publicDir: string;
-        rootDir: string;
         facades: {
             bundle: string;
             entrypoint: string;
@@ -53,7 +52,6 @@ async function bundleCodeSplit(
     {
         cacheDir,
         publicDir,
-        rootDir,
         facades,
         transformers,
         importMapFile,
@@ -106,8 +104,6 @@ async function bundleCodeSplit(
         })],
     });
 
-    console.log(result.metafile);
-
     await Promise.all(result.outputFiles.map(async (outputFile) => {
         const output = result.metafile
             ?.outputs[path.relative(Deno.cwd(), outputFile.path)];
@@ -123,7 +119,7 @@ async function bundleCodeSplit(
                 const bundleExt = path.extname(outputFile.path);
                 const outputPath = path.resolve(
                     path.dirname(outputFile.path),
-                    `${bundleName}-${bundleHash.toUpperCase()}.${bundleExt}`,
+                    `${bundleName}-${bundleHash.toUpperCase()}${bundleExt}`,
                 );
 
                 outputFile.path = outputPath;
@@ -149,6 +145,8 @@ async function bundleCodeSplit(
         await fs.ensureFile(outputFile.path);
         await Deno.writeFile(outputFile.path, outputFile.contents);
     }));
+
+    //TODO(@PaulBlanche): also output metafile ?
 
     return url;
 }

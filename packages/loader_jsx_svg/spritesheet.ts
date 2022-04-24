@@ -61,6 +61,7 @@ export class SpriteSheet<NODE> {
         return `/svg/${this.name}-${hash.toUpperCase()}.svg`;
     }
 
+    // deno-lint-ignore no-explicit-any
     output(jsx: (name: string, props: any) => NODE) {
         return this.render(jsx(
             'svg',

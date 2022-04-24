@@ -2,6 +2,7 @@ import { fakePageBuilder } from './__fixtures__/PageBuilder.ts';
 import { fakeStaticPage } from './__fixtures__/Page.ts';
 import { asSpy } from '../../test_util/mod.ts';
 import * as asserts from '../../../dep/std/asserts.ts';
+import { assertSpyCallArgs, assertSpyCalls } from '../../../dep/std/mock.ts';
 
 import { PageRefresher } from '../../../packages/core/PageRefresher.ts';
 
@@ -23,12 +24,8 @@ Deno.test('PageRefresher: refresh call builder.build with parsed request', async
 
     asserts.assertEquals(result, pagePath);
 
-    asserts.assertEquals(
-        asSpy(builder.build).calls.map((call) => call.params),
-        [
-            [{ id: '345' }, 'refresh'],
-        ],
-    );
+    assertSpyCalls(asSpy(builder.build), 1);
+    assertSpyCallArgs(asSpy(builder.build), 0, [{ id: '345' }, 'refresh']);
 });
 
 Deno.test('PageRefresher: throws if path does not match', async () => {

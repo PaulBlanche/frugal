@@ -1,0 +1,9 @@
+export const snapshot = {};
+
+snapshot[`script_loader: file structure 1`] = `'<html>\\n    <head>\\n        <title>foo</title>\\n    </head>\\n    <body>\\n        <div id="log"></div>\\n        <script type="module" src="/js/body-KTAQS.js"></script>\\n    </body>\\n</html>'`;
+
+snapshot[`script_loader: file structure 2`] = `'<html>\\n    <head>\\n        <title>foo</title>\\n    </head>\\n    <body>\\n        <div id="log"></div>\\n        <script type="module" src="/js/body-KTAQS.js"></script>\\n    </body>\\n</html>'`;
+
+snapshot[`script_loader: file structure 3`] = `'<html>\\n    <head>\\n        <title>bar</title>\\n    </head>\\n    <body>\\n        <div id="log"></div>\\n        <script type="module" src="/js/body-CH9IOZ.js"></script>\\n    </body>\\n</html>'`;
+
+snapshot[`script_loader: file structure 4`] = `'<html>\\n    <head>\\n        <title>bar</title>\\n    </head>\\n    <body>\\n        <div id="log"></div>\\n        <script type="module" src="/js/body-CH9IOZ.js"></script>\\n    </body>\\n</html>'`;

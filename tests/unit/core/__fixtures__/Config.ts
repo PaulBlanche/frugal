@@ -4,26 +4,22 @@ import {
     OFF_LOGGER_CONFIG,
 } from '../../../../packages/core/Config.ts';
 import * as importmap from '../../../../dep/importmap.ts';
-import { spy } from '../../../test_util/mod.ts';
 
-type FakeCleanConfigConfig = {
-    config?: Partial<
-        Omit<Config, 'importMap'> & { importMap: importmap.ImportMap }
-    >;
+type FakeCleanConfigConfig = Partial<
+Omit<Config, 'importMap'> & { importMap: importmap.ImportMap }
+> & {
     mock?: {};
 };
 
 export function fakeConfig(
     {
-        config: {
-            self = new URL('file:///'),
-            root,
-            importMap = {},
-            loaders,
-            outputDir = '',
-            pages = [],
-            logging = OFF_LOGGER_CONFIG,
-        } = {},
+        self = new URL('file:///'),
+        root,
+        importMap = {},
+        loaders,
+        outputDir = '',
+        pages = [],
+        logging = OFF_LOGGER_CONFIG,
         mock = {},
     }: FakeCleanConfigConfig = {},
 ) {

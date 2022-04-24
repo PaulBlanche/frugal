@@ -1,9 +1,11 @@
 import { LoaderContext } from '../../../packages/core/LoaderContext.ts';
-import { CleanConfig } from '../../../packages/core/Config.ts';
-import { Asset, Loader } from '../../../packages/core/loader.ts';
-import { PersistantCache } from '../../../packages/core/Cache.ts';
-import { asSpy, spy } from '../../test_util/mod.ts';
+import { Asset } from '../../../packages/core/loader.ts';
+import { fakePersistantCache } from './__fixtures__/Cache.ts';
+import { fakeAsset, fakeLoader } from './__fixtures__/Loader.ts';
+import { fakeConfig } from './__fixtures__/Config.ts';
+import { asSpy } from '../../test_util/mod.ts';
 import * as asserts from '../../../dep/std/asserts.ts';
+import { assertSpyCall, assertSpyCalls, spy } from '../../../dep/std/mock.ts';
 
 Deno.test('LoaderContext: build call all loader with correct assets', async () => {
     const fooLoader = fakeLoader({
@@ -26,53 +28,27 @@ Deno.test('LoaderContext: build call all loader with correct assets', async () =
         fakeAsset({ loader: 'baz' }),
     ];
 
-    await LoaderContext.build(config, assets, (name) => {
-        return Promise.resolve(new PersistantCache('', {}));
+    await LoaderContext.build(config, assets, (_name) => {
+        return Promise.resolve(fakePersistantCache());
     });
 
-    asserts.assertEquals(asSpy(fooLoader.generate).calls.length, 1);
+    assertSpyCalls(asSpy(fooLoader.generate), 1);
     asserts.assertEquals(
-        asSpy(fooLoader.generate).calls[0].params[0].assets,
+        asSpy(fooLoader.generate).calls[0].args[0].assets,
         assets.filter((asset) => asset.loader === 'foo'),
     );
     asserts.assertEquals(
-        await asSpy(fooLoader.generate).calls[0].result,
+        await asSpy(fooLoader.generate).calls[0].returned,
         'foo-generated',
     );
 
-    asserts.assertEquals(asSpy(barLoader.generate).calls.length, 1);
+    assertSpyCalls(asSpy(barLoader.generate), 1);
     asserts.assertEquals(
-        asSpy(barLoader.generate).calls[0].params[0].assets,
+        asSpy(barLoader.generate).calls[0].args[0].assets,
         assets.filter((asset) => asset.loader === 'bar'),
     );
     asserts.assertEquals(
-        await asSpy(barLoader.generate).calls[0].result,
+        await asSpy(barLoader.generate).calls[0].returned,
         'bar-generated',
     );
 });
-
-function fakeAsset(asset: Partial<Asset>) {
-    return {
-        loader: asset.loader ?? '',
-        module: asset.module ?? '',
-        hash: asset.hash ?? '',
-        entrypoint: asset.entrypoint ?? '',
-    };
-}
-
-function fakeConfig(config: { loaders: Loader<any, any>[] }) {
-    return new CleanConfig({
-        self: new URL('file:///'),
-        outputDir: '',
-        pages: [],
-        loaders: config.loaders,
-    }, {});
-}
-
-function fakeLoader(loader: Partial<Loader<any, any>>) {
-    return {
-        name: loader.name ?? '',
-        test: loader.test ?? (() => true),
-        generate: loader.generate ?? (() => Promise.resolve()),
-    };
-}

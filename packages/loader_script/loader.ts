@@ -95,7 +95,6 @@ export function script(
                     ...bundlConfig,
                     publicDir: dir.public,
                     cacheDir: dir.cache,
-                    rootDir: dir.root,
                     facades,
                 });
 

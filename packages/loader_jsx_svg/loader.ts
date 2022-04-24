@@ -88,7 +88,6 @@ ${
 }
 
 export async function write<NODE>(
-    // deno-lint-ignore no-explicit-any
     spritesheets: SpriteSheet<NODE>[],
     publicDir: string,
     // deno-lint-ignore no-explicit-any
