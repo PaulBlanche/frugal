@@ -31,7 +31,7 @@ export const config: Config = {
             }],
             importMapFile: importMap,
             format: 'esm',
-            //minify: true,
+            minify: true,
             splitting: true,
             entryNames: '[dir]/[name]-[hash]',
         }),

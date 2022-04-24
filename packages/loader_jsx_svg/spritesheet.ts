@@ -58,7 +58,7 @@ export class SpriteSheet<NODE> {
             return hash.update(sprite.id);
         }, new murmur.Hash()).alphabetic();
 
-        return `/svg/${this.name}.${hash}.svg`;
+        return `/svg/${this.name}-${hash.toUpperCase()}.svg`;
     }
 
     output(jsx: (name: string, props: any) => NODE) {

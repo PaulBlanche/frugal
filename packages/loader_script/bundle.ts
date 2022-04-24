@@ -117,10 +117,21 @@ async function bundleCodeSplit(
             const facades = facadeToEntrypoint[output.entryPoint];
             // if there is a matching facade (so if the outputed file is not a dynamic entrypoint)
             if (facades !== undefined) {
+                const bundleName = facades[0].bundle;
+                const bundleHash = new murmur.Hash().update(outputFile.text)
+                    .alphabetic();
+                const bundleExt = path.extname(outputFile.path);
+                const outputPath = path.resolve(
+                    path.dirname(outputFile.path),
+                    `${bundleName}-${bundleHash.toUpperCase()}.${bundleExt}`,
+                );
+
+                outputFile.path = outputPath;
+
                 for (const { entrypoint, bundle } of facades) {
                     url[entrypoint] = url[entrypoint] ?? {};
                     url[entrypoint][bundle] = `/${
-                        path.relative(publicDir, outputFile.path)
+                        path.relative(publicDir, outputPath)
                     }`;
 
                     logger().debug({
