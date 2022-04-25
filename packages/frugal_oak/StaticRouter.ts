@@ -1,4 +1,4 @@
-import { composeMiddleware, Context, Router } from 'oak';
+import { composeMiddleware, Context, etag, Router } from 'oak';
 import { Frugal, NotFound } from '../core/mod.ts';
 import { StaticContext } from './FrugalContext.ts';
 import * as path from '../../dep/std/path.ts';
@@ -220,7 +220,6 @@ export class StaticRouter {
                 }
                 throw error;
             }
-            console.log('AFTER CACHED', context.response);
         };
     }
 
@@ -246,19 +245,40 @@ export class StaticRouter {
     }
 
     private async _sendFromCache(context: Context, pathname: string) {
-        console.log('send from cache');
         const config = this.frugal.config;
 
         const pagePath = path.join(config.publicDir, pathname);
         const content = await config.pagePersistance.get(pagePath);
 
-        console.log('send from cache', content);
+        if (await ifNoneMatch(context, content)) {
+            context.response.status = 200;
+            context.response.body = content;
+        } else {
+            context.response.status = 304;
+            context.response.body = null;
+        }
 
-        context.response.status = 200;
-        context.response.body = content;
+        context.response.headers.set(
+            'ETag',
+            await etag.calculate(content, { weak: true }),
+        );
+
         context.response.headers.set(
             'Cache-Control',
             'public, max-age=0, must-revalidate',
         );
     }
+}
+
+async function ifNoneMatch(context: Context, content: string) {
+    const ifNoneMatchHeader = context.request.headers.get('If-None-Match');
+
+    if (ifNoneMatchHeader) {
+        return await etag.ifNoneMatch(
+            context.request.headers.get('If-None-Match')!,
+            content,
+            { weak: true },
+        );
+    }
+    return true;
 }

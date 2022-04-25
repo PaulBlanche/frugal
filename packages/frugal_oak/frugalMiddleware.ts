@@ -6,7 +6,6 @@ import { staticFileMiddleware } from './staticFileMiddleware.ts';
 import { PrgOrchestrator } from './PrgOrchestrator.ts';
 import { SessionManager } from './SessionManager.ts';
 import { trailingSlashMiddleware } from './trailingSlashMiddleware.ts';
-import { etagMiddleware } from './etagMiddleware.ts';
 import * as log from '../log/mod.ts';
 
 const fsPersistance = new FilesystemPersistance();
@@ -56,7 +55,6 @@ export async function frugalMiddleware(
     });
 
     return composeMiddleware([
-        etagMiddleware(),
         trailingSlashMiddleware(),
         dynamicRouter.routes(),
         staticRouter.routes(),
