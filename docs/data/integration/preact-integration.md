@@ -43,7 +43,6 @@ The `getContentFrom` will return a `getContent` function of a [page descriptor]
 /* @jsx preact.h */
 /* @jsxFrag preact.Fragment */
 import * as preact from 'preact';
-import * as preact from 'preact';
 import {
     AppProps,
     Head,
@@ -114,6 +113,8 @@ export function main() {
     hydrate(NAME, async () => (await import('./MyComponent.tsx')).MyComponent);
 }
 ```
+
+> ⚠️ Since the client code will be bundle with esbuild, and given that esbuild [does not support `@jsxImportSource` annotation](https://github.com/evanw/esbuild/issues/718), you will have to import `preact` and use `@jsx` and `@jsxFrag` annotations.
 
 ## Hydration strategy
 
