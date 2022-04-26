@@ -49,6 +49,7 @@
         "doc:dev": "DENO_FUTURE_CHECK=1 FRUGAL_DEV=1 deno run --no-check --allow-all --watch=docs/data docs/serve.ts",
         "doc:build": "DENO_FUTURE_CHECK=1 deno run --no-check --allow-all docs/build.ts",
         "doc:serve": "DENO_FUTURE_CHECK=1 deno run --no-check --allow-all docs/serve.ts",
-        "example:run": "DENO_FUTURE_CHECK=1 deno run --no-check --allow-all"
+        "example:run": "DENO_FUTURE_CHECK=1 deno run --no-check --allow-all",
+        "swc:cache": "DENO_FUTURE_CHECK=1 deno run --no-check --allow-all packages/swc-wasm/cache.ts"
     }
 }
