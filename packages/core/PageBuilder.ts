@@ -112,6 +112,7 @@ export class PageBuilder<REQUEST extends object, DATA, POST_BODY> {
                         phase,
                     });
 
+                console.log(pagePath);
                 await this.config.persistance.set(pagePath, content);
 
                 logger().debug({
