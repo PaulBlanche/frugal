@@ -136,6 +136,7 @@ export class CleanConfig {
     }
 
     get outputDir() {
+        console.log(this.root.pathname, this.config.outputDir);
         return path.resolve(this.root.pathname, this.config.outputDir);
     }
 
