@@ -139,6 +139,7 @@ Deno.test('script_loader: script execution and order', async (t) => {
 async function getFrugalInstance(
     config: Pick<Config, 'pages' | 'outputDir' | 'loaders'>,
 ) {
+    console.log(import.meta.url, new URL(import.meta.url));
     const frugal = await Frugal.build({
         self: new URL(import.meta.url),
         outputDir: config.outputDir,
