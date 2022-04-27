@@ -14,11 +14,13 @@ jobs:
     strategy:
       matrix:
         deno-version: [1.x, canary]
+        os: [ubuntu-latest, windows-latest, macos-latest]
         include:
           - deno-version: canary
+            os: ubuntu-latest
             coverage: true
 
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
 
     steps:
     - name: checkout project
