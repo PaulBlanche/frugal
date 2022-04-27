@@ -444,7 +444,16 @@ class FakeEnvironment {
         Deno.writeTextFile = spy((path, content) =>
             this.fakeWriteFileText(path, content)
         );
-        globalThis.fetch = spy((url) => this.fakeFetch(url));
+        const realFetch = globalThis.fetch;
+        globalThis.fetch = spy((url) => {
+            if (
+                url.toString() ===
+                    'https://cdn.esm.sh/v78/@swc/wasm-web@1.2.172/deno/wasm-web_bg.wasm'
+            ) {
+                return realFetch(url);
+            }
+            return this.fakeFetch(url);
+        });
     }
 
     set(path: string, content: string) {

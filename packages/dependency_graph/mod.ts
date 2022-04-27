@@ -1,4 +1,4 @@
-import * as swc from '../../dep/swc.ts';
+import * as swc from '../../packages/swc-wasm/mod.ts';
 import * as murmur from '../murmur/mod.ts';
 import { assert } from '../../dep/std/asserts.ts';
 
@@ -184,7 +184,7 @@ async function analyze(
 
     const source = await loadSource(resolvedModuleSpecifier, config.load);
 
-    const ast = swc.parse(source, {
+    const ast = swc.parseSync(source, {
         target: 'es2019',
         syntax: 'typescript',
         tsx: true,
