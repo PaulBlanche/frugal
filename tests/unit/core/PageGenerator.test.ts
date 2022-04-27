@@ -2,6 +2,7 @@ import { PageGenerator } from '../../../packages/core/PageGenerator.ts';
 import { fakeDynamicPage, fakeStaticPage } from './__fixtures__/Page.ts';
 import { fakeLoaderContext } from './__fixtures__/LoaderContext.ts';
 import { asSpy } from '../../test_util/mod.ts';
+import * as path from '../../../dep/std/path.ts';
 import * as asserts from '../../../dep/std/asserts.ts';
 import { assertSpyCall, assertSpyCalls } from '../../../dep/std/mock.ts';
 
@@ -39,7 +40,10 @@ Deno.test('PageGenerator: generateContentFromData call page.getContent', async (
         },
     );
 
-    asserts.assertEquals(result.pagePath, 'public/dir/foo/654/index.html');
+    asserts.assertEquals(
+        result.pagePath,
+        path.join(publicDir, pathName, 'index.html'),
+    );
     asserts.assertEquals(result.content, content);
 
     assertSpyCalls(asSpy(page.getContent), 1);
@@ -85,7 +89,10 @@ Deno.test('PageGenerator: generate orchestrate the generation of DynamicPage', a
         searchParams,
     });
 
-    asserts.assertEquals(result.pagePath, 'public/dir/foo/345/index.html');
+    asserts.assertEquals(
+        result.pagePath,
+        path.join(publicDir, pathName, 'index.html'),
+    );
     asserts.assertEquals(result.content, content);
 
     assertSpyCalls(asSpy(page.getDynamicData), 1);
