@@ -105,6 +105,8 @@ async function bundleCodeSplit(
     });
 
     await Promise.all(result.outputFiles.map(async (outputFile) => {
+        console.log(Deno.cwd(), outputFile.path);
+
         const output = result.metafile
             ?.outputs[path.relative(Deno.cwd(), outputFile.path)];
 
