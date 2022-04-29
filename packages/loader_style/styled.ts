@@ -84,23 +84,26 @@ function css(
     return propertyList.join('');
 }
 
-export function inherit(...parents: ScopedRules[]) {
-    return {
-        styled: (hint: string) => styled(hint, ...parents),
-    };
-}
+export class ScopedClassName {
+    hint: string;
+    parents: ScopedRules[];
 
-export function styled(hint: string, ...parents: ScopedRules[]) {
-    const extended: ScopedRules[] = [...parents];
+    constructor(hint: string = '') {
+        this.hint = hint;
+        this.parents = [];
+    }
 
-    return scoped;
+    extends(...parents: ScopedRules[]) {
+        this.parents = parents;
+        return this;
+    }
 
-    function scoped(
+    styled(
         template: TemplateStringsArray,
         ...interpolations: Interpolable[]
     ) {
         const properties = css(template, ...interpolations);
-        const rule = new ScopedRules(hint, properties, extended);
+        const rule = new ScopedRules(this.hint, properties, this.parents);
         if (!SCOPED_CLASSNAMES.has(rule.className)) {
             RULES.push(rule);
             SCOPED_CLASSNAMES.add(rule.className);
@@ -109,23 +112,31 @@ export function styled(hint: string, ...parents: ScopedRules[]) {
     }
 }
 
-export const global = {
-    styled: globalStyle,
-};
+export function className(hint: string) {
+    return new ScopedClassName(hint);
+}
 
-function globalStyle(className: string) {
-    return global;
+export class GlobalClassName {
+    name: string;
 
-    function global(
+    constructor(name: string) {
+        this.name = name;
+    }
+
+    styled(
         template: TemplateStringsArray,
         ...interpolations: Interpolable[]
     ) {
         const properties = css(template, ...interpolations);
-        const rule = new Rules(className, properties, `.${className}`);
+        const rule = new Rules(this.name, properties, `.${this.name}`);
         RULES.push(rule);
 
         return rule;
     }
+}
+
+export function globalClassName(name: string) {
+    return new GlobalClassName(name);
 }
 
 export function createGlobalStyle(

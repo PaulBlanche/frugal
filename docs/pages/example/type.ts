@@ -1,4 +1,5 @@
 import { Form } from './Form.ts';
 
-export type Request = unknown;
+// deno-lint-ignore ban-types
+export type Request = {};
 export type Data = { form: Form };
