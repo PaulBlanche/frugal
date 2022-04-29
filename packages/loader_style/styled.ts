@@ -112,7 +112,7 @@ export class ScopedClassName {
     }
 }
 
-export function className(hint: string = '') {
+export function className(hint: string) {
     return new ScopedClassName(hint);
 }
 
