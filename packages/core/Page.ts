@@ -75,6 +75,14 @@ export type DynamicPageDescriptor<REQUEST, DATA, POST_BODY> = {
 
 // deno-lint-ignore ban-types
 export function page<REQUEST extends object, DATA, POST_BODY>(
+    descriptor: StaticPageDescriptor<REQUEST, DATA, POST_BODY>,
+): Page<REQUEST, DATA, POST_BODY>;
+// deno-lint-ignore ban-types
+export function page<REQUEST extends object, DATA, POST_BODY>(
+    descriptor: DynamicPageDescriptor<REQUEST, DATA, POST_BODY>,
+): Page<REQUEST, DATA, POST_BODY>;
+// deno-lint-ignore ban-types
+export function page<REQUEST extends object, DATA, POST_BODY>(
     // deno-lint-ignore no-explicit-any
     descriptor: any,
 ): Page<REQUEST, DATA, POST_BODY> {

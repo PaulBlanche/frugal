@@ -1,0 +1,3 @@
+export const snapshot = {};
+
+snapshot[`style_loader: file structure 1`] = `'<html>\\n    <head>\\n        <link rel="stylesheet" href="/style/style-1H2D4IT.css" />\\n    </head>\\n    <body>\\n        <div class="extended-component-1f74y1x component-1yz2e8z base-component-ntdcly" />\\n        <div class="global-classname" />\\n        <div class="scoped-11i6is0" />\\n        <div class="animated-15adumx" />\\n    </body>\\n</html>'`;
