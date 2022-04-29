@@ -1,28 +1,33 @@
-import { styled } from '../dep/frugal/styled.ts';
+import { className } from '../dep/frugal/styled.ts';
 import { activeLink, link } from '../styles/link.style.ts';
 
-export const tocLink = styled('toc-link', link)`
-  text-transform: capitalize;
-`;
+export const tocLink = className('toc-link')
+    .extends(link)
+    .styled`
+        text-transform: capitalize;
+    `;
 
-export const tocLinkActive = styled('toc-link-active')`
-    ${activeLink.css}
-`;
+export const tocLinkActive = className('toc-link-active')
+    .styled`
+        ${activeLink.css}
+    `;
 
-export const tocItem = styled('toc-item')`
-    margin-top: 0.4rem;
+export const tocItem = className('toc-item')
+    .styled`
+        margin-top: 0.4rem;
 
-    &::before {
-        counter-increment: section;
-        content: counters(section,".") " ";
-        font-weight: bold;
-    }
-`;
+        &::before {
+            counter-increment: section;
+            content: counters(section,".") " ";
+            font-weight: bold;
+        }
+    `;
 
-export const tocList = styled('toc-list')`
-    counter-reset: section;
-    list-style: none;
-    padding-left: 1rem;
-`;
+export const tocList = className('toc-list')
+    .styled`
+        counter-reset: section;
+        list-style: none;
+        padding-left: 1rem;
+    `;
 
-export const toc = styled('toc')``;
+export const toc = className('toc').styled``;
