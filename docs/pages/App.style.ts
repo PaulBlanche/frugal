@@ -1,4 +1,12 @@
-import { createGlobalStyle } from '../dep/frugal/styled.ts';
+import { className, createGlobalStyle } from '../dep/frugal/styled.ts';
+
+export const loadingSpinner = className('loading-spinner')
+    .styled`
+        width: 30px;
+        position: fixed;
+        bottom: 30px;
+        right: 30px;
+    `;
 
 createGlobalStyle`
     body {
@@ -11,5 +19,9 @@ createGlobalStyle`
     }
     *, *:before, *:after {
         box-sizing: inherit;
+    }
+
+    body:not(.frugal-prefetch-loading) ${loadingSpinner} {
+        display: none;
     }
 `;

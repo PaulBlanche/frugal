@@ -3,6 +3,8 @@
 import * as preact from 'preact';
 import * as server from 'preact-render-to-string';
 import { HeadProvider } from './Head.tsx';
+import { NavigatorConfig } from './session/Navigator.ts';
+import { PrefetcherConfig } from './session/Prefetcher.ts';
 
 import * as frugal from '../core/mod.ts';
 
@@ -38,6 +40,8 @@ type ContentConfig = {
     App: App;
     Document: Document;
     embedData: boolean;
+    prefetch?: Partial<PrefetcherConfig>;
+    navigate?: Partial<NavigatorConfig>;
 };
 
 const DEFAULT_APP: App = ({ children }) => {
@@ -93,6 +97,15 @@ export function getContentFrom<REQUEST, DATA>(
                     <DataProvider
                         embedData={embedData}
                         context={{ data, pathname }}
+                        prefetch={{
+                            defaultPrefetch: true,
+                            timeout: 200,
+                            cooldown: 2 * 1000,
+                        }}
+                        navigate={{
+                            defaultNavigate: true,
+                            timeout: 200,
+                        }}
                     >
                         <Page
                             entrypoint={String(entrypoint)}

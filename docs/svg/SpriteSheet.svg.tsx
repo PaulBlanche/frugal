@@ -11,6 +11,12 @@ const CarretSprite = spritesheet.sprite(
     'carret',
 );
 
+const SpinnerSprite = spritesheet.sprite(
+    <circle cx='50' cy='50' r='45' />,
+    'circle',
+);
+
 spritesheet.collect();
 
 export const carretUrl = CarretSprite.url();
+export const spinnerUrl = SpinnerSprite.url();

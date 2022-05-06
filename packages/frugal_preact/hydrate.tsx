@@ -8,26 +8,48 @@ export type App<PROPS> = (props: PROPS) => preact.VNode;
 
 export type GetApp<PROPS> = () => Promise<App<PROPS>> | App<PROPS>;
 
+function onDocumentComplete(callback: () => void) {
+    if (document.readyState === 'complete') {
+        callback();
+    } else {
+        document.addEventListener('readystatechange', (event) => {
+            if (document.readyState === 'complete') {
+                callback();
+            }
+        });
+        addEventListener(
+            'frugal:readystatechange',
+            (event) => {
+                if (event.detail.readystate === 'complete') {
+                    callback();
+                }
+            },
+        );
+    }
+}
+
 export function hydrate<PROPS>(name: string, getApp: GetApp<PROPS>) {
-    const hydratableOnLoad = queryHydratables(name, 'load');
-    if (hydratableOnLoad.length !== 0) {
-        hydrateOnLoad(hydratableOnLoad, getApp);
-    }
+    onDocumentComplete(() => {
+        const hydratableOnLoad = queryHydratables(name, 'load');
+        if (hydratableOnLoad.length !== 0) {
+            hydrateOnLoad(hydratableOnLoad, getApp);
+        }
 
-    const hydratableOnVisible = queryHydratables(name, 'visible');
-    if (hydratableOnVisible.length !== 0) {
-        hydrateOnVisible(hydratableOnVisible, getApp);
-    }
+        const hydratableOnVisible = queryHydratables(name, 'visible');
+        if (hydratableOnVisible.length !== 0) {
+            hydrateOnVisible(hydratableOnVisible, getApp);
+        }
 
-    const hydratableOnIdle = queryHydratables(name, 'idle');
-    if (hydratableOnIdle.length !== 0) {
-        hydrateOnIdle(hydratableOnIdle, getApp);
-    }
+        const hydratableOnIdle = queryHydratables(name, 'idle');
+        if (hydratableOnIdle.length !== 0) {
+            hydrateOnIdle(hydratableOnIdle, getApp);
+        }
 
-    const hydratableOnMediaQuery = queryHydratables(name, 'media-query');
-    if (hydratableOnMediaQuery.length !== 0) {
-        hydrateOnMediaQuery(hydratableOnMediaQuery, getApp);
-    }
+        const hydratableOnMediaQuery = queryHydratables(name, 'media-query');
+        if (hydratableOnMediaQuery.length !== 0) {
+            hydrateOnMediaQuery(hydratableOnMediaQuery, getApp);
+        }
+    });
 }
 
 function hydrateOnLoad<PROPS>(

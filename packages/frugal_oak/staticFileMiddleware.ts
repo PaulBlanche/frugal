@@ -43,12 +43,9 @@ function _filesystemMiddleware(frugal: Frugal): Middleware {
 
             await context.send({
                 root: frugal.config.publicDir,
+                immutable: true,
+                maxage: 31536000,
             });
-
-            context.response.headers.set(
-                'Cache-Control',
-                'max-age=31536000, immutable',
-            );
         } catch {
             logger('filesystemMiddleware').debug({
                 method: context.request.method,
@@ -82,12 +79,9 @@ function _autoIndexMiddleware(frugal: Frugal): Middleware {
             await context.send({
                 root: frugal.config.publicDir,
                 path: filename,
+                immutable: true,
+                maxage: 31536000,
             });
-
-            context.response.headers.set(
-                'Cache-Control',
-                'max-age=31536000, immutable',
-            );
         } catch {
             logger('autoIndexMiddleware').debug({
                 method: context.request.method,

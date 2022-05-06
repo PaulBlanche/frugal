@@ -265,7 +265,7 @@ export class StaticRouter {
 
         context.response.headers.set(
             'Cache-Control',
-            'public, max-age=0, must-revalidate',
+            'public, max-age=5, must-revalidate',
         );
     }
 }
@@ -280,5 +280,6 @@ async function ifNoneMatch(context: Context, content: string) {
             { weak: true },
         );
     }
+
     return true;
 }
