@@ -1,14 +1,10 @@
 /* @jsx preact.h */
 /* @jsxFrag preact.Fragment */
 import * as preact from 'preact';
+import { SvgProps } from './type.ts';
 import { carretUrl } from './SpriteSheet.svg.tsx';
 
-type CarretProps = Omit<
-    preact.JSX.IntrinsicElements['svg'],
-    'viewBox' | 'xlmns' | 'fill'
->;
-
-export function Carret({ class: className, ...props }: CarretProps) {
+export function Carret({ class: className, ...props }: SvgProps) {
     return (
         <svg
             {...props}

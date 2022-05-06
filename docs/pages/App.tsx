@@ -1,10 +1,13 @@
 /* @jsx preact.h */
 /* @jsxFrag preact.Fragment */
 import * as preact from 'preact';
+import { cx } from '../dep/frugal/styled.ts';
 import { AppProps, Head } from '../dep/frugal/frugal_preact.server.ts';
 import type { Generated } from '../dep/frugal/loader_script.ts';
 
-import './App.style.ts';
+import { Spinner } from '../svg/Spinner.tsx';
+
+import { loadingSpinner } from './App.style.ts';
 
 export function App({ entrypoint, loaderContext, children }: AppProps) {
     const scriptGenerated = loaderContext.get<Generated>('script');
@@ -31,11 +34,12 @@ export function App({ entrypoint, loaderContext, children }: AppProps) {
                 />
                 <html lang='en' />
                 {styleUrl && <link rel='stylesheet' href={styleUrl} />}
+                {bodyBundleUrl && (
+                    <script type='module' src={bodyBundleUrl}></script>
+                )}
             </Head>
             {children}
-            {bodyBundleUrl && (
-                <script type='module' src={bodyBundleUrl}></script>
-            )}
+            <Spinner class={cx(loadingSpinner)} />
         </>
     );
 }

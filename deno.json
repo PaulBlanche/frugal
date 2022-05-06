@@ -1,10 +1,11 @@
 {
     "compilerOptions": {
         "lib": [
+            "dom",
             "esnext",
             "deno.ns",
+            "deno.fetch",
             "deno.unstable",
-            "dom",
             "dom.iterable",
             "dom.asynciterable"
         ]
