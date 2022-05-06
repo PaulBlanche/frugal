@@ -75,7 +75,7 @@ export class Renderer {
         const mergeSnapshot: snapshot.Head = [];
 
         const merged: Set<string> = new Set();
-        for (let node of previousSnapshot) {
+        for (const node of previousSnapshot) {
             if (node.name !== 'script' && node.name !== 'link') {
                 continue;
             }
@@ -91,7 +91,7 @@ export class Renderer {
             merged.add(node.hash);
         }
 
-        for (let node of nextSnapshot) {
+        for (const node of nextSnapshot) {
             if (merged.has(node.hash)) {
                 continue;
             }
