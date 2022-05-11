@@ -8,7 +8,7 @@ import * as s from './Navigation.style.ts';
 export function Navigation() {
     const pathname = usePathname();
 
-    const isHome = pathname === '/index.html';
+    const isHome = pathname === '/';
     const isDocs = pathname.startsWith('/docs');
     const isExample = pathname.startsWith('/example');
 

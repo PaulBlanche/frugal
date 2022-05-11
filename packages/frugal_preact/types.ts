@@ -1,6 +1,3 @@
-import { NavigatorConfig } from './session/Navigator.ts';
-import { PrefetcherConfig } from './session/Prefetcher.ts';
-
 declare global {
     interface FrugalGlobalNamespace {
         context?: {
@@ -8,8 +5,6 @@ declare global {
             data: any;
             pathname: string;
         };
-        prefetch?: PrefetcherConfig;
-        navigate?: NavigatorConfig;
     }
 
     namespace globalThis {

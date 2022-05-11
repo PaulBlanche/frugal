@@ -4,9 +4,6 @@ import * as preact from 'preact';
 import * as hooks from 'preact/hooks';
 import './types.ts';
 
-import './session/session.script.ts';
-import { NavigatorConfig } from './session/Navigator.ts';
-import { PrefetcherConfig } from './session/Prefetcher.ts';
 import { Head } from './Head.tsx';
 
 type DataContext = { data: unknown; pathname: string };
@@ -37,26 +34,13 @@ type DataProviderProps = {
     embedData?: boolean;
     context?: DataContext;
     children: preact.ComponentChildren;
-    prefetch?: Partial<PrefetcherConfig>;
-    navigate?: Partial<NavigatorConfig>;
 };
 
 export function DataProvider(
-    { embedData = false, context, children, prefetch, navigate }:
-        DataProviderProps,
+    { embedData = false, context, children }: DataProviderProps,
 ) {
     if (typeof document === 'undefined') {
         const configScript = ['window.__FRUGAL__ = window.__FRUGAL__ || {};'];
-        if (navigate !== undefined) {
-            configScript.push(
-                `window.__FRUGAL__.navigate = ${JSON.stringify(navigate)};`,
-            );
-        }
-        if (prefetch !== undefined) {
-            configScript.push(
-                `window.__FRUGAL__.prefetch = ${JSON.stringify(prefetch)};`,
-            );
-        }
 
         return (
             <>

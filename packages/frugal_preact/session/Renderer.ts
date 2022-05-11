@@ -16,6 +16,7 @@ export class Renderer {
         [...document.body.childNodes].forEach((node) => {
             document.body.removeChild(node);
         });
+
         [...this.nextDocument.body.childNodes].forEach((node) => {
             document.body.appendChild(node);
         });
@@ -28,6 +29,8 @@ export class Renderer {
 
         [...document.head.childNodes].forEach((element) => {
             if (element instanceof Element) {
+                // find all elements both in current head and snapshot.
+                // Remove the others.
                 const elementIndex = headSnapshot.findIndex((node) =>
                     node.element === element
                 );
@@ -36,6 +39,9 @@ export class Renderer {
                 } else {
                     const node = headSnapshot[elementIndex];
                     if (node.name === 'script' && node.content.length !== 0) {
+                        // special case for script with content both in current head
+                        // and snapshot. We remove them, but do not mark them as
+                        // merged. They will be eval'd in the next loop.
                         document.head.removeChild(element);
                     } else {
                         alreadyMergedElements.push(element);

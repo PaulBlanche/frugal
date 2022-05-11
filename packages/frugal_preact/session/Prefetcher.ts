@@ -77,7 +77,7 @@ export class Prefetcher {
         this.status = Status.DONE;
         this.lastPrefetch = Date.now();
 
-        if (this.link === undefined) {
+        if (this.link === undefined || !document.head.contains(this.link)) {
             this.link = document.createElement('link');
             this.link.rel = 'prefetch';
             this.link.href = this.url.href;

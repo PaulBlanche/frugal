@@ -8,6 +8,7 @@ import type { Generated } from '../dep/frugal/loader_script.ts';
 import { Spinner } from '../svg/Spinner.tsx';
 
 import { loadingSpinner } from './App.style.ts';
+import './session.script.ts';
 
 export function App({ entrypoint, loaderContext, children }: AppProps) {
     const scriptGenerated = loaderContext.get<Generated>('script');
