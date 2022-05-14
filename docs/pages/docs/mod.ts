@@ -2,7 +2,7 @@ import * as frugal from '../../dep/frugal/core.ts';
 import { getContentFrom } from '../../dep/frugal/frugal_preact.server.ts';
 
 import { flattenToc, Toc } from '../../toc.ts';
-import { Data } from './type.ts';
+import { Data, Path } from './type.ts';
 import { App } from '../App.tsx';
 import { Page } from './Page.tsx';
 
@@ -67,7 +67,7 @@ const TOC: Toc = {
     ],
 };
 
-export function getRequestList() {
+export function getPathList(): Path[] {
     const slugs = flattenToc(TOC).map((node) => node.slug).filter((
         slug,
     ): slug is string => slug !== undefined);
@@ -105,7 +105,7 @@ export const pattern = `/docs:slug(.*)`;
 
 export const self = new URL(import.meta.url);
 
-export const getContent = getContentFrom<Request, Data>(Page, {
+export const getContent = getContentFrom<Path, Data>(Page, {
     App,
     embedData: false,
 });

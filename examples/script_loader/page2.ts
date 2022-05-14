@@ -3,21 +3,21 @@ import type { Generated } from '../../packages/loader_script/mod.ts';
 
 import './foo.script.ts';
 
-type Request = { slug: string };
+type Path = { slug: string };
 
 type Data = {
     title: string;
     content: string;
 };
 
-export function getRequestList(): Request[] {
+export function getPathList(): Path[] {
     return [{ slug: 'article-1' }, { slug: 'article-2' }];
 }
 
 export function getStaticData(
-    { request }: frugal.GetStaticDataParams<Request>,
+    { path }: frugal.GetStaticDataParams<Path>,
 ): Data {
-    if (request.slug === 'article-1') {
+    if (path.slug === 'article-1') {
         return {
             title: 'first article !',
             content: 'this is the first article',
@@ -34,7 +34,7 @@ export const pattern = '/page2/:slug.html';
 export const self = new URL(import.meta.url);
 
 export function getContent(
-    { data, loaderContext, entrypoint }: frugal.GetContentParams<Request, Data>,
+    { data, loaderContext, entrypoint }: frugal.GetContentParams<Path, Data>,
 ) {
     const bodyScriptSrc =
         loaderContext.get<Generated>('script')?.[String(entrypoint)]?.['body'];

@@ -16,16 +16,16 @@ function logger() {
 }
 
 // deno-lint-ignore ban-types
-export class PageBuilder<PATH extends object, DATA> {
-    private generator: PageGenerator<PATH, DATA>;
-    private page: Page<PATH, DATA>;
+export class PageBuilder<PATH extends object, DATA, BODY> {
+    private generator: PageGenerator<PATH, DATA, BODY>;
+    private page: Page<PATH, DATA, BODY>;
     private hash: string;
     private config: PageBuilderConfig;
 
     constructor(
-        page: Page<PATH, DATA>,
+        page: Page<PATH, DATA, BODY>,
         hash: string,
-        generator: PageGenerator<PATH, DATA>,
+        generator: PageGenerator<PATH, DATA, BODY>,
         config: PageBuilderConfig,
     ) {
         this.page = page;

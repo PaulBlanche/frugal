@@ -8,13 +8,13 @@ function logger() {
 }
 
 // deno-lint-ignore ban-types
-export class PageRefresher<REQUEST extends object, DATA> {
-    private builder: PageBuilder<REQUEST, DATA>;
-    private page: Page<REQUEST, DATA>;
+export class PageRefresher<REQUEST extends object, DATA, BODY> {
+    private builder: PageBuilder<REQUEST, DATA, BODY>;
+    private page: Page<REQUEST, DATA, BODY>;
 
     constructor(
-        page: Page<REQUEST, DATA>,
-        builder: PageBuilder<REQUEST, DATA>,
+        page: Page<REQUEST, DATA, BODY>,
+        builder: PageBuilder<REQUEST, DATA, BODY>,
     ) {
         this.page = page;
         this.builder = builder;

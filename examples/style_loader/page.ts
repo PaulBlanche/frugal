@@ -4,21 +4,21 @@ import { getContentFrom } from '../../packages/frugal_preact/mod.server.ts';
 import { App } from './App.tsx';
 import { Page } from './Page.tsx';
 
-type Request = { slug: string };
+type Path = { slug: string };
 
 export type Data = {
     title: string;
     content: string;
 };
 
-export function getRequestList(): Request[] {
+export function getPathList(): Path[] {
     return [{ slug: 'article-1' }, { slug: 'article-2' }];
 }
 
 export function getStaticData(
-    { request }: frugal.GetStaticDataParams<Request>,
+    { path }: frugal.GetStaticDataParams<Path>,
 ): Data {
-    if (request.slug === 'article-1') {
+    if (path.slug === 'article-1') {
         return {
             title: 'first article !',
             content: 'this is the first article',

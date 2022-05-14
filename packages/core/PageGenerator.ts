@@ -1,5 +1,11 @@
 import { LoaderContext } from './LoaderContext.ts';
-import { DynamicPage, Page, Phase, StaticPage } from './Page.ts';
+import {
+    DynamicPage,
+    GenerationRequest,
+    Page,
+    Phase,
+    StaticPage,
+} from './Page.ts';
 import * as pathUtils from '../../dep/std/path.ts';
 import * as log from '../log/mod.ts';
 import { assert } from '../../dep/std/asserts.ts';
@@ -20,13 +26,14 @@ type ContentGenerationContext<DATA, PATH> = {
     path: PATH;
     phase: Phase;
 };
+
 // deno-lint-ignore ban-types
-export class PageGenerator<PATH extends object, DATA> {
-    private page: Page<PATH, DATA>;
+export class PageGenerator<PATH extends object, DATA, BODY> {
+    private page: Page<PATH, DATA, BODY>;
     private config: PageGeneratorConfig;
 
     constructor(
-        page: Page<PATH, DATA>,
+        page: Page<PATH, DATA, BODY>,
         config: PageGeneratorConfig,
     ) {
         this.page = page;
@@ -38,7 +45,7 @@ export class PageGenerator<PATH extends object, DATA> {
     }
 
     async generate(
-        request: Request,
+        request: GenerationRequest<BODY>,
     ): Promise<{ pagePath: string; content: string }> {
         const pathname = new URL(request.url).pathname;
         const match = this.page.match(pathname);
@@ -61,7 +68,7 @@ export class PageGenerator<PATH extends object, DATA> {
                 data,
                 path,
                 phase: 'generate',
-                method: getMethod(request),
+                method: request.method,
             },
         );
 
@@ -70,11 +77,9 @@ export class PageGenerator<PATH extends object, DATA> {
 
     private async _getData(
         path: PATH,
-        request: Request,
+        request: GenerationRequest<BODY>,
     ) {
-        const method = getMethod(request);
-
-        if (method === 'GET') {
+        if (request.method === 'GET') {
             if (this.config.devMode && this.page instanceof StaticPage) {
                 return await this.page.getStaticData({
                     phase: 'build',
@@ -149,14 +154,4 @@ export class PageGenerator<PATH extends object, DATA> {
 
         return { pagePath, content };
     }
-}
-
-function getMethod(request: Request): 'GET' | 'POST' {
-    if (request.method !== 'GET' && request.method !== 'POST') {
-        throw Error(
-            `unable to handle request method ${request.method}`,
-        );
-    }
-
-    return request.method;
 }

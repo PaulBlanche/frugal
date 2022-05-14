@@ -7,6 +7,7 @@ export type { PageGenerator } from './PageGenerator.ts';
 export { DEFAULT_LOGGER_CONFIG, OFF_LOGGER_CONFIG } from './Config.ts';
 export type {
     DynamicPageDescriptor,
+    GenerationRequest,
     GetContent,
     GetContentParams,
     GetDynamicData,

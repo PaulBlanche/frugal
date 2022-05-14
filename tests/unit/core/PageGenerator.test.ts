@@ -1,4 +1,5 @@
 import { PageGenerator } from '../../../packages/core/PageGenerator.ts';
+import { GenerationRequest } from '../../../packages/core/Page.ts';
 import { fakeDynamicPage, fakeStaticPage } from './__fixtures__/Page.ts';
 import { fakeLoaderContext } from './__fixtures__/LoaderContext.ts';
 import { asSpy } from '../../test_util/mod.ts';
@@ -76,8 +77,12 @@ Deno.test('PageGenerator: generate orchestrate the generation of DynamicPage', a
         },
     );
 
-    const method = 'GET';
-    const request = new Request('http://0.0.0.0/foo/345', { method });
+    const request: GenerationRequest<unknown> = {
+        url: new URL('http://0.0.0.0/foo/345'),
+        method: 'GET',
+        headers: new Headers(),
+        body: undefined,
+    };
 
     const result = await generator.generate(request);
 
@@ -99,7 +104,7 @@ Deno.test('PageGenerator: generate orchestrate the generation of DynamicPage', a
     assertSpyCalls(asSpy(page.getContent), 1);
     assertSpyCall(asSpy(page.getContent), 0, {
         args: [{
-            method,
+            method: request.method,
             phase: 'generate',
             data: data,
             loaderContext,
@@ -126,7 +131,12 @@ Deno.test('PageGenerator: generate throws if pathname does not match', async () 
         },
     );
 
-    const request = new Request('http://0.0.0.0/foo/345', { method: 'GET' });
+    const request: GenerationRequest<unknown> = {
+        url: new URL('http://0.0.0.0/foo/345'),
+        method: 'GET',
+        headers: new Headers(),
+        body: undefined,
+    };
 
     await asserts.assertRejects(async () => {
         await generator.generate(request);
@@ -147,7 +157,12 @@ Deno.test('PageGenerator: generate throws for StaticPage', async () => {
         },
     );
 
-    const request = new Request('http://0.0.0.0/foo/345', { method: 'GET' });
+    const request: GenerationRequest<unknown> = {
+        url: new URL('http://0.0.0.0/foo/345'),
+        method: 'GET',
+        headers: new Headers(),
+        body: undefined,
+    };
 
     await asserts.assertRejects(async () => {
         await generator.generate(request);

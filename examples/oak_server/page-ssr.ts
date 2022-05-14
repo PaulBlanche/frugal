@@ -14,12 +14,12 @@ type Data = {
 // For server side pages, we have an extra `searchParams` extracted from the url
 // of the client request. The `request` object contains the url parameters.
 export function getDynamicData(
-    { request, searchParams }: frugal.GetDynamicDataParams<Request>,
+    { path, request }: frugal.GetDynamicDataParams<Request, unknown>,
 ): Data {
     return {
-        title: `another article (${request.slug})`,
+        title: `another article (${path.slug})`,
         content: 'this is another article',
-        searchParams: searchParams.toString(),
+        searchParams: request.url.searchParams.toString(),
     };
 }
 
