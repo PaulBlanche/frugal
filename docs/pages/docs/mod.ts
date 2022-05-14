@@ -2,7 +2,7 @@ import * as frugal from '../../dep/frugal/core.ts';
 import { getContentFrom } from '../../dep/frugal/frugal_preact.server.ts';
 
 import { flattenToc, Toc } from '../../toc.ts';
-import { Data, Request } from './type.ts';
+import { Data } from './type.ts';
 import { App } from '../App.tsx';
 import { Page } from './Page.tsx';
 
@@ -92,9 +92,9 @@ async function getMarkup(slug: string) {
 }
 
 export async function getStaticData(
-    { request }: frugal.GetStaticDataParams<Request>,
+    { path }: frugal.GetStaticDataParams<frugal.PathObject<typeof pattern>>,
 ): Promise<Data> {
-    const markup = await getMarkup(request.slug);
+    const markup = await getMarkup(path.slug);
     return {
         toc: TOC,
         markup,

@@ -1,7 +1,7 @@
 import { CleanConfig, Config } from './Config.ts';
 import { Builder } from './Builder.ts';
 import { Refresher } from './Refresher.ts';
-import { Generator } from './Generator.ts';
+import { Generator, requestToString } from './Generator.ts';
 import { LoaderContext } from './LoaderContext.ts';
 import { DynamicPage, StaticPage } from './Page.ts';
 import { PageBuilder } from './PageBuilder.ts';
@@ -34,19 +34,19 @@ export class Frugal {
         [pattern: string]: {
             type: 'static';
             // deno-lint-ignore no-explicit-any
-            page: StaticPage<any, any, any>;
+            page: StaticPage<any, any>;
             // deno-lint-ignore no-explicit-any
-            builder: PageBuilder<any, any, any>;
+            builder: PageBuilder<any, any>;
             // deno-lint-ignore no-explicit-any
-            refresher: PageRefresher<any, any, any>;
+            refresher: PageRefresher<any, any>;
             // deno-lint-ignore no-explicit-any
-            generator: PageGenerator<any, any, any>;
+            generator: PageGenerator<any, any>;
         } | {
             type: 'dynamic';
             // deno-lint-ignore no-explicit-any
-            page: DynamicPage<any, any, any>;
+            page: DynamicPage<any, any>;
             // deno-lint-ignore no-explicit-any
-            generator: PageGenerator<any, any, any>;
+            generator: PageGenerator<any, any>;
         };
     };
 
@@ -172,7 +172,7 @@ export class Frugal {
         const dynamicPages = config.pages.filter((
             page,
             // deno-lint-ignore no-explicit-any
-        ): page is DynamicPage<any, any, any> => page instanceof DynamicPage);
+        ): page is DynamicPage<any, any> => page instanceof DynamicPage);
 
         const generators = dynamicPages.map((page) => {
             const generator = new PageGenerator(page, {
@@ -189,7 +189,7 @@ export class Frugal {
         const staticPages = config.pages.filter((
             page,
             // deno-lint-ignore no-explicit-any
-        ): page is StaticPage<any, any, any> => page instanceof StaticPage);
+        ): page is StaticPage<any, any> => page instanceof StaticPage);
 
         const { refreshers, builders } = staticPages.reduce(
             (accumulator, page) => {
@@ -230,9 +230,9 @@ export class Frugal {
             },
             { builders: [], refreshers: [] } as {
                 // deno-lint-ignore no-explicit-any
-                builders: PageBuilder<any, any, any>[];
+                builders: PageBuilder<any, any>[];
                 // deno-lint-ignore no-explicit-any
-                refreshers: PageRefresher<any, any, any>[];
+                refreshers: PageRefresher<any, any>[];
             },
         );
 
@@ -314,7 +314,7 @@ export class Frugal {
     }
 
     // generate a specific dynamic page (allways generate even if nothing changed)
-    async generate(pathname: string, context: GenerationContext<unknown>) {
+    async generate(pathname: string, context: GenerationContext) {
         logger().info({
             op: 'start',
             pathname,
@@ -323,8 +323,7 @@ export class Frugal {
                 return `${this.op} ${this.logger!.timerStart}`;
             },
             logger: {
-                timerStart:
-                    `generating ${context.method} ${pathname}?${context.searchParams.toString()}`,
+                timerStart: `generating ${requestToString(context.request)}`,
             },
         });
 
@@ -339,8 +338,7 @@ export class Frugal {
                 return `${this.logger!.timerEnd} ${this.op}`;
             },
             logger: {
-                timerEnd:
-                    `generating ${context.method} ${pathname}?${context.searchParams.toString()}`,
+                timerEnd: `generating ${requestToString(context.request)}`,
             },
         });
 

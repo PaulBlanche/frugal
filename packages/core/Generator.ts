@@ -8,12 +8,12 @@ function logger() {
 export class Generator {
     private config: CleanConfig;
     // deno-lint-ignore no-explicit-any
-    generators: PageGenerator<any, any, any>[];
+    generators: PageGenerator<any, any>[];
 
     constructor(
         config: CleanConfig,
         // deno-lint-ignore no-explicit-any
-        generators: PageGenerator<any, any, any>[],
+        generators: PageGenerator<any, any>[],
     ) {
         this.config = config;
         this.generators = generators;
@@ -21,7 +21,7 @@ export class Generator {
 
     async generate(
         pathname: string,
-        context: GenerationContext<unknown>,
+        context: GenerationContext,
     ) {
         logger().info({
             op: 'start',
@@ -31,8 +31,7 @@ export class Generator {
                 return `${this.op} ${this.logger!.timerStart}`;
             },
             logger: {
-                timerStart:
-                    `generation of ${pathname}?${context.searchParams.toString()}`,
+                timerStart: `generation of ${requestToString(context.request)}`,
             },
         });
 
@@ -46,8 +45,9 @@ export class Generator {
                     return `no match found for ${this.pathname}`;
                 },
                 logger: {
-                    timerEnd:
-                        `generation of ${context.method} ${pathname}?${context.searchParams.toString()}`,
+                    timerEnd: `generation of ${
+                        requestToString(context.request)
+                    }`,
                 },
             });
             return undefined;
@@ -62,8 +62,7 @@ export class Generator {
                 return `${this.logger!.timerEnd} ${this.op}`;
             },
             logger: {
-                timerEnd:
-                    `generation of ${context.method} ${pathname}?${context.searchParams.toString()}`,
+                timerEnd: `generation of ${requestToString(context.request)}`,
             },
         });
 
@@ -73,7 +72,7 @@ export class Generator {
     private getMatchingGenerator(
         pathname: string,
         // deno-lint-ignore no-explicit-any
-    ): PageGenerator<any, any, any> | undefined {
+    ): PageGenerator<any, any> | undefined {
         for (const pageGenerator of this.generators) {
             if (pageGenerator.match(pathname)) {
                 return pageGenerator;
@@ -82,4 +81,8 @@ export class Generator {
 
         return undefined;
     }
+}
+
+export function requestToString(request: Request) {
+    return `${request.method} ${request.url}`;
 }

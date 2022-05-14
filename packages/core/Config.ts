@@ -14,7 +14,7 @@ export type Config = {
     loaders?: Loader<unknown>[];
     outputDir: string;
     // deno-lint-ignore no-explicit-any
-    pages: Page<any, any, any>[];
+    pages: Page<any, any>[];
     pagePersistance?: Persistance;
     cachePersistance?: Persistance;
     logging?: log.Config;

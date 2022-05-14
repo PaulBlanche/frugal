@@ -37,9 +37,9 @@ export class PrgOrchestrator {
             });
 
             const result = await ctx.generator.generate(url.pathname, {
-                method: 'POST',
-                searchParams: url.searchParams,
-                body: context.request.body(),
+                request: context.request.originalRequest as unknown as
+                    & Omit<Request, 'method'>
+                    & { method: 'POST' | 'GET' },
             });
 
             const sessionId = await this.sessionManager.set(result.content);

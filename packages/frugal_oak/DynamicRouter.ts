@@ -98,8 +98,9 @@ export class DynamicRouter {
             });
 
             const result = await ctx.generator.generate(url.pathname, {
-                method: 'GET',
-                searchParams: url.searchParams,
+                request: context.request.originalRequest as unknown as
+                    & Omit<Request, 'method'>
+                    & { method: 'POST' | 'GET' },
             });
 
             if (result === undefined) {

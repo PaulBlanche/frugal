@@ -11,8 +11,8 @@ export type {
     GetContentParams,
     GetDynamicData,
     GetDynamicDataParams,
-    GetRequestList,
-    GetRequestListParams,
+    GetPathList,
+    GetPathListParams,
     GetStaticData,
     GetStaticDataParams,
     Phase,
@@ -24,3 +24,4 @@ export { DynamicPage, page, StaticPage } from './Page.ts';
 export { build, Frugal } from './Frugal.ts';
 export { PersistantCache } from './Cache.ts';
 export * from './Persistance.ts';
+export { type PathObject } from './PathObject.ts';
