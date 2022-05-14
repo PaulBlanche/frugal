@@ -4,92 +4,98 @@ import * as pathToRegexp from '../../dep/path-to-regexp.ts';
 
 export type Phase = 'build' | 'refresh' | 'generate';
 
-export type GetRequestListParams = {
+export type GenerationRequest<BODY> = {
+    method: 'POST' | 'GET';
+    url: URL;
+    body: BODY;
+    headers: Headers;
+};
+
+export type GetPathListParams = {
     phase: Phase;
 };
 
-export type GetStaticDataParams<REQUEST> = {
+export type GetStaticDataParams<PATH> = {
     phase: Phase;
-    request: REQUEST;
+    path: PATH;
 };
 
-export type GetDynamicDataParams<REQUEST> = {
-    phase: Phase;
-    request: REQUEST;
-    searchParams: URLSearchParams;
+export type GetDynamicDataParams<PATH, BODY> = {
+    phase: Phase; //FIXME: shouldn't this be 'generate' ?
+    path: PATH;
+    request: GenerationRequest<BODY>;
 };
 
-export type PostDynamicDataParams<REQUEST, POST_BODY> = {
+export type PostDynamicDataParams<PATH, BODY> = {
     phase: 'generate';
-    request: REQUEST;
-    searchParams: URLSearchParams;
-    body: POST_BODY;
+    path: PATH;
+    request: GenerationRequest<BODY>;
 };
 
-export type GetContentParams<REQUEST, DATA> = {
+export type GetContentParams<PATH, DATA> = {
     method: 'POST' | 'GET';
     phase: Phase;
-    request: REQUEST;
+    path: PATH;
     data: DATA;
     pathname: string;
     entrypoint: URL;
     loaderContext: LoaderContext;
 };
 
-export type GetRequestList<REQUEST> = (
-    params: GetRequestListParams,
-) => Promise<REQUEST[]> | REQUEST[];
+export type GetPathList<PATH> = (
+    params: GetPathListParams,
+) => Promise<PATH[]> | PATH[];
 
-export type GetStaticData<REQUEST, DATA> = (
-    params: GetStaticDataParams<REQUEST>,
+export type GetStaticData<PATH, DATA> = (
+    params: GetStaticDataParams<PATH>,
 ) => Promise<DATA> | DATA;
 
-export type GetDynamicData<REQUEST, DATA> = (
-    params: GetDynamicDataParams<REQUEST>,
+export type GetDynamicData<PATH, DATA, BODY> = (
+    params: GetDynamicDataParams<PATH, BODY>,
 ) => Promise<DATA> | DATA;
 
-export type PostDynamicData<REQUEST, DATA, POST_BODY> = (
-    params: PostDynamicDataParams<REQUEST, POST_BODY>,
+export type PostDynamicData<PATH, DATA, BODY> = (
+    params: PostDynamicDataParams<PATH, BODY>,
 ) => Promise<DATA> | DATA;
 
-export type GetContent<REQUEST, DATA> = (
-    params: GetContentParams<REQUEST, DATA>,
+export type GetContent<PATH, DATA> = (
+    params: GetContentParams<PATH, DATA>,
 ) => Promise<string> | string;
 
-export type StaticPageDescriptor<REQUEST, DATA, POST_BODY> = {
+export type StaticPageDescriptor<PATH, DATA, BODY> = {
     self: URL;
     pattern: string;
-    getRequestList: GetRequestList<REQUEST>;
-    postDynamicData?: PostDynamicData<REQUEST, DATA, POST_BODY>;
-    getStaticData: GetStaticData<REQUEST, DATA>;
-    getContent: GetContent<REQUEST, DATA>;
+    getPathList: GetPathList<PATH>;
+    postDynamicData?: PostDynamicData<PATH, DATA, BODY>;
+    getStaticData: GetStaticData<PATH, DATA>;
+    getContent: GetContent<PATH, DATA>;
 };
 
-export type DynamicPageDescriptor<REQUEST, DATA, POST_BODY> = {
+export type DynamicPageDescriptor<PATH, DATA, BODY> = {
     self: URL;
     pattern: string;
-    getDynamicData: GetDynamicData<REQUEST, DATA>;
-    postDynamicData?: PostDynamicData<REQUEST, DATA, POST_BODY>;
-    getContent: GetContent<REQUEST, DATA>;
+    getDynamicData: GetDynamicData<PATH, DATA, BODY>;
+    postDynamicData?: PostDynamicData<PATH, DATA, BODY>;
+    getContent: GetContent<PATH, DATA>;
 };
 
 // deno-lint-ignore ban-types
-export function page<REQUEST extends object, DATA, POST_BODY>(
-    descriptor: StaticPageDescriptor<REQUEST, DATA, POST_BODY>,
-): Page<REQUEST, DATA, POST_BODY>;
+export function page<PATH extends object, DATA, BODY>(
+    descriptor: StaticPageDescriptor<PATH, DATA, BODY>,
+): Page<PATH, DATA, BODY>;
 // deno-lint-ignore ban-types
-export function page<REQUEST extends object, DATA, POST_BODY>(
-    descriptor: DynamicPageDescriptor<REQUEST, DATA, POST_BODY>,
-): Page<REQUEST, DATA, POST_BODY>;
+export function page<PATH extends object, DATA, BODY>(
+    descriptor: DynamicPageDescriptor<PATH, DATA, BODY>,
+): Page<PATH, DATA, BODY>;
 // deno-lint-ignore ban-types
-export function page<REQUEST extends object, DATA, POST_BODY>(
+export function page<PATH extends object, DATA, BODY>(
     // deno-lint-ignore no-explicit-any
     descriptor: any,
-): Page<REQUEST, DATA, POST_BODY> {
-    if (isStaticDescriptor<REQUEST, DATA, POST_BODY>(descriptor)) {
+): Page<PATH, DATA, BODY> {
+    if (isStaticDescriptor<PATH, DATA, BODY>(descriptor)) {
         return new StaticPage(descriptor);
     }
-    if (isDynamicDescriptor<REQUEST, DATA, POST_BODY>(descriptor)) {
+    if (isDynamicDescriptor<PATH, DATA, BODY>(descriptor)) {
         return new DynamicPage(descriptor);
     }
 
@@ -102,10 +108,10 @@ export function page<REQUEST extends object, DATA, POST_BODY>(
 }
 
 // deno-lint-ignore ban-types
-function isDynamicDescriptor<REQUEST extends object, DATA, POST_BODY>(
+function isDynamicDescriptor<PATH extends object, DATA, BODY>(
     // deno-lint-ignore no-explicit-any
     descriptor: any,
-): descriptor is DynamicPageDescriptor<REQUEST, DATA, POST_BODY> {
+): descriptor is DynamicPageDescriptor<PATH, DATA, BODY> {
     if (typeof descriptor === 'object' && descriptor !== null) {
         if ('getDynamicData' in descriptor) {
             validateDynamicDescriptor(descriptor);
@@ -116,10 +122,10 @@ function isDynamicDescriptor<REQUEST extends object, DATA, POST_BODY>(
 }
 
 // deno-lint-ignore ban-types
-function isStaticDescriptor<REQUEST extends object, DATA, POST_BODY>(
+function isStaticDescriptor<PATH extends object, DATA, BODY>(
     // deno-lint-ignore no-explicit-any
     descriptor: any,
-): descriptor is StaticPageDescriptor<REQUEST, DATA, POST_BODY> {
+): descriptor is StaticPageDescriptor<PATH, DATA, BODY> {
     if (typeof descriptor === 'object' && descriptor !== null) {
         if ('getStaticData' in descriptor) {
             validateStaticDescriptor(descriptor);
@@ -130,8 +136,8 @@ function isStaticDescriptor<REQUEST extends object, DATA, POST_BODY>(
 }
 
 // deno-lint-ignore ban-types
-function validateStaticDescriptor<REQUEST extends object, DATA, POST_BODY>(
-    descriptor: StaticPageDescriptor<REQUEST, DATA, POST_BODY>,
+function validateStaticDescriptor<PATH extends object, DATA, BODY>(
+    descriptor: StaticPageDescriptor<PATH, DATA, BODY>,
 ): void {
     assert(
         descriptor.self instanceof URL,
@@ -142,8 +148,8 @@ function validateStaticDescriptor<REQUEST extends object, DATA, POST_BODY>(
         `Page descriptor ${String(descriptor.self)} has no pattern`,
     );
     assert(
-        typeof descriptor.getRequestList === 'function',
-        `Page descriptor "${descriptor.pattern}" has no getRequestList function`,
+        typeof descriptor.getPathList === 'function',
+        `Page descriptor "${descriptor.pattern}" has no getPathList function`,
     );
     assert(
         typeof descriptor.getStaticData === 'function',
@@ -156,8 +162,8 @@ function validateStaticDescriptor<REQUEST extends object, DATA, POST_BODY>(
 }
 
 // deno-lint-ignore ban-types
-function validateDynamicDescriptor<REQUEST extends object, DATA, POST_BODY>(
-    descriptor: DynamicPageDescriptor<REQUEST, DATA, POST_BODY>,
+function validateDynamicDescriptor<PATH extends object, DATA, BODY>(
+    descriptor: DynamicPageDescriptor<PATH, DATA, BODY>,
 ): void {
     assert(
         descriptor.self instanceof URL,
@@ -178,22 +184,22 @@ function validateDynamicDescriptor<REQUEST extends object, DATA, POST_BODY>(
 }
 
 // deno-lint-ignore ban-types
-export type Page<REQUEST extends object, DATA, POST_BODY> =
-    | StaticPage<REQUEST, DATA, POST_BODY>
-    | DynamicPage<REQUEST, DATA, POST_BODY>;
+export type Page<PATH extends object, DATA, BODY> =
+    | StaticPage<PATH, DATA, BODY>
+    | DynamicPage<PATH, DATA, BODY>;
 
 export class BasePage<
     // deno-lint-ignore ban-types
-    REQUEST extends object,
+    PATH extends object,
     DATA,
-    POST_BODY,
+    BODY,
     DESCRIPTOR extends
-        | StaticPageDescriptor<REQUEST, DATA, POST_BODY>
-        | DynamicPageDescriptor<REQUEST, DATA, POST_BODY>,
+        | StaticPageDescriptor<PATH, DATA, BODY>
+        | DynamicPageDescriptor<PATH, DATA, BODY>,
 > {
     protected descriptor: DESCRIPTOR;
-    private urlCompiler: pathToRegexp.PathFunction<REQUEST>;
-    private urlMatcher: pathToRegexp.MatchFunction<REQUEST>;
+    private urlCompiler: pathToRegexp.PathFunction<PATH>;
+    private urlMatcher: pathToRegexp.MatchFunction<PATH>;
 
     constructor(
         descriptor: DESCRIPTOR,
@@ -211,15 +217,15 @@ export class BasePage<
         return this.descriptor.self;
     }
 
-    getContent(params: Omit<GetContentParams<REQUEST, DATA>, 'entrypoint'>) {
+    getContent(params: Omit<GetContentParams<PATH, DATA>, 'entrypoint'>) {
         return this.descriptor.getContent({
             ...params,
             entrypoint: this.descriptor.self,
         });
     }
 
-    compile(request: REQUEST) {
-        return this.urlCompiler(request);
+    compile(path: PATH) {
+        return this.urlCompiler(path);
     }
 
     match(path: string) {
@@ -230,7 +236,7 @@ export class BasePage<
         return this.descriptor.postDynamicData !== undefined;
     }
 
-    postDynamicData(params: PostDynamicDataParams<REQUEST, POST_BODY>) {
+    postDynamicData(params: PostDynamicDataParams<PATH, BODY>) {
         if (this.descriptor.postDynamicData === undefined) {
             throw Error(
                 `Unable to handle post, descriptor ${this.descriptor.pattern} has no postDynamicData`,
@@ -242,45 +248,41 @@ export class BasePage<
 }
 
 // deno-lint-ignore ban-types
-export class StaticPage<REQUEST extends object, DATA, POST_BODY>
-    extends BasePage<
-        REQUEST,
-        DATA,
-        POST_BODY,
-        StaticPageDescriptor<REQUEST, DATA, POST_BODY>
-    >
-    implements StaticPageDescriptor<REQUEST, DATA, POST_BODY> {
+export class StaticPage<PATH extends object, DATA, BODY> extends BasePage<
+    PATH,
+    DATA,
+    BODY,
+    StaticPageDescriptor<PATH, DATA, BODY>
+> implements StaticPageDescriptor<PATH, DATA, BODY> {
     constructor(
-        descriptor: StaticPageDescriptor<REQUEST, DATA, POST_BODY>,
+        descriptor: StaticPageDescriptor<PATH, DATA, BODY>,
     ) {
         super(descriptor);
     }
 
-    getStaticData(params: GetStaticDataParams<REQUEST>) {
+    getStaticData(params: GetStaticDataParams<PATH>) {
         return this.descriptor.getStaticData(params);
     }
 
-    getRequestList(params: GetRequestListParams) {
-        return this.descriptor.getRequestList(params);
+    getPathList(params: GetPathListParams) {
+        return this.descriptor.getPathList(params);
     }
 }
 
 // deno-lint-ignore ban-types
-export class DynamicPage<REQUEST extends object, DATA, POST_BODY>
-    extends BasePage<
-        REQUEST,
-        DATA,
-        POST_BODY,
-        DynamicPageDescriptor<REQUEST, DATA, POST_BODY>
-    >
-    implements DynamicPageDescriptor<REQUEST, DATA, POST_BODY> {
+export class DynamicPage<PATH extends object, DATA, BODY> extends BasePage<
+    PATH,
+    DATA,
+    BODY,
+    DynamicPageDescriptor<PATH, DATA, BODY>
+> implements DynamicPageDescriptor<PATH, DATA, BODY> {
     constructor(
-        descriptor: DynamicPageDescriptor<REQUEST, DATA, POST_BODY>,
+        descriptor: DynamicPageDescriptor<PATH, DATA, BODY>,
     ) {
         super(descriptor);
     }
 
-    getDynamicData(params: GetDynamicDataParams<REQUEST>) {
+    getDynamicData(params: GetDynamicDataParams<PATH, BODY>) {
         return this.descriptor.getDynamicData(params);
     }
 }

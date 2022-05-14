@@ -2,33 +2,33 @@ import {
     DynamicPage,
     GetContent,
     GetDynamicData,
-    GetRequestList,
+    GetPathList,
     GetStaticData,
     StaticPage,
 } from '../../../../packages/core/Page.ts';
 import { spy } from '../../../../dep/std/mock.ts';
 
-type FakeDynamicPageConfig<REQUEST extends object, DATA, POST_BODY> = {
+type FakeDynamicPageConfig<PATH extends object, DATA, BODY> = {
     self?: URL;
     pattern?: string;
-    getDynamicData?: GetDynamicData<REQUEST, DATA>;
-    getContent?: GetContent<REQUEST, DATA>;
+    getDynamicData?: GetDynamicData<PATH, DATA, BODY>;
+    getContent?: GetContent<PATH, DATA>;
     mock?: {
-        getDynamicData?: DynamicPage<REQUEST, DATA, POST_BODY>['getDynamicData'];
-        getContent?: DynamicPage<REQUEST, DATA, POST_BODY>['getContent'];
+        getDynamicData?: DynamicPage<PATH, DATA, BODY>['getDynamicData'];
+        getContent?: DynamicPage<PATH, DATA, BODY>['getContent'];
     };
 };
 
-export function fakeDynamicPage<REQUEST extends object, DATA, POST_BODY>(
+export function fakeDynamicPage<PATH extends object, DATA, BODY>(
     {
         self = new URL('file:///'),
         pattern = '',
         getDynamicData = () => ({} as any),
         getContent = () => '',
         mock = {},
-    }: FakeDynamicPageConfig<REQUEST, DATA, POST_BODY> = {},
+    }: FakeDynamicPageConfig<PATH, DATA, BODY> = {},
 ) {
-    const page = new DynamicPage<REQUEST, DATA, POST_BODY>({
+    const page = new DynamicPage<PATH, DATA, BODY>({
         self,
         pattern,
         getDynamicData,
@@ -46,37 +46,33 @@ export function fakeDynamicPage<REQUEST extends object, DATA, POST_BODY>(
     return page;
 }
 
-type FakeStaticPageConfig<REQUEST extends object, DATA, POST_BODY> = {
+type FakeStaticPageConfig<PATH extends object, DATA, BODY> = {
     self?: URL;
     pattern?: string;
-    getRequestList?: GetRequestList<REQUEST>;
-    getStaticData?: GetStaticData<REQUEST, DATA>;
-    getContent?: GetContent<REQUEST, DATA>;
+    getPathList?: GetPathList<PATH>;
+    getStaticData?: GetStaticData<PATH, DATA>;
+    getContent?: GetContent<PATH, DATA>;
     mock?: {
-        getRequestList?: StaticPage<REQUEST, DATA, POST_BODY>['getRequestList'];
-        getStaticData?: StaticPage<REQUEST, DATA, POST_BODY>['getStaticData'];
-        getContent?: StaticPage<REQUEST, DATA, POST_BODY>['getContent'];
+        getPathList?: StaticPage<PATH, DATA, BODY>['getPathList'];
+        getStaticData?: StaticPage<PATH, DATA, BODY>['getStaticData'];
+        getContent?: StaticPage<PATH, DATA, BODY>['getContent'];
     };
 };
 
-export function fakeStaticPage<REQUEST extends object, DATA, POST_BODY>(
+export function fakeStaticPage<PATH extends object, DATA, BODY>(
     {
         self = new URL('file:///'),
         pattern = '',
-        getRequestList = () => [],
+        getPathList = () => [],
         getStaticData = () => ({} as any),
         getContent = () => '',
         mock = {},
-    }: FakeStaticPageConfig<
-        REQUEST,
-        DATA,
-        POST_BODY
-    > = {},
+    }: FakeStaticPageConfig<PATH, DATA, BODY> = {},
 ) {
-    const page = new StaticPage<REQUEST, DATA, POST_BODY>({
+    const page = new StaticPage<PATH, DATA, BODY>({
         self,
         pattern,
-        getRequestList,
+        getPathList,
         getStaticData,
         getContent,
     });
@@ -89,9 +85,9 @@ export function fakeStaticPage<REQUEST extends object, DATA, POST_BODY>(
         mock.getStaticData ?? originalGetDynamicData.bind(page),
     );
 
-    const originalGetRequestList = page.getRequestList;
-    page.getRequestList = spy(
-        mock.getRequestList ?? originalGetRequestList.bind(page),
+    const originalGetPathList = page.getPathList;
+    page.getPathList = spy(
+        mock.getPathList ?? originalGetPathList.bind(page),
     );
 
     return page;

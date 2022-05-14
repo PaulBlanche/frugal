@@ -23,6 +23,6 @@ Deno.test('Builder: delegates to underlying PageBuilders', async () => {
 
     await builder.build();
 
-    assertSpyCalls(asSpy(pageBuilders[0].buildAll), 1)
-    assertSpyCalls(asSpy(pageBuilders[1].buildAll), 1)
+    assertSpyCalls(asSpy(pageBuilders[0].buildAll), 1);
+    assertSpyCalls(asSpy(pageBuilders[1].buildAll), 1);
 });

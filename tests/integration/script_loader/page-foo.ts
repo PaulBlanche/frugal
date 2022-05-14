@@ -5,7 +5,7 @@ import './scripts/foo.script.ts';
 import './component.ts';
 import './scripts/shared.script.ts';
 
-type Request = { slug: string };
+type Path = { slug: string };
 
 type Data = {
     title: string;
@@ -19,21 +19,21 @@ async function getData() {
     return JSON.parse(data)['foo'];
 }
 
-export async function getRequestList(): Promise<Request[]> {
+export async function getPathList(): Promise<Path[]> {
     const data = await getData();
     return Object.keys(data).map((key) => ({ slug: key }));
 }
 
 export async function getStaticData(
-    { request }: frugal.GetStaticDataParams<Request>,
+    { path }: frugal.GetStaticDataParams<Path>,
 ): Promise<Data> {
     const data = await getData();
 
-    if (!(request.slug in data)) {
+    if (!(path.slug in data)) {
         throw Error();
     }
 
-    return data[request.slug];
+    return data[path.slug];
 }
 
 export const pattern = 'foo/:slug.html';
@@ -41,7 +41,7 @@ export const pattern = 'foo/:slug.html';
 export const self = new URL(import.meta.url);
 
 export function getContent(
-    { loaderContext, entrypoint }: frugal.GetContentParams<Request, Data>,
+    { loaderContext, entrypoint }: frugal.GetContentParams<Path, Data>,
 ) {
     const scriptBodyGenerated = loaderContext.get<Generated>('script');
 

@@ -3,28 +3,28 @@ import { cx } from '../../packages/loader_style/styled.ts';
 
 import { red } from './main.style.ts';
 
-type Request = { slug: string };
+type Path = { slug: string };
 
 type Data = {
     title: string;
     content: string;
 };
 
-export function getRequestList(): Request[] {
+export function getPathList(): Path[] {
     return [{ slug: '1' }];
 }
 
 export function getStaticData(
-    { request }: frugal.GetStaticDataParams<Request>,
+    { path }: frugal.GetStaticDataParams<Path>,
 ): Data {
-    if (request.slug === '1') {
+    if (path.slug === '1') {
         return {
             title: 'first article !',
             content: 'this is the first article',
         };
     }
     return {
-        title: `another article ${request.slug}`,
+        title: `another article ${path.slug}`,
         content: 'this is another article',
     };
 }
@@ -34,7 +34,7 @@ export const pattern = '/isr/:slug.html';
 export const self = new URL(import.meta.url);
 
 export function getContent(
-    { data, method, loaderContext }: frugal.GetContentParams<Request, Data>,
+    { data, method, loaderContext }: frugal.GetContentParams<Path, Data>,
 ) {
     const styleUrl = loaderContext.get('style');
 

@@ -7,12 +7,13 @@ export type { PageGenerator } from './PageGenerator.ts';
 export { DEFAULT_LOGGER_CONFIG, OFF_LOGGER_CONFIG } from './Config.ts';
 export type {
     DynamicPageDescriptor,
+    GenerationRequest,
     GetContent,
     GetContentParams,
     GetDynamicData,
     GetDynamicDataParams,
-    GetRequestList,
-    GetRequestListParams,
+    GetPathList,
+    GetPathListParams,
     GetStaticData,
     GetStaticDataParams,
     Phase,
@@ -24,3 +25,4 @@ export { DynamicPage, page, StaticPage } from './Page.ts';
 export { build, Frugal } from './Frugal.ts';
 export { PersistantCache } from './Cache.ts';
 export * from './Persistance.ts';
+export { type PathObject } from './PathObject.ts';

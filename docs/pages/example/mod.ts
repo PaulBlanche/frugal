@@ -4,10 +4,10 @@ import * as oak from 'oak';
 
 import { App } from '../App.tsx';
 import { Page } from './Page.tsx';
-import { Data, Request } from './type.ts';
+import { Data, Path } from './type.ts';
 import { fromFormData, initialForm, submitForm, validateForm } from './Form.ts';
 
-export function getRequestList(): Request[] {
+export function getPathList(): Path[] {
     return [{}];
 }
 
@@ -18,8 +18,9 @@ export function getStaticData(): Data {
 }
 
 export async function postDynamicData(
-    { body }: frugal.PostDynamicDataParams<Request, oak.BodyFormData>,
+    { request }: frugal.PostDynamicDataParams<Path, oak.BodyFormData>,
 ): Promise<Data> {
+    const body = request.body;
     const formDataBody = await body.value.read();
     const form = fromFormData(formDataBody);
     const validatedForm = await validateForm(form);

@@ -28,7 +28,6 @@ You have to create a peristance provider instance, and pass it in the frugal con
 ```ts
 import { Config, UpstashPersistance } from './dep/frugal/core.ts';
 
-
 const upstashPersistance = new UpstashPersistance(UPSTASH_REDIS_REST_URL UPSTASH_REDIS_REST_TOKEN)
 
 const config: Config = {

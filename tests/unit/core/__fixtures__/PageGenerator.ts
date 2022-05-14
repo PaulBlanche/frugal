@@ -7,21 +7,21 @@ import { fakeDynamicPage } from './Page.ts';
 import { fakeLoaderContext } from './LoaderContext.ts';
 import { spy } from '../../../../dep/std/mock.ts';
 
-type FakePageGeneratorConfig<REQUEST extends object, DATA, POST_BODY> = {
-    page?: Page<REQUEST, DATA, POST_BODY>;
+type FakePageGeneratorConfig<PATH extends object, DATA, BODY> = {
+    page?: Page<PATH, DATA, BODY>;
     config?: PageGeneratorConfig;
     mock?: {
-        match?: PageGenerator<REQUEST, DATA, POST_BODY>['match'];
-        generate?: PageGenerator<REQUEST, DATA, POST_BODY>['generate'];
+        match?: PageGenerator<PATH, DATA, BODY>['match'];
+        generate?: PageGenerator<PATH, DATA, BODY>['generate'];
         generateContentFromData?: PageGenerator<
-            REQUEST,
+            PATH,
             DATA,
-            POST_BODY
+            BODY
         >['generateContentFromData'];
     };
 };
 
-export function fakePageGenerator<REQUEST extends object, DATA, POST_BODY>(
+export function fakePageGenerator<PATH extends object, DATA, BODY>(
     {
         page = fakeDynamicPage(),
         config = {
@@ -29,9 +29,9 @@ export function fakePageGenerator<REQUEST extends object, DATA, POST_BODY>(
             publicDir: '',
         },
         mock = {},
-    }: FakePageGeneratorConfig<REQUEST, DATA, POST_BODY> = {},
+    }: FakePageGeneratorConfig<PATH, DATA, BODY> = {},
 ) {
-    const generator = new PageGenerator<REQUEST, DATA, POST_BODY>(page, config);
+    const generator = new PageGenerator<PATH, DATA, BODY>(page, config);
 
     const originalMatch = generator.match;
     generator.match = spy(mock.match ?? originalMatch.bind(generator));

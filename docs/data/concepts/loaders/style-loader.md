@@ -3,13 +3,13 @@
 The `style` loader works with the `styled` utility (a clone of the api of `styled-component`). Every module targeted by this loader should export classnames, generated with the `styled` utility :
 
 ```tsx
-import { styled } from 'https://deno.land/x/frugal/packages/loader_style/styled.ts';
+import { className } from 'https://deno.land/x/frugal/packages/loader_style/styled.ts';
 
-export const item = styled('item')`
+export const item = className('item').styled`
     color: red;
 `;
 
-export const list = styled('list')`
+export const list = className('list').styled`
     padding: 0;
 `;
 ```
@@ -35,7 +35,7 @@ The `style` loader will provide to the `loaderContext` a string containing the u
 
 ```ts
 export function getContent(
-    { loaderContext, entrypoint }: frugal.GetContentParams<Request, Data>,
+    { loaderContext, entrypoint }: frugal.GetContentParams<Path, Data>,
 ) {
     const cssFileUrl = loaderContext.get('style');
 
@@ -76,13 +76,13 @@ export const config: Config = {
 With this setup, the following module, using non-standard syntax :
 
 ```tsx
-import { styled } from 'https://deno.land/x/frugal/packages/loader_style/styled.ts';
+import { className } from 'https://deno.land/x/frugal/packages/loader_style/styled.ts';
 
-export const item = styled('item')`
+export const item = className('item').styled`
     color: red;
 `;
 
-export const list = styled('list')`
+export const list = className('list').styled`
     padding: 0;
 
     ${item} {

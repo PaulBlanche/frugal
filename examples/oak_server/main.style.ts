@@ -1,6 +1,6 @@
 import {
     createGlobalStyle,
-    styled,
+    className,
 } from '../../packages/loader_style/styled.ts';
 
 createGlobalStyle`
@@ -9,6 +9,6 @@ createGlobalStyle`
     }
 `;
 
-export const red = styled('red')`
+export const red = className('red').styled`
     color: red;
 `;

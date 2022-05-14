@@ -7,15 +7,13 @@ In a module (`/pages/hello-world.ts` for example), create a [static page descrip
 ```tsx
 import type * as frugal from 'https://deno.land/x/frugal/packages/core/mod.ts';
 
-export function getRequestList() {
+export function getPathList() {
     return [{}];
 }
 
 export const pattern = '/hello-world';
 
-export function getStaticData(
-    { request }: frugal.GetStaticDataParams<any>,
-): Data {
+export function getStaticData(): string {
     return 'Hello world';
 }
 

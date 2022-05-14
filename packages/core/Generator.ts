@@ -1,5 +1,6 @@
 import * as log from '../log/mod.ts';
-import { GenerationContext, PageGenerator } from './PageGenerator.ts';
+import { PageGenerator } from './PageGenerator.ts';
+import { GenerationRequest } from './Page.ts';
 import { CleanConfig } from './Config.ts';
 function logger() {
     return log.getLogger('frugal:Generator');
@@ -20,50 +21,45 @@ export class Generator {
     }
 
     async generate(
-        pathname: string,
-        context: GenerationContext<unknown>,
+        // deno-lint-ignore no-explicit-any
+        request: GenerationRequest<any>,
     ) {
         logger().info({
             op: 'start',
-            pathname,
-            context,
+            request,
             msg() {
                 return `${this.op} ${this.logger!.timerStart}`;
             },
             logger: {
-                timerStart:
-                    `generation of ${pathname}?${context.searchParams.toString()}`,
+                timerStart: `generation of ${requestToString(request)}`,
             },
         });
 
-        const pageGenerator = this.getMatchingGenerator(pathname);
+        const pageGenerator = this.getMatchingGenerator(request);
 
         if (pageGenerator === undefined) {
             logger().info({
-                pathname,
-                context,
+                request,
                 msg() {
-                    return `no match found for ${this.pathname}`;
+                    return `no match found for ${requestToString(request)}`;
                 },
                 logger: {
-                    timerEnd:
-                        `generation of ${context.method} ${pathname}?${context.searchParams.toString()}`,
+                    timerEnd: `generation of ${requestToString(request)}`,
                 },
             });
             return undefined;
         }
 
-        const result = await pageGenerator.generate(pathname, context);
+        const result = await pageGenerator.generate(request);
 
         logger().info({
             op: 'done',
-            pathname,
+            request,
             msg() {
                 return `${this.logger!.timerEnd} ${this.op}`;
             },
             logger: {
-                timerEnd:
-                    `generation of ${context.method} ${pathname}?${context.searchParams.toString()}`,
+                timerEnd: `generation of ${requestToString(request)}`,
             },
         });
 
@@ -71,9 +67,11 @@ export class Generator {
     }
 
     private getMatchingGenerator(
-        pathname: string,
+        // deno-lint-ignore no-explicit-any
+        request: GenerationRequest<any>,
         // deno-lint-ignore no-explicit-any
     ): PageGenerator<any, any, any> | undefined {
+        const pathname = new URL(request.url).pathname;
         for (const pageGenerator of this.generators) {
             if (pageGenerator.match(pathname)) {
                 return pageGenerator;
@@ -82,4 +80,9 @@ export class Generator {
 
         return undefined;
     }
+}
+
+// deno-lint-ignore no-explicit-any
+export function requestToString(request: GenerationRequest<any>) {
+    return `${request.method} ${request.url}`;
 }

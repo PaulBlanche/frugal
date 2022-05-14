@@ -68,7 +68,7 @@ The `script` loader will provide to the `loaderContext` an object with this sha
 
 ```ts
 export function getContent(
-    { loaderContext, entrypoint }: frugal.GetContentParams<Request, Data>,
+    { loaderContext, entrypoint }: frugal.GetContentParams<Path, Data>,
 ) {
     const esmBundleUrl = loaderContext.get('script')?.[entrypoint]?.['esm'];
 
@@ -99,13 +99,13 @@ If you import a style module in a script, the `script` loader will bundle the st
 When bundling a style module, we only want to bundle the classnames, not what was used to generate them. For this style module :
 
 ```tsx
-import { styled } from 'https://deno.land/x/frugal/packages/loader_style/styled.ts';
+import { className } from 'https://deno.land/x/frugal/packages/loader_style/styled.ts';
 
-export const item = styled('item')`
+export const item = className('item').styled`
     color: red;
 `;
 
-export const list = styled('list')`
+export const list = className('list').styled`
     padding: 0;
 `;
 ```

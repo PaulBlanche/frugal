@@ -97,9 +97,11 @@ export class DynamicRouter {
                 },
             });
 
-            const result = await ctx.generator.generate(url.pathname, {
+            const result = await ctx.generator.generate({
+                url: context.request.url,
+                headers: context.request.headers,
                 method: 'GET',
-                searchParams: url.searchParams,
+                body: context.request.body(),
             });
 
             if (result === undefined) {

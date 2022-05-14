@@ -22,7 +22,7 @@ import { getContentFrom } from 'https://deno.land/x/frugal/packages/frugal_preac
 import { App } from './App.tsx';
 import { Page } from './Page.tsx';
 
-export function getRequestList() {
+export function getPathList() {
     return [{}];
 }
 
@@ -190,9 +190,9 @@ Preact integration comes with two hooks : `usePathname` and `useData`.
 
 ### `usePathname`
 
-This hook will return the `pathname` of the current page. This is the compiled `pattern` of your page descriptor, with each paramater replaced with the value in the _request object_ used to generate the page.
+This hook will return the `pathname` of the current page. This is the compiled `pattern` of your page descriptor, with each paramater replaced with the value in the _path object_ used to generate the page.
 
-For a page with the pattern `/:foo/:bar` that was rendered with the request object `{{ foo: 'hello', bar: 'world' }`, the `pathname` will be `/hello/world`.
+For a page with the pattern `/:foo/:bar` that was rendered with the _path object_ `{{ foo: 'hello', bar: 'world' }`, the `pathname` will be `/hello/world`.
 
 ### `useData`
 

@@ -16,16 +16,16 @@ function logger() {
 }
 
 // deno-lint-ignore ban-types
-export class PageBuilder<REQUEST extends object, DATA, POST_BODY> {
-    private generator: PageGenerator<REQUEST, DATA, POST_BODY>;
-    private page: Page<REQUEST, DATA, POST_BODY>;
+export class PageBuilder<PATH extends object, DATA, BODY> {
+    private generator: PageGenerator<PATH, DATA, BODY>;
+    private page: Page<PATH, DATA, BODY>;
     private hash: string;
     private config: PageBuilderConfig;
 
     constructor(
-        page: Page<REQUEST, DATA, POST_BODY>,
+        page: Page<PATH, DATA, BODY>,
         hash: string,
-        generator: PageGenerator<REQUEST, DATA, POST_BODY>,
+        generator: PageGenerator<PATH, DATA, BODY>,
         config: PageBuilderConfig,
     ) {
         this.page = page;
@@ -51,12 +51,12 @@ export class PageBuilder<REQUEST extends object, DATA, POST_BODY> {
             },
         });
 
-        const requestsList = await this.page.getRequestList({
+        const pathList = await this.page.getPathList({
             phase: 'build',
         });
 
-        await Promise.all(requestsList.map(async (request) => {
-            await this.build(request, 'build');
+        await Promise.all(pathList.map(async (path) => {
+            await this.build(path, 'build');
         }));
 
         logger().info({
@@ -71,12 +71,12 @@ export class PageBuilder<REQUEST extends object, DATA, POST_BODY> {
         });
     }
 
-    async build(request: REQUEST, phase: Phase): Promise<string> {
+    async build(path: PATH, phase: Phase): Promise<string> {
         assert(
             this.page instanceof StaticPage,
             `Can't statically build DynamicPage ${this.page.pattern}`,
         );
-        const url = this.page.compile(request);
+        const url = this.page.compile(path);
 
         logger().debug({
             op: 'start',
@@ -92,7 +92,7 @@ export class PageBuilder<REQUEST extends object, DATA, POST_BODY> {
 
         const data = await this.page.getStaticData({
             phase,
-            request,
+            path,
         });
 
         const pageInstanceHash = new mumur.Hash()
@@ -108,7 +108,7 @@ export class PageBuilder<REQUEST extends object, DATA, POST_BODY> {
                     .generateContentFromData(url, {
                         method: 'GET',
                         data,
-                        request,
+                        path,
                         phase,
                     });
 

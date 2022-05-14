@@ -12,7 +12,7 @@ export function getStaticData() {
     return {};
 }
 
-export function getRequestList() {
+export function getPathList() {
     return [{}];
 }
 

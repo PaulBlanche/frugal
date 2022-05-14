@@ -36,9 +36,10 @@ export class PrgOrchestrator {
                 },
             });
 
-            const result = await ctx.generator.generate(url.pathname, {
+            const result = await ctx.generator.generate({
+                url: context.request.url,
+                headers: context.request.headers,
                 method: 'POST',
-                searchParams: url.searchParams,
                 body: context.request.body(),
             });
 

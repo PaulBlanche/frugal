@@ -1,6 +1,12 @@
 import { LoaderContext } from './LoaderContext.ts';
-import { DynamicPage, Page, Phase, StaticPage } from './Page.ts';
-import * as path from '../../dep/std/path.ts';
+import {
+    DynamicPage,
+    GenerationRequest,
+    Page,
+    Phase,
+    StaticPage,
+} from './Page.ts';
+import * as pathUtils from '../../dep/std/path.ts';
 import * as log from '../log/mod.ts';
 import { assert } from '../../dep/std/asserts.ts';
 
@@ -14,25 +20,20 @@ function logger() {
     return log.getLogger('frugal:PageGenerator');
 }
 
-export type GenerationContext<POST_BODY> =
-    & { searchParams: URLSearchParams }
-    & ({
-        method: 'GET';
-    } | { method: 'POST'; body: POST_BODY });
-
-type ContentGenerationContext<DATA, REQUEST> = {
+type ContentGenerationContext<DATA, PATH> = {
     method: 'POST' | 'GET';
     data: DATA;
-    request: REQUEST;
+    path: PATH;
     phase: Phase;
 };
+
 // deno-lint-ignore ban-types
-export class PageGenerator<REQUEST extends object, DATA, POST_BODY> {
-    private page: Page<REQUEST, DATA, POST_BODY>;
+export class PageGenerator<PATH extends object, DATA, BODY> {
+    private page: Page<PATH, DATA, BODY>;
     private config: PageGeneratorConfig;
 
     constructor(
-        page: Page<REQUEST, DATA, POST_BODY>,
+        page: Page<PATH, DATA, BODY>,
         config: PageGeneratorConfig,
     ) {
         this.page = page;
@@ -44,12 +45,12 @@ export class PageGenerator<REQUEST extends object, DATA, POST_BODY> {
     }
 
     async generate(
-        pathname: string,
-        context: GenerationContext<POST_BODY>,
+        request: GenerationRequest<BODY>,
     ): Promise<{ pagePath: string; content: string }> {
+        const pathname = new URL(request.url).pathname;
         const match = this.page.match(pathname);
         assert(match !== false);
-        const request = match.params;
+        const path = match.params;
 
         logger().debug({
             pattern: this.page.pattern,
@@ -59,25 +60,30 @@ export class PageGenerator<REQUEST extends object, DATA, POST_BODY> {
             },
         });
 
-        const data = await this._getData(request, context);
+        const data = await this._getData(path, request);
 
         const result = await this.generateContentFromData(
             pathname,
-            { data, request, phase: 'generate', method: context.method },
+            {
+                data,
+                path,
+                phase: 'generate',
+                method: request.method,
+            },
         );
 
         return result;
     }
 
     private async _getData(
-        request: REQUEST,
-        context: GenerationContext<POST_BODY>,
+        path: PATH,
+        request: GenerationRequest<BODY>,
     ) {
-        if (context.method === 'GET') {
+        if (request.method === 'GET') {
             if (this.config.devMode && this.page instanceof StaticPage) {
                 return await this.page.getStaticData({
                     phase: 'build',
-                    request,
+                    path,
                 });
             }
 
@@ -88,24 +94,23 @@ export class PageGenerator<REQUEST extends object, DATA, POST_BODY> {
 
             return await this.page.getDynamicData({
                 phase: 'generate',
+                path,
                 request,
-                searchParams: context.searchParams,
             });
         }
 
         return await this.page.postDynamicData({
             phase: 'generate',
+            path,
             request,
-            searchParams: context.searchParams,
-            body: context.body,
         });
     }
 
     async generateContentFromData(
         pathname: string,
-        { data, request, phase, method }: ContentGenerationContext<
+        { data, path, phase, method }: ContentGenerationContext<
             DATA,
-            REQUEST
+            PATH
         >,
     ): Promise<{ pagePath: string; content: string }> {
         logger().debug({
@@ -124,15 +129,15 @@ export class PageGenerator<REQUEST extends object, DATA, POST_BODY> {
         const content = await this.page.getContent({
             method,
             phase,
-            request,
+            path,
             data,
             pathname,
             loaderContext: this.config.loaderContext,
         });
 
         const pagePath = pathname.endsWith('.html')
-            ? path.join(this.config.publicDir, pathname)
-            : path.join(this.config.publicDir, pathname, 'index.html');
+            ? pathUtils.join(this.config.publicDir, pathname)
+            : pathUtils.join(this.config.publicDir, pathname, 'index.html');
 
         logger().debug({
             op: 'done',
