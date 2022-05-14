@@ -272,6 +272,7 @@ export class Frugal {
     }
 
     // generate a specific dynamic page (allways generate even if nothing changed)
+    // deno-lint-ignore no-explicit-any
     async generate(request: GenerationRequest<any>) {
         const result = await this.generator.generate(request);
         await this.save({ runtime: true });

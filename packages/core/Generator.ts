@@ -21,6 +21,7 @@ export class Generator {
     }
 
     async generate(
+        // deno-lint-ignore no-explicit-any
         request: GenerationRequest<any>,
     ) {
         logger().info({
@@ -66,6 +67,7 @@ export class Generator {
     }
 
     private getMatchingGenerator(
+        // deno-lint-ignore no-explicit-any
         request: GenerationRequest<any>,
         // deno-lint-ignore no-explicit-any
     ): PageGenerator<any, any, any> | undefined {
@@ -80,6 +82,7 @@ export class Generator {
     }
 }
 
+// deno-lint-ignore no-explicit-any
 export function requestToString(request: GenerationRequest<any>) {
     return `${request.method} ${request.url}`;
 }
