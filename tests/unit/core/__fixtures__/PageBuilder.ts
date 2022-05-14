@@ -10,18 +10,18 @@ import { fakeCache } from './Cache.ts';
 import { fakePersistance } from './Persistance.ts';
 import { spy } from '../../../../dep/std/mock.ts';
 
-type FakePageBuilderConfig<REQUEST extends object, DATA, BODY> = {
-    page?: Page<REQUEST, DATA, BODY>;
+type FakePageBuilderConfig<PATH extends object, DATA, BODY> = {
+    page?: Page<PATH, DATA, BODY>;
     hash?: string;
-    generator?: PageGenerator<REQUEST, DATA, BODY>;
+    generator?: PageGenerator<PATH, DATA, BODY>;
     config?: PageBuilderConfig;
     mock?: {
-        build?: PageBuilder<REQUEST, DATA, BODY>['build'];
-        buildAll?: PageBuilder<REQUEST, DATA, BODY>['buildAll'];
+        build?: PageBuilder<PATH, DATA, BODY>['build'];
+        buildAll?: PageBuilder<PATH, DATA, BODY>['buildAll'];
     };
 };
 
-export function fakePageBuilder<REQUEST extends object, DATA, BODY>(
+export function fakePageBuilder<PATH extends object, DATA, BODY>(
     {
         page = fakeStaticPage(),
         hash = '',
@@ -31,9 +31,9 @@ export function fakePageBuilder<REQUEST extends object, DATA, BODY>(
             persistance: fakePersistance(),
         },
         mock = {},
-    }: FakePageBuilderConfig<REQUEST, DATA, BODY> = {},
+    }: FakePageBuilderConfig<PATH, DATA, BODY> = {},
 ) {
-    const builder = new PageBuilder<REQUEST, DATA, BODY>(
+    const builder = new PageBuilder<PATH, DATA, BODY>(
         page,
         hash,
         generator,

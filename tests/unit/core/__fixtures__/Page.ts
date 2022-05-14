@@ -53,7 +53,7 @@ type FakeStaticPageConfig<PATH extends object, DATA, BODY> = {
     getStaticData?: GetStaticData<PATH, DATA>;
     getContent?: GetContent<PATH, DATA>;
     mock?: {
-        getRequestList?: StaticPage<PATH, DATA, BODY>['getPathList'];
+        getPathList?: StaticPage<PATH, DATA, BODY>['getPathList'];
         getStaticData?: StaticPage<PATH, DATA, BODY>['getStaticData'];
         getContent?: StaticPage<PATH, DATA, BODY>['getContent'];
     };
@@ -85,9 +85,9 @@ export function fakeStaticPage<PATH extends object, DATA, BODY>(
         mock.getStaticData ?? originalGetDynamicData.bind(page),
     );
 
-    const originalGetRequestList = page.getPathList;
+    const originalGetPathList = page.getPathList;
     page.getPathList = spy(
-        mock.getRequestList ?? originalGetRequestList.bind(page),
+        mock.getPathList ?? originalGetPathList.bind(page),
     );
 
     return page;

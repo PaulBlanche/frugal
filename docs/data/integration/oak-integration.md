@@ -56,7 +56,7 @@ That way, after a form submission, the user recive the answer on a `GET` request
 
 ### On demand refresh os static pages
 
-For all static pages, the server will trigger a rerender of the page with fresh data if the page is request with a `?force_refresh` query parameter.
+For all static pages, the server will trigger a rerender of the page with fresh data if the page is requested with a `?force_refresh` query parameter.
 
 The server will answer with the newly generated page, and will also cache the page (using the persistance provider configured on frugal).
 
