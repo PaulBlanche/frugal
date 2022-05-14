@@ -14,10 +14,6 @@ function logger() {
     return log.getLogger('frugal:PageGenerator');
 }
 
-export type GenerationContext = {
-    request: Request;
-};
-
 type ContentGenerationContext<DATA, PATH> = {
     method: 'POST' | 'GET';
     data: DATA;
@@ -42,9 +38,9 @@ export class PageGenerator<PATH extends object, DATA> {
     }
 
     async generate(
-        pathname: string,
-        context: GenerationContext,
+        request: Request,
     ): Promise<{ pagePath: string; content: string }> {
+        const pathname = new URL(request.url).pathname;
         const match = this.page.match(pathname);
         assert(match !== false);
         const path = match.params;
@@ -57,7 +53,7 @@ export class PageGenerator<PATH extends object, DATA> {
             },
         });
 
-        const data = await this._getData(path, context);
+        const data = await this._getData(path, request);
 
         const result = await this.generateContentFromData(
             pathname,
@@ -65,7 +61,7 @@ export class PageGenerator<PATH extends object, DATA> {
                 data,
                 path,
                 phase: 'generate',
-                method: getMethod(context.request),
+                method: getMethod(request),
             },
         );
 
@@ -74,9 +70,9 @@ export class PageGenerator<PATH extends object, DATA> {
 
     private async _getData(
         path: PATH,
-        context: GenerationContext,
+        request: Request,
     ) {
-        const method = getMethod(context.request);
+        const method = getMethod(request);
 
         if (method === 'GET') {
             if (this.config.devMode && this.page instanceof StaticPage) {
@@ -94,14 +90,14 @@ export class PageGenerator<PATH extends object, DATA> {
             return await this.page.getDynamicData({
                 phase: 'generate',
                 path,
-                request: context.request,
+                request,
             });
         }
 
         return await this.page.postDynamicData({
             phase: 'generate',
             path,
-            request: context.request,
+            request,
         });
     }
 

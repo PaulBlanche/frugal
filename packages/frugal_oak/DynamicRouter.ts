@@ -97,11 +97,9 @@ export class DynamicRouter {
                 },
             });
 
-            const result = await ctx.generator.generate(url.pathname, {
-                request: context.request.originalRequest as unknown as
-                    & Omit<Request, 'method'>
-                    & { method: 'POST' | 'GET' },
-            });
+            const result = await ctx.generator.generate(
+                context.request.originalRequest as unknown as Request,
+            );
 
             if (result === undefined) {
                 logger('generateMiddleware').debug({

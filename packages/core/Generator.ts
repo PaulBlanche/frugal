@@ -1,5 +1,5 @@
 import * as log from '../log/mod.ts';
-import { GenerationContext, PageGenerator } from './PageGenerator.ts';
+import { PageGenerator } from './PageGenerator.ts';
 import { CleanConfig } from './Config.ts';
 function logger() {
     return log.getLogger('frugal:Generator');
@@ -20,49 +20,44 @@ export class Generator {
     }
 
     async generate(
-        pathname: string,
-        context: GenerationContext,
+        request: Request,
     ) {
         logger().info({
             op: 'start',
-            pathname,
-            context,
+            request,
             msg() {
                 return `${this.op} ${this.logger!.timerStart}`;
             },
             logger: {
-                timerStart: `generation of ${requestToString(context.request)}`,
+                timerStart: `generation of ${requestToString(request)}`,
             },
         });
 
-        const pageGenerator = this.getMatchingGenerator(pathname);
+        const pageGenerator = this.getMatchingGenerator(request);
 
         if (pageGenerator === undefined) {
             logger().info({
-                pathname,
-                context,
+                request,
                 msg() {
-                    return `no match found for ${this.pathname}`;
+                    return `no match found for ${requestToString(request)}`;
                 },
                 logger: {
-                    timerEnd: `generation of ${
-                        requestToString(context.request)
-                    }`,
+                    timerEnd: `generation of ${requestToString(request)}`,
                 },
             });
             return undefined;
         }
 
-        const result = await pageGenerator.generate(pathname, context);
+        const result = await pageGenerator.generate(request);
 
         logger().info({
             op: 'done',
-            pathname,
+            request,
             msg() {
                 return `${this.logger!.timerEnd} ${this.op}`;
             },
             logger: {
-                timerEnd: `generation of ${requestToString(context.request)}`,
+                timerEnd: `generation of ${requestToString(request)}`,
             },
         });
 
@@ -70,9 +65,10 @@ export class Generator {
     }
 
     private getMatchingGenerator(
-        pathname: string,
+        request: Request,
         // deno-lint-ignore no-explicit-any
     ): PageGenerator<any, any> | undefined {
+        const pathname = new URL(request.url).pathname;
         for (const pageGenerator of this.generators) {
             if (pageGenerator.match(pathname)) {
                 return pageGenerator;

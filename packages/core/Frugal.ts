@@ -1,12 +1,12 @@
 import { CleanConfig, Config } from './Config.ts';
 import { Builder } from './Builder.ts';
 import { Refresher } from './Refresher.ts';
-import { Generator, requestToString } from './Generator.ts';
+import { Generator } from './Generator.ts';
 import { LoaderContext } from './LoaderContext.ts';
 import { DynamicPage, StaticPage } from './Page.ts';
 import { PageBuilder } from './PageBuilder.ts';
 import { PageRefresher } from './PageRefresher.ts';
-import { GenerationContext, PageGenerator } from './PageGenerator.ts';
+import { PageGenerator } from './PageGenerator.ts';
 import * as log from '../log/mod.ts';
 import * as path from '../../dep/std/path.ts';
 import { assert } from '../../dep/std/asserts.ts';
@@ -259,88 +259,22 @@ export class Frugal {
 
     // build all registered static pages
     async build() {
-        logger().info({
-            op: 'start',
-            msg() {
-                return `${this.op} ${this.logger!.timerStart}`;
-            },
-            logger: {
-                timerStart: 'building',
-            },
-        });
-
         await this.builder.build();
         await this.save();
-
-        logger().info({
-            op: 'done',
-            msg() {
-                return `${this.logger!.timerEnd} ${this.op}`;
-            },
-            logger: {
-                timerEnd: 'building',
-            },
-        });
     }
 
     // refresh a specific static page (might do nothing if nothing changed)
     async refresh(pathname: string) {
-        logger().info({
-            op: 'start',
-            pathname,
-            msg() {
-                return `${this.op} ${this.logger!.timerStart}`;
-            },
-            logger: {
-                timerStart: `refreshing ${pathname}`,
-            },
-        });
-
         const result = await this.refresher.refresh(pathname);
         await this.save({ runtime: true });
-
-        logger().info({
-            op: 'done',
-            pathname,
-            msg() {
-                return `${this.logger!.timerEnd} ${this.op}`;
-            },
-            logger: {
-                timerEnd: `refreshing ${pathname}`,
-            },
-        });
 
         return result;
     }
 
     // generate a specific dynamic page (allways generate even if nothing changed)
-    async generate(pathname: string, context: GenerationContext) {
-        logger().info({
-            op: 'start',
-            pathname,
-            context,
-            msg() {
-                return `${this.op} ${this.logger!.timerStart}`;
-            },
-            logger: {
-                timerStart: `generating ${requestToString(context.request)}`,
-            },
-        });
-
-        const result = await this.generator.generate(pathname, context);
+    async generate(request: Request) {
+        const result = await this.generator.generate(request);
         await this.save({ runtime: true });
-
-        logger().info({
-            op: 'done',
-            pathname,
-            context,
-            msg() {
-                return `${this.logger!.timerEnd} ${this.op}`;
-            },
-            logger: {
-                timerEnd: `generating ${requestToString(context.request)}`,
-            },
-        });
 
         return result;
     }
