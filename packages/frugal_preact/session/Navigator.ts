@@ -37,6 +37,12 @@ export class Navigator {
         }
 
         try {
+            dispatchEvent(
+                new CustomEvent('frugal:readystatechange', {
+                    detail: { readystate: 'loading' },
+                }),
+            );
+
             const html = await this.fetch();
             const nextDocument = new DOMParser().parseFromString(
                 html,
@@ -44,6 +50,18 @@ export class Navigator {
             );
             new Renderer(nextDocument).render();
             history.pushState(null, '', this.url);
+
+            dispatchEvent(
+                new CustomEvent('frugal:readystatechange', {
+                    detail: { readystate: 'interactive' },
+                }),
+            );
+
+            const scrollTarget = document.querySelector(this.url.hash);
+            if (scrollTarget !== null) {
+                scrollTarget.scrollIntoView();
+            }
+
             dispatchEvent(
                 new CustomEvent('frugal:readystatechange', {
                     detail: { readystate: 'complete' },
@@ -67,5 +85,42 @@ export class Navigator {
         document.body.classList.remove(LOADING_CLASSNAME);
 
         return html;
+    }
+}
+
+const readyStateOrder: Record<DocumentReadyState, number> = {
+    'loading': 0,
+    'interactive': 1,
+    'complete': 2,
+};
+
+export function onReadyStateChange(
+    readyState: DocumentReadyState,
+    callback: () => void,
+) {
+    let hasRunForInitialLoad = false;
+    if (readyStateOrder[document.readyState] > readyStateOrder[readyState]) {
+        if (!hasRunForInitialLoad) {
+            callback();
+            hasRunForInitialLoad = true;
+        }
+    } else {
+        document.addEventListener('readystatechange', () => {
+            if (document.readyState === readyState) {
+                if (!hasRunForInitialLoad) {
+                    callback();
+                    hasRunForInitialLoad = true;
+                }
+            }
+        });
+
+        addEventListener(
+            'frugal:readystatechange',
+            (event) => {
+                if (event.detail.readystate === readyState) {
+                    callback();
+                }
+            },
+        );
     }
 }

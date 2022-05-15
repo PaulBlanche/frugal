@@ -3,33 +3,14 @@
 import * as preact from 'preact';
 import { DataProvider } from './dataContext.tsx';
 import type { HydrationStrategy } from './types.ts';
+import { onReadyStateChange } from './session/Navigator.ts';
 
 export type App<PROPS> = (props: PROPS) => preact.VNode;
 
 export type GetApp<PROPS> = () => Promise<App<PROPS>> | App<PROPS>;
 
-function onDocumentComplete(callback: () => void) {
-    if (document.readyState === 'complete') {
-        callback();
-    } else {
-        document.addEventListener('readystatechange', (event) => {
-            if (document.readyState === 'complete') {
-                callback();
-            }
-        });
-        addEventListener(
-            'frugal:readystatechange',
-            (event) => {
-                if (event.detail.readystate === 'complete') {
-                    callback();
-                }
-            },
-        );
-    }
-}
-
 export function hydrate<PROPS>(name: string, getApp: GetApp<PROPS>) {
-    onDocumentComplete(() => {
+    onReadyStateChange('complete', () => {
         const hydratableOnLoad = queryHydratables(name, 'load');
         if (hydratableOnLoad.length !== 0) {
             hydrateOnLoad(hydratableOnLoad, getApp);
