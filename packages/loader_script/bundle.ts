@@ -96,7 +96,10 @@ async function bundleCodeSplit(
         metafile: true,
         platform: 'neutral',
         incremental: false,
-        outdir: path.join(publicDir, 'js'),
+        outdir: publicDir,
+        entryNames: `js/${esbuildConfig.entryNames ?? '[dir]/[name]-[hash]'}`,
+        chunkNames: `js/${esbuildConfig.chunkNames ?? '[dir]/[name]-[hash]'}`,
+        assetNames: `js/${esbuildConfig.assetNames ?? '[dir]/[name]-[hash]'}`,
         plugins: [frugalPlugin({
             loader: 'portable',
             importMapFile,

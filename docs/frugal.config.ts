@@ -33,7 +33,7 @@ export const config: Config = {
             format: 'esm',
             minify: true,
             splitting: true,
-            entryNames: '[dir]/[name]-[hash]',
+            sourcemap: true,
         }),
         style({
             test: IS_STYLE_FILE,
