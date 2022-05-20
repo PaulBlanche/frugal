@@ -1,5 +1,6 @@
 import * as utils from './utils.ts';
 import { Renderer } from './Renderer.ts';
+import '../types.ts';
 
 export const LOADING_CLASSNAME = 'frugal-prefetch-loading';
 
@@ -57,9 +58,11 @@ export class Navigator {
                 }),
             );
 
-            const scrollTarget = document.querySelector(this.url.hash);
-            if (scrollTarget !== null) {
-                scrollTarget.scrollIntoView();
+            if (this.url.hash.startsWith('#')) {
+                const scrollTarget = document.querySelector(this.url.hash);
+                if (scrollTarget !== null) {
+                    scrollTarget.scrollIntoView();
+                }
             }
 
             dispatchEvent(
@@ -67,7 +70,8 @@ export class Navigator {
                     detail: { readystate: 'complete' },
                 }),
             );
-        } catch {
+        } catch (error: unknown) {
+            console.error(error);
             location.href = this.url.href;
         }
     }
