@@ -1,91 +1,177 @@
-export type PathObject<PATH extends string> = PathToObject<
-    NormalizedPath<PATH>
-> extends [
-    // deno-lint-ignore no-explicit-any
-    any,
-    infer T,
-] ? T
+type PathObject<PATH extends string> = Collapse<
+    Consume<{ rest: PATH; object: unknown; index: [] }>['object']
+>;
+
+type Consume<
+    CONTEXT extends ContextBase,
+> = CONTEXT['rest'] extends `${infer CHAR}${infer REST}`
+    ? CONTEXT['escape'] extends true ? Consume<
+        { rest: REST; index: CONTEXT['index']; object: CONTEXT['object'] }
+    >
+    : CHAR extends ':' ? Consume<ConsumeNamedParameter<CONTEXT>>
+    : CHAR extends '(' ? Consume<ConsumeUnnamedParameter<CONTEXT>>
+    : CHAR extends '{' ? REST extends `${infer PARAM}}${infer REST}` ? Consume<
+        {
+            rest: `${PARAM}${REST}`;
+            index: CONTEXT['index'];
+            object: CONTEXT['object'];
+        }
+    >
+    : Consume<
+        { rest: REST; index: CONTEXT['index']; object: CONTEXT['object'] }
+    >
+    : CHAR extends '\\' ? Consume<
+        {
+            rest: REST;
+            index: CONTEXT['index'];
+            object: CONTEXT['object'];
+            escape: true;
+        }
+    >
+    : Consume<
+        { rest: REST; index: CONTEXT['index']; object: CONTEXT['object'] }
+    >
+    : { rest: ''; index: CONTEXT['index']; object: CONTEXT['object'] };
+
+type ConsumeNamedParameter<
+    CONTEXT extends ContextBase,
+> = ConsumeModifier<
+    ConsumePattern<
+        ConsumeParameterName<{ rest: CONTEXT['rest']; index: CONTEXT['index'] }>
+    >
+> extends {
+    name: infer NAME;
+    optionnal?: infer OPTIONNAL;
+    rest: infer REST;
+    index: infer INDEX;
+} ? NAME extends string | number ? {
+    object:
+        & CONTEXT['object']
+        & (OPTIONNAL extends true ? { [key in NAME]?: string }
+            : { [key in NAME]: string });
+    rest: REST;
+    index: INDEX;
+}
+: never
     : never;
 
-type NormalizedPath<PATH extends string> = PATH extends
-    `${infer _PREFIX}:${infer REST}` ? `:${REST}` : PATH;
+type ConsumeUnnamedParameter<
+    CONTEXT extends ContextBase,
+> = ConsumeModifier<ConsumePattern<CONTEXT>> extends {
+    name: infer NAME;
+    optionnal?: infer OPTIONNAL;
+    rest: infer REST;
+    index: infer INDEX;
+} ? NAME extends string | number ? {
+    object:
+        & CONTEXT['object']
+        & (OPTIONNAL extends true ? { [key in NAME]?: string }
+            : { [key in NAME]: string });
+    rest: REST;
+    index: INDEX;
+}
+: never
+    : CONTEXT['rest'] extends `(${infer REST}`
+        ? { object: CONTEXT['object']; index: CONTEXT['index']; rest: REST }
+    : { object: CONTEXT['object']; index: CONTEXT['index']; rest: '' };
 
-type PathToObject<
-    PATH extends string,
-    // deno-lint-ignore no-explicit-any
-    INDEX extends any[] = [],
-    // deno-lint-ignore ban-types
-    OBJECT = {},
-> = PATH extends `:${infer SEGMENT}:${infer REST}` ? PathToObject<
-    `:${REST}`,
-    ParameterToObject<SEGMENT, INDEX, OBJECT>[0],
-    ParameterToObject<SEGMENT, INDEX, OBJECT>[1]
->
-    : PATH extends `:${infer SEGMENT}`
-        ? ParameterToObject<SEGMENT, INDEX, OBJECT>
-    : OBJECT;
+type ParameterContextBase = {
+    rest: string;
+    name?: string | number;
+    optionnal?: true;
+    index: unknown[];
+};
 
-// deno-lint-ignore no-explicit-any
-type ParameterToObject<PARAMETER extends string, INDEX extends any[], OBJECT> =
-    [
-        ParameterName<PARAMETER, INDEX>[1],
-        & OBJECT
-        & (PARAMETER extends `${infer _BEFORE}?${infer AFTER}`
-            ? HasClosingParens<AFTER> extends false
-                ? { [s in ParameterName<PARAMETER, INDEX>[0]]?: string }
-            : { [s in ParameterName<PARAMETER, INDEX>[0]]: string }
-            : { [s in ParameterName<PARAMETER, INDEX>[0]]: string }),
-    ];
+type ConsumeModifier<INPUT extends ParameterContextBase> = INPUT['rest'] extends
+    `?${infer REST}` ? {
+    name: INPUT['name'];
+    index: INPUT['index'];
+    optionnal: true;
+    rest: REST;
+}
+    : INPUT['rest'] extends `*${infer REST}` ? {
+        name: INPUT['name'];
+        index: INPUT['index'];
+        optionnal: true;
+        rest: REST;
+    }
+    : INPUT;
 
-type HasClosingParens<STRING extends string> = STRING extends
-    `${infer CHAR}${infer REST}`
-    ? CHAR extends ')' ? true : HasClosingParens<REST>
-    : false;
+type ConsumePattern<
+    INPUT extends ParameterContextBase,
+> = INPUT['rest'] extends `(${infer _PATTERN})${infer REST}`
+    ? INPUT['name'] extends string ? {
+        name: INPUT['name'];
+        rest: REST;
+        index: INPUT['index'];
+    }
+    : {
+        name: INPUT['index']['length'];
+        rest: REST;
+        index: [...INPUT['index'], 0];
+    }
+    : INPUT;
 
-// deno-lint-ignore no-explicit-any
-type ParameterName<SEGMENT extends string, INDEX extends any[]> =
-    FirstWord<SEGMENT> extends '' ? [INDEX['length'], [...INDEX, 0]]
-        : [FirstWord<SEGMENT>, INDEX];
+type ConsumeParameterName<INPUT extends ParameterContextBase> =
+    INPUT['rest'] extends `:${infer REST}` ? {
+        index: INPUT['index'];
+        name: ConsumeWord<REST>['word'];
+        rest: ConsumeWord<REST>['rest'];
+    }
+        : never;
 
-type FirstWord<SEGMENT extends string, WORD extends string = ''> =
-    Lowercase<SEGMENT> extends `${infer CHAR}${infer REST}`
-        ? CHAR extends 'a' ? FirstWord<REST, `${WORD}${CHAR}`>
-        : CHAR extends 'b' ? FirstWord<REST, `${WORD}${CHAR}`>
-        : CHAR extends 'c' ? FirstWord<REST, `${WORD}${CHAR}`>
-        : CHAR extends 'd' ? FirstWord<REST, `${WORD}${CHAR}`>
-        : CHAR extends 'e' ? FirstWord<REST, `${WORD}${CHAR}`>
-        : CHAR extends 'f' ? FirstWord<REST, `${WORD}${CHAR}`>
-        : CHAR extends 'g' ? FirstWord<REST, `${WORD}${CHAR}`>
-        : CHAR extends 'h' ? FirstWord<REST, `${WORD}${CHAR}`>
-        : CHAR extends 'i' ? FirstWord<REST, `${WORD}${CHAR}`>
-        : CHAR extends 'j' ? FirstWord<REST, `${WORD}${CHAR}`>
-        : CHAR extends 'k' ? FirstWord<REST, `${WORD}${CHAR}`>
-        : CHAR extends 'l' ? FirstWord<REST, `${WORD}${CHAR}`>
-        : CHAR extends 'm' ? FirstWord<REST, `${WORD}${CHAR}`>
-        : CHAR extends 'n' ? FirstWord<REST, `${WORD}${CHAR}`>
-        : CHAR extends 'o' ? FirstWord<REST, `${WORD}${CHAR}`>
-        : CHAR extends 'p' ? FirstWord<REST, `${WORD}${CHAR}`>
-        : CHAR extends 'q' ? FirstWord<REST, `${WORD}${CHAR}`>
-        : CHAR extends 'r' ? FirstWord<REST, `${WORD}${CHAR}`>
-        : CHAR extends 's' ? FirstWord<REST, `${WORD}${CHAR}`>
-        : CHAR extends 't' ? FirstWord<REST, `${WORD}${CHAR}`>
-        : CHAR extends 'u' ? FirstWord<REST, `${WORD}${CHAR}`>
-        : CHAR extends 'v' ? FirstWord<REST, `${WORD}${CHAR}`>
-        : CHAR extends 'w' ? FirstWord<REST, `${WORD}${CHAR}`>
-        : CHAR extends 'x' ? FirstWord<REST, `${WORD}${CHAR}`>
-        : CHAR extends 'y' ? FirstWord<REST, `${WORD}${CHAR}`>
-        : CHAR extends 'z' ? FirstWord<REST, `${WORD}${CHAR}`>
-        : CHAR extends '0' ? FirstWord<REST, `${WORD}${CHAR}`>
-        : CHAR extends '1' ? FirstWord<REST, `${WORD}${CHAR}`>
-        : CHAR extends '2' ? FirstWord<REST, `${WORD}${CHAR}`>
-        : CHAR extends '3' ? FirstWord<REST, `${WORD}${CHAR}`>
-        : CHAR extends '4' ? FirstWord<REST, `${WORD}${CHAR}`>
-        : CHAR extends '5' ? FirstWord<REST, `${WORD}${CHAR}`>
-        : CHAR extends '6' ? FirstWord<REST, `${WORD}${CHAR}`>
-        : CHAR extends '7' ? FirstWord<REST, `${WORD}${CHAR}`>
-        : CHAR extends '8' ? FirstWord<REST, `${WORD}${CHAR}`>
-        : CHAR extends '9' ? FirstWord<REST, `${WORD}${CHAR}`>
-        : CHAR extends '-' ? FirstWord<REST, `${WORD}${CHAR}`>
-        : CHAR extends '_' ? FirstWord<REST, `${WORD}${CHAR}`>
-        : WORD
-        : WORD;
+type ConsumeWord<INPUT extends string, WORD extends string = ''> =
+    Lowercase<INPUT> extends `${infer CHAR}${infer REST}`
+        ? CHAR extends 'a' ? ConsumeWord<REST, `${WORD}${CHAR}`>
+        : CHAR extends 'b' ? ConsumeWord<REST, `${WORD}${CHAR}`>
+        : CHAR extends 'c' ? ConsumeWord<REST, `${WORD}${CHAR}`>
+        : CHAR extends 'd' ? ConsumeWord<REST, `${WORD}${CHAR}`>
+        : CHAR extends 'e' ? ConsumeWord<REST, `${WORD}${CHAR}`>
+        : CHAR extends 'f' ? ConsumeWord<REST, `${WORD}${CHAR}`>
+        : CHAR extends 'g' ? ConsumeWord<REST, `${WORD}${CHAR}`>
+        : CHAR extends 'h' ? ConsumeWord<REST, `${WORD}${CHAR}`>
+        : CHAR extends 'i' ? ConsumeWord<REST, `${WORD}${CHAR}`>
+        : CHAR extends 'j' ? ConsumeWord<REST, `${WORD}${CHAR}`>
+        : CHAR extends 'k' ? ConsumeWord<REST, `${WORD}${CHAR}`>
+        : CHAR extends 'l' ? ConsumeWord<REST, `${WORD}${CHAR}`>
+        : CHAR extends 'm' ? ConsumeWord<REST, `${WORD}${CHAR}`>
+        : CHAR extends 'n' ? ConsumeWord<REST, `${WORD}${CHAR}`>
+        : CHAR extends 'o' ? ConsumeWord<REST, `${WORD}${CHAR}`>
+        : CHAR extends 'p' ? ConsumeWord<REST, `${WORD}${CHAR}`>
+        : CHAR extends 'q' ? ConsumeWord<REST, `${WORD}${CHAR}`>
+        : CHAR extends 'r' ? ConsumeWord<REST, `${WORD}${CHAR}`>
+        : CHAR extends 's' ? ConsumeWord<REST, `${WORD}${CHAR}`>
+        : CHAR extends 't' ? ConsumeWord<REST, `${WORD}${CHAR}`>
+        : CHAR extends 'u' ? ConsumeWord<REST, `${WORD}${CHAR}`>
+        : CHAR extends 'v' ? ConsumeWord<REST, `${WORD}${CHAR}`>
+        : CHAR extends 'w' ? ConsumeWord<REST, `${WORD}${CHAR}`>
+        : CHAR extends 'x' ? ConsumeWord<REST, `${WORD}${CHAR}`>
+        : CHAR extends 'y' ? ConsumeWord<REST, `${WORD}${CHAR}`>
+        : CHAR extends 'z' ? ConsumeWord<REST, `${WORD}${CHAR}`>
+        : CHAR extends '0' ? ConsumeWord<REST, `${WORD}${CHAR}`>
+        : CHAR extends '1' ? ConsumeWord<REST, `${WORD}${CHAR}`>
+        : CHAR extends '2' ? ConsumeWord<REST, `${WORD}${CHAR}`>
+        : CHAR extends '3' ? ConsumeWord<REST, `${WORD}${CHAR}`>
+        : CHAR extends '4' ? ConsumeWord<REST, `${WORD}${CHAR}`>
+        : CHAR extends '5' ? ConsumeWord<REST, `${WORD}${CHAR}`>
+        : CHAR extends '6' ? ConsumeWord<REST, `${WORD}${CHAR}`>
+        : CHAR extends '7' ? ConsumeWord<REST, `${WORD}${CHAR}`>
+        : CHAR extends '8' ? ConsumeWord<REST, `${WORD}${CHAR}`>
+        : CHAR extends '9' ? ConsumeWord<REST, `${WORD}${CHAR}`>
+        : CHAR extends '-' ? ConsumeWord<REST, `${WORD}${CHAR}`>
+        : CHAR extends '_' ? ConsumeWord<REST, `${WORD}${CHAR}`>
+        : { word: WORD; rest: INPUT }
+        : { word: WORD; rest: INPUT };
+
+type PathObjectBase = Record<string | number, string> | unknown;
+
+type ContextBase = {
+    rest: string;
+    object: PathObjectBase;
+    index: unknown[];
+    escape?: true;
+};
+
+type Collapse<OBJECT extends PathObjectBase> = {
+    [K in keyof OBJECT]: OBJECT[K];
+};
