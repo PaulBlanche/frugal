@@ -20,43 +20,58 @@ export class Navigator {
         this.anchor = anchor;
     }
 
-    shouldNavigate() {
+    shouldNavigate(directive?: string | null) {
+        return this.config.defaultNavigate
+            ? directive !== 'false'
+            : directive === 'true';
+    }
+
+    shouldHandleNavigate() {
         const rel = this.anchor.dataset['frugalPrefetch'] ?? '';
         const isExternal = rel.split(' ').includes('external');
 
         const navigate = this.anchor.dataset['frugalNavigate'];
-        const shouldNavigate = this.config.defaultNavigate
-            ? navigate !== 'false'
-            : navigate === 'true';
 
-        return shouldNavigate && !isExternal && utils.isInternalUrl(this.url);
+        return this.shouldNavigate(navigate) && !isExternal &&
+            utils.isInternalUrl(this.url);
+    }
+
+    shouldProcessNavigate(document: Document) {
+        const frugalVisitTypeMeta = document.querySelector(
+            'head meta[name="frugal-navigate"]',
+        );
+        if (frugalVisitTypeMeta) {
+            const navigate = frugalVisitTypeMeta.getAttribute('content');
+            return this.shouldNavigate(navigate);
+        }
+
+        return true;
     }
 
     async navigate() {
-        if (!this.shouldNavigate()) {
+        if (!this.shouldHandleNavigate()) {
+            this.realNavigate();
             return;
         }
 
         try {
-            dispatchEvent(
-                new CustomEvent('frugal:readystatechange', {
-                    detail: { readystate: 'loading' },
-                }),
-            );
+            this.setReadyState('loading');
 
             const html = await this.fetch();
             const nextDocument = new DOMParser().parseFromString(
                 html,
                 'text/html',
             );
+
+            if (!this.shouldProcessNavigate(nextDocument)) {
+                this.realNavigate();
+                return;
+            }
+
             new Renderer(nextDocument).render();
             history.pushState(null, '', this.url);
 
-            dispatchEvent(
-                new CustomEvent('frugal:readystatechange', {
-                    detail: { readystate: 'interactive' },
-                }),
-            );
+            this.setReadyState('interactive');
 
             if (this.url.hash.startsWith('#')) {
                 const scrollTarget = document.querySelector(this.url.hash);
@@ -65,15 +80,20 @@ export class Navigator {
                 }
             }
 
-            dispatchEvent(
-                new CustomEvent('frugal:readystatechange', {
-                    detail: { readystate: 'complete' },
-                }),
-            );
+            this.setReadyState('complete');
         } catch (error: unknown) {
             console.error(error);
-            location.href = this.url.href;
+            this.realNavigate();
+            return;
         }
+    }
+
+    setReadyState(readystate: DocumentReadyState) {
+        dispatchEvent(
+            new CustomEvent('frugal:readystatechange', {
+                detail: { readystate },
+            }),
+        );
     }
 
     async fetch() {
@@ -90,6 +110,10 @@ export class Navigator {
 
         return html;
     }
+
+    realNavigate() {
+        location.href = this.url.href;
+    }
 }
 
 const readyStateOrder: Record<DocumentReadyState, number> = {
@@ -103,21 +127,24 @@ export function onReadyStateChange(
     callback: () => void,
 ) {
     if (readyStateOrder[document.readyState] >= readyStateOrder[readyState]) {
+        console.log('immediate');
         callback();
     } else {
         document.addEventListener('readystatechange', () => {
             if (document.readyState === readyState) {
+                console.log('on readystatechange');
                 callback();
             }
         });
-
-        addEventListener(
-            'frugal:readystatechange',
-            (event) => {
-                if (event.detail.readystate === readyState) {
-                    callback();
-                }
-            },
-        );
     }
+
+    addEventListener(
+        'frugal:readystatechange',
+        (event) => {
+            if (event.detail.readystate === readyState) {
+                console.log('on frugal:readystatechange');
+                callback();
+            }
+        },
+    );
 }

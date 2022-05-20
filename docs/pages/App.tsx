@@ -36,7 +36,7 @@ export function App({ entrypoint, loaderContext, children }: AppProps) {
                 <html lang='en' />
                 {styleUrl && <link rel='stylesheet' href={styleUrl} />}
                 {bodyBundleUrl && (
-                    <script type='module' src={bodyBundleUrl}></script>
+                    <script async type='module' src={bodyBundleUrl}></script>
                 )}
             </Head>
             {children}

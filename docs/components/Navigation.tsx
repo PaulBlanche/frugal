@@ -45,7 +45,15 @@ function NavigationEntry(
     { active = false, children, href }: NavigationEntryProps,
 ) {
     if (active) {
-        return <span class={cx(s.entry, s.entryActive)}>{children}</span>;
+        return (
+            <span class={cx(s.entry, s.entryActive)}>
+                {children}
+            </span>
+        );
     }
-    return <a class={cx(s.entry)} href={href}>{children}</a>;
+    return (
+        <a class={cx(s.entry)} href={href}>
+            {children}
+        </a>
+    );
 }
