@@ -38,8 +38,8 @@ export class Renderer {
                     document.head.removeChild(element);
                 } else {
                     const node = headSnapshot[elementIndex];
-                    if (node.name === 'script' && node.content.length !== 0) {
-                        // special case for script with content both in current head
+                    if (node.name === 'script') {
+                        // special case for script both in current head
                         // and snapshot. We remove them, but do not mark them as
                         // merged. They will be eval'd in the next loop.
                         document.head.removeChild(element);
