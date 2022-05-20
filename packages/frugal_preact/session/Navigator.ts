@@ -102,19 +102,12 @@ export function onReadyStateChange(
     readyState: DocumentReadyState,
     callback: () => void,
 ) {
-    let hasRunForInitialLoad = false;
-    if (readyStateOrder[document.readyState] > readyStateOrder[readyState]) {
-        if (!hasRunForInitialLoad) {
-            callback();
-            hasRunForInitialLoad = true;
-        }
+    if (readyStateOrder[document.readyState] >= readyStateOrder[readyState]) {
+        callback();
     } else {
         document.addEventListener('readystatechange', () => {
             if (document.readyState === readyState) {
-                if (!hasRunForInitialLoad) {
-                    callback();
-                    hasRunForInitialLoad = true;
-                }
+                callback();
             }
         });
 
