@@ -1,5 +1,5 @@
 import { build, page } from '../../packages/core/mod.ts';
-import { script } from '../../packages/loader_script/mod.ts';
+import { ScriptLoader } from '../../packages/loader_script/mod.ts';
 
 import * as myPage from './page.ts';
 
@@ -23,7 +23,7 @@ build({
     // and configured to catch all import ending in `.script.ts`. The bundles
     // will be outputed in `esm` format and with code splitting.
     // see the `script_loader` example for more info.
-    loaders: [script({
+    loaders: [new ScriptLoader({
         bundles: [{
             name: 'body',
             test: (url) => /\.script\.ts$/.test(url.toString()),

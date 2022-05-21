@@ -19,9 +19,9 @@ type Config = {
 
 /**
  * Style loader, able to output a css stylesheet from all style module in the
- * pages dependency graphe
+ * pages dependency graph
  */
-export class StyleLoader implements frugal.Loader<string, string> {
+export class StyleLoader implements frugal.Loader<string> {
     name = 'style';
     #config: Config;
 
@@ -45,7 +45,7 @@ export class StyleLoader implements frugal.Loader<string, string> {
 
         const cache = await params.getCache();
 
-        return cache.memoize({
+        const result = cache.memoize({
             key: bundleHash(params.assets),
             producer: async () => {
                 logger().debug({
@@ -78,6 +78,10 @@ export class StyleLoader implements frugal.Loader<string, string> {
                 });
             },
         });
+
+        await cache.save();
+
+        return result;
     }
 
     /**

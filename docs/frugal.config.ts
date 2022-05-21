@@ -1,5 +1,5 @@
 import { Config, page } from './dep/frugal/core.ts';
-import { script } from './dep/frugal/loader_script.ts';
+import { ScriptLoader } from './dep/frugal/loader_script.ts';
 import { StyleLoader, styleTransformer } from './dep/frugal/loader_style.ts';
 import * as stylis from './dep/stylis.ts';
 import { svg, svgTransformer } from './dep/frugal/loader_jsx_svg.ts';
@@ -17,7 +17,7 @@ export const config: Config = {
     outputDir: './dist',
     importMap,
     loaders: [
-        script({
+        new ScriptLoader({
             bundles: [{
                 name: 'body',
                 test: IS_SCRIPT_FILE,
