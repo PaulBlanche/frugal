@@ -2,53 +2,77 @@ import * as log from '../../dep/std/log.ts';
 import * as colors from '../../dep/std/colors.ts';
 import * as murmur from '../murmur/mod.ts';
 
+/**
+ * Internal representation of a log record
+ */
 type FrugalLogRecord = {
+    /** the log message */
     msg?: string;
     logger: {
         level: number;
         levelName: string;
+        /** the scope of the logger that produced the current record */
         scope: string;
         datetime: Date;
+        /** an optionnal property marking the start of a time interval
+         * measurment */
         timerStart?: string;
+        /** an optionnal property marking the end of a time interval measurment
+         * (relative to a log record with a matching `startTime`) */
         timerEnd?: string;
+        /** a property automatically filled with the result of a time interval
+         * measurment (in the `timerEnd` record) */
         delta?: number;
     };
 };
 
+/**
+ * Small time keeper utility
+ */
 class StopWatch {
-    timers: Map<string, number>;
+    #timers: Map<string, number>;
 
     constructor() {
-        this.timers = new Map();
+        this.#timers = new Map();
     }
 
+    /**
+     * Given a `FrugalLogRecord`, this function will :
+     * - start a timer associated with the `logger.timerStart` value (if
+     *   present)
+     * - end the timer associated with the `logger.timerEnd` value (if present)
+     *   and set the `logger.delta` value.
+     */
     time(record: FrugalLogRecord) {
         if (record.logger.timerStart) {
             const timerStartKey =
                 `${record.logger.scope}:${record.logger.timerStart}`;
-            this.timers.set(timerStartKey, performance.now());
+            this.#timers.set(timerStartKey, performance.now());
         }
 
         if (record.logger.timerEnd) {
             const timerEndKey =
                 `${record.logger.scope}:${record.logger.timerEnd}`;
-            if (this.timers.has(timerEndKey)) {
+            if (this.#timers.has(timerEndKey)) {
                 record.logger.delta = performance.now() -
-                    this.timers.get(timerEndKey)!;
+                    this.#timers.get(timerEndKey)!;
             }
         }
     }
 }
 
+/**
+ * Format a `log.LogRecord` to the `FrugalLogRecord` structure.
+ */
 class FrugalFormatter {
-    private stopwatch: StopWatch;
+    #stopwatch: StopWatch;
 
     constructor() {
-        this.stopwatch = new StopWatch();
+        this.#stopwatch = new StopWatch();
     }
 
     format(logRecord: log.LogRecord): FrugalLogRecord {
-        const data = this.parseData(logRecord);
+        const data = this.#parseData(logRecord);
 
         const record: FrugalLogRecord = {
             ...data,
@@ -61,12 +85,12 @@ class FrugalFormatter {
             },
         };
 
-        this.stopwatch.time(record);
+        this.#stopwatch.time(record);
 
         return record;
     }
 
-    private parseData(logRecord: log.LogRecord): Partial<FrugalLogRecord> {
+    #parseData(logRecord: log.LogRecord): Partial<FrugalLogRecord> {
         try {
             return JSON.parse(logRecord.msg);
         } catch {
@@ -75,31 +99,51 @@ class FrugalFormatter {
     }
 }
 
+/**
+ * A basic log handler, that format each log record passing through
+ */
 class FrugalHandler extends log.handlers.ConsoleHandler {
-    private frugalFormatter: FrugalFormatter;
+    #frugalFormatter: FrugalFormatter;
 
     constructor(levelName: log.LevelName, options: log.HandlerOptions = {}) {
         super(levelName, options);
-        this.frugalFormatter = new FrugalFormatter();
+        this.#frugalFormatter = new FrugalFormatter();
     }
 
     toFrugalRecord(logRecord: log.LogRecord): FrugalLogRecord {
-        return this.frugalFormatter.format(logRecord);
+        return this.#frugalFormatter.format(logRecord);
     }
 }
 
+/**
+ * The JSONHandler, that flat-out stringify any `FrugalLogRecord` passing
+ * through.
+ */
 class JSONHandler extends FrugalHandler {
     format(logRecord: log.LogRecord): string {
         return JSON.stringify(this.toFrugalRecord(logRecord));
     }
 }
 
+/**
+ * The JSONHandler, that will output a human readable string for each
+ * `FrugalLogRecord` passing through. Messages will be colored depending on
+ * levels :
+ *  - `CRITICAL` or `ERROR` level messages will be printed black on a red
+ *    background
+ *  - `WARNING` level messages will be printed yellow
+ *  - `INFO` or `DEBUG` level messages will be printed white, with a random
+ *    persistent color for each scope.
+ *
+ * If a `logger.delta` value is present, a string `'(done in xxx s)'` will be
+ * appended to the message
+ */
 class HumanHandler extends FrugalHandler {
-    private colors: Map<string, number>;
+    #colors: Map<string, number>;
 
     constructor(levelName: log.LevelName, options: log.HandlerOptions = {}) {
         super(levelName, options);
-        this.colors = new Map();
+        this.#colors = new Map();
     }
 
     format(logRecord: log.LogRecord): string {
@@ -114,27 +158,27 @@ class HumanHandler extends FrugalHandler {
             case 'CRITICAL':
             case 'ERROR': {
                 return colors.bgRed(
-                    colors.black(this.message(time, level, scope, record)),
+                    colors.black(this.#message(time, level, scope, record)),
                 );
             }
             case 'WARNING': {
-                return colors.yellow(this.message(time, level, scope, record));
+                return colors.yellow(this.#message(time, level, scope, record));
             }
             case 'INFO':
             case 'DEBUG': {
                 const coloredScope = colors.rgb8(
                     scope,
-                    this.scopeColorIndex(scope),
+                    this.#scopeColorIndex(scope),
                 );
-                return this.message(time, level, coloredScope, record);
+                return this.#message(time, level, coloredScope, record);
             }
             default: {
-                return this.message(time, level, scope, record);
+                return this.#message(time, level, scope, record);
             }
         }
     }
 
-    private message(
+    #message(
         time: string,
         level: string,
         scope: string,
@@ -149,19 +193,22 @@ class HumanHandler extends FrugalHandler {
         }${delta}`;
     }
 
-    private scopeColorIndex(scope: string): number {
-        if (!this.colors.has(scope)) {
-            const hash = new murmur.Hash().update(scope).number();
+    #scopeColorIndex(scope: string): number {
+        if (!this.#colors.has(scope)) {
+            const hash = new murmur.Hash().update(scope).digest('raw');
 
             const index = (hash % Math.floor((6 * 5 * 6 - 3) / 2)) * 2 + 19;
 
-            this.colors.set(scope, index);
+            this.#colors.set(scope, index);
         }
 
-        return this.colors.get(scope)!;
+        return this.#colors.get(scope)!;
     }
 }
 
+/**
+ * The user log record
+ */
 type FrugalLogEntry = {
     msg?: string | (() => string);
     logger?: {
@@ -171,6 +218,10 @@ type FrugalLogEntry = {
     };
 } & Record<string, unknown>;
 
+/**
+ * The logger, wrapping a `log.Logger`. This wrapper is an adapter between the
+ * custom `FrugalLogEntry` structure and the `log.Logger`
+ */
 export class FrugalLogger {
     logger: log.Logger;
 
@@ -178,7 +229,7 @@ export class FrugalLogger {
         this.logger = logger;
     }
 
-    private log<T extends FrugalLogEntry>(
+    #log<T extends FrugalLogEntry>(
         level: 'info' | 'debug' | 'warning' | 'error' | 'critical',
         entry: T,
     ): Omit<T, 'msg'> & { msg?: string } {
@@ -194,31 +245,31 @@ export class FrugalLogger {
     debug<T extends FrugalLogEntry>(
         entry: T,
     ): Omit<T, 'msg'> & { msg?: string } {
-        return this.log('debug', entry);
+        return this.#log('debug', entry);
     }
 
     info<T extends FrugalLogEntry>(
         entry: T,
     ): Omit<T, 'msg'> & { msg?: string } {
-        return this.log('info', entry);
+        return this.#log('info', entry);
     }
 
     warning<T extends FrugalLogEntry>(
         entry: T,
     ): Omit<T, 'msg'> & { msg?: string } {
-        return this.log('warning', entry);
+        return this.#log('warning', entry);
     }
 
     error<T extends FrugalLogEntry>(
         entry: T,
     ): Omit<T, 'msg'> & { msg?: string } {
-        return this.log('error', entry);
+        return this.#log('error', entry);
     }
 
     critical<T extends FrugalLogEntry>(
         entry: T,
     ): Omit<T, 'msg'> & { msg?: string } {
-        return this.log('critical', entry);
+        return this.#log('critical', entry);
     }
 }
 
