@@ -11,7 +11,7 @@ For example, with the given `frugal.config.ts` :
 ```ts
 import { Config, page } from '../packages/core/mod.ts';
 import * as myPage from './pages/myPage.ts';
-import { style } from 'https://deno.land/x/frugal/packages/loader_style/mod.ts';
+import { StyleLoader } from 'https://deno.land/x/frugal/packages/loader_style/mod.ts';
 
 const self = new URL(import.meta.url);
 
@@ -21,9 +21,11 @@ export const config: Config = {
     pages: [
         page(myPage),
     ],
-    loader: [style({
-        test: (url) => /\.style\.ts$/.test(url.toString()),
-    })],
+    loader: [
+        new StyleLoader({
+            test: (url) => /\.style\.ts$/.test(url.toString()),
+        }),
+    ],
 };
 ```
 

@@ -6,7 +6,7 @@ import {
 } from '../../../packages/core/mod.ts';
 import * as path from '../../../dep/std/path.ts';
 import { Hash } from '../../../packages/murmur/mod.ts';
-import { style } from '../../../packages/loader_style/mod.ts';
+import { StyleLoader } from '../../../packages/loader_style/mod.ts';
 import { assertSnapshot } from '../../../dep/std/snapshot.ts';
 
 import * as myPage from './page.ts';
@@ -15,7 +15,7 @@ Deno.test('style_loader: file structure', async (t) => {
     const config = {
         outputDir: dist(),
         loaders: [
-            style({
+            new StyleLoader({
                 test: (url) => {
                     return url.toString().endsWith('.style.ts');
                 },

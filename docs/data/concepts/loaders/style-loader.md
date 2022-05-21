@@ -51,7 +51,7 @@ The `style` loader has no notion of css syntax, it simply aggregates what is gi
 import { Config, page } from '../packages/core/mod.ts';
 import * as myPage from './pages/myPage.ts';
 import * as stylis from 'https://esm.sh/stylis@4.0.13';
-import { style } from 'https://deno.land/x/frugal/packages/loader_style/mod.ts';
+import { StyleLoader } from 'https://deno.land/x/frugal/packages/loader_style/mod.ts';
 
 const self = new URL(import.meta.url);
 
@@ -61,15 +61,17 @@ export const config: Config = {
     pages: [
         page(myPage),
     ],
-    loader: [style({
-        test: (url) => /\.style\.ts$/.test(url.toString()),
-        transform: (content) => {
-            return stylis.serialize(
-                stylis.compile(content),
-                stylis.middleware([stylis.prefixer, stylis.stringify]),
-            );
-        },
-    })],
+    loader: [
+        new StyleLoader({
+            test: (url) => /\.style\.ts$/.test(url.toString()),
+            transform: (content) => {
+                return stylis.serialize(
+                    stylis.compile(content),
+                    stylis.middleware([stylis.prefixer, stylis.stringify]),
+                );
+            },
+        }),
+    ],
 };
 ```
 

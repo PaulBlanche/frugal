@@ -2,7 +2,7 @@ import { Config, page } from '../../packages/core/mod.ts';
 
 import * as pageISR from './page-isr.ts';
 import * as pageSSR from './page-ssr.ts';
-import { style } from '../../packages/loader_style/mod.ts';
+import { StyleLoader } from '../../packages/loader_style/mod.ts';
 
 export const config: Config = {
     // since deno does not have any notion of "root of module", frugal needs to
@@ -43,7 +43,7 @@ export const config: Config = {
     },
 
     loaders: [
-        style({
+        new StyleLoader({
             test: (url) => /\.style\.ts$/.test(url.toString()),
         }),
     ],

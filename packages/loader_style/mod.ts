@@ -1,2 +1,2 @@
-export * from './loader.ts';
+export * from './StyleLoader.ts';
 export * from './transformer.ts';

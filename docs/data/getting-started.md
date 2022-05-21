@@ -86,7 +86,7 @@ Next, you need to configure frugal. Create a module `furgal.config.ts` exportin
 ```ts
 import { Config, page } from '../packages/core/mod.ts';
 import * as helloWorld from './pages/hello-world.ts';
-import { style } from 'https://deno.land/x/frugal/packages/loader_style/mod.ts';
+import { StyleLoader } from 'https://deno.land/x/frugal/packages/loader_style/mod.ts';
 
 const self = new URL(import.meta.url);
 
@@ -96,9 +96,11 @@ export const config: Config = {
     pages: [
         page(helloWorld),
     ],
-    loader: [style({
-        test: (url) => /\.style\.ts$/.test(url.toString()),
-    })],
+    loader: [
+        new StyleLoader({
+            test: (url) => /\.style\.ts$/.test(url.toString()),
+        }),
+    ],
 };
 ```
 

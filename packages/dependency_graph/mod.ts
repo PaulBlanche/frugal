@@ -185,7 +185,7 @@ async function analyze(
     const source = await loadSource(resolvedModuleSpecifier, config.load);
 
     const ast = swc.parseSync(source, {
-        target: 'es2019',
+        target: 'es2022',
         syntax: 'typescript',
         tsx: true,
         comments: false,

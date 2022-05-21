@@ -121,7 +121,7 @@ In order to do so, the `script` loader accepts a `transformers` array. Each tran
 
 ```ts
 import { script } from 'https://deno.land/x/frugal/packages/loader_script/mod.ts';
-import { style, styleTransformer } from 'https://deno.land/x/frugal/packages/loader_style/mod.ts';
+import { StyleLoader, styleTransformer } from 'https://deno.land/x/frugal/packages/loader_style/mod.ts';
 
 function isStyleModule(url: string|URL) {
     return /\.style\.ts$/.test(url.toString())
@@ -130,7 +130,7 @@ function isStyleModule(url: string|URL) {
 const config = {
     //...
     loaders: [
-        style({
+        new StyleLoader({
             test: isStyleModule,
         })
         script({

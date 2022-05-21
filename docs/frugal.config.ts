@@ -1,6 +1,6 @@
 import { Config, page } from './dep/frugal/core.ts';
 import { script } from './dep/frugal/loader_script.ts';
-import { style, styleTransformer } from './dep/frugal/loader_style.ts';
+import { StyleLoader, styleTransformer } from './dep/frugal/loader_style.ts';
 import * as stylis from './dep/stylis.ts';
 import { svg, svgTransformer } from './dep/frugal/loader_jsx_svg.ts';
 import * as preact from 'preact';
@@ -35,7 +35,7 @@ export const config: Config = {
             splitting: true,
             sourcemap: true,
         }),
-        style({
+        new StyleLoader({
             test: IS_STYLE_FILE,
             transform: (bundle) => {
                 return stylis.serialize(
