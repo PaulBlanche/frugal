@@ -54,7 +54,7 @@ async function getFrugalInstance(
 }
 
 function dist() {
-    return `./dist-${new Hash().update(String(Math.random())).alphabetic()}`;
+    return `./dist-${new Hash().update(String(Math.random())).digest()}`;
 }
 
 function relativeUrl(file: string) {

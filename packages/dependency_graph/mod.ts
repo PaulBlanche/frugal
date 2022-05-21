@@ -57,7 +57,7 @@ export async function build(
         type: 'root',
         hash: dependencies.reduce((hash, dependency) => {
             return hash.update(dependency.moduleHash);
-        }, new murmur.Hash()).alphabetic(),
+        }, new murmur.Hash()).digest(),
         dependencies,
     };
 
@@ -94,7 +94,7 @@ export async function build(
                         return hash.update(dependency.moduleHash);
                     },
                     new murmur.Hash().update(current.moduleHash),
-                ).alphabetic();
+                ).digest();
             }
         }
 
@@ -222,7 +222,7 @@ async function analyze(
 
     return {
         dependencies,
-        contentHash: new murmur.Hash().update(source).alphabetic(),
+        contentHash: new murmur.Hash().update(source).digest(),
     };
 
     function handleImport(specifier: string) {

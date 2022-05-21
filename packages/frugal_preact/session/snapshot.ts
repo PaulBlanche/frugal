@@ -47,7 +47,7 @@ export function serialize(head: HTMLHeadElement) {
             name,
             attributes,
             content,
-            hash: hash.alphabetic(),
+            hash: hash.digest(),
             element: node,
         });
     });

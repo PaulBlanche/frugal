@@ -1,22 +1,41 @@
-import { default as MurmurHash3 } from '../../dep/murmurhash.ts';
+import MurmurHash3 from '../../dep/murmurhash.ts';
 
-export class Hash {
-    murmur: MurmurHash3;
+type DigestType = 'raw' | 'alphanumeric';
 
-    constructor() {
-        this.murmur = new MurmurHash3();
+/**
+ * Thin wrapper around `MurmurHash3`
+ */
+export class Hash extends MurmurHash3 {
+    constructor(key?: string, seed?: number) {
+        super(key, seed);
     }
 
-    update(data: string | Hash) {
-        this.murmur.hash(data instanceof Hash ? data.alphabetic() : data);
+    /**
+     * update the hash content with the given `data`.
+     */
+    update(data: string | Hash): Hash {
+        this.hash(data instanceof Hash ? data.digest() : data);
         return this;
     }
 
-    alphabetic() {
-        return this.murmur.result().toString(36);
-    }
-
-    number() {
-        return this.murmur.result();
+    /**
+     * compute the digest of all data passed to the hash. The digest can either
+     * be:
+     *   - `'raw'`, returning a 32-bit positive integer (the raw result of the
+     *     mumrmurHash algorithm)
+     *   - `'alphanumeric'` (default), returning an alphanumeric string
+     *     ([a-z0-9])
+     */
+    digest(type: 'raw'): number;
+    digest(type?: 'alphanumeric'): string;
+    digest(type?: DigestType): string | number {
+        switch (type) {
+            case 'raw':
+                return this.result();
+            case undefined:
+            case 'alphanumeric':
+            default:
+                return this.result().toString(36);
+        }
     }
 }

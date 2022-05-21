@@ -34,7 +34,7 @@ export function svg(config: Config): frugal.Loader<string, void> {
 
         const bundleHash = assets.reduce((hash, asset) => {
             return hash.update(asset.hash);
-        }, new murmur.Hash()).alphabetic();
+        }, new murmur.Hash()).digest();
 
         return cache.memoize({
             key: bundleHash,

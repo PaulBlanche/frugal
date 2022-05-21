@@ -18,7 +18,7 @@ export class SessionManager {
         return new murmur.Hash()
             .update(uuid)
             .update(content)
-            .alphabetic();
+            .digest();
     }
 
     private _sessionPath(sessionId: string): string {

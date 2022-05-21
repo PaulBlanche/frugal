@@ -40,7 +40,7 @@ export function script(
 
         const bundleHash = assets.reduce((hash, asset) => {
             return hash.update(asset.hash);
-        }, new murmur.Hash()).alphabetic();
+        }, new murmur.Hash()).digest();
 
         const result = await cache.memoize({
             key: bundleHash,

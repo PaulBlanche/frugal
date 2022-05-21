@@ -470,9 +470,9 @@ class FakeEnvironment {
 
     hash(path: string) {
         if (path.startsWith('http')) {
-            return new murmur.Hash().update(`//${path}`).alphabetic();
+            return new murmur.Hash().update(`//${path}`).digest();
         }
-        return new murmur.Hash().update(this.get(path)).alphabetic();
+        return new murmur.Hash().update(this.get(path)).digest();
     }
 
     fakeReadFileText(path: string | URL) {
@@ -534,7 +534,7 @@ function root(
         type: 'root',
         hash: dependencies.reduce((hash, module) => {
             return hash.update(module.moduleHash);
-        }, new murmur.Hash()).alphabetic(),
+        }, new murmur.Hash()).digest(),
         dependencies,
     };
 }
@@ -561,7 +561,7 @@ function module(
         url: moduleConfig.url,
         moduleHash: dependencies.reduce((hash, node) => {
             return hash.update(node.moduleHash);
-        }, new murmur.Hash().update(contentHash)).alphabetic(),
+        }, new murmur.Hash().update(contentHash)).digest(),
         contentHash,
         dependencies,
     };

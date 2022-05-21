@@ -30,7 +30,7 @@ export function style(config: Config): frugal.Loader<string, string> {
 
         const bundleHash = assets.reduce((hash, asset) => {
             return hash.update(asset.hash);
-        }, new murmur.Hash()).alphabetic();
+        }, new murmur.Hash()).digest();
 
         return cache.memoize({
             key: bundleHash,
@@ -71,7 +71,7 @@ export const output = style.output()`;
 
                 const bundleHash = new murmur.Hash()
                     .update(bundle)
-                    .alphabetic();
+                    .digest();
 
                 const bundleName = `style-${bundleHash.toUpperCase()}`;
                 const bundleUrl = `/style/${bundleName}.css`;

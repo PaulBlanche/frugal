@@ -99,7 +99,7 @@ export class PageBuilder<PATH extends object, DATA, BODY> {
             .update(JSON.stringify(data))
             .update(url)
             .update(this.hash)
-            .alphabetic();
+            .digest();
 
         return await this.config.cache.memoize({
             key: pageInstanceHash,

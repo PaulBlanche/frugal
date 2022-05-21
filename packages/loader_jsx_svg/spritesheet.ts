@@ -51,7 +51,7 @@ export class SpriteSheet<NODE> {
 
         const hash = new murmur.Hash().update(this.render(children)).update(
             name ?? '',
-        ).alphabetic();
+        ).digest();
 
         const id = `${name}-${hash}`;
         const sprite = new Sprite(children, id, this);
@@ -73,7 +73,7 @@ export class SpriteSheet<NODE> {
         }
         const hash = this.sprites.reduce((hash, sprite) => {
             return hash.update(sprite.id);
-        }, new murmur.Hash()).alphabetic();
+        }, new murmur.Hash()).digest();
 
         return `/svg/${this.name}-${hash.toUpperCase()}.svg`;
     }

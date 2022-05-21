@@ -94,7 +94,7 @@ export function module(
         moduleHash: dependencies.reduce(
             (hash, node) => hash.update(node.moduleHash),
             new murmur.Hash().update(node.contentHash ?? ''),
-        ).alphabetic(),
+        ).digest(),
         contentHash: node.contentHash ?? '',
         dependencies,
     };

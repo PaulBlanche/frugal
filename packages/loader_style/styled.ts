@@ -31,7 +31,7 @@ export class ScopedRules extends Rules {
             hash.update(rule.className);
         });
 
-        const className = `${hint || 'c'}-${hash.alphabetic()}`;
+        const className = `${hint || 'c'}-${hash.digest()}`;
 
         super(className, properties, `.${className}`);
 
@@ -53,7 +53,7 @@ class KeyFrames {
     constructor(properties: string) {
         const hash = new murmur.Hash().update(properties);
 
-        this.name = `a-${hash.alphabetic()}`;
+        this.name = `a-${hash.digest()}`;
         this.css = properties;
     }
 
