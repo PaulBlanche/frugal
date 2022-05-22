@@ -24,6 +24,9 @@ export type Config = {
 export type DependencyGraph = graph.Root;
 export type Node = graph.Module;
 
+/**
+ * Build a dependency graph from the given entrypoints.
+ */
 export async function build(
     entrypoints: URL[],
     config: Config = {},
@@ -62,6 +65,13 @@ export async function build(
         dependencies,
     };
 
+    /**
+     * Build the dependency graph for one entrypoint.
+     *
+     * On each descovered module, we also compute a module hash of the content
+     * hash of the module, and the module hash of each dependencies. This hash
+     * changes if the code of the module or any of its dependencies changes.
+     */
     async function buildForEntrypoint(resolvedEntrypoint: URL) {
         const cache = new Map<string, Promise<graph.Module>>();
 
@@ -103,6 +113,11 @@ export async function build(
 
         return root;
 
+        /**
+         * Return a memoized module objet. If the precursor url was already
+         * visited for the current entrypoint, this method return the cached
+         * module
+         */
         async function getModule(
             resolvedEntrypoint: URL,
             precursor: Precursor,
@@ -118,6 +133,9 @@ export async function build(
             return node;
         }
 
+        /**
+         * Return a module object form an analysis of the module.
+         */
         async function generateModule(
             resolvedEntrypoint: URL,
             precursor: Precursor,
@@ -149,6 +167,9 @@ export async function build(
         }
     }
 
+    /**
+     * Return a memoized analysis of a given module
+     */
     async function analyzeMemoized(
         resolvedModuleSpecifier: URL,
     ): Promise<AnalysisResult> {
@@ -169,6 +190,18 @@ type AnalysisResult = {
     contentHash: string;
 };
 
+/**
+ * Return an analysis of a given module.
+ *
+ * We extract all imports :
+ * - import declarations : `import foo from 'bar'`, `import { foo } from 'bar'`,
+ *   ...
+ * - named export declarations : `export { foo as bar } from 'bar'`
+ * - export all declarations : `export * as foo from 'bar'`
+ *
+ * We also compute a content hash of the source code of the module. This hash
+ * changes if the source code of the module change.
+ */
 async function analyze(
     resolvedModuleSpecifier: URL,
     config: Config,

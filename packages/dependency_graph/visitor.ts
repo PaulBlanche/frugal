@@ -8,6 +8,12 @@ export type Visitor<NODE extends VisitableNode> =
         all?: (node: NODE) => void;
     };
 
+/**
+ * Utility function to visit some AST.
+ *
+ * On each visited node, the method `visit${node.type}` will be called on the
+ * visitor if it exists.
+ */
 export function visit<NODE extends VisitableNode>(
     node: NODE,
     visitor: Visitor<NODE> = {},
@@ -20,6 +26,9 @@ export function visit<NODE extends VisitableNode>(
     }
 }
 
+/**
+ * Visit a single node, and returns the next nodes to visit
+ */
 function visitNode<NODE extends VisitableNode>(
     node: NODE,
     visitor: Visitor<NODE>,
