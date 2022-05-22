@@ -1,7 +1,7 @@
 import * as asserts from '../../../dep/std/asserts.ts';
 import { Loader } from '../../../packages/core/loader.ts';
-import { DependencyTree } from '../../../packages/core/DependencyTree.ts';
-import * as tree from '../../../packages/dependency_graph/tree.ts';
+import { DependencyGraph } from '../../../packages/core/DependencyGraph.ts';
+import * as graph from '../../../packages/dependency_graph/mod.ts';
 import * as murmur from '../../../packages/murmur/mod.ts';
 
 Deno.test('gather only modules matched by loaders with entrypoint', () => {
@@ -109,13 +109,13 @@ function loader(
     };
 }
 
-function dependencyTree(node: PartialRoot) {
-    return new DependencyTree(root(node));
+function dependencyTree(node: PartialDependencyGraph) {
+    return new DependencyGraph(root(node));
 }
 
 function root(
-    node: PartialRoot,
-): tree.Root {
+    node: PartialDependencyGraph,
+): graph.DependencyGraph {
     const dependencies = (node.dependencies ?? []).map((dependency) => {
         return module(dependency);
     });
@@ -128,8 +128,8 @@ function root(
 }
 
 function module(
-    node: PartialModule,
-): tree.Module {
+    node: PartialNode,
+): graph.Node {
     const dependencies = (node.dependencies ?? []).map((dependency) => {
         return module({ ...dependency, entrypoint: node.entrypoint });
     });
@@ -147,9 +147,11 @@ function module(
     };
 }
 
-type PartialModule = Partial<
-    Omit<tree.Module, 'dependencies'> & { dependencies: PartialModule[] }
+type PartialNode = Partial<
+    Omit<graph.Node, 'dependencies'> & { dependencies: PartialNode[] }
 >;
-type PartialRoot = Partial<
-    Omit<tree.Root, 'dependencies'> & { dependencies: PartialModule[] }
+type PartialDependencyGraph = Partial<
+    Omit<graph.DependencyGraph, 'dependencies'> & {
+        dependencies: PartialNode[];
+    }
 >;

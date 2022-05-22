@@ -15,12 +15,19 @@ function logger() {
     return log.getLogger('frugal:PageBuilder');
 }
 
-// deno-lint-ignore ban-types
-export class PageBuilder<PATH extends object, DATA, BODY> {
-    private generator: PageGenerator<PATH, DATA, BODY>;
-    private page: Page<PATH, DATA, BODY>;
-    private hash: string;
-    private config: PageBuilderConfig;
+/**
+ * Class handling the page building process (offloading the actual generation to
+ * PageGenerator)
+ */
+export class PageBuilder<
+    PATH extends Record<string, string> = Record<string, string>,
+    DATA = unknown,
+    BODY = unknown,
+> {
+    #generator: PageGenerator<PATH, DATA, BODY>;
+    #page: Page<PATH, DATA, BODY>;
+    #hash: string;
+    #config: PageBuilderConfig;
 
     constructor(
         page: Page<PATH, DATA, BODY>,
@@ -28,30 +35,33 @@ export class PageBuilder<PATH extends object, DATA, BODY> {
         generator: PageGenerator<PATH, DATA, BODY>,
         config: PageBuilderConfig,
     ) {
-        this.page = page;
-        this.config = config;
-        this.hash = hash;
-        this.generator = generator;
+        this.#page = page;
+        this.#config = config;
+        this.#hash = hash;
+        this.#generator = generator;
     }
 
+    /**
+     * Build the page for all the path returned by `getPathList`.
+     */
     async buildAll() {
         assert(
-            this.page instanceof StaticPage,
-            `Can't statically build DynamicPage ${this.page.pattern}`,
+            this.#page instanceof StaticPage,
+            `Can't statically build DynamicPage ${this.#page.pattern}`,
         );
 
         logger().info({
             op: 'start',
-            pattern: this.page.pattern,
+            pattern: this.#page.pattern,
             msg() {
                 return `${this.op} ${this.logger!.timerStart}`;
             },
             logger: {
-                timerStart: `build all ${this.page.pattern}`,
+                timerStart: `build all ${this.#page.pattern}`,
             },
         });
 
-        const pathList = await this.page.getPathList({
+        const pathList = await this.#page.getPathList({
             phase: 'build',
         });
 
@@ -61,36 +71,42 @@ export class PageBuilder<PATH extends object, DATA, BODY> {
 
         logger().info({
             op: 'done',
-            pattern: this.page.pattern,
+            pattern: this.#page.pattern,
             msg() {
                 return `${this.logger!.timerEnd} ${this.op}`;
             },
             logger: {
-                timerEnd: `build all ${this.page.pattern}`,
+                timerEnd: `build all ${this.#page.pattern}`,
             },
         });
     }
 
+    /**
+     * Build the page for a given path and return the output path.
+     *
+     * The build process id memoized and will be skiped if nothing has changed
+     * since the last build.
+     */
     async build(path: PATH, phase: Phase): Promise<string> {
         assert(
-            this.page instanceof StaticPage,
-            `Can't statically build DynamicPage ${this.page.pattern}`,
+            this.#page instanceof StaticPage,
+            `Can't statically build DynamicPage ${this.#page.pattern}`,
         );
-        const url = this.page.compile(path);
+        const url = this.#page.compile(path);
 
         logger().debug({
             op: 'start',
-            pattern: this.page.pattern,
+            pattern: this.#page.pattern,
             url,
             msg() {
                 return `${this.op} ${this.logger!.timerStart}`;
             },
             logger: {
-                timerStart: `build ${this.page.pattern} as ${url}`,
+                timerStart: `build ${this.#page.pattern} as ${url}`,
             },
         });
 
-        const data = await this.page.getStaticData({
+        const data = await this.#page.getStaticData({
             phase,
             path,
         });
@@ -98,13 +114,13 @@ export class PageBuilder<PATH extends object, DATA, BODY> {
         const pageInstanceHash = new mumur.Hash()
             .update(JSON.stringify(data))
             .update(url)
-            .update(this.hash)
+            .update(this.#hash)
             .digest();
 
-        return await this.config.cache.memoize({
+        return await this.#config.cache.memoize({
             key: pageInstanceHash,
             producer: async () => {
-                const { pagePath, content } = await this.generator
+                const { pagePath, content } = await this.#generator
                     .generateContentFromData(url, {
                         method: 'GET',
                         data,
@@ -112,17 +128,17 @@ export class PageBuilder<PATH extends object, DATA, BODY> {
                         phase,
                     });
 
-                await this.config.persistance.set(pagePath, content);
+                await this.#config.persistance.set(pagePath, content);
 
                 logger().debug({
                     op: 'done',
-                    pattern: this.page.pattern,
+                    pattern: this.#page.pattern,
                     url,
                     msg() {
                         return `${this.logger!.timerEnd} ${this.op}`;
                     },
                     logger: {
-                        timerEnd: `build ${this.page.pattern} as ${url}`,
+                        timerEnd: `build ${this.#page.pattern} as ${url}`,
                     },
                 });
 
@@ -131,7 +147,7 @@ export class PageBuilder<PATH extends object, DATA, BODY> {
             otherwise: () => {
                 logger().debug({
                     op: 'done',
-                    pattern: this.page.pattern,
+                    pattern: this.#page.pattern,
                     url,
                     msg() {
                         return `${
@@ -139,7 +155,7 @@ export class PageBuilder<PATH extends object, DATA, BODY> {
                         } ${this.op} (from cache)`;
                     },
                     logger: {
-                        timerEnd: `build ${this.page.pattern} as ${url}`,
+                        timerEnd: `build ${this.#page.pattern} as ${url}`,
                     },
                 });
             },

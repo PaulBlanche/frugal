@@ -10,7 +10,11 @@ import { fakeCache } from './Cache.ts';
 import { fakePersistance } from './Persistance.ts';
 import { spy } from '../../../../dep/std/mock.ts';
 
-type FakePageBuilderConfig<PATH extends object, DATA, BODY> = {
+type FakePageBuilderConfig<
+    PATH extends Record<string, string> = Record<string, string>,
+    DATA = unknown,
+    BODY = unknown,
+> = {
     page?: Page<PATH, DATA, BODY>;
     hash?: string;
     generator?: PageGenerator<PATH, DATA, BODY>;
@@ -21,7 +25,11 @@ type FakePageBuilderConfig<PATH extends object, DATA, BODY> = {
     };
 };
 
-export function fakePageBuilder<PATH extends object, DATA, BODY>(
+export function fakePageBuilder<
+    PATH extends Record<string, string> = Record<string, string>,
+    DATA = unknown,
+    BODY = unknown,
+>(
     {
         page = fakeStaticPage(),
         hash = '',

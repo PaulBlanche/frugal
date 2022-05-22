@@ -10,12 +10,11 @@ import * as docs from './pages/docs/mod.ts';
 import * as example from './pages/example/mod.ts';
 
 const self = new URL(import.meta.url);
-const importMap = new URL('../import_map.json', self).pathname;
 
 export const config: Config = {
-    self: new URL(import.meta.url),
+    self,
     outputDir: './dist',
-    importMap,
+    importMap: '../import_map.json',
     loaders: [
         new ScriptLoader({
             bundles: [{
@@ -29,7 +28,6 @@ export const config: Config = {
                 test: IS_SVG,
                 transform: svgTransformer,
             }],
-            importMapFile: importMap,
             format: 'esm',
             minify: true,
             splitting: true,

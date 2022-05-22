@@ -22,7 +22,7 @@ export type {
     StaticPageDescriptor,
 } from './Page.ts';
 export { DynamicPage, page, StaticPage } from './Page.ts';
-export { build, Frugal } from './Frugal.ts';
+export { Frugal } from './Frugal.ts';
 export { PersistantCache } from './Cache.ts';
 export * from './Persistance.ts';
 export { type PathObject } from './PathObject.ts';

@@ -4,7 +4,7 @@ import { asSpy, decycle } from '../../test_util/mod.ts';
 import { spy } from '../../../dep/std/mock.ts';
 
 import * as dependency from '../../../packages/dependency_graph/mod.ts';
-import * as tree from '../../../packages/dependency_graph/tree.ts';
+import * as graph from '../../../packages/dependency_graph/graph.ts';
 
 Deno.test('dependency_graph: file without dependencies', async () => {
     const ffs = new FakeEnvironment({
@@ -34,7 +34,7 @@ Deno.test('dependency_graph: file without dependencies', async () => {
         'each local file should be read once',
     );
 
-    asserts.assertEquals<tree.Root>(
+    asserts.assertEquals<graph.Root>(
         tree,
         root(ffs, {
             dependencies: [{
@@ -84,7 +84,7 @@ Deno.test('dependency_graph: files with basic tree dependency', async () => {
         'each local file should be read once',
     );
 
-    asserts.assertEquals<tree.Root>(
+    asserts.assertEquals<graph.Root>(
         tree,
         root(ffs, {
             dependencies: [{
@@ -147,7 +147,7 @@ Deno.test('dependency_graph: files with acyclic graph dependency', async () => {
         'each local file should be read once',
     );
 
-    asserts.assertEquals<tree.Root>(
+    asserts.assertEquals<graph.Root>(
         tree,
         root(ffs, {
             dependencies: [{
@@ -224,7 +224,7 @@ Deno.test('dependency_graph: files with cyclic graph dependency', async () => {
     });
     module2.dependencies = [module1];
 
-    asserts.assertEquals<tree.Root>(
+    asserts.assertEquals<graph.Root>(
         decycle(tree),
         decycle(root(ffs, {
             dependencies: [{
@@ -274,7 +274,7 @@ Deno.test('dependency_graph: multiple entrypoints sharing dependencies', async (
         'each file should be read once',
     );
 
-    asserts.assertEquals<tree.Root>(
+    asserts.assertEquals<graph.Root>(
         tree,
         root(ffs, {
             dependencies: [{
@@ -359,7 +359,7 @@ Deno.test('dependency_graph: custom resolution/loading', async () => {
         ],
     );
 
-    asserts.assertEquals<tree.Root>(
+    asserts.assertEquals<graph.Root>(
         tree,
         root(ffs, {
             dependencies: [{
@@ -411,7 +411,7 @@ Deno.test('dependency_graph: handling all kind of imports', async () => {
 
     const tree = await dependency.build([new URL('file:///entrypoint1.ts')]);
 
-    asserts.assertEquals<tree.Root>(
+    asserts.assertEquals<graph.Root>(
         tree,
         root(ffs, {
             dependencies: [{
@@ -511,18 +511,18 @@ class FakeEnvironment {
 }
 
 type LightRoot = {
-    dependencies: ((LightModule & { entrypoint: URL }) | tree.Module)[];
+    dependencies: ((LightModule & { entrypoint: URL }) | graph.Module)[];
 };
 
 type LightModule = {
     url: URL;
-    dependencies?: (LightModule | tree.Module)[];
+    dependencies?: (LightModule | graph.Module)[];
 };
 
 function root(
     ffs: FakeEnvironment,
-    rootConfig: LightRoot | tree.Root,
-): tree.Root {
+    rootConfig: LightRoot | graph.Root,
+): graph.Root {
     const dependencies = rootConfig.dependencies.map((dependency) => {
         if ('type' in dependency) {
             return dependency;
@@ -541,8 +541,8 @@ function root(
 
 function module(
     ffs: FakeEnvironment,
-    moduleConfig: (LightModule & { entrypoint: URL }) | tree.Module,
-): tree.Module {
+    moduleConfig: (LightModule & { entrypoint: URL }) | graph.Module,
+): graph.Module {
     const dependencies = (moduleConfig.dependencies ?? []).map((dependency) => {
         if ('type' in dependency) {
             return dependency;
@@ -555,7 +555,7 @@ function module(
 
     const contentHash = ffs.hash(moduleConfig.url.toString());
 
-    const mod: tree.Module = {
+    const mod: graph.Module = {
         type: 'module',
         entrypoint: moduleConfig.entrypoint,
         url: moduleConfig.url,

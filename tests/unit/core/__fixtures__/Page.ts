@@ -8,7 +8,11 @@ import {
 } from '../../../../packages/core/Page.ts';
 import { spy } from '../../../../dep/std/mock.ts';
 
-type FakeDynamicPageConfig<PATH extends object, DATA, BODY> = {
+type FakeDynamicPageConfig<
+    PATH extends Record<string, string> = Record<string, string>,
+    DATA = unknown,
+    BODY = unknown,
+> = {
     self?: URL;
     pattern?: string;
     getDynamicData?: GetDynamicData<PATH, DATA, BODY>;
@@ -19,7 +23,11 @@ type FakeDynamicPageConfig<PATH extends object, DATA, BODY> = {
     };
 };
 
-export function fakeDynamicPage<PATH extends object, DATA, BODY>(
+export function fakeDynamicPage<
+    PATH extends Record<string, string> = Record<string, string>,
+    DATA = unknown,
+    BODY = unknown,
+>(
     {
         self = new URL('file:///'),
         pattern = '',
@@ -46,7 +54,11 @@ export function fakeDynamicPage<PATH extends object, DATA, BODY>(
     return page;
 }
 
-type FakeStaticPageConfig<PATH extends object, DATA, BODY> = {
+type FakeStaticPageConfig<
+    PATH extends Record<string, string> = Record<string, string>,
+    DATA = unknown,
+    BODY = unknown,
+> = {
     self?: URL;
     pattern?: string;
     getPathList?: GetPathList<PATH>;
@@ -59,7 +71,11 @@ type FakeStaticPageConfig<PATH extends object, DATA, BODY> = {
     };
 };
 
-export function fakeStaticPage<PATH extends object, DATA, BODY>(
+export function fakeStaticPage<
+    PATH extends Record<string, string> = Record<string, string>,
+    DATA = unknown,
+    BODY = unknown,
+>(
     {
         self = new URL('file:///'),
         pattern = '',

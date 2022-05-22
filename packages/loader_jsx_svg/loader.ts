@@ -16,15 +16,15 @@ type Config = {
     jsx: (name: string, props: any) => any;
 };
 
-export function svg(config: Config): frugal.Loader<string, void> {
+export function svg({ test, jsx }: Config): frugal.Loader<string, void> {
     return {
         name: 'jsx-svg',
-        test: config.test,
+        test,
         generate,
     };
 
     async function generate(
-        { getCache, assets, dir }: frugal.GenerateParams<void>,
+        { getCache, assets, config }: frugal.GenerateParams<void>,
     ): Promise<string> {
         logger().debug({
             msg: 'generate',
@@ -64,7 +64,7 @@ ${
                     URL.createObjectURL(new Blob([svgGeneratorScript]))
                 );
 
-                await write(spritesheets, dir.public, config.jsx);
+                await write(spritesheets, config.publicDir, jsx);
 
                 logger().debug({
                     op: 'done',

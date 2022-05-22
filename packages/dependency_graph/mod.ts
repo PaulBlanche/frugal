@@ -4,15 +4,15 @@ import { assert } from '../../dep/std/asserts.ts';
 
 import * as visitor from './visitor.ts';
 import * as log from '../log/mod.ts';
-import * as tree from './tree.ts';
+import * as graph from './graph.ts';
 
 type Precursor = {
     type: 'precursor';
     url: URL;
-    parent?: tree.Module;
+    parent?: graph.Module;
 };
 
-type Entry = Precursor | tree.Module;
+type Entry = Precursor | graph.Module;
 
 export type Config = {
     load?: (
@@ -21,12 +21,13 @@ export type Config = {
     resolve?: (specifier: string, referrer: URL) => URL | undefined;
 };
 
-export type DependencyTree = tree.Root;
+export type DependencyGraph = graph.Root;
+export type Node = graph.Module;
 
 export async function build(
     entrypoints: URL[],
     config: Config = {},
-): Promise<DependencyTree> {
+): Promise<DependencyGraph> {
     const analysisCache = new Map<string, Promise<AnalysisResult>>();
 
     logger().info({
@@ -62,9 +63,9 @@ export async function build(
     };
 
     async function buildForEntrypoint(resolvedEntrypoint: URL) {
-        const cache = new Map<string, Promise<tree.Module>>();
+        const cache = new Map<string, Promise<graph.Module>>();
 
-        let root: tree.Module | undefined = undefined;
+        let root: graph.Module | undefined = undefined;
 
         const queue: Entry[] = [{ type: 'precursor', url: resolvedEntrypoint }];
         let current: Entry | undefined;
@@ -105,7 +106,7 @@ export async function build(
         async function getModule(
             resolvedEntrypoint: URL,
             precursor: Precursor,
-        ): Promise<tree.Module> {
+        ): Promise<graph.Module> {
             const key = `${resolvedEntrypoint}:${precursor.url}`;
             if (!cache.has(key)) {
                 cache.set(key, generateModule(resolvedEntrypoint, precursor));
@@ -120,12 +121,12 @@ export async function build(
         async function generateModule(
             resolvedEntrypoint: URL,
             precursor: Precursor,
-        ): Promise<tree.Module> {
+        ): Promise<graph.Module> {
             const { dependencies, contentHash } = await analyzeMemoized(
                 precursor.url,
             );
 
-            const module: tree.Module = {
+            const module: graph.Module = {
                 type: 'module',
                 entrypoint: resolvedEntrypoint,
                 url: precursor.url,

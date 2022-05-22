@@ -2,12 +2,27 @@ import * as fs from '../../dep/std/fs.ts';
 
 export class NotFound extends Error {}
 
+/**
+ * A persistance layer
+ */
 export interface Persistance {
+    /**
+     * Set the given content at the given path
+     */
     set(path: string, content: string): Promise<void>;
+    /**
+     * Set the content at the given path
+     */
     get(path: string): Promise<string>;
+    /**
+     * delete the content at the given path
+     */
     delete(path: string): Promise<void>;
 }
 
+/**
+ * A persistance layer using the filesystem
+ */
 export class FilesystemPersistance implements Persistance {
     constructor() {}
 
@@ -32,6 +47,9 @@ export class FilesystemPersistance implements Persistance {
     }
 }
 
+/**
+ * A persistance layer using Upstash
+ */
 export class UpstashPersistance implements Persistance {
     url: string;
     token: string;

@@ -1,4 +1,5 @@
 import { PersistantCache } from './Cache.ts';
+import { CleanConfig } from './Config.ts';
 
 export type Asset = {
     loader: string;
@@ -10,7 +11,7 @@ export type Asset = {
 export type GenerateParams<CACHED = unknown> = {
     getCache: () => Promise<PersistantCache<CACHED>>;
     assets: Asset[];
-    dir: { cache: string; public: string; root: string };
+    config: CleanConfig;
 };
 
 export type Loader<GENERATED, CACHED = unknown> = {

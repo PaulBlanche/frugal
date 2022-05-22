@@ -106,7 +106,7 @@ export class ScriptLoader implements frugal.Loader<Generated> {
     /**
      * Actual generation of the bundles
      */
-    async #produce({ assets, dir }: frugal.GenerateParams) {
+    async #produce({ assets, config }: frugal.GenerateParams) {
         const scriptLists = assets.reduce(
             (scriptLists, asset) => {
                 const entrypoint = asset.entrypoint;
@@ -142,8 +142,9 @@ export class ScriptLoader implements frugal.Loader<Generated> {
 
         return await bundle({
             ...this.#bundleConfig,
-            publicDir: dir.public,
-            cacheDir: dir.cache,
+            importMapFile: config.importMapFile,
+            publicDir: config.publicDir,
+            cacheDir: config.cacheDir,
             facades,
         });
     }

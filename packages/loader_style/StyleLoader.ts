@@ -87,7 +87,7 @@ export class StyleLoader implements frugal.Loader<string> {
     /**
      * Real generation of the stylesheet (without cache logic)
      */
-    async #produce({ assets, dir }: frugal.GenerateParams) {
+    async #produce({ assets, config }: frugal.GenerateParams) {
         const styleModule = new URL('./styled.ts', import.meta.url);
 
         const styleGeneratorScript = `
@@ -106,7 +106,7 @@ export const output = style.output()`;
 
         const bundleName = `style-${bundleHash.toUpperCase()}`;
         const bundleUrl = `/style/${bundleName}.css`;
-        const bundlePath = path.join(dir.public, bundleUrl);
+        const bundlePath = path.join(config.publicDir, bundleUrl);
 
         logger().debug({
             url: bundleUrl,
