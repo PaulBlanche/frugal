@@ -222,22 +222,12 @@ export class FrugalWatcherServer {
             }
         });
 
-        console.log('start watch');
         await Promise.all([server.listen(), child.start()]);
-
-        /*
-        const child = Deno.spawnChild(Deno.execPath(), {
-            args: [
-                'run',
-                '--unstable',
-                paths.length === 0 ? '--watch' : `--watch=${paths.join(',')}`,
-                '--no-check',
-                '--allow-all',
-                filePath,
-            ],
-        });
-
-        child.stdout.pipeTo(Deno.stdout.writable);
-        child.stderr.pipeTo(Deno.stderr.writable);*/
     }
+}
+
+export async function serve(config: Config) {
+    const builder = new FrugalServerBuilder(config);
+    const instance = await builder.load();
+    await instance.listen();
 }

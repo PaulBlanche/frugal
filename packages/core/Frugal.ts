@@ -446,3 +446,9 @@ export class FrugalWatcher {
         await child.status;
     }
 }
+
+export async function build(config: Config) {
+    const builder = new FrugalBuilder(config);
+    const instance = await builder.create();
+    return await instance.build();
+}
