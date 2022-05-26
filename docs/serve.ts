@@ -1,9 +1,5 @@
 import { config } from './frugal.config.ts';
-import {
-    FrugalServerBuilder,
-    FrugalWatcherServer,
-} from './dep/frugal/frugal_oak.ts';
+import { FrugalServerBuilder } from './dep/frugal/frugal_oak.ts';
 
-const server = await new FrugalWatcherServer(new FrugalServerBuilder(config))
-    .create();
+const server = await new FrugalServerBuilder(config).load();
 await server.listen();

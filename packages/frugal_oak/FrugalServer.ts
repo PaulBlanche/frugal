@@ -157,6 +157,8 @@ export class FrugalServerBuilder {
     }
 }
 
+import { WatchChild } from '../core/watch/WatchChild.ts';
+
 export class FrugalWatcherServer {
     #builder: FrugalServerBuilder;
 
@@ -173,11 +175,20 @@ export class FrugalWatcherServer {
         const config = await this.#builder._getCleanConfig();
         const code =
             `const { config } = await import('file://${config.self.pathname}')
-        const { FrugalWatchServer, FrugalServerBuilder } = await import('file://${
+        const { WatchService } = await import('file://${
+                new URL('../core/watch/WatchService.ts', import.meta.url)
+                    .pathname
+            }')
+        const { FrugalWatcherServer, FrugalServerBuilder } = await import('file://${
                 new URL('mod.ts', import.meta.url).pathname
             }')
 
-        const frugalServer = await new FrugalWatchServer(new FrugalServerBuilder(config)).create();
+        const service = new WatchService()
+
+        const frugalServer = await new FrugalWatcherServer(new FrugalServerBuilder(config)).create();
+        frugalServer.application.addEventListener('listen', () => {
+            service.sendMessage({ type: 'restart' })
+        })
         await frugalServer.listen();
         `;
 
@@ -186,6 +197,61 @@ export class FrugalWatcherServer {
         await fs.ensureFile(filePath);
         await Deno.writeTextFile(filePath, code);
 
+        const app = new oak.Application();
+        const router = new oak.Router();
+
+        const clients: oak.ServerSentEventTarget[] = [];
+
+        router.get('/sse', (ctx) => {
+            const target = ctx.sendEvents({
+                headers: new Headers({
+                    'Access-Control-Allow-Origin': '*',
+                }),
+            });
+            const index = clients.length;
+            clients.push(target);
+            target.addEventListener('close', () => {
+                console.log('livereload close');
+                clients.splice(index, 1);
+            });
+        });
+
+        app.use(router.routes(), router.allowedMethods());
+        app.addEventListener('listen', () => {
+            console.log('live reload server listening');
+        });
+        app.addEventListener('error', (error) => {
+            console.log('SSE ERROR', error);
+        });
+
+        const child = new WatchChild(Deno.execPath(), {
+            args: [
+                'run',
+                '--unstable',
+                paths.length === 0 ? '--watch' : `--watch=${paths.join(',')}`,
+                '--no-check',
+                '--allow-all',
+                filePath,
+            ],
+        });
+
+        child.addEventListener('log', (event) => {
+            console.log(...event.data);
+        });
+
+        child.addEventListener('message', (event) => {
+            console.log('coucou');
+            if (event.message.type === 'restart') {
+                for (const client of clients) {
+                    client.dispatchMessage({ type: 'reload' });
+                }
+            }
+        });
+
+        console.log('start watch');
+        await Promise.all([app.listen({ port: 4075 }), child.start()]);
+
+        /*
         const child = Deno.spawnChild(Deno.execPath(), {
             args: [
                 'run',
@@ -198,8 +264,6 @@ export class FrugalWatcherServer {
         });
 
         child.stdout.pipeTo(Deno.stdout.writable);
-        child.stderr.pipeTo(Deno.stderr.writable);
-
-        await child.status;
+        child.stderr.pipeTo(Deno.stderr.writable);*/
     }
 }

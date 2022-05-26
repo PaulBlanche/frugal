@@ -127,11 +127,7 @@ export class ScriptLoader implements frugal.Loader<Generated> {
                     facades.push({
                         entrypoint,
                         bundle,
-                        content: bundles[bundle].map((path, i) => {
-                            const name = `import${i}`;
-                            return `import { main as ${name} } from "${path}";
-                    ${name}();`;
-                        }).join('\n'),
+                        content: facadeContent(bundles[bundle], config.watch),
                     });
                 }
 
@@ -161,4 +157,23 @@ function bundleHash(assets: frugal.Asset[]) {
     return assets.reduce((hash, asset) => {
         return hash.update(asset.hash);
     }, new murmur.Hash()).digest();
+}
+
+function facadeContent(bundle: string[], watch?: boolean) {
+    const content = bundle.map((path, i) => {
+        const name = `import${i}`;
+        return `import { main as ${name} } from "${path}";
+${name}();`;
+    }).join('\n');
+
+    if (watch) {
+        return `import { LiveReloadClient } from "${
+            new URL('../core/watch/LiveReloadClient.ts', import.meta.url)
+                .pathname
+        }";
+new LiveReloadClient(\`\${location.protocol}//\${location.hostname}:4075/sse\`);
+${content}`;
+    }
+
+    return content;
 }
