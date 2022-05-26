@@ -15,7 +15,8 @@
                 "examples",
                 "docs/dist",
                 ".vscode/",
-                ".deno_dir"
+                ".deno_dir",
+                "tests/cov_profile/"
             ]
         },
         "options": {

@@ -181,7 +181,7 @@ export class CleanConfig {
     }
 
     get watch() {
-        return this.#watch !== undefined;
+        return this.#watch;
     }
 
     get importMapFile() {

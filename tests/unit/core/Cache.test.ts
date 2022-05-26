@@ -1,5 +1,5 @@
 import * as asserts from '../../../dep/std/asserts.ts';
-import { spy, assertSpyCall, assertSpyCalls } from '../../../dep/std/mock.ts';
+import { assertSpyCall, assertSpyCalls, spy } from '../../../dep/std/mock.ts';
 import { fakePersistance } from './__fixtures__/Persistance.ts';
 
 import { Cache, PersistantCache } from '../../../packages/core/Cache.ts';
@@ -88,12 +88,11 @@ Deno.test('Cache: memoize keeps call results in memory', async () => {
         cache.memoize({ producer, otherwise, key: 'key' }),
     ]);
 
-    assertSpyCall(producer, 0, { args:[], returned: value })
-    assertSpyCalls(producer, 1)
+    assertSpyCall(producer, 0, { args: [], returned: value });
+    assertSpyCalls(producer, 1);
 
-    assertSpyCall(otherwise, 0, { args: [], returned: undefined })
-    assertSpyCalls(otherwise, 1)
-
+    assertSpyCall(otherwise, 0, { args: [], returned: undefined });
+    assertSpyCalls(otherwise, 1);
 });
 
 Deno.test('Cache: memoize keeps call results after serialization', async () => {
@@ -110,10 +109,10 @@ Deno.test('Cache: memoize keeps call results after serialization', async () => {
 
     await cache.memoize({ producer, otherwise, key: 'key' });
 
-    assertSpyCall(producer, 0, { args:[], returned: value })
-    assertSpyCalls(producer, 1)
+    assertSpyCall(producer, 0, { args: [], returned: value });
+    assertSpyCalls(producer, 1);
 
-    assertSpyCalls(otherwise, 0)
+    assertSpyCalls(otherwise, 0);
 
     const newCache = await Cache.unserialize(cache.serialize());
 
@@ -121,10 +120,10 @@ Deno.test('Cache: memoize keeps call results after serialization', async () => {
         newCache.memoize({ producer, otherwise, key: 'key' }),
     ]);
 
-    assertSpyCalls(producer, 1)
-    
-    assertSpyCall(otherwise, 0, { args: [], returned: undefined })
-    assertSpyCalls(otherwise, 1)
+    assertSpyCalls(producer, 1);
+
+    assertSpyCall(otherwise, 0, { args: [], returned: undefined });
+    assertSpyCalls(otherwise, 1);
 });
 
 Deno.test('Cache: memoize keeps call results after save/load', async () => {
@@ -147,17 +146,17 @@ Deno.test('Cache: memoize keeps call results after save/load', async () => {
 
     const newCache = await PersistantCache.load(persistance, 'path');
 
-    assertSpyCall(producer, 0, { args:[], returned: value })
-    assertSpyCalls(producer, 1)
+    assertSpyCall(producer, 0, { args: [], returned: value });
+    assertSpyCalls(producer, 1);
 
-    assertSpyCalls(otherwise, 0)
+    assertSpyCalls(otherwise, 0);
 
     await Promise.all([
         newCache.memoize({ producer, otherwise, key: 'key' }),
     ]);
 
-    assertSpyCalls(producer, 1)
-    
-    assertSpyCall(otherwise, 0, { args: [], returned: undefined })
-    assertSpyCalls(otherwise, 1)
+    assertSpyCalls(producer, 1);
+
+    assertSpyCall(otherwise, 0, { args: [], returned: undefined });
+    assertSpyCalls(otherwise, 1);
 });

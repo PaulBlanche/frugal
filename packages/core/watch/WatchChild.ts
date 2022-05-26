@@ -80,9 +80,6 @@ export class WatchChild<
         const reader = readerFromStreamReader(this.#child.stdout.getReader());
         for await (const line of readLines(reader)) {
             const event: WatchChildEvents<IN_MESSAGE> = JSON.parse(line);
-            if (event.type === 'message') {
-                console.log('process', event);
-            }
             this.#dispatch(event);
         }
     }

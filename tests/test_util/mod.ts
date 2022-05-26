@@ -1,2 +1,2 @@
 export * from './decycle.ts';
-export * from './asSpy.ts'
+export * from './asSpy.ts';

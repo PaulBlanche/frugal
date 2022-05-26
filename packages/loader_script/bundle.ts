@@ -5,7 +5,6 @@ import * as log from '../log/mod.ts';
 
 import * as esbuild from '../../dep/esbuild.ts';
 import { frugalPlugin, Transformer } from './frugalPlugin.ts';
-import { CleanConfig } from '../core/Config.ts';
 
 function logger() {
     return log.getLogger('frugal:loader:script');

@@ -45,10 +45,6 @@ export class StyleLoader implements frugal.Loader<string> {
 
         const cache = await params.getCache();
 
-        console.log('#########################################');
-        console.log(bundleHash(params.assets), cache.toJSON());
-        console.log('#########################################');
-
         const result = await cache.memoize({
             key: bundleHash(params.assets),
             producer: async () => {
@@ -84,11 +80,6 @@ export class StyleLoader implements frugal.Loader<string> {
         });
 
         await cache.save();
-
-        console.log('#########################################');
-        console.log(cache.toJSON());
-        console.log(await result);
-        console.log('#########################################');
 
         return result;
     }

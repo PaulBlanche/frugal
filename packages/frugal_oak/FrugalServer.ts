@@ -9,6 +9,7 @@ import { trailingSlashMiddleware } from './trailingSlashMiddleware.ts';
 import * as log from '../log/mod.ts';
 import * as path from '../../dep/std/path.ts';
 import * as fs from '../../dep/std/fs.ts';
+import { LiveReloadServer } from './watch/LivreReloadServer.ts';
 
 const fsPersistance = new frugal.FilesystemPersistance();
 
@@ -197,32 +198,7 @@ export class FrugalWatcherServer {
         await fs.ensureFile(filePath);
         await Deno.writeTextFile(filePath, code);
 
-        const app = new oak.Application();
-        const router = new oak.Router();
-
-        const clients: oak.ServerSentEventTarget[] = [];
-
-        router.get('/sse', (ctx) => {
-            const target = ctx.sendEvents({
-                headers: new Headers({
-                    'Access-Control-Allow-Origin': '*',
-                }),
-            });
-            const index = clients.length;
-            clients.push(target);
-            target.addEventListener('close', () => {
-                console.log('livereload close');
-                clients.splice(index, 1);
-            });
-        });
-
-        app.use(router.routes(), router.allowedMethods());
-        app.addEventListener('listen', () => {
-            console.log('live reload server listening');
-        });
-        app.addEventListener('error', (error) => {
-            console.log('SSE ERROR', error);
-        });
+        const server = new LiveReloadServer();
 
         const child = new WatchChild(Deno.execPath(), {
             args: [
@@ -242,14 +218,12 @@ export class FrugalWatcherServer {
         child.addEventListener('message', (event) => {
             console.log('coucou');
             if (event.message.type === 'restart') {
-                for (const client of clients) {
-                    client.dispatchMessage({ type: 'reload' });
-                }
+                server.reload();
             }
         });
 
         console.log('start watch');
-        await Promise.all([app.listen({ port: 4075 }), child.start()]);
+        await Promise.all([server.listen(), child.start()]);
 
         /*
         const child = Deno.spawnChild(Deno.execPath(), {

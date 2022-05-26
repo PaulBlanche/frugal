@@ -5,11 +5,13 @@ import {
 } from '../../../../packages/core/Config.ts';
 import * as importmap from '../../../../dep/importmap.ts';
 
-type FakeCleanConfigConfig = Partial<
-Omit<Config, 'importMap'> & { importMap: importmap.ImportMap }
-> & {
-    mock?: {};
-};
+type FakeCleanConfigConfig =
+    & Partial<
+        Omit<Config, 'importMap'> & { importMap: importmap.ImportMap }
+    >
+    & {
+        mock?: {};
+    };
 
 export function fakeConfig(
     {

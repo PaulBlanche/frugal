@@ -27,7 +27,7 @@ export class WatchService<
             'message': [],
         });
 
-        console.log = (...data: any[]) => {
+        console.log = (...data: unknown[]) => {
             this.#sendEvent({ type: 'log', data });
         };
 
@@ -36,11 +36,7 @@ export class WatchService<
 
     async #listen() {
         for await (const line of readLines(Deno.stdin)) {
-            console.log('service', line);
             const event: WatchServiceEvents<IN_MESSAGE> = JSON.parse(line);
-            if (event.type === 'message') {
-                console.log('service', event);
-            }
             this.#dispatch(event);
         }
     }

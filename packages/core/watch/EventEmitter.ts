@@ -1,3 +1,4 @@
+// deno-lint-ignore no-explicit-any
 export type Event<TYPE extends string = any, PAYLOAD = unknown> = {
     type: TYPE;
 } & PAYLOAD;
