@@ -1,6 +1,7 @@
 import { LoaderContext } from './LoaderContext.ts';
 import { assert } from '../../dep/std/asserts.ts';
 import * as pathToRegexp from '../../dep/path-to-regexp.ts';
+import { FrugalError } from './FrugalError.ts';
 
 /**
  * The different phases of Frugal.
@@ -348,7 +349,7 @@ export class BasePage<
 
     postDynamicData(params: PostDynamicDataParams<PATH, BODY>) {
         if (this.descriptor.postDynamicData === undefined) {
-            throw Error(
+            throw new FrugalError(
                 `Unable to handle post, descriptor ${this.descriptor.pattern} has no postDynamicData`,
             );
         }

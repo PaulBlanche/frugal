@@ -1,4 +1,5 @@
-import { Config, page } from './dep/frugal/core.ts';
+import { page, UpstashPersistance } from './dep/frugal/core.ts';
+import { Config } from './dep/frugal/frugal_oak.ts';
 import { ScriptLoader } from './dep/frugal/loader_script.ts';
 import { StyleLoader, styleTransformer } from './dep/frugal/loader_style.ts';
 import * as stylis from './dep/stylis.ts';
@@ -54,6 +55,14 @@ export const config: Config = {
         page(example),
     ],
 
+    //'https://eu1-intense-kodiak-36255.upstash.io'
+    // 'AY2fACQgMDUyZDkwZjktMWMwZS00NDdiLWFmOTktODIzOTVkZmY3YzQxZDliOTkxNWJjNmFhNDZkZWFiNjEwODc5ZDU3N2MwZDM=',
+
+    sessionPersistance: new UpstashPersistance(
+        Deno.env.get('UPSTASH_URL') ?? '',
+        Deno.env.get('UPSTASH_TOKEN') ?? '',
+    ),
+
     logging: {
         type: 'human',
         loggers: {
@@ -72,8 +81,23 @@ export const config: Config = {
             'frugal:loader:jsx_svg': 'DEBUG',
             'frugal:loader:script': 'DEBUG',
             'frugal:loader:style': 'DEBUG',
+
+            'frugal_oak:DynamicRouter': 'DEBUG',
+            'frugal_oak:DynamicRouter:generateMiddleware': 'DEBUG',
+            'frugal_oak:PrgOrchestrator': 'DEBUG',
+            'frugal_oak:PrgOrchestrator:postMiddleware': 'DEBUG',
+            'frugal_oak:PrgOrchestrator:getRedirectionMiddleware': 'DEBUG',
+            'frugal_oak:staticFileMiddleware': 'DEBUG',
+            'frugal_oak:staticFileMiddleware:filesystemMiddleware': 'DEBUG',
+            'frugal_oak:staticFileMiddleware:autoIndexMiddleware': 'DEBUG',
+            'frugal_oak:StaticRouter': 'DEBUG',
+            'frugal_oak:StaticRouter:forceRefreshMiddleware': 'DEBUG',
+            'frugal_oak:StaticRouter:cachedMiddleware': 'DEBUG',
+            'frugal_oak:StaticRouter:refreshJitMiddleware': 'DEBUG',
         },
     },
+
+    listen: { port: 8000 },
 };
 
 function IS_STYLE_FILE(url: URL | string) {

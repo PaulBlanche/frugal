@@ -81,6 +81,12 @@ async function buildContext(
 ) {
     const context: Context = {};
 
+    Promise.all(config.loaders.map(async (loader) => {
+        if (loader.onBuildContextStart) {
+            await loader.onBuildContextStart(config);
+        }
+    }));
+
     await Promise.all(config.loaders.map(async (loader) => {
         const loadableAssets = assets.filter((entry) =>
             entry.loader === loader.name
@@ -97,11 +103,11 @@ async function buildContext(
         });
     }));
 
-    config.loaders.map((loader) => {
-        if (loader.end) {
-            loader.end();
+    Promise.all(config.loaders.map(async (loader) => {
+        if (loader.onBuildContextEnd) {
+            await loader.onBuildContextEnd(config);
         }
-    });
+    }));
 
     return context;
 }

@@ -18,5 +18,8 @@ export type Loader<GENERATED, CACHED = unknown> = {
     name: string;
     test: (url: URL) => boolean;
     generate(params: GenerateParams<CACHED>): Promise<GENERATED>;
-    end?: () => void;
+    onWatchStart?(config: CleanConfig): Promise<void> | void;
+    onBuildContextStart?(config: CleanConfig): Promise<void> | void;
+    onBuildContextEnd?(config: CleanConfig): Promise<void> | void;
+    onWatchEnd?(config: CleanConfig): Promise<void> | void;
 };

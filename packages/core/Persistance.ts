@@ -1,6 +1,7 @@
 import * as fs from '../../dep/std/fs.ts';
+import { FrugalError } from './FrugalError.ts';
 
-export class NotFound extends Error {}
+export class NotFound extends FrugalError {}
 
 /**
  * A persistance layer
@@ -77,7 +78,7 @@ export class UpstashPersistance implements Persistance {
         const response = await this._sendCommand(['set', path, content]);
         if (response.status !== 200) {
             const body = await response.json();
-            throw Error(body.error);
+            throw new Error(body.error);
         }
     }
 
@@ -85,7 +86,7 @@ export class UpstashPersistance implements Persistance {
         const response = await this._sendCommand(['get', path]);
         const body = await response.json();
         if (response.status !== 200) {
-            throw Error(body.error);
+            throw new Error(body.error);
         }
         if (body.result === null) {
             throw new NotFound(`path ${path} was not found`);
@@ -97,7 +98,7 @@ export class UpstashPersistance implements Persistance {
         const response = await this._sendCommand(['del', path]);
         if (response.status !== 200) {
             const body = await response.json();
-            throw Error(body.error);
+            throw new Error(body.error);
         }
     }
 }

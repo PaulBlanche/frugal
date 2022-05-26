@@ -119,6 +119,10 @@ export class Cache<VALUE = unknown> {
     serialize(): CacheData {
         return this.nextData;
     }
+
+    toJSON() {
+        return { nextData: this.nextData, previousData: this.previousData };
+    }
 }
 
 /**

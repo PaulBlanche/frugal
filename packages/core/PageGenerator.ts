@@ -13,7 +13,7 @@ import { assert } from '../../dep/std/asserts.ts';
 export type PageGeneratorConfig = {
     loaderContext: LoaderContext;
     publicDir: string;
-    devMode?: boolean;
+    watch?: boolean;
 };
 
 function logger() {
@@ -139,7 +139,7 @@ export class PageGenerator<
         request: GenerationRequest<BODY>,
     ) {
         if (request.method === 'GET') {
-            if (this.#config.devMode && this.#page instanceof StaticPage) {
+            if (this.#config.watch && this.#page instanceof StaticPage) {
                 return await this.#page.getStaticData({
                     phase: 'build',
                     path,

@@ -1,5 +1,5 @@
 import { composeMiddleware, Middleware } from 'oak';
-import { Frugal } from '../core/mod.ts';
+import { FrugalInstance } from '../core/mod.ts';
 import * as log from '../log/mod.ts';
 
 function logger(middleware?: string) {
@@ -10,9 +10,15 @@ function logger(middleware?: string) {
 }
 
 type Config = {
-    frugal: Frugal;
+    frugal: FrugalInstance;
 };
 
+/**
+ * Middleware handling static files in the `public` directory.
+ *
+ * if no file matches the request, the middleware will try to serve
+ * `${request.url.pathname}/index.html`.
+ */
 export function staticFileMiddleware({ frugal }: Config): Middleware {
     return (context, next) => {
         logger().debug({
@@ -23,13 +29,13 @@ export function staticFileMiddleware({ frugal }: Config): Middleware {
             },
         });
         return composeMiddleware([
-            _filesystemMiddleware(frugal),
-            _autoIndexMiddleware(frugal),
+            filesystemMiddleware(frugal),
+            autoIndexMiddleware(frugal),
         ])(context, next);
     };
 }
 
-function _filesystemMiddleware(frugal: Frugal): Middleware {
+function filesystemMiddleware(frugal: FrugalInstance): Middleware {
     return async (context, next) => {
         // try to serve the file as is from the filesystem
         try {
@@ -60,7 +66,7 @@ function _filesystemMiddleware(frugal: Frugal): Middleware {
     };
 }
 
-function _autoIndexMiddleware(frugal: Frugal): Middleware {
+function autoIndexMiddleware(frugal: FrugalInstance): Middleware {
     return async (context, next) => {
         const url = context.request.url;
 

@@ -61,7 +61,7 @@ export class Router {
                 const generator = new PageGenerator(page, {
                     loaderContext,
                     publicDir: config.publicDir,
-                    devMode: config.devMode,
+                    watch: config.watch,
                 });
 
                 const module = moduleList.get(page.self);

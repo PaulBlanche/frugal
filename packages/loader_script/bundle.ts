@@ -5,6 +5,7 @@ import * as log from '../log/mod.ts';
 
 import * as esbuild from '../../dep/esbuild.ts';
 import { frugalPlugin, Transformer } from './frugalPlugin.ts';
+import { CleanConfig } from '../core/Config.ts';
 
 function logger() {
     return log.getLogger('frugal:loader:script');
@@ -44,6 +45,25 @@ type Config = {
     importMapFile?: string;
 };
 
+declare module '../core/Config.ts' {
+    interface ServiceInMessageMap {
+        'loader_script:done': {
+            type: 'loader_script:done';
+            url: Record<string, Record<string, string>>;
+        };
+    }
+
+    interface ServiceOutMessageMap {
+        'loader_script:build': {
+            type: 'loader_script:build';
+            config: {
+                facadeToEntrypoint: FacadeToEntrypoint;
+                entryPoints: string[];
+            };
+        };
+    }
+}
+
 export type BundleConfig = Config & EsbuildConfig;
 
 export async function bundle(
@@ -55,7 +75,7 @@ export async function bundle(
         importMapFile,
         ...esbuildConfig
     }: BundleConfig,
-) {
+): Promise<Record<string, Record<string, string>>> {
     const config = {
         cacheDir,
         publicDir,
@@ -74,13 +94,13 @@ export async function bundle(
     return write(result, facadeToEntrypoint, config);
 }
 
-type facadeToEntrypoint = Record<string, {
+type FacadeToEntrypoint = Record<string, {
     entrypoint: string;
     bundle: string;
 }[]>;
 
 async function generateEntrypoints(config: Config) {
-    const facadeToEntrypoint: facadeToEntrypoint = {};
+    const facadeToEntrypoint: FacadeToEntrypoint = {};
 
     const entryPoints = await Promise.all(config.facades.map(async (facade) => {
         const facadeId = new murmur.Hash().update(
@@ -108,7 +128,7 @@ async function generateEntrypoints(config: Config) {
     return { facadeToEntrypoint, entryPoints };
 }
 
-type BuildResult = esbuild.BuildResult & {
+type BuildResult = esbuild.BuildIncremental & {
     outputFiles: esbuild.OutputFile[];
     metafile: esbuild.Metafile;
 };
@@ -125,7 +145,7 @@ async function build(
         write: false,
         metafile: true,
         platform: 'neutral',
-        incremental: false,
+        incremental: true,
         outdir: config.publicDir,
         entryNames: `js/${esbuildConfig.entryNames ?? '[dir]/[name]-[hash]'}`,
         chunkNames: `js/${esbuildConfig.chunkNames ?? '[dir]/[name]-[hash]'}`,
@@ -140,7 +160,7 @@ async function build(
 
 async function write(
     result: BuildResult,
-    facadeToEntrypoint: facadeToEntrypoint,
+    facadeToEntrypoint: FacadeToEntrypoint,
     config: Config,
 ) {
     const url: Record<string, Record<string, string>> = {};

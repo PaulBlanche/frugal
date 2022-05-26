@@ -3,10 +3,12 @@ import { LoaderContext } from './LoaderContext.ts';
 import { GenerationRequest } from './Page.ts';
 import * as log from '../log/mod.ts';
 import * as path from '../../dep/std/path.ts';
+import * as fs from '../../dep/std/fs.ts';
 import { DependencyGraph, ModuleList } from './DependencyGraph.ts';
 import { FilesystemPersistance } from './Persistance.ts';
 import { PersistantCache } from './Cache.ts';
 import { Router } from './Router.ts';
+import { FrugalError } from './FrugalError.ts';
 
 const PAGE_CACHE_FILENAME = 'pages.json';
 const MODULES_FILENAME = 'modules.json';
@@ -19,7 +21,7 @@ function logger() {
 /**
  * A Frugal instance.
  */
-export class Frugal {
+export class FrugalInstance {
     /** the formated config of the frugal instance */
     #config: CleanConfig;
     /** the list of all modules in the dependency graph */
@@ -31,20 +33,6 @@ export class Frugal {
     /** a router, used to match a pathname to the Generator, the Builder or the
      * Refresher of a page matching the pathname */
     #router: Router;
-
-    /**
-     * Build a frugal instance (see {@link FrugalBuilder#build})
-     */
-    static async build(config: Config) {
-        return await new FrugalBuilder(config).build();
-    }
-
-    /**
-     * Load a frugal instance (see {@link FrugalBuilder#load})
-     */
-    static async load(config: Config) {
-        return await new FrugalBuilder(config).load();
-    }
 
     constructor(
         config: CleanConfig,
@@ -242,17 +230,19 @@ function builderLogger() {
  * class orchestrates config loading, dependency graph building, cache loading
  * and loaders.
  */
-class FrugalBuilder {
+export class FrugalBuilder {
+    _watch?: boolean;
     #config: Config;
     #cleanConfig: Promise<CleanConfig> | undefined;
 
     constructor(config: Config) {
+        this._watch = false;
         this.#config = config;
         this.#cleanConfig = undefined;
     }
 
     /**
-     * Build a Frugal instance based on a given config object. This leverages
+     * Create a Frugal instance based on a given config object. This leverages
      * cached information from previous build (some operation might be skiped if
      * nothing has changed since the last build) :
      *
@@ -262,8 +252,8 @@ class FrugalBuilder {
      * - loader pass on loadable modules (some loader might partially or
      *   entirely skip some tasks based on cached info)
      */
-    async build() {
-        const cleanConfig = await this.#getCleanConfig();
+    async create() {
+        const config = await this._getCleanConfig();
 
         builderLogger().info({
             op: 'start',
@@ -278,18 +268,18 @@ class FrugalBuilder {
         const { assets, moduleList } = await this.#analyse();
 
         const cache = await PersistantCache.load(
-            cleanConfig.cachePersistance,
-            path.resolve(cleanConfig.cacheDir, PAGE_CACHE_FILENAME),
+            config.cachePersistance,
+            path.resolve(config.cacheDir, PAGE_CACHE_FILENAME),
         );
 
         const loaderContext = await LoaderContext.build(
-            cleanConfig,
+            config,
             assets,
             (name) => {
                 return PersistantCache.load(
                     new FilesystemPersistance(),
                     path.resolve(
-                        cleanConfig.cacheDir,
+                        config.cacheDir,
                         'loader',
                         `${name}.json`,
                     ),
@@ -297,8 +287,8 @@ class FrugalBuilder {
             },
         );
 
-        const frugal = new Frugal(
-            cleanConfig,
+        const frugal = new FrugalInstance(
+            config,
             moduleList,
             cache,
             loaderContext,
@@ -327,7 +317,7 @@ class FrugalBuilder {
      * setup the Frugal instance was serialized during the build
      */
     async load() {
-        const cleanConfig = await this.#getCleanConfig();
+        const config = await this._getCleanConfig();
 
         builderLogger().info({
             op: 'start',
@@ -339,66 +329,120 @@ class FrugalBuilder {
             },
         });
 
-        const moduleList = await ModuleList.load(
-            path.resolve(cleanConfig.cacheDir, MODULES_FILENAME),
-        );
-        const cache = await PersistantCache.load(
-            cleanConfig.cachePersistance,
-            path.resolve(cleanConfig.cacheDir, PAGE_CACHE_FILENAME),
-        );
-        const loaderContext = await LoaderContext.load(
-            path.resolve(cleanConfig.cacheDir, LOADER_CONTEXT_FILENAME),
-        );
+        try {
+            const moduleList = await ModuleList.load(
+                path.resolve(config.cacheDir, MODULES_FILENAME),
+            );
+            const cache = await PersistantCache.load(
+                config.cachePersistance,
+                path.resolve(config.cacheDir, PAGE_CACHE_FILENAME),
+            );
+            const loaderContext = await LoaderContext.load(
+                path.resolve(config.cacheDir, LOADER_CONTEXT_FILENAME),
+            );
 
-        const frugal = new Frugal(
-            cleanConfig,
-            moduleList,
-            cache,
-            loaderContext,
-        );
+            const frugal = new FrugalInstance(
+                config,
+                moduleList,
+                cache,
+                loaderContext,
+            );
 
-        builderLogger().info({
-            op: 'done',
-            msg() {
-                return `${this.logger!.timerEnd} ${this.op}`;
-            },
-            logger: {
-                timerEnd: 'loading frugal context',
-            },
-        });
+            builderLogger().info({
+                op: 'done',
+                msg() {
+                    return `${this.logger!.timerEnd} ${this.op}`;
+                },
+                logger: {
+                    timerEnd: 'loading frugal context',
+                },
+            });
 
-        return frugal;
+            return frugal;
+        } catch {
+            throw new FrugalError(
+                'Could not load the frugal context, some files are missing. You might need to build the frugal context first',
+            );
+        }
     }
 
     async #analyse() {
-        const cleanConfig = await this.#getCleanConfig();
+        const config = await this._getCleanConfig();
 
         const dependencyTree = await DependencyGraph.build(
-            cleanConfig.pages.map((page) => page.self),
+            config.pages.map((page) => page.self),
             {
-                resolve: cleanConfig.resolve,
+                resolve: config.resolve,
             },
         );
 
-        const assets = dependencyTree.gather(cleanConfig.loaders);
+        const assets = dependencyTree.gather(config.loaders);
 
         return { assets, moduleList: dependencyTree.moduleList() };
     }
 
-    async #getCleanConfig() {
+    async _getCleanConfig() {
         if (this.#cleanConfig !== undefined) {
             return await this.#cleanConfig;
         }
 
-        const config = await CleanConfig.load(this.#config);
-        await log.setup(config.loggingConfig);
+        this.#cleanConfig = CleanConfig.load(this.#config, this._watch);
+        const cleanConfig = await this.#cleanConfig;
+        await log.setup(cleanConfig.loggingConfig);
 
-        if (config.devMode) {
+        if (cleanConfig.watch) {
             builderLogger().warning({
                 msg: 'running frugal in dev mode, all pages will be treated as dynamic pages',
             });
         }
 
-        return config;
+        return cleanConfig;
+    }
+}
+
+export class FrugalWatcher {
+    #builder: FrugalBuilder;
+
+    constructor(builder: FrugalBuilder) {
+        this.#builder = builder;
+        this.#builder._watch = true;
+    }
+
+    create() {
+        return this.#builder.create();
+    }
+
+    async watch(paths: string[]) {
+        const config = await this.#builder._getCleanConfig();
+        const code =
+            `const { config } = await import('file://${config.self.pathname}')
+        const { FrugalWatcher, FrugalBuilder } = await import('file://${
+                new URL('mod.ts', import.meta.url).pathname
+            }')
+
+        const frugal = await new FrugalWatcher(new FrugalBuilder(config)).create();
+        await frugal.build();
+        `;
+
+        const filePath = path.join(config.cacheDir, 'watch.ts');
+
+        await fs.ensureFile(filePath);
+        await Deno.writeTextFile(filePath, code);
+
+        const child = Deno.spawnChild(Deno.execPath(), {
+            args: [
+                'run',
+                '--unstable',
+                paths.length === 0 ? '--watch' : `--watch=${paths.join(',')}`,
+                '--no-check',
+                '--allow-all',
+                filePath,
+            ],
+        });
+
+        child.stdout.pipeTo(Deno.stdout.writable);
+        child.stderr.pipeTo(Deno.stderr.writable);
+
+        await child.status;
     }
 }

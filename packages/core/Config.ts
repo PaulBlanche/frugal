@@ -8,8 +8,6 @@ import { FilesystemPersistance, Persistance } from './Persistance.ts';
 // TODO(PaulBlanche): add config validator
 
 export type Config = {
-    /** Trigger development mode : all pages are considered dynamic pages */
-    devMode?: boolean;
     /** The URL of the module containing the config module (usually
      * `import.meta.url`). All relative paths will be resolved relatively to
      * this */
@@ -37,50 +35,45 @@ export type Config = {
     logging?: log.Config;
 };
 
+const LOGGERS = [
+    'frugal:asset',
+    'frugal:Cache',
+    'frugal:Frugal',
+    'frugal:FrugalBuilder',
+    'frugal:FrugalContext',
+    'frugal:LoaderContext',
+    'frugal:PageBuilder',
+    'frugal:PageGenerator',
+    'frugal:PageRefresher',
+    'frugal:dependency_graph',
+    'frugal:DependencyGraph',
+    'frugal:loader:jsx_svg',
+    'frugal:loader:script',
+    'frugal:loader:style',
+];
+
+function logger(level: log.Config['loggers'][string]) {
+    return LOGGERS.reduce<log.Config['loggers']>((loggers, logger) => {
+        loggers[logger] = level;
+        return loggers;
+    }, {});
+}
+
 export const OFF_LOGGER_CONFIG: log.Config = {
     type: 'human',
-    loggers: {
-        'frugal:asset': 'NOTSET',
-        'frugal:Cache': 'NOTSET',
-        'frugal:Frugal': 'NOTSET',
-        'frugal:FrugalBuilder': 'NOTSET',
-        'frugal:FrugalContext': 'NOTSET',
-        'frugal:LoaderContext': 'NOTSET',
-        'frugal:PageBuilder': 'NOTSET',
-        'frugal:PageGenerator': 'NOTSET',
-        'frugal:PageRefresher': 'NOTSET',
-        'frugal:dependency_graph': 'NOTSET',
-        'frugal:DependencyGraph': 'NOTSET',
-        'frugal:loader:jsx_svg': 'NOTSET',
-        'frugal:loader:script': 'NOTSET',
-        'frugal:loader:style': 'NOTSET',
-    },
+    loggers: logger('NOTSET'),
 };
 
 export const DEFAULT_LOGGER_CONFIG: log.Config = {
     type: 'human',
-    loggers: {
-        'frugal:asset': 'INFO',
-        'frugal:Cache': 'INFO',
-        'frugal:Frugal': 'INFO',
-        'frugal:FrugalBuilder': 'INFO',
-        'frugal:FrugalContext': 'INFO',
-        'frugal:LoaderContext': 'INFO',
-        'frugal:PageBuilder': 'INFO',
-        'frugal:PageGenerator': 'INFO',
-        'frugal:PageRefresher': 'INFO',
-        'frugal:dependency_graph': 'INFO',
-        'frugal:DependencyGraph': 'INFO',
-        'frugal:loader:jsx_svg': 'INFO',
-        'frugal:loader:script': 'INFO',
-        'frugal:loader:style': 'INFO',
-    },
+    loggers: logger('INFO'),
 };
 
 /**
  * A config object, wrapping the actual config with convinence methods.
  */
 export class CleanConfig {
+    #watch?: boolean;
     #config: Config;
     #importMap: importmap.ImportMap;
     #importMapFile?: string;
@@ -88,11 +81,15 @@ export class CleanConfig {
     /**
      * Load the given config
      */
-    static async load(config: Config) {
+    static async load(
+        config: Config,
+        watch?: boolean,
+    ) {
         const cleanConfig = new CleanConfig(
             config,
             await loadImportMap(config),
             config.importMap,
+            watch,
         );
 
         return cleanConfig;
@@ -102,7 +99,9 @@ export class CleanConfig {
         config: Config,
         importMap: importmap.ImportMap,
         importMapFile?: string,
+        watch?: boolean,
     ) {
+        this.#watch = watch;
         this.#config = config;
         this.#importMap = importmap.resolveImportMap(importMap, this.root);
         this.#importMapFile = importMapFile
@@ -181,8 +180,8 @@ export class CleanConfig {
         return path.resolve(this.outputDir, '.cache');
     }
 
-    get devMode() {
-        return this.#config.devMode;
+    get watch() {
+        return this.#watch !== undefined;
     }
 
     get importMapFile() {

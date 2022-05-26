@@ -53,7 +53,7 @@ export class ScriptLoader implements frugal.Loader<Generated> {
      *
      * Since esbuild run as a background service and is not able to stop when deno stops, we must manually stop the background service before exiting deno.
      */
-    end() {
+    onBuildContextEnd() {
         esbuild.stop();
     }
 
