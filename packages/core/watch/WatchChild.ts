@@ -1,5 +1,5 @@
-import { readLines } from 'https://deno.land/std@0.136.0/io/mod.ts';
-import { readerFromStreamReader } from 'https://deno.land/std@0.136.0/streams/mod.ts';
+import { readLines } from '../../../dep/std/io.ts';
+import { readerFromStreamReader } from '../../../dep/std/streams.ts';
 import {
     EventEmitter,
     type EventNames,
