@@ -24,25 +24,25 @@ Create a file `/serve.ts` :
 
 ```ts
 import { config } from './frugal.config.ts';
-import { Frugal } from 'https://deno.land/x/frugal/packages/core/mod.ts';
-import { frugalMiddleware } from 'https://deno.land/x/frugal/packages/frugal_oak/mod.ts';
+import { serve } from 'https://deno.land/x/frugal/packages/frugal_oak/mod.ts';
 
-const frugal = await Frugal.load(config);
-
-const application = new Application();
-
-application.use(await frugalMiddleware(frugal));
-
-await application.listen({ port: 8000 });
+await serve(config);
 ```
 
-the async `frugalMiddleware` function gives you an oak-compatible `Middleware`. This middleware will handle everything related to frugal :
+The `serve` function handles everything for you (loading the frugal instance and setting up the server). If you want more control, you can use `FrugalServerBuilder` :
 
-- serving static pages (using the page persistance provider you defined in frugal config)
-- serving dynamic pages
-- serving static assets (like css and js files)
+```ts
+import { config } from './frugal.config.ts';
+import { FrugalServerBuilder } from 'https://deno.land/x/frugal/packages/frugal_oak/mod.ts';
 
-You are free to add any routes you want to the oak `Application`, but be cautious not to shadow any routes that `frugalMiddleware` might already handle.
+const server = await new FrugalServerBuilder(config).load();
+
+server.application.use(...)
+
+await server.listen();
+```
+
+You can add any middleware you want to the underlying oak application. Be cautious not to override any routes setup by frugal.
 
 ## Features
 

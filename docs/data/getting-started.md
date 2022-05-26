@@ -101,6 +101,9 @@ export const config: Config = {
             test: (url) => /\.style\.ts$/.test(url.toString()),
         }),
     ],
+    listen: {
+        port: 8000,
+    },
 };
 ```
 
@@ -118,10 +121,9 @@ Create a file `/build.ts` :
 
 ```ts
 import { config } from './frugal.config.ts';
-import { Frugal } from 'https://deno.land/x/frugal/packages/core/mod.ts';
+import { build } from 'https://deno.land/x/frugal/packages/core/mod.ts';
 
-const frugal = await Frugal.build(config);
-await frugal.build();
+await build(config);
 ```
 
 Running this file will build your project. You might need the following permissions :
@@ -136,19 +138,12 @@ Create a file `/serve.ts` :
 
 ```ts
 import { config } from './frugal.config.ts';
-import { Frugal } from 'https://deno.land/x/frugal/packages/core/mod.ts';
-import { frugalMiddleware } from 'https://deno.land/x/frugal/packages/frugal_oak/mod.ts';
+import { serve } from 'https://deno.land/x/frugal/packages/frugal_oak/mod.ts';
 
-const frugal = await Frugal.load(config);
-
-const application = new Application();
-
-application.use(await frugalMiddleware(frugal));
-
-await application.listen({ port: 8000 });
+await serve(config);
 ```
 
-Running this file will serve your project. Is your project contains static pages, you will have to run a build first. You might need the following permissions :
+Running this file will serve your project. You will need to run a build first, to create the frugal instance. The `serve.ts` script will only load this instance (faster boot than recreating the instance from scratch). You might need the following permissions :
 
 - `allow-read` at least on the root of your project.
 - `allow-write` on the root of your project. Strictly speaking, frugal will only write in the `outputDir` defined in the configuration.
