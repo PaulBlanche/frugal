@@ -1,66 +1,262 @@
 import { CleanConfig, Config } from './Config.ts';
-import { Builder } from './Builder.ts';
-import { Refresher } from './Refresher.ts';
-import { Generator } from './Generator.ts';
 import { LoaderContext } from './LoaderContext.ts';
-import { DynamicPage, GenerationRequest, StaticPage } from './Page.ts';
-import { PageBuilder } from './PageBuilder.ts';
-import { PageRefresher } from './PageRefresher.ts';
-import { PageGenerator } from './PageGenerator.ts';
+import { GenerationRequest } from './Page.ts';
 import * as log from '../log/mod.ts';
 import * as path from '../../dep/std/path.ts';
+import * as fs from '../../dep/std/fs.ts';
 import { assert } from '../../dep/std/asserts.ts';
-import { DependencyTree, ModuleList } from './DependencyTree.ts';
+import { DependencyGraph, ModuleList } from './DependencyGraph.ts';
 import { FilesystemPersistance } from './Persistance.ts';
 import { PersistantCache } from './Cache.ts';
-
-function logger() {
-    return log.getLogger('frugal:Frugal');
-}
+import { Router } from './Router.ts';
+import { FrugalError } from './FrugalError.ts';
 
 const PAGE_CACHE_FILENAME = 'pages.json';
 const MODULES_FILENAME = 'modules.json';
 const LOADER_CONTEXT_FILENAME = 'loader_context.json';
 
-export class Frugal {
-    private builder: Builder;
-    private refresher: Refresher;
-    private generator: Generator;
-    config: CleanConfig;
-    private moduleList: ModuleList;
-    private cache: PersistantCache;
-    private loaderContext: LoaderContext;
-    routes: {
-        [pattern: string]: {
-            type: 'static';
-            // deno-lint-ignore no-explicit-any
-            page: StaticPage<any, any, any>;
-            // deno-lint-ignore no-explicit-any
-            builder: PageBuilder<any, any, any>;
-            // deno-lint-ignore no-explicit-any
-            refresher: PageRefresher<any, any, any>;
-            // deno-lint-ignore no-explicit-any
-            generator: PageGenerator<any, any, any>;
-        } | {
-            type: 'dynamic';
-            // deno-lint-ignore no-explicit-any
-            page: DynamicPage<any, any, any>;
-            // deno-lint-ignore no-explicit-any
-            generator: PageGenerator<any, any, any>;
-        };
-    };
+function logger() {
+    return log.getLogger('frugal:Frugal');
+}
 
-    static async build(config: Config) {
-        const cleanConfig = await CleanConfig.load(config);
-        await log.setup(cleanConfig.loggingConfig);
+/**
+ * A Frugal instance.
+ */
+export class FrugalInstance {
+    /** the formated config of the frugal instance */
+    #config: CleanConfig;
+    /** the list of all modules in the dependency graph */
+    #moduleList: ModuleList;
+    /** the instance cache */
+    #cache: PersistantCache;
+    /** the context containing the result of all loaders */
+    #loaderContext: LoaderContext;
+    /** a router, used to match a pathname to the Generator, the Builder or the
+     * Refresher of a page matching the pathname */
+    #router: Router;
 
-        if (cleanConfig.devMode) {
-            logger().warning({
-                msg: 'running frugal in dev mode, all pages will be treated as dynamic pages',
-            });
+    constructor(
+        config: CleanConfig,
+        moduleList: ModuleList,
+        cache: PersistantCache,
+        loaderContext: LoaderContext,
+    ) {
+        this.#router = new Router(config, moduleList, cache, loaderContext);
+        this.#config = config;
+        this.#moduleList = moduleList;
+        this.#cache = cache;
+        this.#loaderContext = loaderContext;
+    }
+
+    get config() {
+        return this.#config;
+    }
+
+    get routes() {
+        return this.#router.routes;
+    }
+
+    /**
+     * Save the current Frugal instance, so it can be loaded with the
+     * {@link Frugal.load} method
+     */
+    async save(options: { runtime?: boolean } = {}) {
+        if (options.runtime !== true) {
+            await this.#moduleList.save(
+                path.resolve(this.#config.cacheDir, MODULES_FILENAME),
+            );
+            await this.#loaderContext.save(
+                path.resolve(this.#config.cacheDir, LOADER_CONTEXT_FILENAME),
+            );
         }
+        await this.#cache.save();
+    }
+
+    /**
+     * Build all the registered static pages.
+     *
+     * A page might be skipped if nothing has changed since the last build or
+     * refresh of the page
+     */
+    async build() {
+        logger().info({
+            op: 'start',
+            msg() {
+                return `${this.op} ${this.logger!.timerStart}`;
+            },
+            logger: {
+                timerStart: 'build',
+            },
+        });
+
+        await Promise.all(this.#router.routes.map(async (route) => {
+            if (route.type === 'static') {
+                await route.builder.buildAll();
+            }
+        }));
+        await this.save();
 
         logger().info({
+            op: 'done',
+            msg() {
+                return `${this.op} ${this.logger!.timerEnd}`;
+            },
+            logger: {
+                timerEnd: 'build',
+            },
+        });
+    }
+
+    /**
+     * Refresh the static page matching the given `pathname` if it exists.
+     *
+     * Event if the page match, it might be skipped if nothing has changed since
+     * the last build or refresh of the page
+     */
+    async refresh(pathname: string) {
+        logger().info({
+            op: 'start',
+            pathname,
+            msg() {
+                return `${this.op} ${this.logger!.timerStart}`;
+            },
+            logger: {
+                timerStart: `refresh of ${pathname}`,
+            },
+        });
+
+        const route = this.#router.getMatchingRoute(pathname);
+        if (route !== undefined && route.type === 'static') {
+            const result = await route.refresher.refresh(pathname);
+            await this.save({ runtime: true });
+
+            logger().info({
+                op: 'done',
+                pathname,
+                msg() {
+                    return `${this.logger!.timerEnd} ${this.op}`;
+                },
+                logger: {
+                    timerEnd: `refresh of ${pathname}`,
+                },
+            });
+
+            return result;
+        } else {
+            logger().info({
+                pathname,
+                msg() {
+                    return `no match found for ${this.pathname}`;
+                },
+                logger: {
+                    timerEnd: `refresh of ${pathname}`,
+                },
+            });
+        }
+    }
+
+    /**
+     * Generate the page (static or dynamic) matching the given `pathname` if it
+     * exists.
+     *
+     * If a page match, the generation will always run, even if nothing has
+     * changed since the las build, refresh or generate.
+     */
+    async generate(request: GenerationRequest<unknown>) {
+        logger().info({
+            op: 'start',
+            request,
+            msg() {
+                return `${this.op} ${this.logger!.timerStart}`;
+            },
+            logger: {
+                timerStart: `generation of ${requestToString(request)}`,
+            },
+        });
+
+        const route = this.#router.getMatchingRoute(request.url.pathname);
+        if (route !== undefined) {
+            const result = await route.generator.generate(request);
+            await this.save({ runtime: true });
+
+            logger().info({
+                op: 'done',
+                request,
+                msg() {
+                    return `${this.logger!.timerEnd} ${this.op}`;
+                },
+                logger: {
+                    timerEnd: `generation of ${requestToString(request)}`,
+                },
+            });
+
+            return result;
+        } else {
+            logger().info({
+                request,
+                msg() {
+                    return `no match found for ${requestToString(request)}`;
+                },
+                logger: {
+                    timerEnd: `generation of ${requestToString(request)}`,
+                },
+            });
+        }
+    }
+
+    /**
+     * Wipe the `outputDir`.
+     *
+     * if `justCache` is set to `true`, the `outputDir` is
+     * left untouched, and only the cache directory is wiped
+     */
+    async clean({ justCache = false }: { justCache?: boolean } = {}) {
+        if (justCache) {
+            await Deno.remove(this.#config.cacheDir, { recursive: true });
+        }
+        await Deno.remove(this.#config.outputDir, { recursive: true });
+    }
+}
+
+export function requestToString(request: GenerationRequest<unknown>) {
+    return `${request.method} ${request.url}`;
+}
+
+function builderLogger() {
+    return log.getLogger('frugal:FrugalBuilder');
+}
+
+/**
+ * FrugalBuilder does everything needed to build or load a Frugal instance. This
+ * class orchestrates config loading, dependency graph building, cache loading
+ * and loaders.
+ */
+export class FrugalBuilder {
+    _watch?: boolean;
+    #config: Config;
+    #cleanConfig: Promise<CleanConfig> | undefined;
+
+    constructor(config: Config) {
+        this._watch = false;
+        this.#config = config;
+        this.#cleanConfig = undefined;
+    }
+
+    /**
+     * Create a Frugal instance based on a given config object. This leverages
+     * cached information from previous build (some operation might be skiped if
+     * nothing has changed since the last build) :
+     *
+     * - dependency graph build (run each time) to gather the list of loadable
+     *   modules
+     * - cache loading (run each time)
+     * - loader pass on loadable modules (some loader might partially or
+     *   entirely skip some tasks based on cached info)
+     */
+    async create() {
+        const config = await this._getCleanConfig();
+
+        builderLogger().info({
             op: 'start',
             msg() {
                 return `${this.op} ${this.logger!.timerStart}`;
@@ -70,40 +266,42 @@ export class Frugal {
             },
         });
 
-        const dependencyTree = await DependencyTree.build(
-            cleanConfig.pages.map((page) => page.self),
+        const { assets, moduleList, configModule } = await this.#analyse();
+
+        const cache = await PersistantCache.load(
+            path.resolve(config.cacheDir, PAGE_CACHE_FILENAME),
             {
-                resolve: cleanConfig.resolve,
+                hash: configModule?.moduleHash,
+                persistance: config.cachePersistance,
             },
         );
-        const cache = await PersistantCache.load(
-            cleanConfig.cachePersistance,
-            path.resolve(cleanConfig.cacheDir, PAGE_CACHE_FILENAME),
-        );
-        const assets = dependencyTree.gather(cleanConfig.loaders);
+
         const loaderContext = await LoaderContext.build(
-            cleanConfig,
+            config,
             assets,
             (name) => {
                 return PersistantCache.load(
-                    new FilesystemPersistance(),
                     path.resolve(
-                        cleanConfig.cacheDir,
+                        config.cacheDir,
                         'loader',
                         `${name}.json`,
                     ),
+                    {
+                        hash: configModule?.moduleHash,
+                        persistance: new FilesystemPersistance(),
+                    },
                 );
             },
         );
 
-        const frugal = new Frugal(
-            cleanConfig,
-            dependencyTree.moduleList(),
+        const frugal = new FrugalInstance(
+            config,
+            moduleList,
             cache,
             loaderContext,
         );
 
-        logger().info({
+        builderLogger().info({
             op: 'done',
             msg() {
                 return `${this.logger!.timerEnd} ${this.op}`;
@@ -116,11 +314,19 @@ export class Frugal {
         return frugal;
     }
 
-    static async load(config: Config) {
-        const cleanConfig = await CleanConfig.load(config);
-        await log.setup(cleanConfig.loggingConfig);
+    /**
+     * Load a Frugal instance based on the previous build. Everything is loaded
+     * from cache (no loader pass, no dependency graph built).
+     *
+     * This is usefull in order to run a server needing access to a Frugal
+     * instance after a build process. The two process can be separated (a build
+     * in CI, an server in the clouds), because all the information needed to
+     * setup the Frugal instance was serialized during the build
+     */
+    async load() {
+        const config = await this._getCleanConfig();
 
-        logger().info({
+        builderLogger().info({
             op: 'start',
             msg() {
                 return `${this.op} ${this.logger!.timerStart}`;
@@ -130,166 +336,145 @@ export class Frugal {
             },
         });
 
-        const moduleList = await ModuleList.load(
-            path.resolve(cleanConfig.cacheDir, MODULES_FILENAME),
-        );
-        const cache = await PersistantCache.load(
-            cleanConfig.cachePersistance,
-            path.resolve(cleanConfig.cacheDir, PAGE_CACHE_FILENAME),
-        );
-        const loaderContext = await LoaderContext.load(
-            path.resolve(cleanConfig.cacheDir, LOADER_CONTEXT_FILENAME),
-        );
+        try {
+            const moduleList = await ModuleList.load(
+                path.resolve(config.cacheDir, MODULES_FILENAME),
+            );
+            const cache = await PersistantCache.load(
+                path.resolve(config.cacheDir, PAGE_CACHE_FILENAME),
+                {
+                    persistance: config.cachePersistance,
+                },
+            );
+            const loaderContext = await LoaderContext.load(
+                path.resolve(config.cacheDir, LOADER_CONTEXT_FILENAME),
+            );
 
-        const frugal = new Frugal(
-            cleanConfig,
-            moduleList,
-            cache,
-            loaderContext,
-        );
-
-        logger().info({
-            op: 'done',
-            msg() {
-                return `${this.logger!.timerEnd} ${this.op}`;
-            },
-            logger: {
-                timerEnd: 'loading frugal context',
-            },
-        });
-
-        return frugal;
-    }
-
-    constructor(
-        config: CleanConfig,
-        moduleList: ModuleList,
-        cache: PersistantCache,
-        loaderContext: LoaderContext,
-    ) {
-        this.routes = {};
-
-        const dynamicPages = config.pages.filter((
-            page,
-            // deno-lint-ignore no-explicit-any
-        ): page is DynamicPage<any, any, any> => page instanceof DynamicPage);
-
-        const generators = dynamicPages.map((page) => {
-            const generator = new PageGenerator(page, {
+            const frugal = new FrugalInstance(
+                config,
+                moduleList,
+                cache,
                 loaderContext,
-                publicDir: config.publicDir,
+            );
+
+            builderLogger().info({
+                op: 'done',
+                msg() {
+                    return `${this.logger!.timerEnd} ${this.op}`;
+                },
+                logger: {
+                    timerEnd: 'loading frugal context',
+                },
             });
 
-            assert(!(page.pattern in this.routes));
-            this.routes[page.pattern] = { type: 'dynamic', page, generator };
+            return frugal;
+        } catch {
+            throw new FrugalError(
+                'Could not load the frugal context, some files are missing. You might need to build the frugal context first',
+            );
+        }
+    }
 
-            return generator;
-        });
+    async #analyse() {
+        const config = await this._getCleanConfig();
 
-        const staticPages = config.pages.filter((
-            page,
-            // deno-lint-ignore no-explicit-any
-        ): page is StaticPage<any, any, any> => page instanceof StaticPage);
-
-        const { refreshers, builders } = staticPages.reduce(
-            (accumulator, page) => {
-                const generator = new PageGenerator(page, {
-                    loaderContext,
-                    publicDir: config.publicDir,
-                    devMode: config.devMode,
-                });
-
-                generators.push(generator);
-
-                const module = moduleList.get(page.self);
-                const pageHash = module?.moduleHash ?? String(Math.random());
-
-                const builder = new PageBuilder(page, pageHash, generator, {
-                    cache,
-                    persistance: config.pagePersistance,
-                });
-
-                const refresher = new PageRefresher(
-                    page,
-                    builder,
-                );
-
-                accumulator.builders.push(builder);
-                accumulator.refreshers.push(refresher);
-
-                assert(!(page.pattern in this.routes));
-                this.routes[page.pattern] = {
-                    type: 'static',
-                    page,
-                    generator,
-                    builder,
-                    refresher,
-                };
-
-                return accumulator;
-            },
-            { builders: [], refreshers: [] } as {
-                // deno-lint-ignore no-explicit-any
-                builders: PageBuilder<any, any, any>[];
-                // deno-lint-ignore no-explicit-any
-                refreshers: PageRefresher<any, any, any>[];
+        const dependencyTree = await DependencyGraph.build(
+            config.pages.map((page) => page.self),
+            {
+                resolve: config.resolve,
             },
         );
 
-        this.generator = new Generator(config, generators);
-        this.builder = new Builder(config, builders);
-        this.refresher = new Refresher(config, refreshers);
-        this.config = config;
-        this.moduleList = moduleList;
-        this.cache = cache;
-        this.loaderContext = loaderContext;
+        const configWithoutPagesDependencyTree = await DependencyGraph.build([
+            config.self,
+        ], {
+            resolve: config.resolve,
+            excludes: config.pages.map((page) => page.self),
+        });
+
+        const configModule = configWithoutPagesDependencyTree.moduleList().get(
+            config.self,
+        );
+        assert(configModule !== undefined);
+
+        const assets = dependencyTree.gather(config.loaders);
+
+        return {
+            assets,
+            moduleList: dependencyTree.moduleList(),
+            configModule,
+        };
     }
 
-    async save(options: { runtime?: boolean } = {}) {
-        if (options.runtime !== true) {
-            await this.moduleList.save(
-                path.resolve(this.config.cacheDir, MODULES_FILENAME),
-            );
-            await this.loaderContext.save(
-                path.resolve(this.config.cacheDir, LOADER_CONTEXT_FILENAME),
-            );
+    async _getCleanConfig() {
+        if (this.#cleanConfig !== undefined) {
+            return await this.#cleanConfig;
         }
-        await this.cache.save();
-    }
 
-    // build all registered static pages
-    async build() {
-        await this.builder.build();
-        await this.save();
-    }
+        this.#cleanConfig = CleanConfig.load(this.#config, this._watch);
+        const cleanConfig = await this.#cleanConfig;
+        await log.setup(cleanConfig.loggingConfig);
 
-    // refresh a specific static page (might do nothing if nothing changed)
-    async refresh(pathname: string) {
-        const result = await this.refresher.refresh(pathname);
-        await this.save({ runtime: true });
-
-        return result;
-    }
-
-    // generate a specific dynamic page (allways generate even if nothing changed)
-    // deno-lint-ignore no-explicit-any
-    async generate(request: GenerationRequest<any>) {
-        const result = await this.generator.generate(request);
-        await this.save({ runtime: true });
-
-        return result;
-    }
-
-    async clean({ justCache = false }: { justCache?: boolean } = {}) {
-        if (justCache) {
-            await Deno.remove(this.config.cacheDir, { recursive: true });
+        if (cleanConfig.watch) {
+            builderLogger().warning({
+                msg: 'running frugal in dev mode, all pages will be treated as dynamic pages',
+            });
         }
-        await Deno.remove(this.config.outputDir, { recursive: true });
+
+        return cleanConfig;
+    }
+}
+
+export class FrugalWatcher {
+    #builder: FrugalBuilder;
+
+    constructor(builder: FrugalBuilder) {
+        this.#builder = builder;
+        this.#builder._watch = true;
+    }
+
+    create() {
+        return this.#builder.create();
+    }
+
+    async watch(paths: string[]) {
+        const config = await this.#builder._getCleanConfig();
+        const code =
+            `const { config } = await import('file://${config.self.pathname}')
+        const { FrugalWatcher, FrugalBuilder } = await import('file://${
+                new URL('mod.ts', import.meta.url).pathname
+            }')
+
+        const frugal = await new FrugalWatcher(new FrugalBuilder(config)).create();
+        await frugal.build();
+        `;
+
+        const filePath = path.join(config.cacheDir, 'watch.ts');
+
+        await fs.ensureFile(filePath);
+        await Deno.writeTextFile(filePath, code);
+
+        const child = Deno.spawnChild(Deno.execPath(), {
+            args: [
+                'run',
+                '--unstable',
+                paths.length === 0 ? '--watch' : `--watch=${paths.join(',')}`,
+                '--no-check',
+                '--allow-all',
+                filePath,
+            ],
+            cwd: path.dirname(config.self.pathname),
+        });
+
+        child.stdout.pipeTo(Deno.stdout.writable);
+        child.stderr.pipeTo(Deno.stderr.writable);
+
+        await child.status;
     }
 }
 
 export async function build(config: Config) {
-    const frugal = await Frugal.build(config);
-    await frugal.build();
-    return frugal;
+    const builder = new FrugalBuilder(config);
+    const instance = await builder.create();
+    return await instance.build();
 }

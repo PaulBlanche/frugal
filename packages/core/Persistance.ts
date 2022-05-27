@@ -1,13 +1,29 @@
 import * as fs from '../../dep/std/fs.ts';
+import { FrugalError } from './FrugalError.ts';
 
-export class NotFound extends Error {}
+export class NotFound extends FrugalError {}
 
+/**
+ * A persistance layer
+ */
 export interface Persistance {
+    /**
+     * Set the given content at the given path
+     */
     set(path: string, content: string): Promise<void>;
+    /**
+     * Set the content at the given path
+     */
     get(path: string): Promise<string>;
+    /**
+     * delete the content at the given path
+     */
     delete(path: string): Promise<void>;
 }
 
+/**
+ * A persistance layer using the filesystem
+ */
 export class FilesystemPersistance implements Persistance {
     constructor() {}
 
@@ -32,22 +48,25 @@ export class FilesystemPersistance implements Persistance {
     }
 }
 
+/**
+ * A persistance layer using Upstash
+ */
 export class UpstashPersistance implements Persistance {
-    url: string;
-    token: string;
+    #url: string;
+    #token: string;
 
     constructor(url: string, token: string) {
-        this.url = url;
-        this.token = token;
+        this.#url = url;
+        this.#token = token;
     }
 
-    private async _sendCommand(command: unknown) {
+    async #sendCommand(command: unknown) {
         return await fetch(
-            this.url,
+            this.#url,
             {
                 method: 'POST',
                 headers: {
-                    Authorization: `Bearer ${this.token}`,
+                    Authorization: `Bearer ${this.#token}`,
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify(command),
@@ -56,18 +75,18 @@ export class UpstashPersistance implements Persistance {
     }
 
     async set(path: string, content: string) {
-        const response = await this._sendCommand(['set', path, content]);
+        const response = await this.#sendCommand(['set', path, content]);
         if (response.status !== 200) {
             const body = await response.json();
-            throw Error(body.error);
+            throw new Error(body.error);
         }
     }
 
     async get(path: string) {
-        const response = await this._sendCommand(['get', path]);
+        const response = await this.#sendCommand(['get', path]);
         const body = await response.json();
         if (response.status !== 200) {
-            throw Error(body.error);
+            throw new Error(body.error);
         }
         if (body.result === null) {
             throw new NotFound(`path ${path} was not found`);
@@ -76,10 +95,10 @@ export class UpstashPersistance implements Persistance {
     }
 
     async delete(path: string) {
-        const response = await this._sendCommand(['del', path]);
+        const response = await this.#sendCommand(['del', path]);
         if (response.status !== 200) {
             const body = await response.json();
-            throw Error(body.error);
+            throw new Error(body.error);
         }
     }
 }

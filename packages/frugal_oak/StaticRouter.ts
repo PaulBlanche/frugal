@@ -1,5 +1,5 @@
 import { composeMiddleware, Context, etag, Router } from 'oak';
-import { Frugal, NotFound } from '../core/mod.ts';
+import { FrugalInstance, NotFound } from '../core/mod.ts';
 import { StaticContext } from './FrugalContext.ts';
 import * as path from '../../dep/std/path.ts';
 import { assert } from '../../dep/std/asserts.ts';
@@ -13,43 +13,55 @@ function logger(middleware?: string) {
     return log.getLogger(`frugal_oak:StaticRouter:${middleware}`);
 }
 
+/**
+ * An oak Router where all static routes in a Frugal instance are registered.
+ *
+ * The router handle GET methods for each route. If the page of a route has a
+ * `postDynamicData` method, the router also handle POST method for this route.
+ */
 export class StaticRouter {
-    router: Router;
-    frugal: Frugal;
-    prgOrchestrator: PrgOrchestrator;
-    refreshKey?: string;
+    #router: Router;
+    #frugal: FrugalInstance;
+    #prgOrchestrator: PrgOrchestrator;
+    #refreshKey?: string;
 
     constructor(
-        frugal: Frugal,
+        frugal: FrugalInstance,
         prgOrchestrator: PrgOrchestrator,
         refreshKey?: string,
     ) {
-        this.router = new Router();
-        this.frugal = frugal;
-        this.prgOrchestrator = prgOrchestrator;
-        this.refreshKey = refreshKey;
+        this.#router = new Router();
+        this.#frugal = frugal;
+        this.#prgOrchestrator = prgOrchestrator;
+        this.#refreshKey = refreshKey;
 
-        this._register(this.router);
+        this.#register(this.#router);
     }
 
+    /**
+     * Return the route middleware from the underlying oak Router.
+     */
     routes() {
-        return this.router.routes();
+        return this.#router.routes();
     }
 
+    /**
+     * Return the allowed method middleware from the underlying oak Router.
+     */
     allowedMethods() {
-        return this.router.allowedMethods();
+        return this.#router.allowedMethods();
     }
 
-    private _register(router: Router) {
-        if (this.frugal.config.devMode) {
+    #register(router: Router) {
+        if (this.#frugal.config.watch) {
             return;
         }
 
-        const prgRedirectionMiddleware = this.prgOrchestrator.getRedirection();
-        const prgPostMiddleware = this.prgOrchestrator.post();
-        const forceRefreshMiddleware = this._forceRefreshMiddleware();
-        const cachedMiddleware = this._cachedMiddleware();
-        const refreshJitMiddleware = this._refreshJitMiddleware();
+        const prgRedirectionMiddleware = this.#prgOrchestrator.getRedirection();
+        const prgPostMiddleware = this.#prgOrchestrator.post();
+        const forceRefreshMiddleware = this.#forceRefreshMiddleware();
+        const cachedMiddleware = this.#cachedMiddleware();
+        const refreshJitMiddleware = this.#refreshJitMiddleware();
 
         const getMiddleware = composeMiddleware(
             [
@@ -69,8 +81,8 @@ export class StaticRouter {
             prgPostMiddleware,
         ]);
 
-        for (const pattern in this.frugal.routes) {
-            const route = this.frugal.routes[pattern];
+        for (const pattern in this.#frugal.routes) {
+            const route = this.#frugal.routes[pattern];
             if (route.type === 'dynamic') {
                 continue;
             }
@@ -103,9 +115,9 @@ export class StaticRouter {
         }
     }
 
-    private _forceRefreshMiddleware() {
+    #forceRefreshMiddleware() {
         return async (context: Context, next: () => Promise<unknown>) => {
-            if (this.refreshKey === undefined) {
+            if (this.#refreshKey === undefined) {
                 logger('forceRefreshMiddleware').debug({
                     msg() {
                         return `no refresh key, skip middleware`;
@@ -143,7 +155,7 @@ export class StaticRouter {
             const match = authorization?.match(/Bearer (.*)/);
             if (
                 match === null || match === undefined ||
-                match[1] !== this.refreshKey
+                match[1] !== this.#refreshKey
             ) {
                 logger('forceRefreshMiddleware').debug({
                     method: context.request.method,
@@ -170,7 +182,7 @@ export class StaticRouter {
         };
     }
 
-    private _cachedMiddleware() {
+    #cachedMiddleware() {
         return async (context: Context, next: () => Promise<unknown>) => {
             const url = context.request.url;
 
@@ -193,7 +205,7 @@ export class StaticRouter {
                             return `try to respond to ${this.method} ${this.pathname} with ${this.filename}`;
                         },
                     });
-                    await this._sendFromCache(context, filename);
+                    await this.#sendFromCache(context, filename);
                 } else {
                     const filename = path.join(url.pathname, 'index.html');
                     logger('cachedMiddleware').debug({
@@ -204,7 +216,7 @@ export class StaticRouter {
                             return `try to respond to ${this.method} ${this.pathname} with ${this.filename}`;
                         },
                     });
-                    await this._sendFromCache(context, filename);
+                    await this.#sendFromCache(context, filename);
                 }
             } catch (error: unknown) {
                 if (error instanceof NotFound) {
@@ -223,7 +235,7 @@ export class StaticRouter {
         };
     }
 
-    private _refreshJitMiddleware() {
+    #refreshJitMiddleware() {
         return async (context: Context, _next: () => Promise<unknown>) => {
             const ctx = context as StaticContext;
             assert(ctx.refresher);
@@ -240,12 +252,12 @@ export class StaticRouter {
 
             await ctx.refresher.refresh(url.pathname);
 
-            return await this._sendFromCache(context, url.pathname);
+            return await this.#sendFromCache(context, url.pathname);
         };
     }
 
-    private async _sendFromCache(context: Context, pathname: string) {
-        const config = this.frugal.config;
+    async #sendFromCache(context: Context, pathname: string) {
+        const config = this.#frugal.config;
 
         const pagePath = path.join(config.publicDir, pathname);
         const content = await config.pagePersistance.get(pagePath);

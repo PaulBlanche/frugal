@@ -8,11 +8,13 @@ function logger() {
     return log.getLogger('frugal:LoaderContext');
 }
 
-// deno-lint-ignore no-explicit-any
-type Context = { [s: string]: any };
+type Context = { [s: string]: unknown };
 
+/**
+ * Class holding the result of all loaders generation
+ */
 export class LoaderContext {
-    private context: Context;
+    #context: Context;
 
     static async build(
         config: CleanConfig,
@@ -29,35 +31,7 @@ export class LoaderContext {
             },
         });
 
-        const context: Context = {};
-
-        await Promise.all((config.loaders ?? []).map(async (loader) => {
-            const loadedAssets = assets.filter((entry) =>
-                entry.loader === loader.name
-            );
-
-            if (loadedAssets === undefined || loadedAssets.length === 0) {
-                return;
-            }
-
-            const result = await loader.generate({
-                getCache: () => getLoaderCache(loader.name),
-                assets: loadedAssets,
-                dir: {
-                    public: config.publicDir,
-                    cache: config.cacheDir,
-                    root: String(config.root),
-                },
-            });
-
-            context[loader.name] = result;
-        }));
-
-        config.loaders.map((loader) => {
-            if (loader.end) {
-                loader.end();
-            }
-        });
+        const context = await buildContext(config, assets, getLoaderCache);
 
         logger().info({
             op: 'done',
@@ -82,18 +56,58 @@ export class LoaderContext {
     }
 
     constructor(context: Context) {
-        this.context = context;
+        this.#context = context;
     }
 
     async save(filePath: string) {
-        const serializedData = JSON.stringify(this.context);
+        const serializedData = JSON.stringify(this.#context);
 
         await fs.ensureFile(filePath);
         await Deno.writeTextFile(filePath, serializedData);
     }
 
-    // deno-lint-ignore no-explicit-any
-    get<VALUE = any>(name: string): VALUE | undefined {
-        return this.context[name];
+    /**
+     * Get the generation result of a loader
+     */
+    get<VALUE = unknown>(name: string): VALUE | undefined {
+        return this.#context[name] as VALUE | undefined;
     }
+}
+
+async function buildContext(
+    config: CleanConfig,
+    assets: Asset[],
+    getLoaderCache: (name: string) => Promise<PersistantCache>,
+) {
+    const context: Context = {};
+
+    Promise.all(config.loaders.map(async (loader) => {
+        if (loader.onBuildContextStart) {
+            await loader.onBuildContextStart(config);
+        }
+    }));
+
+    await Promise.all(config.loaders.map(async (loader) => {
+        const loadableAssets = assets.filter((entry) =>
+            entry.loader === loader.name
+        );
+
+        if (loadableAssets === undefined || loadableAssets.length === 0) {
+            return;
+        }
+
+        context[loader.name] = await loader.generate({
+            getCache: () => getLoaderCache(loader.name),
+            assets: loadableAssets,
+            config,
+        });
+    }));
+
+    Promise.all(config.loaders.map(async (loader) => {
+        if (loader.onBuildContextEnd) {
+            await loader.onBuildContextEnd(config);
+        }
+    }));
+
+    return context;
 }

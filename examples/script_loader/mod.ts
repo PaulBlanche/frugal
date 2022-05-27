@@ -1,5 +1,5 @@
 import { build, page } from '../../packages/core/mod.ts';
-import { script } from '../../packages/loader_script/mod.ts';
+import { ScriptLoader } from '../../packages/loader_script/mod.ts';
 
 import * as page1 from './page1.ts';
 import * as page2 from './page2.ts';
@@ -21,7 +21,7 @@ build({
     // In our case scripts used in both `page1.ts` and `page2.ts` share some code
     // so this code will be put in a shared chunk
     loaders: [
-        script({
+        new ScriptLoader({
             bundles: [{
                 name: 'body',                
                 test: (url) => /\.script\.ts$/.test(url.toString()),

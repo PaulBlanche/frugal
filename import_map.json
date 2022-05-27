@@ -1,8 +1,8 @@
 {
     "imports": {
-        "preact": "https://esm.sh/preact@10.6.5?pin=v66",
-        "preact/hooks": "https://esm.sh/preact@10.6.5/hooks?pin=v66",
-        "preact-render-to-string": "https://esm.sh/preact-render-to-string@5.1.19?pin=v66&deps=preact@10.6.5",
-        "oak": "https://deno.land/x/oak@v10.4.0/mod.ts"
+        "preact": "https://esm.sh/preact@10.7.2",
+        "preact/hooks": "https://esm.sh/preact@10.7.2/hooks",
+        "preact-render-to-string": "https://esm.sh/preact-render-to-string@5.2.0?deps=preact@10.7.2",
+        "oak": "https://deno.land/x/oak@v10.6.0/mod.ts"
     }
 }

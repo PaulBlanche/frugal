@@ -3,3 +3,4 @@ dist/
 .deno_dir/
 cov_profile/
 TODO
+.env

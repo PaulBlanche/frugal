@@ -1,5 +1,5 @@
-import { composeMiddleware, Context, Router } from 'oak';
-import { Frugal } from '../core/mod.ts';
+import * as oak from 'oak';
+import { FrugalInstance } from '../core/mod.ts';
 import * as log from '../log/mod.ts';
 import { PrgOrchestrator } from './PrgOrchestrator.ts';
 import { DynamicContext } from './FrugalContext.ts';
@@ -12,49 +12,59 @@ function logger(middleware?: string) {
     return log.getLogger(`frugal_oak:DynamicRouter:${middleware}`);
 }
 
+/**
+ * An oak Router where all dynamic routes in a Frugal instance are registered.
+ *
+ * The router handle GET methods for each route. If the page of a route has a
+ * `postDynamicData` method, the router also handle POST method for this route.
+ */
 export class DynamicRouter {
-    router: Router;
-    frugal: Frugal;
-    prgOrchestrator: PrgOrchestrator;
+    #router: oak.Router;
+    #frugal: FrugalInstance;
+    #prgOrchestrator: PrgOrchestrator;
 
     constructor(
-        frugal: Frugal,
+        frugal: FrugalInstance,
         prgOrchestrator: PrgOrchestrator,
     ) {
-        this.router = new Router();
-        this.frugal = frugal;
-        this.prgOrchestrator = prgOrchestrator;
+        this.#router = new oak.Router();
+        this.#frugal = frugal;
+        this.#prgOrchestrator = prgOrchestrator;
 
-        this._register(this.router);
+        this.#register(this.#router);
     }
 
+    /**
+     * Return the route middleware from the underlying oak Router.
+     */
     routes() {
-        return this.router.routes();
+        return this.#router.routes();
     }
 
+    /**
+     * Return the allowed method middleware from the underlying oak Router.
+     */
     allowedMethods() {
-        return this.router.allowedMethods();
+        return this.#router.allowedMethods();
     }
 
-    private _register(router: Router) {
-        const prgRedirectionMiddleware = this.prgOrchestrator.getRedirection();
-        const prgPostMiddleware = this.prgOrchestrator.post();
-        const generateMiddleware = this._generateMiddleware();
+    #register(router: oak.Router) {
+        const prgRedirectionMiddleware = this.#prgOrchestrator.getRedirection();
+        const prgPostMiddleware = this.#prgOrchestrator.post();
 
-        const getMiddleware = composeMiddleware([
+        const getMiddleware = oak.composeMiddleware([
             // start of "user flow", first try PRG if needed
             prgRedirectionMiddleware,
             // then generate the page
-            generateMiddleware,
+            generateMiddleware(),
         ]);
 
-        const postMiddleware = composeMiddleware([
+        const postMiddleware = oak.composeMiddleware([
             prgPostMiddleware,
         ]);
 
-        for (const pattern in this.frugal.routes) {
-            const route = this.frugal.routes[pattern];
-            if (route.type === 'static' && !this.frugal.config.devMode) {
+        for (const route of this.#frugal.routes) {
+            if (route.type === 'static' && !this.#frugal.config.watch) {
                 continue;
             }
 
@@ -81,56 +91,56 @@ export class DynamicRouter {
             }
         }
     }
+}
 
-    private _generateMiddleware() {
-        return async (context: Context, _next: () => Promise<unknown>) => {
-            const ctx = context as DynamicContext;
-            assert(ctx.generator);
+function generateMiddleware() {
+    return async (context: oak.Context, _next: () => Promise<unknown>) => {
+        const ctx = context as DynamicContext;
+        assert(ctx.generator);
 
-            const url = context.request.url;
+        const url = context.request.url;
 
+        logger('generateMiddleware').debug({
+            method: context.request.method,
+            pathname: url.pathname,
+            msg() {
+                return `handle ${this.method} ${this.pathname}`;
+            },
+        });
+
+        const result = await ctx.generator.generate({
+            url: context.request.url,
+            headers: context.request.headers,
+            method: 'GET',
+            body: context.request.body(),
+        });
+
+        if (result === undefined) {
             logger('generateMiddleware').debug({
                 method: context.request.method,
                 pathname: url.pathname,
                 msg() {
-                    return `handle ${this.method} ${this.pathname}`;
+                    return `handle failure for ${this.method} ${this.pathname}`;
                 },
             });
 
-            const result = await ctx.generator.generate({
-                url: context.request.url,
-                headers: context.request.headers,
-                method: 'GET',
-                body: context.request.body(),
-            });
+            context.response.status = 404;
+            return;
+        }
 
-            if (result === undefined) {
-                logger('generateMiddleware').debug({
-                    method: context.request.method,
-                    pathname: url.pathname,
-                    msg() {
-                        return `handle failure for ${this.method} ${this.pathname}`;
-                    },
-                });
+        logger('generateMiddleware').debug({
+            method: context.request.method,
+            pathname: url.pathname,
+            msg() {
+                return `handle successful for ${this.method} ${this.pathname}`;
+            },
+        });
 
-                context.response.status = 404;
-                return;
-            }
-
-            logger('generateMiddleware').debug({
-                method: context.request.method,
-                pathname: url.pathname,
-                msg() {
-                    return `handle successful for ${this.method} ${this.pathname}`;
-                },
-            });
-
-            context.response.status = 200;
-            context.response.body = result.content;
-            context.response.headers.set(
-                'Cache-Control',
-                'public, max-age=5, must-revalidate',
-            );
-        };
-    }
+        context.response.status = 200;
+        context.response.body = result.content;
+        context.response.headers.set(
+            'Cache-Control',
+            'public, max-age=5, must-revalidate',
+        );
+    };
 }

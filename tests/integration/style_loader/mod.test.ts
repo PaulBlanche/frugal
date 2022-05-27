@@ -1,12 +1,13 @@
 import {
     Config,
-    Frugal,
+    FrugalBuilder,
+    FrugalInstance,
     OFF_LOGGER_CONFIG,
     page,
 } from '../../../packages/core/mod.ts';
 import * as path from '../../../dep/std/path.ts';
 import { Hash } from '../../../packages/murmur/mod.ts';
-import { style } from '../../../packages/loader_style/mod.ts';
+import { StyleLoader } from '../../../packages/loader_style/mod.ts';
 import { assertSnapshot } from '../../../dep/std/snapshot.ts';
 
 import * as myPage from './page.ts';
@@ -15,7 +16,7 @@ Deno.test('style_loader: file structure', async (t) => {
     const config = {
         outputDir: dist(),
         loaders: [
-            style({
+            new StyleLoader({
                 test: (url) => {
                     return url.toString().endsWith('.style.ts');
                 },
@@ -42,26 +43,26 @@ Deno.test('style_loader: file structure', async (t) => {
 async function getFrugalInstance(
     config: Pick<Config, 'pages' | 'outputDir' | 'loaders'>,
 ) {
-    const frugal = await Frugal.build({
+    const frugal = await new FrugalBuilder({
         self: new URL(import.meta.url),
         outputDir: config.outputDir,
         pages: config.pages,
         loaders: config.loaders,
         logging: OFF_LOGGER_CONFIG,
-    });
+    }).create();
 
     return frugal;
 }
 
 function dist() {
-    return `./dist-${new Hash().update(String(Math.random())).alphabetic()}`;
+    return `./dist-${new Hash().update(String(Math.random())).digest()}`;
 }
 
 function relativeUrl(file: string) {
     return new URL(file, import.meta.url);
 }
 
-function publicFileUrl(frugal: Frugal, file: string) {
+function publicFileUrl(frugal: FrugalInstance, file: string) {
     return relativeUrl(
         path.join(frugal.config.publicDir, file),
     );

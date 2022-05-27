@@ -5,6 +5,10 @@ function logger() {
     return log.getLogger('frugal_oak:trailingSlashMiddleware');
 }
 
+/**
+ * Redirect (307) requests with a trailing slash to the same url without the
+ * trailing slash
+ */
 export function trailingSlashMiddleware(): Middleware {
     return async (context, next) => {
         const url = context.request.url;

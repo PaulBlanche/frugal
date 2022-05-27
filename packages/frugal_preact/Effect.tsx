@@ -27,19 +27,19 @@ export class Effect extends preact.Component<SideEffectProps> {
         super(props);
 
         if (isServer) {
-            this._pushToStack();
+            this.#pushToStack();
             this.emitChange();
         }
     }
     componentDidMount() {
-        this._pushToStack();
+        this.#pushToStack();
         this.emitChange();
     }
     componentDidUpdate() {
         this.emitChange();
     }
     componentWillUnmount() {
-        this._popFromStack();
+        this.#popFromStack();
         this.emitChange();
     }
 
@@ -47,12 +47,12 @@ export class Effect extends preact.Component<SideEffectProps> {
         return null;
     }
 
-    private _pushToStack() {
+    #pushToStack() {
         // deno-lint-ignore no-explicit-any
         this.props.manager.instanceStack.add(this as any);
     }
 
-    private _popFromStack() {
+    #popFromStack() {
         // deno-lint-ignore no-explicit-any
         this.props.manager.instanceStack.delete(this as any);
     }

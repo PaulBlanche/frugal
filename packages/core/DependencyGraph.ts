@@ -1,25 +1,37 @@
 import * as graph from '../dependency_graph/mod.ts';
-import * as tree from '../dependency_graph/tree.ts';
+import { inOrder } from '../dependency_graph/graph.ts';
 import { Asset, Loader } from './loader.ts';
 import * as log from '../log/mod.ts';
 import * as fs from '../../dep/std/fs.ts';
 
 function logger() {
-    return log.getLogger('frugal:DependencyTree');
+    return log.getLogger('frugal:DependencyGraph');
 }
 
-export class DependencyTree {
-    private tree: graph.DependencyTree;
+/**
+ * Class building and handling a dependency graph
+ */
+export class DependencyGraph {
+    #graph: graph.DependencyGraph;
 
+    /**
+     * Build a dependency graph from the given entrypoint.
+     */
     static async build(entrypoints: URL[], config: graph.Config) {
-        const tree = await graph.build(entrypoints, config);
-        return new DependencyTree(tree);
+        return new DependencyGraph(await graph.build(entrypoints, config));
     }
 
-    constructor(tree: graph.DependencyTree) {
-        this.tree = tree;
+    constructor(graph: graph.DependencyGraph) {
+        this.#graph = graph;
     }
 
+    /**
+     * For the passed list of loaders, gather all modules in the dependency
+     * graph matching at least one loader.
+     *
+     * If an asset matches more than one loader, the first loader in the list
+     * wins.
+     */
     gather(loaders: Loader<unknown>[]) {
         const gathered: Asset[] = [];
 
@@ -33,7 +45,7 @@ export class DependencyTree {
             },
         });
 
-        tree.inOrder(this.tree, (current) => {
+        inOrder(this.#graph, (current) => {
             if (current.type === 'root') return;
 
             for (const loader of loaders) {
@@ -78,8 +90,11 @@ export class DependencyTree {
         return gathered;
     }
 
+    /**
+     * Build a unique module list from the dependency graph
+     */
     moduleList() {
-        return ModuleList.build(this.tree);
+        return ModuleList.build(this.#graph);
     }
 }
 
@@ -91,14 +106,20 @@ type Module = {
     dependencies: string[];
 };
 
+/**
+ * Class holding the list of all unique modules inside a dependency graph
+ */
 export class ModuleList {
-    private modules: Record<string, Module>;
+    #modules: Record<string, Module>;
 
-    static build(dependencyTree: graph.DependencyTree) {
+    /**
+     * Build the module list from a dependency graph
+     */
+    static build(dependencyGraph: graph.DependencyGraph) {
         const modules: Record<string, Module> = {};
 
-        const seen = new Set<tree.Module>();
-        tree.inOrder(dependencyTree, (node) => {
+        const seen = new Set<graph.Node>();
+        inOrder(dependencyGraph, (node) => {
             if (node.type === 'module' && !seen.has(node)) {
                 modules[String(node.url)] = {
                     moduleHash: node.moduleHash,
@@ -123,15 +144,18 @@ export class ModuleList {
     }
 
     constructor(modules: Record<string, Module>) {
-        this.modules = modules;
+        this.#modules = modules;
     }
 
+    /**
+     * Query the module info based on its URL
+     */
     get(url: URL): Module | undefined {
-        return this.modules[String(url)];
+        return this.#modules[String(url)];
     }
 
     async save(filePath: string) {
-        const serializedData = JSON.stringify(this.modules);
+        const serializedData = JSON.stringify(this.#modules);
 
         await fs.ensureFile(filePath);
         await Deno.writeTextFile(filePath, serializedData);

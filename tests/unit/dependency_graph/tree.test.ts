@@ -1,8 +1,8 @@
 import * as asserts from '../../../dep/std/asserts.ts';
-import * as tree from '../../../packages/dependency_graph/tree.ts';
+import * as graph from '../../../packages/dependency_graph/graph.ts';
 import * as murmur from '../../../packages/murmur/mod.ts';
 
-const myRoot: tree.Root = root({
+const myRoot: graph.Root = root({
     dependencies: [{
         url: new URL('file:///B'),
         dependencies: [{
@@ -28,7 +28,7 @@ const myRoot: tree.Root = root({
 
 Deno.test('pre order walk', () => {
     const visited: string[] = [];
-    tree.preOrder(myRoot, (node) => {
+    graph.preOrder(myRoot, (node) => {
         if (node.url !== undefined) {
             visited.push(node.url.toString());
         }
@@ -48,7 +48,7 @@ Deno.test('pre order walk', () => {
 
 Deno.test('post order walk', () => {
     const visited: string[] = [];
-    tree.inOrder(myRoot, (node) => {
+    graph.inOrder(myRoot, (node) => {
         if (node.url !== undefined) {
             visited.push(node.url.toString());
         }
@@ -68,7 +68,7 @@ Deno.test('post order walk', () => {
 
 export function root(
     node: PartialRoot,
-): tree.Root {
+): graph.Root {
     const dependencies = (node.dependencies ?? []).map((dependency) => {
         return module(dependency);
     });
@@ -82,7 +82,7 @@ export function root(
 
 export function module(
     node: PartialModule,
-): tree.Module {
+): graph.Module {
     const dependencies = (node.dependencies ?? []).map((dependency) => {
         return module({ ...dependency, entrypoint: node.entrypoint });
     });
@@ -94,15 +94,15 @@ export function module(
         moduleHash: dependencies.reduce(
             (hash, node) => hash.update(node.moduleHash),
             new murmur.Hash().update(node.contentHash ?? ''),
-        ).alphabetic(),
+        ).digest(),
         contentHash: node.contentHash ?? '',
         dependencies,
     };
 }
 
 type PartialModule = Partial<
-    Omit<tree.Module, 'dependencies'> & { dependencies: PartialModule[] }
+    Omit<graph.Module, 'dependencies'> & { dependencies: PartialModule[] }
 >;
 type PartialRoot = Partial<
-    Omit<tree.Root, 'dependencies'> & { dependencies: PartialModule[] }
+    Omit<graph.Root, 'dependencies'> & { dependencies: PartialModule[] }
 >;

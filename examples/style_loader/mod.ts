@@ -1,6 +1,6 @@
 import { build, page } from '../../packages/core/mod.ts';
-import { script } from '../../packages/loader_script/mod.ts';
-import { style } from '../../packages/loader_style/mod.ts';
+import { ScriptLoader } from '../../packages/loader_script/mod.ts';
+import { StyleLoader } from '../../packages/loader_style/mod.ts';
 import { styleTransformer } from '../../packages/loader_style/transformer.ts';
 
 import * as myPage from './page.ts';
@@ -27,7 +27,7 @@ build({
         // and configured to catch all import ending in `.script.ts`. The bundles
         // will be outputed in `esm` format and with code splitting.
         // see the `script_loader` example for more info.
-        script({
+        new ScriptLoader({
             bundles: [{
                 name: 'body',
                 test: (url) => /\.script\.ts$/.test(url.toString()),
@@ -42,7 +42,7 @@ build({
             }],
         }),
         // We register a style loader to catch all import ending in `.style.ts`
-        style({
+        new StyleLoader({
             test: (url) => /\.style\.ts$/.test(url.toString()),
 
             // The transform function allows you to use any flavor of css you want.

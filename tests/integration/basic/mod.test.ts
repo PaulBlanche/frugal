@@ -1,6 +1,7 @@
 import {
     Config,
-    Frugal,
+    FrugalBuilder,
+    FrugalInstance,
     OFF_LOGGER_CONFIG,
     page,
 } from '../../../packages/core/mod.ts';
@@ -201,25 +202,25 @@ Deno.test('Basic usage: files are regenerated if data change', async () => {
 });
 
 async function getFrugalInstance(config: Pick<Config, 'pages' | 'outputDir'>) {
-    const frugal = await Frugal.build({
+    const frugal = await new FrugalBuilder({
         self: new URL(import.meta.url),
         outputDir: config.outputDir,
         pages: config.pages,
         logging: OFF_LOGGER_CONFIG,
-    });
+    }).create();
 
     return frugal;
 }
 
 function dist() {
-    return `./dist-${new Hash().update(String(Math.random())).alphabetic()}`;
+    return `./dist-${new Hash().update(String(Math.random())).digest()}`;
 }
 
 function relativeUrl(file: string) {
     return new URL(file, import.meta.url);
 }
 
-function publicFileUrl(frugal: Frugal, file: string) {
+function publicFileUrl(frugal: FrugalInstance, file: string) {
     return relativeUrl(
         path.join(frugal.config.publicDir, file),
     );

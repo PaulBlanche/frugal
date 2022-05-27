@@ -10,10 +10,6 @@ function logger() {
     return log.getLogger('frugal:loader:script');
 }
 
-export function bundle(config: BundleConfig) {
-    return bundleCodeSplit(config);
-}
-
 export type EsbuildConfig = Omit<
     esbuild.BuildOptions,
     | 'bundle'
@@ -34,103 +30,154 @@ export type EsbuildConfig = Omit<
     | 'watch'
 >;
 
-export type BundleConfig =
-    & {
-        cacheDir: string;
-        publicDir: string;
-        facades: {
-            bundle: string;
-            entrypoint: string;
-            content: string;
-        }[];
-        transformers?: Transformer[];
-        importMapFile?: string;
-    }
-    & EsbuildConfig;
+type Facade = {
+    bundle: string;
+    entrypoint: string;
+    content: string;
+};
 
-async function bundleCodeSplit(
+type Config = {
+    cacheDir: string;
+    publicDir: string;
+    facades: Facade[];
+    transformers?: Transformer[];
+    importMapURL?: URL;
+};
+
+declare module '../core/Config.ts' {
+    interface ServiceInMessageMap {
+        'loader_script:done': {
+            type: 'loader_script:done';
+            url: Record<string, Record<string, string>>;
+        };
+    }
+
+    interface ServiceOutMessageMap {
+        'loader_script:build': {
+            type: 'loader_script:build';
+            config: {
+                facadeToEntrypoint: FacadeToEntrypoint;
+                entryPoints: string[];
+            };
+        };
+    }
+}
+
+export type BundleConfig = Config & EsbuildConfig;
+
+export async function bundle(
     {
         cacheDir,
         publicDir,
         facades,
         transformers,
-        importMapFile,
+        importMapURL,
         ...esbuildConfig
     }: BundleConfig,
-) {
-    const url: Record<string, Record<string, string>> = {};
+): Promise<Record<string, Record<string, string>>> {
+    const config = {
+        cacheDir,
+        publicDir,
+        facades,
+        transformers,
+        importMapURL,
+    };
 
-    const facadeToEntrypoint: Record<
-        string,
-        { entrypoint: string; bundle: string }[]
-    > = {};
+    const {
+        entryPoints,
+        facadeToEntrypoint,
+    } = await generateEntrypoints(config);
 
-    const entryPoints = await Promise.all(facades.map(async (facade) => {
-        const facadeId = new murmur.Hash().update(
-            facade.content,
-        ).alphabetic();
+    const result = await build(entryPoints, config, esbuildConfig);
 
-        const facadePath = path.join(
-            cacheDir,
-            'script_loader',
-            `${facadeId}.ts`,
-        );
+    return write(result, facadeToEntrypoint, config);
+}
 
-        facadeToEntrypoint[`deno:file://${facadePath}`] =
-            facadeToEntrypoint[`deno:file://${facadePath}`] ?? [];
-        facadeToEntrypoint[`deno:file://${facadePath}`].push({
-            entrypoint: facade.entrypoint,
-            bundle: facade.bundle,
-        });
+type FacadeToEntrypoint = Record<string, {
+    entrypoint: string;
+    bundle: string;
+}[]>;
 
-        await fs.ensureFile(facadePath);
-        await Deno.writeTextFile(facadePath, facade.content);
-        return facadePath;
-    }));
+async function generateEntrypoints(config: Config) {
+    const facadeToEntrypoint: FacadeToEntrypoint = {};
 
-    const result = await esbuild.build({
+    const entryPoints = await Promise.all(
+        config.facades.map(async (facade, i) => {
+            const facadeId = new murmur.Hash().update(String(i)).digest();
+
+            const facadePath = path.join(
+                config.cacheDir,
+                'script_loader',
+                `${facadeId}.ts`,
+            );
+
+            facadeToEntrypoint[`deno:file://${facadePath}`] =
+                facadeToEntrypoint[`deno:file://${facadePath}`] ?? [];
+            facadeToEntrypoint[`deno:file://${facadePath}`].push({
+                entrypoint: facade.entrypoint,
+                bundle: facade.bundle,
+            });
+
+            await fs.ensureFile(facadePath);
+            await Deno.writeTextFile(facadePath, facade.content);
+            return facadePath;
+        }),
+    );
+
+    return { facadeToEntrypoint, entryPoints };
+}
+
+type BuildResult = esbuild.BuildIncremental & {
+    outputFiles: esbuild.OutputFile[];
+    metafile: esbuild.Metafile;
+};
+
+async function build(
+    entryPoints: string[],
+    config: Config,
+    esbuildConfig: EsbuildConfig,
+): Promise<BuildResult> {
+    return await esbuild.build({
         ...esbuildConfig,
         entryPoints,
         bundle: true,
         write: false,
         metafile: true,
         platform: 'neutral',
-        incremental: false,
-        outdir: publicDir,
+        incremental: true,
+        outdir: config.publicDir,
         entryNames: `js/${esbuildConfig.entryNames ?? '[dir]/[name]-[hash]'}`,
         chunkNames: `js/${esbuildConfig.chunkNames ?? '[dir]/[name]-[hash]'}`,
         assetNames: `js/${esbuildConfig.assetNames ?? '[dir]/[name]-[hash]'}`,
         plugins: [frugalPlugin({
             loader: 'portable',
-            importMapFile,
-            transformers,
+            importMapURL: config.importMapURL,
+            transformers: config.transformers,
         })],
-    });
+    }) as BuildResult;
+}
+
+async function write(
+    result: BuildResult,
+    facadeToEntrypoint: FacadeToEntrypoint,
+    config: Config,
+) {
+    const url: Record<string, Record<string, string>> = {};
 
     await Promise.all(result.outputFiles.map(async (outputFile) => {
-        const output = result.metafile
-            ?.outputs[path.relative(Deno.cwd(), outputFile.path)];
+        const relativeOutputPath = path.relative(Deno.cwd(), outputFile.path);
+        const output = result.metafile.outputs[relativeOutputPath];
 
         // if the outputed file is an entry point
         if (output?.entryPoint) {
             const facades = facadeToEntrypoint[output.entryPoint];
-            // if there is a matching facade (so if the outputed file is not a dynamic entrypoint)
+            // if there is a matching facade, it means the entrypoint is a static
+            // entrypoint (no dynamic import)
             if (facades !== undefined) {
-                const bundleName = facades[0].bundle;
-                const bundleHash = new murmur.Hash().update(outputFile.text)
-                    .alphabetic();
-                const bundleExt = path.extname(outputFile.path);
-                const outputPath = path.resolve(
-                    path.dirname(outputFile.path),
-                    `${bundleName}-${bundleHash.toUpperCase()}${bundleExt}`,
-                );
-
-                outputFile.path = outputPath;
-
                 for (const { entrypoint, bundle } of facades) {
                     url[entrypoint] = url[entrypoint] ?? {};
                     url[entrypoint][bundle] = `/${
-                        path.relative(publicDir, outputPath)
+                        path.relative(config.publicDir, outputFile.path)
                     }`;
 
                     logger().debug({
@@ -149,220 +196,9 @@ async function bundleCodeSplit(
         await Deno.writeFile(outputFile.path, outputFile.contents);
     }));
 
-    //TODO(@PaulBlanche): also output metafile ?
+    const metaPath = path.join(config.publicDir, 'js', 'meta.json');
+    await fs.ensureFile(metaPath);
+    await Deno.writeTextFile(metaPath, JSON.stringify(result.metafile));
 
     return url;
 }
-
-/*
-type BundleConfig = {
-    cache: frugal.PersistantCache<any>;
-    input?: Omit<rollup.InputOptions, 'input' | 'cache'>;
-    outputs?: rollup.OutputOptions[];
-    inline?: boolean;
-    publicDir: string;
-    scripts: {
-        entrypoint: string;
-        content: string;
-    }[];
-};
-
-export function bundle(config: BundleConfig) {
-    if (config.inline) {
-        return bundleInline(config);
-    }
-
-    return bundleCodeSplit(config);
-}
-
-
-export function INLINE_CACHE_KEY(entrypoint: string) {
-    return `rollup-inline-${entrypoint}`;
-}
-
-export const CODE_SPLIT_CACHE_KEY = `rollup-code-split`;
-
-const SOURCEMAPPING_URL = 'sourceMa' + 'ppingURL';
-
-export async function bundleInline(
-    { cache, input, scripts, outputs = [] }: BundleConfig,
-): Promise<Record<string, Record<string, string>>> {
-    const bundles: Record<string, Record<string, string>> = {};
-
-    await Promise.all(scripts.map(async (script) => {
-        const cacheKey = INLINE_CACHE_KEY(script.entrypoint);
-        const rollupCache = cache.get(cacheKey);
-
-        const rollupBundle = await rollup.rollup({
-            ...input,
-            cache: rollupCache,
-            plugins: [
-                single(script.entrypoint, script.content),
-                ...(input?.plugins ?? []),
-                denoResolver() as rollup.Plugin,
-            ],
-            input: script.entrypoint,
-        });
-
-        cache.set(cacheKey, rollupBundle.cache);
-
-        await Promise.all(outputs.map(async (outputConfig) => {
-            const { output } = await rollupBundle.generate(outputConfig);
-
-            const bundle = output[0].code;
-
-            const format = outputConfig.format ?? 'es';
-
-            bundles[script.entrypoint] = bundles[script.entrypoint] ?? {};
-            bundles[script.entrypoint][format] = bundle;
-
-            logger().debug({
-                entrypoint: script.entrypoint,
-                format: outputConfig.format,
-                msg() {
-                    return `add inline script ${this.entrypoint} (${this.format} format)`;
-                },
-            });
-        }));
-
-        await rollupBundle.close();
-    }));
-
-    return bundles;
-}
-
-export async function bundleCodeSplit(
-    { cache, input, scripts, outputs = [], publicDir }: BundleConfig,
-): Promise<Record<string, Record<string, string>>> {
-    const urls: Record<string, Record<string, string>> = {};
-
-    const rollupCache = cache.get(CODE_SPLIT_CACHE_KEY);
-
-    const rollupBundle = await rollup.rollup({
-        ...input,
-        cache: rollupCache,
-        plugins: [
-            multiple(scripts),
-            ...(input?.plugins ?? []),
-            denoResolver() as rollup.Plugin,
-        ],
-        input: scripts.map((script) => script.entrypoint),
-    });
-
-    cache.set(CODE_SPLIT_CACHE_KEY, rollupBundle.cache);
-
-    await Promise.all(outputs.map(async (outputConfig) => {
-        const { output } = await rollupBundle.generate(outputConfig);
-
-        await Promise.all(output.map(async (chunkOrAsset) => {
-            if (chunkOrAsset.type === 'asset') {
-                return;
-            }
-
-            const bundle = chunkOrAsset.code;
-            const hash = new murmur.Hash().update(bundle).alphabetic();
-
-            const ext = path.extname(chunkOrAsset.fileName);
-            const name = path.basename(chunkOrAsset.fileName, ext);
-            const fileName = chunkOrAsset.isEntry
-                ? `${name}-${hash}${ext}`
-                : chunkOrAsset.fileName;
-
-            const format = outputConfig.format ?? 'es';
-
-            const chunkUrl = `/js/${format}/${fileName}`;
-            const chunkPath = path.join(publicDir, chunkUrl);
-
-            if (outputConfig.sourcemap && chunkOrAsset.map) {
-                if (outputConfig.sourcemap === 'inline') {
-                    const sourceMapUrl = chunkOrAsset.map.toUrl();
-                    const code = bundle +
-                        `//# ${SOURCEMAPPING_URL}=${sourceMapUrl}\n`;
-
-                    await fs.ensureDir(path.dirname(chunkPath));
-                    await Deno.writeTextFile(chunkPath, code);
-                } else {
-                    const sourceMapPath = `${chunkPath}.map`;
-                    const sourceMapUrl = `${path.basename(sourceMapPath)}`;
-
-                    let code = bundle;
-                    if (outputConfig.sourcemap !== 'hidden') {
-                        code += `//# ${SOURCEMAPPING_URL}=${sourceMapUrl}\n`;
-                    }
-
-                    await fs.ensureDir(path.dirname(chunkPath));
-
-                    await Promise.all([
-                        Deno.writeTextFile(chunkPath, code),
-                        Deno.writeTextFile(
-                            sourceMapPath,
-                            chunkOrAsset.map.toString(),
-                        ),
-                    ]);
-                }
-            } else {
-                await fs.ensureDir(path.dirname(chunkPath));
-                await Deno.writeTextFile(chunkPath, bundle);
-            }
-
-            if (chunkOrAsset.isEntry && chunkOrAsset.facadeModuleId !== null) {
-                urls[chunkOrAsset.facadeModuleId] =
-                    urls[chunkOrAsset.facadeModuleId] ??
-                        {};
-                urls[chunkOrAsset.facadeModuleId][format] = chunkUrl;
-
-                logger().debug({
-                    url: chunkUrl,
-                    format: format,
-                    page: chunkOrAsset.facadeModuleId,
-                    msg() {
-                        return `add bundle script ${this.url} for ${this.page} (${this.format} format)`;
-                    },
-                });
-            }
-        }));
-    }));
-
-    return urls;
-}
-
-function single(entrypoint: string, content: string): rollup.Plugin {
-    return {
-        name: 'frugal-bundle-single',
-        resolveId(id) {
-            if (id === entrypoint) {
-                return entrypoint;
-            }
-            return null;
-        },
-        load(id) {
-            if (id === entrypoint) {
-                return content;
-            }
-            return null;
-        },
-    };
-}
-
-function multiple(
-    scripts: { entrypoint: string; content: string }[],
-): rollup.Plugin {
-    return {
-        name: 'frugal-bundle-single',
-        resolveId(id) {
-            const script = scripts.find((entry) => entry.entrypoint === id);
-            if (script !== undefined) {
-                return id;
-            }
-            return null;
-        },
-        load(id) {
-            const script = scripts.find((entry) => entry.entrypoint === id);
-            if (script !== undefined) {
-                return script.content;
-            }
-            return null;
-        },
-    };
-}
-*/

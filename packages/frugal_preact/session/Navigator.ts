@@ -127,12 +127,10 @@ export function onReadyStateChange(
     callback: () => void,
 ) {
     if (readyStateOrder[document.readyState] >= readyStateOrder[readyState]) {
-        console.log('immediate');
         callback();
     } else {
         document.addEventListener('readystatechange', () => {
             if (document.readyState === readyState) {
-                console.log('on readystatechange');
                 callback();
             }
         });
@@ -142,7 +140,6 @@ export function onReadyStateChange(
         'frugal:readystatechange',
         (event) => {
             if (event.detail.readystate === readyState) {
-                console.log('on frugal:readystatechange');
                 callback();
             }
         },

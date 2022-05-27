@@ -4,29 +4,34 @@ import { assert } from '../../dep/std/asserts.ts';
 
 import * as visitor from './visitor.ts';
 import * as log from '../log/mod.ts';
-import * as tree from './tree.ts';
+import * as graph from './graph.ts';
 
 type Precursor = {
     type: 'precursor';
     url: URL;
-    parent?: tree.Module;
+    parent?: graph.Module;
 };
 
-type Entry = Precursor | tree.Module;
+type Entry = Precursor | graph.Module;
 
 export type Config = {
+    excludes?: URL[];
     load?: (
         resolvedModuleSpecifier: URL,
     ) => Promise<string | undefined> | undefined;
     resolve?: (specifier: string, referrer: URL) => URL | undefined;
 };
 
-export type DependencyTree = tree.Root;
+export type DependencyGraph = graph.Root;
+export type Node = graph.Module;
 
+/**
+ * Build a dependency graph from the given entrypoints.
+ */
 export async function build(
     entrypoints: URL[],
     config: Config = {},
-): Promise<DependencyTree> {
+): Promise<DependencyGraph> {
     const analysisCache = new Map<string, Promise<AnalysisResult>>();
 
     logger().info({
@@ -57,14 +62,21 @@ export async function build(
         type: 'root',
         hash: dependencies.reduce((hash, dependency) => {
             return hash.update(dependency.moduleHash);
-        }, new murmur.Hash()).alphabetic(),
+        }, new murmur.Hash()).digest(),
         dependencies,
     };
 
+    /**
+     * Build the dependency graph for one entrypoint.
+     *
+     * On each descovered module, we also compute a module hash of the content
+     * hash of the module, and the module hash of each dependencies. This hash
+     * changes if the code of the module or any of its dependencies changes.
+     */
     async function buildForEntrypoint(resolvedEntrypoint: URL) {
-        const cache = new Map<string, Promise<tree.Module>>();
+        const cache = new Map<string, Promise<graph.Module>>();
 
-        let root: tree.Module | undefined = undefined;
+        let root: graph.Module | undefined = undefined;
 
         const queue: Entry[] = [{ type: 'precursor', url: resolvedEntrypoint }];
         let current: Entry | undefined;
@@ -94,7 +106,7 @@ export async function build(
                         return hash.update(dependency.moduleHash);
                     },
                     new murmur.Hash().update(current.moduleHash),
-                ).alphabetic();
+                ).digest();
             }
         }
 
@@ -102,10 +114,15 @@ export async function build(
 
         return root;
 
+        /**
+         * Return a memoized module objet. If the precursor url was already
+         * visited for the current entrypoint, this method return the cached
+         * module
+         */
         async function getModule(
             resolvedEntrypoint: URL,
             precursor: Precursor,
-        ): Promise<tree.Module> {
+        ): Promise<graph.Module> {
             const key = `${resolvedEntrypoint}:${precursor.url}`;
             if (!cache.has(key)) {
                 cache.set(key, generateModule(resolvedEntrypoint, precursor));
@@ -117,15 +134,18 @@ export async function build(
             return node;
         }
 
+        /**
+         * Return a module object form an analysis of the module.
+         */
         async function generateModule(
             resolvedEntrypoint: URL,
             precursor: Precursor,
-        ): Promise<tree.Module> {
+        ): Promise<graph.Module> {
             const { dependencies, contentHash } = await analyzeMemoized(
                 precursor.url,
             );
 
-            const module: tree.Module = {
+            const module: graph.Module = {
                 type: 'module',
                 entrypoint: resolvedEntrypoint,
                 url: precursor.url,
@@ -137,17 +157,22 @@ export async function build(
             queue.push(module);
 
             dependencies.reverse().forEach((dependency) => {
-                queue.push({
-                    type: 'precursor',
-                    url: dependency,
-                    parent: module,
-                });
+                if (!excluded(dependency)) {
+                    queue.push({
+                        type: 'precursor',
+                        url: dependency,
+                        parent: module,
+                    });
+                }
             });
 
             return module;
         }
     }
 
+    /**
+     * Return a memoized analysis of a given module
+     */
     async function analyzeMemoized(
         resolvedModuleSpecifier: URL,
     ): Promise<AnalysisResult> {
@@ -161,6 +186,14 @@ export async function build(
 
         return analysisResult;
     }
+
+    function excluded(url: URL) {
+        if (config.excludes === undefined) {
+            return false;
+        }
+
+        return config.excludes.some((exclude) => exclude.href === url.href);
+    }
 }
 
 type AnalysisResult = {
@@ -168,6 +201,18 @@ type AnalysisResult = {
     contentHash: string;
 };
 
+/**
+ * Return an analysis of a given module.
+ *
+ * We extract all imports :
+ * - import declarations : `import foo from 'bar'`, `import { foo } from 'bar'`,
+ *   ...
+ * - named export declarations : `export { foo as bar } from 'bar'`
+ * - export all declarations : `export * as foo from 'bar'`
+ *
+ * We also compute a content hash of the source code of the module. This hash
+ * changes if the source code of the module change.
+ */
 async function analyze(
     resolvedModuleSpecifier: URL,
     config: Config,
@@ -185,7 +230,7 @@ async function analyze(
     const source = await loadSource(resolvedModuleSpecifier, config.load);
 
     const ast = swc.parseSync(source, {
-        target: 'es2019',
+        target: 'es2022',
         syntax: 'typescript',
         tsx: true,
         comments: false,
@@ -222,7 +267,7 @@ async function analyze(
 
     return {
         dependencies,
-        contentHash: new murmur.Hash().update(source).alphabetic(),
+        contentHash: new murmur.Hash().update(source).digest(),
     };
 
     function handleImport(specifier: string) {

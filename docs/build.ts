@@ -1,4 +1,5 @@
 import { config } from './frugal.config.ts';
-import { build } from './dep/frugal/core.ts';
+import { FrugalBuilder } from './dep/frugal/core.ts';
 
-await build(config);
+const instance = await new FrugalBuilder(config).create();
+await instance.build();

@@ -115,7 +115,7 @@ Deno.test('PageBuilder: build will throw on non matching path', async () => {
     const data = { foo: 'bar' };
     const content = 'page content';
 
-    const page = fakeStaticPage<object, { foo: string }, unknown>({
+    const page = fakeStaticPage<{}, { foo: string }, unknown>({
         pattern: 'foo/:id',
         getStaticData: () => data,
         getContent: () => content,
@@ -123,7 +123,7 @@ Deno.test('PageBuilder: build will throw on non matching path', async () => {
 
     const cache = fakeCache();
 
-    const generator = fakePageGenerator<object, { foo: string }, unknown>();
+    const generator = fakePageGenerator<{}, { foo: string }, unknown>();
 
     const builder = new PageBuilder(page, '', generator, {
         persistance: fakePersistance(),

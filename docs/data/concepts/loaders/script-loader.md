@@ -35,17 +35,17 @@ That way you can couple scripts and html easily.
 
 ## Bundling
 
-The `script` loader will generate a different bundle for each page descriptor. If a page descriptor `a` imports some scripts `foo.script.ts` and `bar.script.ts` and a page descriptor only import `foo.script.ts`, you should get two bundles :
+The `script` loader will generate a different bundle for each page descriptor. If a page descriptor `a` imports some scripts `foo.script.ts` and `bar.script.ts` and a page descriptor only import `foo.script.ts`, and those scripts matches the bundle `'body'`, you should get two output bundles :
 
-- a bundle for the page descriptor `a` containing `foo.script.ts` and `bar.script.ts`
-- a bundle fot the page descriptor `b` containing `foo.script.ts`.
+- a bundle `'body'` for the page descriptor `a` containing `foo.script.ts` and `bar.script.ts`
+- a bundle `'body'` for the page descriptor `b` containing `foo.script.ts`.
 
 Under the hood, the `script` loader uses `esbuild` to bundle your scripts. This means that you could enable code splitting and minification, or use any other option [`esbuild` supports](https://esbuild.github.io/api/#build-api) :
 
 ```ts
 import { Config, page } from '../packages/core/mod.ts';
 import * as myPage from './pages/myPage.ts';
-import { script } from 'https://deno.land/x/frugal/packages/loader_script/mod.ts';
+import { ScriptLoader } from 'https://deno.land/x/frugal/packages/loader_script/mod.ts';
 
 const self = new URL(import.meta.url);
 
@@ -55,12 +55,17 @@ export const config: Config = {
     pages: [
         page(myPage),
     ],
-    loader: [script({
-        test: (url) => /\.script\.ts$/.test(url.toString()),
-        formats: ['esm'],
-        minify: true,
-        splitting: true,
-    })],
+    loader: [
+        new ScriptLoader({
+            bundles: [{
+                name: 'body',
+                test: (url) => /\.script\.ts$/.test(url.toString()),
+            }]
+            formats: ['esm'],
+            minify: true,
+            splitting: true,
+        }),
+    ],
 };
 ```
 
@@ -70,7 +75,37 @@ The `script` loader will provide to the `loaderContext` an object with this sha
 export function getContent(
     { loaderContext, entrypoint }: frugal.GetContentParams<Path, Data>,
 ) {
-    const esmBundleUrl = loaderContext.get('script')?.[entrypoint]?.['esm'];
+    const scriptUrl = loaderContext.get('script')[entrypoint]['body'];
+
+    // ...
+}
+```
+
+You can define mutliple bundles. For exemple if you want to have a bundle `'body'` for scripts that goes in the body, and a bundle `'head'` for scripts that goes in the head, you can define two bundles :
+
+```ts
+new ScriptLoader({
+    bundles: [{
+        name: 'body',
+        test: (url) => /\.script\.ts$/.test(url.toString()),
+    }, {
+        name: 'head',
+        test: (url) => /\.head-script\.ts$/.test(url.toString()),
+    }],
+    formats: ['esm'],
+    minify: true,
+    splitting: true,
+});
+```
+
+In the `getContent` method of your page descriptor, you can then get the `url` of the genrated bundles in `loaderContext` :
+
+```ts
+export function getContent(
+    { entrypoint, loaderContext }: frugal.GetContentParams<any, string>,
+) {
+    const bodyScriptUrl = loaderContext.get('script')[entrypoint]['body'];
+    const headScriptUrl = loaderContext.get('script')[entrypoint]['head'];
 
     // ...
 }
@@ -83,8 +118,11 @@ If you use an import map, you have to pass it to the `script` loader. The loader
 ```ts
 const importMapFile = new URL('./import_map.json', import.meta.url).pathname;
 
-script({
-    test: (url) => /\.script\.ts$/.test(url.toString()),
+new ScriptLoader({
+    bundles: [{
+        name: 'body',
+        test: (url) => /\.script\.ts$/.test(url.toString()),
+    }],
     formats: ['esm'],
     minify: true,
     splitting: true,
@@ -120,8 +158,8 @@ export const list = 'list-vngyoe';
 In order to do so, the `script` loader accepts a `transformers` array. Each transformer will run on modules matching a `test` function, and transform the code of the module before bundling :
 
 ```ts
-import { script } from 'https://deno.land/x/frugal/packages/loader_script/mod.ts';
-import { style, styleTransformer } from 'https://deno.land/x/frugal/packages/loader_style/mod.ts';
+import { ScriptLoader } from 'https://deno.land/x/frugal/packages/loader_script/mod.ts';
+import { StyleLoader, styleTransformer } from 'https://deno.land/x/frugal/packages/loader_style/mod.ts';
 
 function isStyleModule(url: string|URL) {
     return /\.style\.ts$/.test(url.toString())
@@ -130,10 +168,10 @@ function isStyleModule(url: string|URL) {
 const config = {
     //...
     loaders: [
-        style({
+        new StyleLoader({
             test: isStyleModule,
         })
-        script({
+        ScriptLoader({
             test: (url) => /\.script\.ts$/.test(url.toString()),
             formats: ['esm'],
             transformers: [{

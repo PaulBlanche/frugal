@@ -32,18 +32,18 @@ export class SpriteSheet<NODE> {
     name?: string;
     sprites: Sprite<NODE>[];
     render: (node: NODE) => string;
-    private collected: boolean;
+    #collected: boolean;
 
     constructor({ render, name = 'spritesheet' }: SpriteSheetConfig<NODE>) {
         this.name = name;
         this.sprites = [];
         this.render = render;
-        this.collected = false;
+        this.#collected = false;
         SPRITESHEETS.push(this);
     }
 
     sprite(children: NODE, name = 'sprite') {
-        if (this.collected) {
+        if (this.#collected) {
             throw Error(
                 'could not register a sprite to a collected spritesheet',
             );
@@ -51,7 +51,7 @@ export class SpriteSheet<NODE> {
 
         const hash = new murmur.Hash().update(this.render(children)).update(
             name ?? '',
-        ).alphabetic();
+        ).digest();
 
         const id = `${name}-${hash}`;
         const sprite = new Sprite(children, id, this);
@@ -62,18 +62,18 @@ export class SpriteSheet<NODE> {
     }
 
     collect() {
-        this.collected = true;
+        this.#collected = true;
     }
 
     url() {
-        if (!this.collected) {
+        if (!this.#collected) {
             throw Error(
                 'could not get a sprite url before collecting the spritesheet',
             );
         }
         const hash = this.sprites.reduce((hash, sprite) => {
             return hash.update(sprite.id);
-        }, new murmur.Hash()).alphabetic();
+        }, new murmur.Hash()).digest();
 
         return `/svg/${this.name}-${hash.toUpperCase()}.svg`;
     }

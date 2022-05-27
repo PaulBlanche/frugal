@@ -16,6 +16,9 @@ export type Module = {
 
 export type Node = Root | Module;
 
+/**
+ * Pre-order walk of a graph. Each node will be visited only once.
+ */
 export function preOrder(node: Node, callback: (node: Node) => void) {
     const queue: { node: Node; path: string[] }[] = [{ node, path: [] }];
     let current: { node: Node; path: string[] } | undefined;
@@ -39,6 +42,9 @@ export function preOrder(node: Node, callback: (node: Node) => void) {
     }
 }
 
+/**
+ * In-order walk of a graph. Each node will be visited only once.
+ */
 export function inOrder(node: Node, callback: (node: Node) => void) {
     const queue: { post?: boolean; node: Node; path: string[] }[] = [{
         node,
