@@ -1,9 +1,49 @@
 export const snapshot = {};
 
-snapshot[`script_loader: file structure 1`] = `'<html>\\n    <head>\\n        <title>foo</title>\\n    </head>\\n    <body>\\n        <div id="log"></div>\\n        <script type="module" src="/js/1g2x6yn.js"></script>\\n    </body>\\n</html>'`;
+snapshot[`script_loader: file structure 1`] = `
+'<html>
+    <head>
+        <title>foo</title>
+    </head>
+    <body>
+        <div id="log"></div>
+        <script type="module" src="/js/1g2x6yn.js"></script>
+    </body>
+</html>'
+`;
 
-snapshot[`script_loader: file structure 2`] = `'<html>\\n    <head>\\n        <title>foo</title>\\n    </head>\\n    <body>\\n        <div id="log"></div>\\n        <script type="module" src="/js/1g2x6yn.js"></script>\\n    </body>\\n</html>'`;
+snapshot[`script_loader: file structure 2`] = `
+'<html>
+    <head>
+        <title>foo</title>
+    </head>
+    <body>
+        <div id="log"></div>
+        <script type="module" src="/js/1g2x6yn.js"></script>
+    </body>
+</html>'
+`;
 
-snapshot[`script_loader: file structure 3`] = `'<html>\\n    <head>\\n        <title>bar</title>\\n    </head>\\n    <body>\\n        <div id="log"></div>\\n        <script type="module" src="/js/9p5xk7.js"></script>\\n    </body>\\n</html>'`;
+snapshot[`script_loader: file structure 3`] = `
+'<html>
+    <head>
+        <title>bar</title>
+    </head>
+    <body>
+        <div id="log"></div>
+        <script type="module" src="/js/9p5xk7.js"></script>
+    </body>
+</html>'
+`;
 
-snapshot[`script_loader: file structure 4`] = `'<html>\\n    <head>\\n        <title>bar</title>\\n    </head>\\n    <body>\\n        <div id="log"></div>\\n        <script type="module" src="/js/9p5xk7.js"></script>\\n    </body>\\n</html>'`;
+snapshot[`script_loader: file structure 4`] = `
+'<html>
+    <head>
+        <title>bar</title>
+    </head>
+    <body>
+        <div id="log"></div>
+        <script type="module" src="/js/9p5xk7.js"></script>
+    </body>
+</html>'
+`;

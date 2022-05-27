@@ -76,7 +76,7 @@ export class CleanConfig {
     #watch?: boolean;
     #config: Config;
     #importMap: importmap.ImportMap;
-    #importMapFile?: string;
+    #importMapURL?: URL;
 
     /**
      * Load the given config
@@ -104,8 +104,8 @@ export class CleanConfig {
         this.#watch = watch;
         this.#config = config;
         this.#importMap = importmap.resolveImportMap(importMap, this.root);
-        this.#importMapFile = importMapFile
-            ? new URL(importMapFile, this.root).pathname
+        this.#importMapURL = importMapFile
+            ? new URL(importMapFile, this.root)
             : undefined;
     }
 
@@ -184,8 +184,8 @@ export class CleanConfig {
         return this.#watch;
     }
 
-    get importMapFile() {
-        return this.#importMapFile;
+    get importMapURL() {
+        return this.#importMapURL;
     }
 
     /**

@@ -41,7 +41,7 @@ type Config = {
     publicDir: string;
     facades: Facade[];
     transformers?: Transformer[];
-    importMapFile?: string;
+    importMapURL?: URL;
 };
 
 declare module '../core/Config.ts' {
@@ -71,7 +71,7 @@ export async function bundle(
         publicDir,
         facades,
         transformers,
-        importMapFile,
+        importMapURL,
         ...esbuildConfig
     }: BundleConfig,
 ): Promise<Record<string, Record<string, string>>> {
@@ -80,7 +80,7 @@ export async function bundle(
         publicDir,
         facades,
         transformers,
-        importMapFile,
+        importMapURL,
     };
 
     const {
@@ -151,7 +151,7 @@ async function build(
         assetNames: `js/${esbuildConfig.assetNames ?? '[dir]/[name]-[hash]'}`,
         plugins: [frugalPlugin({
             loader: 'portable',
-            importMapFile: config.importMapFile,
+            importMapURL: config.importMapURL,
             transformers: config.transformers,
         })],
     }) as BuildResult;

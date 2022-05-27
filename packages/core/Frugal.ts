@@ -438,6 +438,7 @@ export class FrugalWatcher {
                 '--allow-all',
                 filePath,
             ],
+            cwd: path.dirname(config.self.pathname),
         });
 
         child.stdout.pipeTo(Deno.stdout.writable);

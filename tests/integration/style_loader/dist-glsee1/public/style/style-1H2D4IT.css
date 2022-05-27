@@ -1,0 +1,56 @@
+@keyframes a-crjgm2 {
+  from {
+    color: red;
+  }
+
+  to {
+    color: blue;
+  }
+}
+
+    body {
+        .base-component-ntdcly {
+            color: purple;
+        }
+    }
+
+.base-component-ntdcly {
+        color: red;
+        background-color: blue;
+    }
+.component-1yz2e8z {
+        color: blue;
+        font-size: 100px;
+    }
+.component-derived-iqn5ea {
+        
+
+        color: red;
+        background-color: blue;
+    
+
+        color: blue;
+        font-size: 100px;
+    
+        font-size: 50px;
+    }
+.extended-component-1f74y1x {
+        background-color: red;
+    }
+.scoped-11i6is0 {
+        color: red;
+
+        .base-component-ntdcly {
+            color: green;
+        }
+    }
+.global-classname {
+        color: blue;
+
+        .base-component-ntdcly {
+            color: yellow;
+        }
+    }
+.animated-15adumx {
+      animation: a-crjgm2;
+}

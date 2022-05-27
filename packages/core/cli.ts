@@ -4,9 +4,6 @@ import * as colors from '../../dep/std/colors.ts';
 import { AssertionError } from '../../dep/std/asserts.ts';
 import { FrugalBuilder, FrugalWatcher } from './Frugal.ts';
 import { FrugalError } from './FrugalError.ts';
-import { config } from '../../dep/std/dotenv.ts';
-
-config({ safe: true, export: true });
 
 const HEADER = `Frugal CLI`;
 

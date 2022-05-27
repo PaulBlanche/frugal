@@ -209,6 +209,7 @@ export class FrugalWatcherServer {
                 '--allow-all',
                 filePath,
             ],
+            cwd: path.dirname(config.self.pathname),
         });
 
         child.addEventListener('log', (event) => {

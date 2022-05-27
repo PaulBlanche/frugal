@@ -138,7 +138,7 @@ export class ScriptLoader implements frugal.Loader<Generated> {
 
         return await bundle({
             ...this.#bundleConfig,
-            importMapFile: config.importMapFile,
+            importMapURL: config.importMapURL,
             publicDir: config.publicDir,
             cacheDir: config.cacheDir,
             facades,
@@ -165,6 +165,8 @@ function facadeContent(bundle: string[], watch?: boolean) {
         return `import { main as ${name} } from "${path}";
 ${name}();`;
     }).join('\n');
+
+    console.log(watch);
 
     if (watch) {
         return `import { LiveReloadClient } from "${
