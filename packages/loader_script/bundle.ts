@@ -101,28 +101,28 @@ type FacadeToEntrypoint = Record<string, {
 async function generateEntrypoints(config: Config) {
     const facadeToEntrypoint: FacadeToEntrypoint = {};
 
-    const entryPoints = await Promise.all(config.facades.map(async (facade) => {
-        const facadeId = new murmur.Hash().update(
-            facade.content,
-        ).digest();
+    const entryPoints = await Promise.all(
+        config.facades.map(async (facade, i) => {
+            const facadeId = new murmur.Hash().update(String(i)).digest();
 
-        const facadePath = path.join(
-            config.cacheDir,
-            'script_loader',
-            `${facadeId}.ts`,
-        );
+            const facadePath = path.join(
+                config.cacheDir,
+                'script_loader',
+                `${facadeId}.ts`,
+            );
 
-        facadeToEntrypoint[`deno:file://${facadePath}`] =
-            facadeToEntrypoint[`deno:file://${facadePath}`] ?? [];
-        facadeToEntrypoint[`deno:file://${facadePath}`].push({
-            entrypoint: facade.entrypoint,
-            bundle: facade.bundle,
-        });
+            facadeToEntrypoint[`deno:file://${facadePath}`] =
+                facadeToEntrypoint[`deno:file://${facadePath}`] ?? [];
+            facadeToEntrypoint[`deno:file://${facadePath}`].push({
+                entrypoint: facade.entrypoint,
+                bundle: facade.bundle,
+            });
 
-        await fs.ensureFile(facadePath);
-        await Deno.writeTextFile(facadePath, facade.content);
-        return facadePath;
-    }));
+            await fs.ensureFile(facadePath);
+            await Deno.writeTextFile(facadePath, facade.content);
+            return facadePath;
+        }),
+    );
 
     return { facadeToEntrypoint, entryPoints };
 }

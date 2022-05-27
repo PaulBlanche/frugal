@@ -308,53 +308,53 @@ export class BasePage<
         BODY
     >,
 > {
-    protected descriptor: DESCRIPTOR;
-    private urlCompiler: pathToRegexp.PathFunction<PATH>;
-    private urlMatcher: pathToRegexp.MatchFunction<PATH>;
+    _descriptor: DESCRIPTOR;
+    #urlCompiler: pathToRegexp.PathFunction<PATH>;
+    #urlMatcher: pathToRegexp.MatchFunction<PATH>;
 
     constructor(
         descriptor: DESCRIPTOR,
     ) {
-        this.descriptor = descriptor;
-        this.urlCompiler = pathToRegexp.compile(this.descriptor.pattern);
-        this.urlMatcher = pathToRegexp.match(this.descriptor.pattern);
+        this._descriptor = descriptor;
+        this.#urlCompiler = pathToRegexp.compile(this._descriptor.pattern);
+        this.#urlMatcher = pathToRegexp.match(this._descriptor.pattern);
     }
 
     get pattern() {
-        return this.descriptor.pattern;
+        return this._descriptor.pattern;
     }
 
     get self() {
-        return this.descriptor.self;
+        return this._descriptor.self;
     }
 
     getContent(params: Omit<GetContentParams<PATH, DATA>, 'entrypoint'>) {
-        return this.descriptor.getContent({
+        return this._descriptor.getContent({
             ...params,
-            entrypoint: this.descriptor.self,
+            entrypoint: this._descriptor.self,
         });
     }
 
     compile(path: PATH) {
-        return this.urlCompiler(path);
+        return this.#urlCompiler(path);
     }
 
     match(path: string) {
-        return this.urlMatcher(path);
+        return this.#urlMatcher(path);
     }
 
     get canPostDynamicData() {
-        return this.descriptor.postDynamicData !== undefined;
+        return this._descriptor.postDynamicData !== undefined;
     }
 
     postDynamicData(params: PostDynamicDataParams<PATH, BODY>) {
-        if (this.descriptor.postDynamicData === undefined) {
+        if (this._descriptor.postDynamicData === undefined) {
             throw new FrugalError(
-                `Unable to handle post, descriptor ${this.descriptor.pattern} has no postDynamicData`,
+                `Unable to handle post, descriptor ${this._descriptor.pattern} has no postDynamicData`,
             );
         }
 
-        return this.descriptor.postDynamicData(params);
+        return this._descriptor.postDynamicData(params);
     }
 }
 
@@ -375,11 +375,11 @@ export class StaticPage<
     }
 
     getStaticData(params: GetStaticDataParams<PATH>) {
-        return this.descriptor.getStaticData(params);
+        return this._descriptor.getStaticData(params);
     }
 
     getPathList(params: GetPathListParams) {
-        return this.descriptor.getPathList(params);
+        return this._descriptor.getPathList(params);
     }
 }
 
@@ -400,6 +400,6 @@ export class DynamicPage<
     }
 
     getDynamicData(params: GetDynamicDataParams<PATH, BODY>) {
-        return this.descriptor.getDynamicData(params);
+        return this._descriptor.getDynamicData(params);
     }
 }

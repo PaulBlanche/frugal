@@ -7,7 +7,7 @@ snapshot[`script_loader: file structure 1`] = `
     </head>
     <body>
         <div id="log"></div>
-        <script type="module" src="/js/1g2x6yn.js"></script>
+        <script type="module" src="/js/1me2ikf.js"></script>
     </body>
 </html>'
 `;
@@ -19,7 +19,7 @@ snapshot[`script_loader: file structure 2`] = `
     </head>
     <body>
         <div id="log"></div>
-        <script type="module" src="/js/1g2x6yn.js"></script>
+        <script type="module" src="/js/1me2ikf.js"></script>
     </body>
 </html>'
 `;
@@ -31,7 +31,7 @@ snapshot[`script_loader: file structure 3`] = `
     </head>
     <body>
         <div id="log"></div>
-        <script type="module" src="/js/9p5xk7.js"></script>
+        <script type="module" src="/js/1537r83.js"></script>
     </body>
 </html>'
 `;
@@ -43,7 +43,7 @@ snapshot[`script_loader: file structure 4`] = `
     </head>
     <body>
         <div id="log"></div>
-        <script type="module" src="/js/9p5xk7.js"></script>
+        <script type="module" src="/js/1537r83.js"></script>
     </body>
 </html>'
 `;

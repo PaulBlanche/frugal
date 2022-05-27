@@ -110,7 +110,7 @@ type Module = {
  * Class holding the list of all unique modules inside a dependency graph
  */
 export class ModuleList {
-    private modules: Record<string, Module>;
+    #modules: Record<string, Module>;
 
     /**
      * Build the module list from a dependency graph
@@ -144,18 +144,18 @@ export class ModuleList {
     }
 
     constructor(modules: Record<string, Module>) {
-        this.modules = modules;
+        this.#modules = modules;
     }
 
     /**
      * Query the module info based on its URL
      */
     get(url: URL): Module | undefined {
-        return this.modules[String(url)];
+        return this.#modules[String(url)];
     }
 
     async save(filePath: string) {
-        const serializedData = JSON.stringify(this.modules);
+        const serializedData = JSON.stringify(this.#modules);
 
         await fs.ensureFile(filePath);
         await Deno.writeTextFile(filePath, serializedData);

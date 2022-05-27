@@ -146,8 +146,8 @@ type PersistantCacheConfig = {
  * etc...)
  */
 export class PersistantCache<VALUE = unknown> extends Cache<VALUE> {
-    private cachePath: string;
-    private persistance: Persistance;
+    #cachePath: string;
+    #persistance: Persistance;
 
     /**
      * Load the cache from persistance. All persisted data is cold data, and
@@ -192,8 +192,8 @@ export class PersistantCache<VALUE = unknown> extends Cache<VALUE> {
         config: PersistantCacheConfig,
     ) {
         super(serializedCache, config);
-        this.cachePath = cachePath;
-        this.persistance = config.persistance;
+        this.#cachePath = cachePath;
+        this.#persistance = config.persistance;
     }
 
     /**
@@ -201,14 +201,14 @@ export class PersistantCache<VALUE = unknown> extends Cache<VALUE> {
      */
     async save(): Promise<void> {
         logger().info({
-            cachePath: this.cachePath,
+            cachePath: this.#cachePath,
             msg() {
                 return `saving ${this.cachePath}`;
             },
         });
 
-        await this.persistance.set(
-            this.cachePath,
+        await this.#persistance.set(
+            this.#cachePath,
             JSON.stringify(this.serialize()),
         );
     }

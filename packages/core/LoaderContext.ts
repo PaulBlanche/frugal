@@ -14,7 +14,7 @@ type Context = { [s: string]: unknown };
  * Class holding the result of all loaders generation
  */
 export class LoaderContext {
-    private context: Context;
+    #context: Context;
 
     static async build(
         config: CleanConfig,
@@ -56,11 +56,11 @@ export class LoaderContext {
     }
 
     constructor(context: Context) {
-        this.context = context;
+        this.#context = context;
     }
 
     async save(filePath: string) {
-        const serializedData = JSON.stringify(this.context);
+        const serializedData = JSON.stringify(this.#context);
 
         await fs.ensureFile(filePath);
         await Deno.writeTextFile(filePath, serializedData);
@@ -70,7 +70,7 @@ export class LoaderContext {
      * Get the generation result of a loader
      */
     get<VALUE = unknown>(name: string): VALUE | undefined {
-        return this.context[name] as VALUE | undefined;
+        return this.#context[name] as VALUE | undefined;
     }
 }
 
