@@ -141,7 +141,7 @@ export class PageGenerator<
         if (request.method === 'GET') {
             if (this.#config.watch && this.#page instanceof StaticPage) {
                 return await this.#page.getStaticData({
-                    phase: 'build',
+                    phase: 'generate',
                     path,
                 });
             }
