@@ -1,6 +1,11 @@
 import * as log from '../log/mod.ts';
 import { Persistance } from './Persistance.ts';
 
+export type SerializedCache = {
+    hash: string;
+    data: CacheData;
+};
+
 export type CacheData = {
     [s: string]: unknown;
 };
@@ -15,40 +20,50 @@ function logger() {
     return log.getLogger('frugal:Cache');
 }
 
+type CacheConfig = {
+    hash?: string;
+};
+
 /**
  * Base Cache class
  */
 export class Cache<VALUE = unknown> {
-    private previousData: CacheData;
-    private nextData: CacheData;
+    #hash?: string;
+    #previousData: CacheData;
+    #nextData: CacheData;
 
-    static unserialize(data?: CacheData) {
-        if (data === undefined) {
-            return new Cache({});
+    static unserialize(serialized?: SerializedCache, config?: CacheConfig) {
+        if (serialized === undefined) {
+            return new Cache({ hash: config?.hash ?? '', data: {} }, config);
         }
-        return new Cache(data);
+        return new Cache(serialized, config);
     }
 
     constructor(
-        previousData: CacheData,
-        nextData: CacheData = {},
+        serialized: SerializedCache,
+        config: CacheConfig = {},
     ) {
-        this.previousData = previousData;
-        this.nextData = nextData;
+        this.#hash = config.hash;
+        if (config.hash !== undefined && config.hash !== serialized.hash) {
+            this.#previousData = {};
+        } else {
+            this.#previousData = serialized.data;
+        }
+        this.#nextData = {};
     }
 
     /**
      * Returns true if the key is present from the previous run (cold data)
      */
     had(key: string) {
-        return key in this.previousData;
+        return key in this.#previousData;
     }
 
     /**
      * Returns true if the key is present from the current run (hot data)
      */
     has(key: string) {
-        return key in this.nextData;
+        return key in this.#nextData;
     }
 
     /**
@@ -92,10 +107,10 @@ export class Cache<VALUE = unknown> {
      */
     get<V = VALUE>(key: string): V | undefined {
         if (this.has(key)) {
-            return this.nextData[key] as V;
+            return this.#nextData[key] as V;
         }
         if (this.had(key)) {
-            return this.previousData[key] as V;
+            return this.#previousData[key] as V;
         }
         return undefined;
     }
@@ -104,7 +119,7 @@ export class Cache<VALUE = unknown> {
      * Set the value associated to the key in hot data
      */
     set<V = VALUE>(key: string, value: V) {
-        this.nextData[key] = value;
+        this.#nextData[key] = value;
     }
 
     /**
@@ -112,18 +127,19 @@ export class Cache<VALUE = unknown> {
      */
     propagate(key: string) {
         if (this.had(key) && !this.has(key)) {
-            this.set(key, this.previousData[key]);
+            this.set(key, this.#previousData[key]);
         }
     }
 
-    serialize(): CacheData {
-        return this.nextData;
-    }
-
-    toJSON() {
-        return { nextData: this.nextData, previousData: this.previousData };
+    serialize(): SerializedCache {
+        return { hash: this.#hash ?? '', data: this.#nextData };
     }
 }
+
+type PersistantCacheConfig = {
+    persistance: Persistance;
+    hash?: string;
+};
 
 /**
  * A Cache that can be persisted using a `Persistance` layer (filesystem, Redis,
@@ -137,7 +153,10 @@ export class PersistantCache<VALUE = unknown> extends Cache<VALUE> {
      * Load the cache from persistance. All persisted data is cold data, and
      * hot data is empty at first.
      */
-    static async load(persistance: Persistance, cachePath: string) {
+    static async load(
+        cachePath: string,
+        config: PersistantCacheConfig,
+    ) {
         logger().info({
             cachePath,
             msg() {
@@ -145,11 +164,12 @@ export class PersistantCache<VALUE = unknown> extends Cache<VALUE> {
             },
         });
         try {
-            const data = await persistance.get(cachePath);
+            const data = await config.persistance.get(cachePath);
+            const serializedCache: SerializedCache = JSON.parse(data);
             return new PersistantCache(
-                persistance,
                 cachePath,
-                JSON.parse(data),
+                serializedCache,
+                config,
             );
         } catch {
             logger().debug({
@@ -159,19 +179,21 @@ export class PersistantCache<VALUE = unknown> extends Cache<VALUE> {
                 },
             });
 
-            return new PersistantCache(persistance, cachePath, {});
+            return new PersistantCache(cachePath, {
+                hash: config.hash ?? '',
+                data: {},
+            }, config);
         }
     }
 
     constructor(
-        persistance: Persistance,
         cachePath: string,
-        previousData: CacheData,
-        nextData: CacheData = {},
+        serializedCache: SerializedCache,
+        config: PersistantCacheConfig,
     ) {
-        super(previousData, nextData);
+        super(serializedCache, config);
         this.cachePath = cachePath;
-        this.persistance = persistance;
+        this.persistance = config.persistance;
     }
 
     /**

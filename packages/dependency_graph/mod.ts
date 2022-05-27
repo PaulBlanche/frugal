@@ -15,6 +15,7 @@ type Precursor = {
 type Entry = Precursor | graph.Module;
 
 export type Config = {
+    excludes?: URL[];
     load?: (
         resolvedModuleSpecifier: URL,
     ) => Promise<string | undefined> | undefined;
@@ -156,11 +157,13 @@ export async function build(
             queue.push(module);
 
             dependencies.reverse().forEach((dependency) => {
-                queue.push({
-                    type: 'precursor',
-                    url: dependency,
-                    parent: module,
-                });
+                if (!excluded(dependency)) {
+                    queue.push({
+                        type: 'precursor',
+                        url: dependency,
+                        parent: module,
+                    });
+                }
             });
 
             return module;
@@ -182,6 +185,14 @@ export async function build(
         assert(analysisResult !== undefined);
 
         return analysisResult;
+    }
+
+    function excluded(url: URL) {
+        if (config.excludes === undefined) {
+            return false;
+        }
+
+        return config.excludes.some((exclude) => exclude.href === url.href);
     }
 }
 

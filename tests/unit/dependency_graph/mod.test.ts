@@ -435,6 +435,57 @@ Deno.test('dependency_graph: handling all kind of imports', async () => {
     );
 });
 
+Deno.test('dependency_graph: files with basic tree dependency and excludes', async () => {
+    const ffs = new FakeEnvironment({
+        'file:///entrypoint1.ts': `
+            import './module1.ts'
+            import './module2.ts'
+        `,
+        'file:///module1.ts': `
+            import './module11.ts'
+        `,
+        'file:///module2.ts': `
+            import './module21.ts'
+            //module2.ts
+        `,
+        'file:///module11.ts': `
+            //module11.ts
+        `,
+        'file:///module21.ts': `
+            //module21.ts
+    `,
+    });
+
+    const tree = await dependency.build([new URL('file:///entrypoint1.ts')], {
+        excludes: [new URL('file:///module2.ts')],
+    });
+
+    asserts.assertEquals(
+        asSpy(Deno.readTextFile).calls.map((call) => call.args[0].toString()),
+        [
+            'file:///entrypoint1.ts',
+            'file:///module1.ts',
+            'file:///module11.ts',
+        ],
+        'each local file should be read once',
+    );
+
+    asserts.assertEquals<graph.Root>(
+        tree,
+        root(ffs, {
+            dependencies: [{
+                url: new URL('file:///entrypoint1.ts'),
+                entrypoint: new URL('file:///entrypoint1.ts'),
+                dependencies: [{
+                    url: new URL('file:///module1.ts'),
+                    dependencies: [{
+                        url: new URL('file:///module11.ts'),
+                    }],
+                }],
+            }],
+        }),
+    );
+});
 class FakeEnvironment {
     env: Map<string, string>;
 

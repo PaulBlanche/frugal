@@ -166,8 +166,6 @@ function facadeContent(bundle: string[], watch?: boolean) {
 ${name}();`;
     }).join('\n');
 
-    console.log(watch);
-
     if (watch) {
         return `import { LiveReloadClient } from "${
             new URL('../core/watch/LiveReloadClient.ts', import.meta.url)

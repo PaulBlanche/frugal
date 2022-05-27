@@ -4,6 +4,7 @@ import { GenerationRequest } from './Page.ts';
 import * as log from '../log/mod.ts';
 import * as path from '../../dep/std/path.ts';
 import * as fs from '../../dep/std/fs.ts';
+import { assert } from '../../dep/std/asserts.ts';
 import { DependencyGraph, ModuleList } from './DependencyGraph.ts';
 import { FilesystemPersistance } from './Persistance.ts';
 import { PersistantCache } from './Cache.ts';
@@ -265,11 +266,14 @@ export class FrugalBuilder {
             },
         });
 
-        const { assets, moduleList } = await this.#analyse();
+        const { assets, moduleList, configModule } = await this.#analyse();
 
         const cache = await PersistantCache.load(
-            config.cachePersistance,
             path.resolve(config.cacheDir, PAGE_CACHE_FILENAME),
+            {
+                hash: configModule?.moduleHash,
+                persistance: config.cachePersistance,
+            },
         );
 
         const loaderContext = await LoaderContext.build(
@@ -277,12 +281,15 @@ export class FrugalBuilder {
             assets,
             (name) => {
                 return PersistantCache.load(
-                    new FilesystemPersistance(),
                     path.resolve(
                         config.cacheDir,
                         'loader',
                         `${name}.json`,
                     ),
+                    {
+                        hash: configModule?.moduleHash,
+                        persistance: new FilesystemPersistance(),
+                    },
                 );
             },
         );
@@ -334,8 +341,10 @@ export class FrugalBuilder {
                 path.resolve(config.cacheDir, MODULES_FILENAME),
             );
             const cache = await PersistantCache.load(
-                config.cachePersistance,
                 path.resolve(config.cacheDir, PAGE_CACHE_FILENAME),
+                {
+                    persistance: config.cachePersistance,
+                },
             );
             const loaderContext = await LoaderContext.load(
                 path.resolve(config.cacheDir, LOADER_CONTEXT_FILENAME),
@@ -376,9 +385,25 @@ export class FrugalBuilder {
             },
         );
 
+        const configWithoutPagesDependencyTree = await DependencyGraph.build([
+            config.self,
+        ], {
+            resolve: config.resolve,
+            excludes: config.pages.map((page) => page.self),
+        });
+
+        const configModule = configWithoutPagesDependencyTree.moduleList().get(
+            config.self,
+        );
+        assert(configModule !== undefined);
+
         const assets = dependencyTree.gather(config.loaders);
 
-        return { assets, moduleList: dependencyTree.moduleList() };
+        return {
+            assets,
+            moduleList: dependencyTree.moduleList(),
+            configModule,
+        };
     }
 
     async _getCleanConfig() {

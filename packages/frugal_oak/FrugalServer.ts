@@ -217,7 +217,6 @@ export class FrugalWatcherServer {
         });
 
         child.addEventListener('message', (event) => {
-            console.log('coucou');
             if (event.message.type === 'restart') {
                 server.reload();
             }
