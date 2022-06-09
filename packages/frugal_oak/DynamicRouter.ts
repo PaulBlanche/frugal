@@ -1,5 +1,5 @@
 import * as oak from 'oak';
-import { FrugalInstance } from '../core/mod.ts';
+import { FrugalInstance, GenerationRequest } from '../core/mod.ts';
 import * as log from '../log/mod.ts';
 import { PrgOrchestrator } from './PrgOrchestrator.ts';
 import { DynamicContext } from './FrugalContext.ts';
@@ -108,12 +108,14 @@ function generateMiddleware() {
             },
         });
 
-        const result = await ctx.generator.generate({
+        const request: GenerationRequest = {
             url: context.request.url,
             headers: context.request.headers,
             method: 'GET',
             body: context.request.body(),
-        });
+        };
+
+        const result = await ctx.generator.generate(request);
 
         if (result === undefined) {
             logger('generateMiddleware').debug({
@@ -138,9 +140,17 @@ function generateMiddleware() {
 
         context.response.status = 200;
         context.response.body = result.content;
-        context.response.headers.set(
+        context.response.headers = result.headers;
+        if (!context.response.headers.has('ETag')) {
+            context.response.headers.set(
+                'ETag',
+                await oak.etag.calculate(result.content, { weak: true }),
+            );
+        }
+
+        /*context.response.headers.set(
             'Cache-Control',
             'public, max-age=5, must-revalidate',
-        );
+        );*/
     };
 }

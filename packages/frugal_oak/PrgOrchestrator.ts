@@ -84,6 +84,9 @@ export class PrgOrchestrator {
             context: Context,
             next: () => Promise<unknown>,
         ): Promise<unknown> => {
+            const ctx = context as FrugalContext;
+            assert(ctx.generator);
+
             const sessionId = await context.cookies.get(SESSION_COOKIE_NAME);
             if (sessionId === undefined) {
                 logger('getRedirectionMiddleware').debug({
@@ -108,13 +111,22 @@ export class PrgOrchestrator {
                 });
 
                 const content = await this.#sessionManager.get(sessionId);
+                const headers = await ctx.generator.getHeaders({
+                    url: context.request.url,
+                    headers: context.request.headers,
+                    method: 'POST',
+                    body: context.request.body(),
+                });
 
                 context.response.status = 200;
                 context.response.body = content;
-                context.response.headers.set(
-                    'Cache-Control',
-                    'no-store',
-                );
+                context.response.headers = headers;
+                if (!context.response.headers.has('Cache-Control')) {
+                    context.response.headers.set(
+                        'Cache-Control',
+                        'no-store',
+                    );
+                }
 
                 await this.#sessionManager.delete(sessionId);
             } catch (error: unknown) {

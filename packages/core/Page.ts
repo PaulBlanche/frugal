@@ -57,6 +57,31 @@ export type PostDynamicDataParams<
     request: GenerationRequest<BODY>;
 };
 
+export type GetStaticHeadersParams<
+    PATH extends Record<string, string> = Record<string, string>,
+> = {
+    phase: Phase;
+    path: PATH;
+};
+
+export type GetDynamicHeadersParams<
+    PATH extends Record<string, string> = Record<string, string>,
+    BODY = unknown,
+> = {
+    phase: Phase;
+    path: PATH;
+    request: GenerationRequest<BODY>;
+};
+
+export type PostDynamicHeadersParams<
+    PATH extends Record<string, string> = Record<string, string>,
+    BODY = unknown,
+> = {
+    phase: 'generate';
+    path: PATH;
+    request: GenerationRequest<BODY>;
+};
+
 export type GetContentParams<
     PATH extends Record<string, string> = Record<string, string>,
     DATA = unknown,
@@ -119,6 +144,26 @@ export type PostDynamicData<
     params: PostDynamicDataParams<PATH, BODY>,
 ) => Promise<DATA> | DATA;
 
+export type GetStaticHeaders<
+    PATH extends Record<string, string> = Record<string, string>,
+> = (
+    params: GetStaticHeadersParams<PATH>,
+) => Promise<Headers> | Headers;
+
+export type GetDynamicHeaders<
+    PATH extends Record<string, string> = Record<string, string>,
+    BODY = unknown,
+> = (
+    params: GetDynamicHeadersParams<PATH, BODY>,
+) => Promise<Headers> | Headers;
+
+export type PostDynamicHeaders<
+    PATH extends Record<string, string> = Record<string, string>,
+    BODY = unknown,
+> = (
+    params: PostDynamicHeadersParams<PATH, BODY>,
+) => Promise<Headers> | Headers;
+
 /**
  * Get the content of a page given its path object and data object.
  */
@@ -136,10 +181,12 @@ export type StaticPageDescriptor<
 > = {
     self: URL;
     pattern: string;
-    getPathList: GetPathList<PATH>;
+    getPathList?: GetPathList<PATH>;
     postDynamicData?: PostDynamicData<PATH, DATA, BODY>;
-    getStaticData: GetStaticData<PATH, DATA>;
+    getStaticData?: GetStaticData<PATH, DATA>;
     getContent: GetContent<PATH, DATA>;
+    getStaticHeaders?: GetStaticHeaders<PATH>;
+    postDynamicHeaders?: PostDynamicHeaders<PATH, BODY>;
 };
 
 export type DynamicPageDescriptor<
@@ -152,6 +199,8 @@ export type DynamicPageDescriptor<
     getDynamicData: GetDynamicData<PATH, DATA, BODY>;
     postDynamicData?: PostDynamicData<PATH, DATA, BODY>;
     getContent: GetContent<PATH, DATA>;
+    getDynamicHeaders?: GetDynamicHeaders<PATH, BODY>;
+    postDynamicHeaders?: PostDynamicHeaders<PATH, BODY>;
 };
 
 export type PageDescriptor<
@@ -356,6 +405,13 @@ export class BasePage<
 
         return this._descriptor.postDynamicData(params);
     }
+
+    postDynamicHeaders(params: PostDynamicHeadersParams<PATH, BODY>) {
+        if (this._descriptor.postDynamicHeaders === undefined) {
+            return new Headers();
+        }
+        return this._descriptor.postDynamicHeaders(params);
+    }
 }
 
 export class StaticPage<
@@ -375,11 +431,24 @@ export class StaticPage<
     }
 
     getStaticData(params: GetStaticDataParams<PATH>) {
+        if (this._descriptor.getStaticData === undefined) {
+            return {} as any;
+        }
         return this._descriptor.getStaticData(params);
     }
 
     getPathList(params: GetPathListParams) {
+        if (this._descriptor.getPathList === undefined) {
+            return [{} as any];
+        }
         return this._descriptor.getPathList(params);
+    }
+
+    getStaticHeaders(params: GetStaticHeadersParams<PATH>) {
+        if (this._descriptor.getStaticHeaders === undefined) {
+            return new Headers();
+        }
+        return this._descriptor.getStaticHeaders(params);
     }
 }
 
@@ -401,5 +470,12 @@ export class DynamicPage<
 
     getDynamicData(params: GetDynamicDataParams<PATH, BODY>) {
         return this._descriptor.getDynamicData(params);
+    }
+
+    getDynamicHeaders(params: GetDynamicHeadersParams<PATH, BODY>) {
+        if (this._descriptor.getDynamicHeaders === undefined) {
+            return new Headers();
+        }
+        return this._descriptor.getDynamicHeaders(params);
     }
 }

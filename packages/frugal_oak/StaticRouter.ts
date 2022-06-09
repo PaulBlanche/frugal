@@ -256,11 +256,13 @@ export class StaticRouter {
         };
     }
 
-    async #sendFromCache(context: Context, pathname: string) {
+    async #sendFromCache(context: StaticContext, pathname: string) {
+        assert(context.builder);
         const config = this.#frugal.config;
 
         const pagePath = path.join(config.publicDir, pathname);
         const content = await config.pagePersistance.get(pagePath);
+        const headers = await context.builder.getHeaders(pathname, 'build');
 
         if (await ifNoneMatch(context, content)) {
             context.response.status = 200;
@@ -270,15 +272,18 @@ export class StaticRouter {
             context.response.body = null;
         }
 
-        context.response.headers.set(
-            'ETag',
-            await etag.calculate(content, { weak: true }),
-        );
+        context.response.headers = headers;
+        if (!context.response.headers.has('ETag')) {
+            context.response.headers.set(
+                'ETag',
+                await etag.calculate(content, { weak: true }),
+            );
+        }
 
-        context.response.headers.set(
+        /*context.response.headers.set(
             'Cache-Control',
             'public, max-age=5, must-revalidate',
-        );
+        );*/
     }
 }
 

@@ -81,6 +81,14 @@ export class PageBuilder<
         });
     }
 
+    getHeaders(path: PATH, phase: Phase) {
+        assert(
+            this.#page instanceof StaticPage,
+            `Can't statically build DynamicPage ${this.#page.pattern}`,
+        );
+        return this.#page.getStaticHeaders({ phase, path });
+    }
+
     /**
      * Build the page for a given path and return the output path.
      *

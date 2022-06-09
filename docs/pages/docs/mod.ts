@@ -101,6 +101,12 @@ export async function getStaticData(
     };
 }
 
+export function getStaticHeaders() {
+    return new Headers({
+        'Cache-Control': 'public, max-age=3600, must-revalidate', // cached for the hour
+    });
+}
+
 export const pattern = `/docs:slug(.*)`;
 
 export const self = new URL(import.meta.url);

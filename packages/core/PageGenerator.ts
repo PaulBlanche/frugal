@@ -53,11 +53,9 @@ export class PageGenerator<
      */
     async generate(
         request: GenerationRequest<BODY>,
-    ): Promise<{ pagePath: string; content: string }> {
+    ): Promise<{ pagePath: string; content: string; headers: Headers }> {
+        const path = this.#getPath(request);
         const pathname = new URL(request.url).pathname;
-        const match = this.#page.match(pathname);
-        assert(match !== false);
-        const path = match.params;
 
         logger().debug({
             pattern: this.#page.pattern,
@@ -68,8 +66,9 @@ export class PageGenerator<
         });
 
         const data = await this.#getData(path, request);
+        const headers = await this.#getHeaders(path, request);
 
-        const result = await this.generateContentFromData(
+        const { pagePath, content } = await this.generateContentFromData(
             pathname,
             {
                 data,
@@ -79,7 +78,47 @@ export class PageGenerator<
             },
         );
 
-        return result;
+        return { pagePath, content, headers };
+    }
+
+    async getHeaders(request: GenerationRequest<BODY>) {
+        const path = this.#getPath(request);
+        return await this.#getHeaders(path, request);
+    }
+
+    #getPath(request: GenerationRequest<BODY>): PATH {
+        const pathname = new URL(request.url).pathname;
+        const match = this.#page.match(pathname);
+        assert(match !== false);
+        return match.params;
+    }
+
+    async #getHeaders(path: PATH, request: GenerationRequest<BODY>) {
+        if (request.method === 'GET') {
+            if (this.#config.watch && this.#page instanceof StaticPage) {
+                return await this.#page.getStaticHeaders({
+                    phase: 'generate',
+                    path,
+                });
+            }
+
+            assert(
+                this.#page instanceof DynamicPage,
+                `Can't dynamically generate StaticPage ${this.#page.pattern}`,
+            );
+
+            return await this.#page.getDynamicHeaders({
+                phase: 'generate',
+                path,
+                request,
+            });
+        }
+
+        return await this.#page.postDynamicHeaders({
+            phase: 'generate',
+            path,
+            request,
+        });
     }
 
     /**
