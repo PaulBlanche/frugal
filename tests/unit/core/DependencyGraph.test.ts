@@ -122,6 +122,7 @@ function root(
 
     return {
         type: 'root',
+        id: 'root',
         hash: node.hash ?? '',
         dependencies,
     };
@@ -134,10 +135,14 @@ function module(
         return module({ ...dependency, entrypoint: node.entrypoint });
     });
 
+    const entrypoint = node.entrypoint ?? new URL('file:///');
+    const url = node.url ?? new URL('file:///');
+
     return {
         type: 'module',
-        entrypoint: node.entrypoint ?? new URL('file:///'),
-        url: node.url ?? new URL('file:///'),
+        id: `${entrypoint}:${url}`,
+        entrypoint,
+        url,
         moduleHash: dependencies.reduce(
             (hash, node) => hash.update(node.moduleHash),
             new murmur.Hash().update(node.contentHash ?? ''),

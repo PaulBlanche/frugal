@@ -307,7 +307,7 @@ Deno.test('dependency_graph: custom resolution/loading', async () => {
         'file:///foo.ts': `
         // foo.ts
     `,
-        'file:///bar.ts': `
+        'file:///virtual-bar.ts': `
         // bar.ts
     `,
     });
@@ -324,7 +324,7 @@ Deno.test('dependency_graph: custom resolution/loading', async () => {
     const load = spy((resolvedModuleSpecifier: URL) => {
         if (resolvedModuleSpecifier.protocol === 'virtual:') {
             if (resolvedModuleSpecifier.pathname === '/bar.ts') {
-                return Promise.resolve(ffs.get('file:///bar.ts'));
+                return Promise.resolve(ffs.get('file:///virtual-bar.ts'));
             }
         }
     });
@@ -369,10 +369,11 @@ Deno.test('dependency_graph: custom resolution/loading', async () => {
                     url: new URL('file:///foo.ts'),
                 }, {
                     ...module(ffs, {
-                        url: new URL('file:///bar.ts'),
+                        url: new URL('file:///virtual-bar.ts'),
                         entrypoint: new URL('file:///entrypoint1.ts'),
                     }),
                     url: new URL('virtual:///bar.ts'),
+                    id: 'file:///entrypoint1.ts:virtual:///bar.ts',
                 }],
             }],
         }),
@@ -583,6 +584,7 @@ function root(
 
     return {
         type: 'root',
+        id: 'root',
         hash: dependencies.reduce((hash, module) => {
             return hash.update(module.moduleHash);
         }, new murmur.Hash()).digest(),
@@ -608,6 +610,7 @@ function module(
 
     const mod: graph.Module = {
         type: 'module',
+        id: `${moduleConfig.entrypoint}:${moduleConfig.url}`,
         entrypoint: moduleConfig.entrypoint,
         url: moduleConfig.url,
         moduleHash: dependencies.reduce((hash, node) => {
