@@ -3,7 +3,7 @@ export const snapshot = {};
 snapshot[`style_loader: file structure 1`] = `
 '<html>
     <head>
-        <link rel="stylesheet" href="/style/style-1H2D4IT.css" />
+        <link rel="stylesheet" href="/style/style-V8ENIT.css" />
     </head>
     <body>
         <div class="extended-component-1f74y1x component-1yz2e8z base-component-ntdcly" />
