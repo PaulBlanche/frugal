@@ -432,14 +432,14 @@ export class StaticPage<
 
     getStaticData(params: GetStaticDataParams<PATH>) {
         if (this._descriptor.getStaticData === undefined) {
-            return {} as any;
+            return {} as DATA;
         }
         return this._descriptor.getStaticData(params);
     }
 
     getPathList(params: GetPathListParams) {
         if (this._descriptor.getPathList === undefined) {
-            return [{} as any];
+            return [{} as PATH];
         }
         return this._descriptor.getPathList(params);
     }
