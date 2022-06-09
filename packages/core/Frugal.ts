@@ -395,6 +395,7 @@ export class FrugalBuilder {
         const configModule = configWithoutPagesDependencyTree.moduleList().get(
             config.self,
         );
+
         assert(configModule !== undefined);
 
         const assets = dependencyTree.gather(config.loaders);

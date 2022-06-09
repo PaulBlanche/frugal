@@ -5,6 +5,7 @@ import { assert } from '../../dep/std/asserts.ts';
 import * as visitor from './visitor.ts';
 import * as log from '../log/mod.ts';
 import * as graph from './graph.ts';
+import * as path from '../../dep/std/path.ts';
 
 type Precursor = {
     type: 'precursor';
@@ -60,6 +61,7 @@ export async function build(
 
     return {
         type: 'root',
+        id: 'root',
         hash: dependencies.reduce((hash, dependency) => {
             return hash.update(dependency.moduleHash);
         }, new murmur.Hash()).digest(),
@@ -123,12 +125,12 @@ export async function build(
             resolvedEntrypoint: URL,
             precursor: Precursor,
         ): Promise<graph.Module> {
-            const key = `${resolvedEntrypoint}:${precursor.url}`;
-            if (!cache.has(key)) {
-                cache.set(key, generateModule(resolvedEntrypoint, precursor));
+            const id = `${resolvedEntrypoint}:${precursor.url}`;
+            if (!cache.has(id)) {
+                cache.set(id, generateModule(resolvedEntrypoint, precursor));
             }
 
-            const node = await cache.get(key);
+            const node = await cache.get(id);
             assert(node !== undefined);
 
             return node;
@@ -147,6 +149,7 @@ export async function build(
 
             const module: graph.Module = {
                 type: 'module',
+                id: `${resolvedEntrypoint}:${precursor.url}`,
                 entrypoint: resolvedEntrypoint,
                 url: precursor.url,
                 moduleHash: contentHash,
@@ -228,6 +231,11 @@ async function analyze(
     });
 
     const source = await loadSource(resolvedModuleSpecifier, config.load);
+    const contentHash = new murmur.Hash().update(source).digest();
+
+    if (!/\.[tj]sx?/.test(path.extname(resolvedModuleSpecifier.pathname))) {
+        return { contentHash, dependencies };
+    }
 
     const ast = swc.parseSync(source, {
         target: 'es2022',
@@ -265,10 +273,7 @@ async function analyze(
         },
     });
 
-    return {
-        dependencies,
-        contentHash: new murmur.Hash().update(source).digest(),
-    };
+    return { dependencies, contentHash };
 
     function handleImport(specifier: string) {
         const resolvedDependency = resolveModule(

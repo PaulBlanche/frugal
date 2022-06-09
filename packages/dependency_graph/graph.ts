@@ -1,5 +1,6 @@
 export type Root = {
     type: 'root';
+    id: 'root';
     url?: URL;
     hash: string;
     dependencies: Module[];
@@ -7,6 +8,7 @@ export type Root = {
 
 export type Module = {
     type: 'module';
+    id: string;
     entrypoint: URL;
     url: URL;
     moduleHash: string;
@@ -46,24 +48,31 @@ export function preOrder(node: Node, callback: (node: Node) => void) {
  * In-order walk of a graph. Each node will be visited only once.
  */
 export function inOrder(node: Node, callback: (node: Node) => void) {
-    const queue: { post?: boolean; node: Node; path: string[] }[] = [{
+    const expanded = new Set();
+    const visited = new Set();
+    const queue: { post?: boolean; node: Node }[] = [{
         node,
-        path: [],
     }];
-    let current: { post?: boolean; node: Node; path: string[] } | undefined;
+    let current: { post?: boolean; node: Node } | undefined;
     while ((current = queue.pop()) !== undefined) {
-        const currentPath = current.path;
         const currentNode = current.node;
-
-        const currentNodeUrl = currentNode.url?.toString() ?? '';
+        const id = currentNode.id;
 
         if (current.post === true) {
+            if (visited.has(id)) {
+                continue;
+            }
+            visited.add(id);
+
             callback(currentNode);
             continue;
         }
 
-        // detect cycles
-        if (currentPath.includes(currentNodeUrl)) continue;
+        if (expanded.has(id)) {
+            continue;
+        }
+
+        expanded.add(id);
 
         current.post = true;
         queue.push(current);
@@ -71,7 +80,6 @@ export function inOrder(node: Node, callback: (node: Node) => void) {
         currentNode.dependencies.slice().reverse().forEach((dependency) => {
             queue.push({
                 node: dependency,
-                path: [...currentPath, currentNodeUrl],
             });
         });
     }
