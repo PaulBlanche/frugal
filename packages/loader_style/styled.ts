@@ -255,7 +255,7 @@ export function cx(
             ) {
                 return Object.entries(name).reduce<string[]>(
                     (classNames, [name, value]) => {
-                        if (Boolean(value)) {
+                        if (value) {
                             classNames.push(name);
                         }
                         return classNames;
