@@ -45,6 +45,11 @@ export function DataProvider(
         return (
             <>
                 <Head>
+                    <script
+                        dangerouslySetInnerHTML={{
+                            __html: configScript.join(''),
+                        }}
+                    />
                     {context && embedData && (
                         <script
                             dangerouslySetInnerHTML={{
@@ -58,11 +63,6 @@ export function DataProvider(
                             }}
                         />
                     )}
-                    <script
-                        dangerouslySetInnerHTML={{
-                            __html: configScript.join(''),
-                        }}
-                    />
                 </Head>
                 <dataContext.Provider value={context}>
                     {children}

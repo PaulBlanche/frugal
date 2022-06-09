@@ -65,7 +65,7 @@ const DEFAULT_DOCUMENT: Document = (
     );
 };
 
-export function getContentFrom<PATH, DATA>(
+export function getContentFrom<PATH extends Record<string, string>, DATA>(
     Page: Page,
     { App = DEFAULT_APP, Document = DEFAULT_DOCUMENT, embedData = true }:
         Partial<

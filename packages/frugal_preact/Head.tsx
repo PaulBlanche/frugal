@@ -68,7 +68,8 @@ function reduceComponents(
         .map((node, i) => {
             const key = node.key ?? i;
             return preact.cloneElement(node, { key });
-        });
+        })
+        .reverse();
 }
 
 const METATYPES = ['name', 'httpEquiv', 'charSet', 'itemProp'];
@@ -104,7 +105,7 @@ function unique() {
                         continue;
                     }
 
-                    if (metatype === 'charset') {
+                    if (metatype === 'charSet') {
                         if (metaTypes.has(metatype)) {
                             isUnique = false;
                         } else {
