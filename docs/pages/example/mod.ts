@@ -7,10 +7,6 @@ import { Page } from './Page.tsx';
 import { Data, Path } from './type.ts';
 import { fromFormData, initialForm, submitForm, validateForm } from './Form.ts';
 
-export function getPathList(): Path[] {
-    return [{}];
-}
-
 export function getStaticData(): Data {
     return {
         form: initialForm(),

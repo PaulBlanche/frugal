@@ -236,19 +236,12 @@ export function page<
     // deno-lint-ignore no-explicit-any
     descriptor: any,
 ): Page<PATH, DATA, BODY> {
-    if (isStaticDescriptor<PATH, DATA, BODY>(descriptor)) {
-        return new StaticPage(descriptor);
-    }
     if (isDynamicDescriptor<PATH, DATA, BODY>(descriptor)) {
+        validateDynamicDescriptor(descriptor);
         return new DynamicPage(descriptor);
     }
-
-    assert(
-        false,
-        `Page descriptor ${
-            String(descriptor.self ?? 'UNKNOWN')
-        } has neither "getDynamicData" nor "getStaticData" method`,
-    );
+    validateStaticDescriptor(descriptor);
+    return new StaticPage(descriptor);
 }
 
 function isDynamicDescriptor<
@@ -261,24 +254,6 @@ function isDynamicDescriptor<
 ): descriptor is DynamicPageDescriptor<PATH, DATA, BODY> {
     if (typeof descriptor === 'object' && descriptor !== null) {
         if ('getDynamicData' in descriptor) {
-            validateDynamicDescriptor(descriptor);
-            return true;
-        }
-    }
-    return false;
-}
-
-function isStaticDescriptor<
-    PATH extends Record<string, string> = Record<string, string>,
-    DATA = unknown,
-    BODY = unknown,
->(
-    // deno-lint-ignore no-explicit-any
-    descriptor: any,
-): descriptor is StaticPageDescriptor<PATH, DATA, BODY> {
-    if (typeof descriptor === 'object' && descriptor !== null) {
-        if ('getStaticData' in descriptor) {
-            validateStaticDescriptor(descriptor);
             return true;
         }
     }
@@ -299,14 +274,6 @@ function validateStaticDescriptor<
     assert(
         typeof descriptor.pattern === 'string',
         `Page descriptor ${String(descriptor.self)} has no pattern`,
-    );
-    assert(
-        typeof descriptor.getPathList === 'function',
-        `Page descriptor "${descriptor.pattern}" has no getPathList function`,
-    );
-    assert(
-        typeof descriptor.getStaticData === 'function',
-        `Page descriptor "${descriptor.pattern}" has no getData function`,
     );
     assert(
         typeof descriptor.getContent === 'function',

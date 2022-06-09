@@ -11,14 +11,14 @@ const KEYFRAMES: KeyFrames[] = [];
  */
 export class Rules {
     /** the css of this rule */
-    ownCss: string;
+    properties: string;
     /** the className of this rule */
     className: string;
     /** the selector of this rule (derived from `className`) */
     selector: string;
 
     constructor(className: string, properties: string) {
-        this.ownCss = properties;
+        this.properties = properties;
         this.className = className;
         this.selector = `.${className}`;
     }
@@ -27,7 +27,7 @@ export class Rules {
      * generates the string css of the rule
      */
     toCss() {
-        return `${this.selector} {${this.ownCss}}`;
+        return `${this.selector}{${this.properties}}`;
     }
 
     toCssComment() {
@@ -62,9 +62,12 @@ export class ScopedRules extends Rules {
         );
         this.parents = parents;
 
-        this.css = `${
-            parents.map((parent) => parent.css).join('\n')
-        }\n${this.ownCss}`;
+        const parentCss = parents.map((parent) => parent.css).join('\n');
+        if (parentCss.length !== 0) {
+            this.css = `${parentCss}\n${this.properties}`;
+        } else {
+            this.css = this.properties;
+        }
     }
 
     toCssComment() {
@@ -74,7 +77,7 @@ export class ScopedRules extends Rules {
     }
 }
 
-class KeyFrames {
+export class KeyFrames {
     name: string;
     css: string;
 
@@ -97,7 +100,7 @@ type Interpolable = (string | number | Rules | KeyFrames);
  *  - Rules interpolations are replaced with their selectors
  *  - KeyFrames interpolations are replaced with their names
  */
-function css(
+export function css(
     template: TemplateStringsArray,
     ...interpolations: Interpolable[]
 ): string {
@@ -222,20 +225,64 @@ export function keyframes(
     return keyframes;
 }
 
+type CXPrimitives =
+    | string
+    | number
+    | boolean
+    | undefined
+    | null
+    | Record<string, unknown>
+    | Rules;
+type CX = CXPrimitives | CX[];
+
 /**
  * generates a className string from a list of string and Rules. This function
  * is able to skip "empty" values (`undefined` or `null`). This function also
  * handle booleans, enabling constructs like `boolean && rule`.
  */
 export function cx(
-    ...classNames: (string | boolean | undefined | null | Rules)[]
+    ...classNames: CX[]
 ): string {
     return classNames
-        .filter((name) => name instanceof Rules || typeof name === 'string')
+        .map((name) => {
+            if (Array.isArray(name)) {
+                return cx(...name);
+            }
+
+            if (
+                typeof name === 'object' && name !== null &&
+                !(name instanceof Rules)
+            ) {
+                return Object.entries(name).reduce<string[]>(
+                    (classNames, [name, value]) => {
+                        if (Boolean(value)) {
+                            classNames.push(name);
+                        }
+                        return classNames;
+                    },
+                    [],
+                ).join(' ');
+            }
+
+            return name;
+        })
+        .filter((name) =>
+            Boolean(name) && (name instanceof Rules ||
+                typeof name === 'string' ||
+                typeof name === 'number')
+        )
         .map((name) => {
             if (name instanceof Rules) return name.className;
             return name;
         }).join(' ');
+}
+
+export function clean() {
+    SCOPED_CLASSNAMES.clear();
+    RULES.length = 0;
+    GLOBAL_STYLES.length = 0;
+    KEYFRAME_NAMES.clear();
+    KEYFRAMES.length = 0;
 }
 
 /**
