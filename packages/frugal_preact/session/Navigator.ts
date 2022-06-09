@@ -10,85 +10,59 @@ export type NavigatorConfig = {
 };
 
 export class Navigator {
-    url: URL;
-    config: NavigatorConfig;
-    anchor: HTMLAnchorElement;
+    #url: URL;
+    #config: NavigatorConfig;
 
-    constructor(url: URL, anchor: HTMLAnchorElement, config: NavigatorConfig) {
-        this.url = url;
-        this.config = config;
-        this.anchor = anchor;
+    constructor(url: URL, config: NavigatorConfig) {
+        this.#url = url;
+        this.#config = config;
     }
 
-    shouldNavigate(directive?: string | null) {
-        return this.config.defaultNavigate
+    get url() {
+        return this.#url;
+    }
+
+    _shouldNavigate(directive?: string | null) {
+        return this.#config.defaultNavigate
             ? directive !== 'false'
             : directive === 'true';
     }
 
-    shouldHandleNavigate() {
-        const rel = this.anchor.dataset['frugalPrefetch'] ?? '';
-        const isExternal = rel.split(' ').includes('external');
-
-        const navigate = this.anchor.dataset['frugalNavigate'];
-
-        return this.shouldNavigate(navigate) && !isExternal &&
-            utils.isInternalUrl(this.url);
-    }
-
-    shouldProcessNavigate(document: Document) {
-        const frugalVisitTypeMeta = document.querySelector(
-            'head meta[name="frugal-navigate"]',
-        );
-        if (frugalVisitTypeMeta) {
-            const navigate = frugalVisitTypeMeta.getAttribute('content');
-            return this.shouldNavigate(navigate);
-        }
-
-        return true;
-    }
-
     async navigate() {
-        if (!this.shouldHandleNavigate()) {
-            this.realNavigate();
-            return;
-        }
-
         try {
-            this.setReadyState('loading');
+            this.#setReadyState('loading');
 
-            const html = await this.fetch();
+            const html = await this.#fetch();
             const nextDocument = new DOMParser().parseFromString(
                 html,
                 'text/html',
             );
 
-            if (!this.shouldProcessNavigate(nextDocument)) {
-                this.realNavigate();
+            if (!this.#shouldProcessNavigate(nextDocument)) {
+                this._realNavigate();
                 return;
             }
 
             new Renderer(nextDocument).render();
-            history.pushState(null, '', this.url);
 
-            this.setReadyState('interactive');
+            this.#setReadyState('interactive');
 
-            if (this.url.hash.startsWith('#')) {
-                const scrollTarget = document.querySelector(this.url.hash);
+            if (this.#url.hash.startsWith('#')) {
+                const scrollTarget = document.querySelector(this.#url.hash);
                 if (scrollTarget !== null) {
                     scrollTarget.scrollIntoView();
                 }
             }
 
-            this.setReadyState('complete');
+            this.#setReadyState('complete');
         } catch (error: unknown) {
             console.error(error);
-            this.realNavigate();
+            this._realNavigate();
             return;
         }
     }
 
-    setReadyState(readystate: DocumentReadyState) {
+    #setReadyState(readystate: DocumentReadyState) {
         dispatchEvent(
             new CustomEvent('frugal:readystatechange', {
                 detail: { readystate },
@@ -96,12 +70,24 @@ export class Navigator {
         );
     }
 
-    async fetch() {
+    #shouldProcessNavigate(document: Document) {
+        const frugalVisitTypeMeta = document.querySelector(
+            'head meta[name="frugal-navigate"]',
+        );
+        if (frugalVisitTypeMeta) {
+            const navigate = frugalVisitTypeMeta.getAttribute('content');
+            return this._shouldNavigate(navigate);
+        }
+
+        return true;
+    }
+
+    async #fetch() {
         const handle = setTimeout(() => {
             document.body.classList.add(LOADING_CLASSNAME);
-        }, this.config.timeout);
+        }, this.#config.timeout);
 
-        const response = await fetch(this.url.href);
+        const response = await fetch(this.#url.href);
 
         const html = await response.text();
 
@@ -111,8 +97,37 @@ export class Navigator {
         return html;
     }
 
-    realNavigate() {
-        location.href = this.url.href;
+    _realNavigate() {
+        location.href = this.#url.href;
+    }
+}
+
+export class ApplicationNavigator extends Navigator {
+    anchor: HTMLAnchorElement;
+
+    constructor(url: URL, anchor: HTMLAnchorElement, config: NavigatorConfig) {
+        super(url, config);
+        this.anchor = anchor;
+    }
+
+    shouldHandleNavigate() {
+        const rel = this.anchor.dataset['frugalPrefetch'] ?? '';
+        const isExternal = rel.split(' ').includes('external');
+
+        const navigate = this.anchor.dataset['frugalNavigate'];
+
+        return this._shouldNavigate(navigate) && !isExternal &&
+            utils.isInternalUrl(this.url);
+    }
+
+    async navigate() {
+        if (!this.shouldHandleNavigate()) {
+            this._realNavigate();
+            return;
+        }
+
+        await super.navigate();
+        history.pushState(null, '', this.url);
     }
 }
 
