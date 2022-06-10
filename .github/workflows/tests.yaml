@@ -20,6 +20,9 @@ jobs:
 
     runs-on: ubuntu-latest
 
+    env:
+      CI: true
+
     steps:
     - name: checkout project
       uses: actions/checkout@v2

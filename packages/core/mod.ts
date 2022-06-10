@@ -22,12 +22,8 @@ export type {
     StaticPageDescriptor,
 } from './Page.ts';
 export { DynamicPage, page, StaticPage } from './Page.ts';
-export {
-    build,
-    FrugalBuilder,
-    FrugalInstance,
-    FrugalWatcher,
-} from './Frugal.ts';
+export { build, FrugalBuilder, FrugalInstance } from './Frugal.ts';
+export { FrugalWatcher, watch } from './watch/FrugalWatcher.ts';
 export { PersistantCache } from './Cache.ts';
 export * from './Persistance.ts';
 export { type PathObject } from './PathObject.ts';

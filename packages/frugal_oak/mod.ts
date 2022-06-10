@@ -4,3 +4,4 @@ export * from './SessionManager.ts';
 export * from './PrgOrchestrator.ts';
 export * from './staticFileMiddleware.ts';
 export * from './FrugalServer.ts';
+export { FrugalWatcherServer, watch } from './watch/FrugalWatcherServer.ts';

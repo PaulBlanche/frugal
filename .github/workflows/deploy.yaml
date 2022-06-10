@@ -11,6 +11,9 @@ jobs:
       id-token: write # Needed for auth with Deno Deploy
       contents: read # Needed to clone the repository
 
+    env:
+      CI: true
+
     steps:
       - name: Clone repository
         uses: actions/checkout@v2

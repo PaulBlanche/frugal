@@ -55,9 +55,6 @@ export const config: Config = {
         page(example),
     ],
 
-    //'https://eu1-intense-kodiak-36255.upstash.io'
-    // 'AY2fACQgMDUyZDkwZjktMWMwZS00NDdiLWFmOTktODIzOTVkZmY3YzQxZDliOTkxNWJjNmFhNDZkZWFiNjEwODc5ZDU3N2MwZDM=',
-
     sessionPersistance: new UpstashPersistance(
         Deno.env.get('UPSTASH_URL') ?? '',
         Deno.env.get('UPSTASH_TOKEN') ?? '',

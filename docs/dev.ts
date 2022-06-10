@@ -1,9 +1,4 @@
 import { config } from './frugal.config.ts';
-import {
-    FrugalServerBuilder,
-    FrugalWatcherServer,
-} from './dep/frugal/frugal_oak.ts';
+import { watch } from './dep/frugal/frugal_oak.ts';
 
-await new FrugalWatcherServer(new FrugalServerBuilder(config)).watch([
-    'docs/data',
-]);
+await watch(config, ['docs/data']);
