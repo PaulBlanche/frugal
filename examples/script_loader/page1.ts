@@ -43,7 +43,7 @@ export const self = new URL(import.meta.url);
 // Here we use template string, but you can use any templating language that
 // can return a html string.
 export function getContent(
-    { data, entrypoint, loaderContext }: frugal.GetContentParams<Path, Data>,
+    { data, descriptor, loaderContext }: frugal.GetContentParams<Path, Data>,
 ) {
     // since we registered a loader, the result of its work is available in the
     // `loaderContext`.
@@ -57,7 +57,7 @@ export function getContent(
     // Each entry in this sub dictionnary is the url of the entrypoint for the
     // bundle
     const bodyScriptSrc =
-        loaderContext.get<Generated>('script')?.[String(entrypoint)]?.['body'];
+        loaderContext.get<Generated>('script')?.[String(descriptor)]?.['body'];
 
     return `<html>
     <body>

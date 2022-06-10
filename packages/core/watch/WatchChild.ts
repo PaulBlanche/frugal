@@ -36,6 +36,10 @@ export type WatchChildEvents<MESSAGE extends Message> = Events<
     EventMap<MESSAGE>
 >;
 
+/**
+ * Spawn a child process, listen for messages in stdout/stderr and dispatches
+ * messages to stdin.
+ */
 export class WatchChild<
     IN_MESSAGE extends Message,
     OUT_MESSAGE extends Message,
@@ -56,6 +60,9 @@ export class WatchChild<
         this.#cmd = cmd;
     }
 
+    /**
+     * Spawn the child process and start listening for messages
+     */
     start() {
         this.#child = Deno.spawnChild(this.#cmd, {
             ...this.#config,
@@ -64,10 +71,12 @@ export class WatchChild<
             stdout: 'piped',
         });
 
-        this.#listenStderr();
-        return this.#listenStdout();
+        return Promise.all([this.#listenStderr(), this.#listenStdout()]);
     }
 
+    /**
+     * Stop the chils process (with SIGTERM)
+     */
     stop() {
         if (this.#child === undefined) return;
 
@@ -93,6 +102,9 @@ export class WatchChild<
         }
     }
 
+    /**
+     * Send a message to the child process (as a json piped in stdin)
+     */
     sendMessage(message: OUT_MESSAGE) {
         this.#sendEvent({ type: 'message', message });
     }
@@ -105,6 +117,9 @@ export class WatchChild<
         );
     }
 
+    /**
+     * Listen to messages from the child process (as json piped in stdout/stderr)
+     */
     addEventListener<EVENT extends EventNames<EventMap<IN_MESSAGE>>>(
         event: EVENT,
         listener: Listener<EventMap<IN_MESSAGE>[EVENT]>,

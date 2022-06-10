@@ -34,10 +34,10 @@ export const pattern = '/page2/:slug.html';
 export const self = new URL(import.meta.url);
 
 export function getContent(
-    { data, loaderContext, entrypoint }: frugal.GetContentParams<Path, Data>,
+    { data, loaderContext, descriptor }: frugal.GetContentParams<Path, Data>,
 ) {
     const bodyScriptSrc =
-        loaderContext.get<Generated>('script')?.[String(entrypoint)]?.['body'];
+        loaderContext.get<Generated>('script')?.[String(descriptor)]?.['body'];
 
     return `<html>
     <body>

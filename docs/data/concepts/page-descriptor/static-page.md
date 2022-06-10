@@ -2,16 +2,16 @@
 
 A static page descriptor is an object with some properties and method :
 
-- a `getPathList` function that will return the list of _path object_ that will be used to generate each page. A list of slugs and locale for example. In spirit, this is similar to `getStaticPath` in Next.js
+- a `getPathList` function that will return the list of _path object_ that will be used to generate each page. A list of slugs and locale for example. In spirit, this is similar to `getStaticPath` in Next.js. This method can be omitted if you only need one empty _path object_ (to generate a single page from a pattern without parameters)
 - a `pattern` string, that will be used for routing. For static pages, this `pattern` will be used to generate the url of the page from the _path object_ with `path-to-regexp`. Keep in mind there should be a 1-to-1 correspondance between the _path object_ and the `pattern`.
-- a `getStaticData` function that will return the _data object_ for a given _path object_. In spirit, this is similar to `getStaticProps` in Next.js
+- a `getStaticData` function that will return the _data object_ for a given _path object_. In spirit, this is similar to `getStaticProps` in Next.js This method can be omitted if you only need an empty _data object_ to render the page markup.
 - a `getContent` function that will return the rendered page as a string given a _data object_. This is similar to the exported component in Next.js
 - a `self` URL of the module. Unless you know what you are doing, it should always be `new URL(import.meta.url)`
 
 A basic example of a static page :
 
 ```tsx
-import type * as frugal from '...';
+import type * as frugal from 'https://deno.land/x/frugal/packages/core/mod.ts';
 
 type Path = { slug: string };
 

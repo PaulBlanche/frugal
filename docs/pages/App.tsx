@@ -10,9 +10,9 @@ import { Spinner } from '../svg/Spinner.tsx';
 import { loadingSpinner } from './App.style.ts';
 import './session.script.ts';
 
-export function App({ entrypoint, loaderContext, children }: AppProps) {
+export function App({ descriptor, loaderContext, children }: AppProps) {
     const scriptGenerated = loaderContext.get<Generated>('script');
-    const bodyBundleUrl = scriptGenerated?.[entrypoint]?.['body'];
+    const bodyBundleUrl = scriptGenerated?.[descriptor]?.['body'];
     const styleUrl = loaderContext.get<string>('style');
     return (
         <>

@@ -6,6 +6,12 @@ import { WatchChild } from '../../core/watch/WatchChild.ts';
 import { Config, FrugalServerBuilder } from '../FrugalServer.ts';
 import { LiveReloadServer } from './LivreReloadServer.ts';
 
+/**
+ * Wrap a FrugalServerBuilder in a watcher instance. Internally, this class will
+ * spawn a child deno process in watch mode actually running the
+ * FrugalServerBuilder and the produced instance. On each application reload, an
+ * event will be dispatched to a LiveReloadClient, triggering a browser refresh.
+ */
 export class FrugalWatcherServer {
     #builder: FrugalServerBuilder;
 
@@ -14,30 +20,32 @@ export class FrugalWatcherServer {
         this.#builder._watch = true;
     }
 
-    create() {
-        return this.#builder.create();
-    }
-
+    /**
+     * start the watch process. By default all modules in the dependency graph
+     * are watched (see
+     * https://deno.land/manual/getting_started/command_line_interface#watch-mode).
+     * If you want to watch additionnal files/folders, pass them to the `paths`
+     * option.
+     */
     async watch(paths: string[]) {
         const config = await this.#builder._getCleanConfig();
         const code =
             `const { config } = await import('file://${config.self.pathname}')
-        const { WatchService } = await import('file://${
+const { WatchService } = await import('file://${
                 new URL('../../core/watch/WatchService.ts', import.meta.url)
                     .pathname
             }')
-        const { FrugalServerBuilder } = await import('file://${
+const { FrugalServerBuilder } = await import('file://${
                 new URL('../mod.ts', import.meta.url).pathname
             }')
 
-        const service = new WatchService()
+const service = new WatchService()
 
-        const frugalServer = await new FrugalServerBuilder(config).create();
-        frugalServer.application.addEventListener('listen', () => {
-            service.sendMessage({ type: 'restart' })
-        })
-        await frugalServer.listen();
-        `;
+const frugalServer = await new FrugalServerBuilder(config).create();
+frugalServer.application.addEventListener('listen', () => {
+    service.sendMessage({ type: 'restart' })
+})
+await frugalServer.listen();`;
 
         const filePath = path.join(config.cacheDir, 'watchServer.ts');
 
@@ -72,6 +80,18 @@ export class FrugalWatcherServer {
     }
 }
 
+/**
+ * Convenience function building a FrugalServerBuilder, a FrugalWatcherServer,
+ * and starting the watch process.
+ *
+ * On each application reload, an event will be dispatched to a
+ * LiveReloadClient, triggering a browser refresh.
+ *
+ * By default all modules in the dependency graph are watched (see
+ * https://deno.land/manual/getting_started/command_line_interface#watch-mode).
+ * If you want to watch additionnal files/folders, pass them to the `watch`
+ * option.
+ */
 export async function watch(config: Config, watch: string[]) {
     const builder = new FrugalServerBuilder(config);
     const watcher = new FrugalWatcherServer(builder);

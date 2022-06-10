@@ -1,17 +1,18 @@
 # Loader
 
-By default, frugal only outputs text files containing html markup. But a website is made form other static assets, like style from a `.css` file or a script from a `.js` file.
+By default, frugal only outputs text files containing html markup. But a website is made form other static assets, like style from a `.css` file, a script from a `.js` file, some images or other files.
 
-Frugal delegates to loader the responsibility of generating those assets.
+Frugal delegates to _loaders_ the responsibility of generating those assets.
 
-Each loader defines a pattern, and frugal will provide all imported modules matching this pattern to the loader.
+Each loader defines a regexp pattern, and frugal will provide all imported modules matching this pattern to the loader.
 
 For example, with the given `frugal.config.ts` :
 
 ```ts
-import { Config, page } from '../packages/core/mod.ts';
-import * as myPage from './pages/myPage.ts';
+import { Config, page } from 'https://deno.land/x/frugal/packages/core/mod.ts';
 import { StyleLoader } from 'https://deno.land/x/frugal/packages/loader_style/mod.ts';
+
+import * as myPage from './pages/myPage.ts';
 
 const self = new URL(import.meta.url);
 
@@ -29,7 +30,7 @@ export const config: Config = {
 };
 ```
 
-frugal will find in `./pages/myPage.ts` or in any of its dependencies any modules ending with `.style.ts`, and provide them to the `style` loader.
+frugal will find in `frugal.config.ts` or in any of its dependencies any static imports of modules ending with `.style.ts`, and provide them to the `style` loader.
 
 Then the loader, according to its own logic, will generate some static assets from those modules.
 

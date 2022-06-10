@@ -3,6 +3,11 @@ import { FrugalBuilder } from '../Frugal.ts';
 import * as path from '../../../dep/std/path.ts';
 import * as fs from '../../../dep/std/fs.ts';
 
+/**
+ * Wrap a FrugalBuilder in a watcher instance. Internally, this class will spawn
+ * a child deno process in watch mode actually running the FrugalBuilder and the
+ * produced instance.
+ */
 export class FrugalWatcher {
     #builder: FrugalBuilder;
 
@@ -11,21 +16,23 @@ export class FrugalWatcher {
         this.#builder._watch = true;
     }
 
-    create() {
-        return this.#builder.create();
-    }
-
-    async watch(paths: string[]) {
+    /**
+     * start the watch process. By default all modules in the dependency graph
+     * are watched (see
+     * https://deno.land/manual/getting_started/command_line_interface#watch-mode).
+     * If you want to watch additionnal files/folders, pass them to the `paths`
+     * option.
+     */
+    async watch(paths: string[] = []) {
         const config = await this.#builder._getCleanConfig();
         const code =
             `const { config } = await import('file://${config.self.pathname}')
-        const { FrugalWatcher, FrugalBuilder } = await import('file://${
-                new URL('mod.ts', import.meta.url).pathname
+const { FrugalWatcher, FrugalBuilder } = await import('file://${
+                new URL('../mod.ts', import.meta.url).pathname
             }')
 
-        const frugal = await new FrugalBuilder(config).create();
-        await frugal.build();
-        `;
+const frugal = await new FrugalBuilder(config).create();
+await frugal.build();`;
 
         const filePath = path.join(config.cacheDir, 'watch.ts');
 
@@ -51,6 +58,14 @@ export class FrugalWatcher {
     }
 }
 
+/**
+ * Convenience function building a FrugalBuilder, a FrugalWatcher, and starting
+ * the watch process. By default all modules in the dependency graph are watched
+ * (see
+ * https://deno.land/manual/getting_started/command_line_interface#watch-mode).
+ * If you want to watch additionnal files/folders, pass them to the `paths`
+ * option.
+ */
 export async function watch(config: Config, watch: string[]) {
     const builder = new FrugalBuilder(config);
     const watcher = new FrugalWatcher(builder);

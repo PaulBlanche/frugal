@@ -168,7 +168,7 @@ ${name}();`;
 
     if (watch) {
         return `import { LiveReloadClient } from "${
-            new URL('../core/watch/LiveReloadClient.ts', import.meta.url)
+            new URL('../frugal_oak/watch/LiveReloadClient.ts', import.meta.url)
                 .pathname
         }";
 new LiveReloadClient(\`\${location.protocol}//\${location.hostname}:4075/sse\`);

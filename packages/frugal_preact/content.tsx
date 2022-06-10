@@ -9,7 +9,7 @@ import * as frugal from '../core/mod.ts';
 import { DataProvider } from './dataContext.tsx';
 
 export type PageProps = {
-    entrypoint: string;
+    descriptor: string;
     loaderContext: frugal.LoaderContext;
 };
 
@@ -20,7 +20,7 @@ export type App = (
 ) => preact.VNode;
 
 export type AppProps = {
-    entrypoint: string;
+    descriptor: string;
     loaderContext: frugal.LoaderContext;
     children: preact.ComponentChildren;
 };
@@ -29,7 +29,7 @@ export type Document = preact.ComponentType<DocumentProps>;
 
 export type DocumentProps = {
     head: preact.VNode[];
-    entrypoint: string;
+    descriptor: string;
     loaderContext: frugal.LoaderContext;
     dangerouslySetInnerHTML: { __html: string };
 };
@@ -75,7 +75,7 @@ export function getContentFrom<PATH extends Record<string, string>, DATA>(
     return ({
         data,
         pathname,
-        entrypoint,
+        descriptor,
         loaderContext,
     }) => {
         let head: preact.VNode[] = [];
@@ -87,7 +87,7 @@ export function getContentFrom<PATH extends Record<string, string>, DATA>(
                 }}
             >
                 <App
-                    entrypoint={String(entrypoint)}
+                    descriptor={String(descriptor)}
                     loaderContext={loaderContext}
                 >
                     <DataProvider
@@ -95,7 +95,7 @@ export function getContentFrom<PATH extends Record<string, string>, DATA>(
                         context={{ data, pathname }}
                     >
                         <Page
-                            entrypoint={String(entrypoint)}
+                            descriptor={String(descriptor)}
                             loaderContext={loaderContext}
                         />
                     </DataProvider>
@@ -106,7 +106,7 @@ export function getContentFrom<PATH extends Record<string, string>, DATA>(
         return `<!DOCTYPE html>${
             server.render(
                 <Document
-                    entrypoint={String(entrypoint)}
+                    descriptor={String(descriptor)}
                     loaderContext={loaderContext}
                     head={head}
                     dangerouslySetInnerHTML={{ __html: html }}

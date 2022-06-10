@@ -9,10 +9,11 @@ A dynamic page descriptor is an object with some properties and method :
 - a `getContent` function that will return the rendered page as a string given a _data object_. This is similar to the exported component in Next.js
 - a `self` URL of the module. Unless you know what you are doing, it should always be `new URL(import.meta.url)`
 
-A basic example of a static page :
+A basic example of a dynamic page :
 
 ```tsx
-import type * as frugal from '...';
+import type * as frugal from 'https://deno.land/x/frugal/packages/core/mod.ts';
+import { queryMyApiFroDataGivenSlug } from './api.ts';
 
 type Path = { slug: string };
 

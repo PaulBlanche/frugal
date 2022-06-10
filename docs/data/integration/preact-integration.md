@@ -50,8 +50,8 @@ import {
 
 import './App.style.ts';
 
-export function App({ entrypoint, loaderContext, children }: AppProps) {
-    const esmBundleUrl = loaderContext.get('script')?.[entrypoint]?.['esm'];
+export function App({ descriptor, loaderContext, children }: AppProps) {
+    const esmBundleUrl = loaderContext.get('script')?.[descriptor]?.['esm'];
     const styleUrl = loaderContext.get<string>('style');
     return (
         <>

@@ -425,6 +425,10 @@ export class FrugalBuilder {
     }
 }
 
+/**
+ * Convenience function building a FrugalBuilder, a FrugalInsance, and starting
+ * the build process.
+ */
 export async function build(config: Config) {
     const builder = new FrugalBuilder(config);
     const instance = await builder.create();

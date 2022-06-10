@@ -16,6 +16,12 @@ export type WatchServiceEvents<MESSAGE extends Message> = Events<
     EventMap<MESSAGE>
 >;
 
+/**
+ * Class handeling the message communication with a parent process (the "other
+ * side" of a `WatchChild`). On construction, this class replace the
+ * `console.log` to an event dispatch (to have the parent process pipe those log
+ * to its stdout), and immediatly sends a `ready` message.
+ */
 export class WatchService<
     IN_MESSAGE extends Message = Message,
     OUT_MESSAGE extends Message = Message,
@@ -41,10 +47,16 @@ export class WatchService<
         }
     }
 
+    /**
+     * Start listening for messages
+     */
     start() {
         return this.#listen();
     }
 
+    /**
+     * Send a message to the parent process (as a json piped in stdout)
+     */
     sendMessage(message: OUT_MESSAGE) {
         this.#sendEvent({ type: 'message', message });
     }
@@ -55,6 +67,9 @@ export class WatchService<
         );
     }
 
+    /**
+     * Listen to messages from the parent process (as json piped in stdin)
+     */
     addEventListener<EVENT extends EventNames<EventMap<IN_MESSAGE>>>(
         event: EVENT,
         listener: Listener<EventMap<IN_MESSAGE>[EVENT]>,

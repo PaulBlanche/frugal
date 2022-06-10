@@ -1,0 +1,6472 @@
+[
+  {
+    "kind": "class",
+    "name": "NotFound",
+    "location": {
+      "filename": "file:///home/whiteshoulders/Personnel/frugal/packages/core/Persistance.ts",
+      "line": 4,
+      "col": 0
+    },
+    "declarationKind": "export",
+    "classDef": {
+      "isAbstract": false,
+      "constructors": [],
+      "properties": [],
+      "indexSignatures": [],
+      "methods": [],
+      "extends": "FrugalError",
+      "implements": [],
+      "typeParams": [],
+      "superTypeParams": []
+    }
+  },
+  {
+    "kind": "interface",
+    "name": "Persistance",
+    "location": {
+      "filename": "file:///home/whiteshoulders/Personnel/frugal/packages/core/Persistance.ts",
+      "line": 9,
+      "col": 0
+    },
+    "declarationKind": "export",
+    "jsDoc": {
+      "doc": "A persistance layer"
+    },
+    "interfaceDef": {
+      "extends": [],
+      "methods": [
+        {
+          "name": "set",
+          "kind": "method",
+          "location": {
+            "filename": "file:///home/whiteshoulders/Personnel/frugal/packages/core/Persistance.ts",
+            "line": 13,
+            "col": 4
+          },
+          "jsDoc": {
+            "doc": "Set the given content at the given path"
+          },
+          "optional": false,
+          "params": [
+            {
+              "kind": "identifier",
+              "name": "path",
+              "optional": false,
+              "tsType": {
+                "repr": "string",
+                "kind": "keyword",
+                "keyword": "string"
+              }
+            },
+            {
+              "kind": "identifier",
+              "name": "content",
+              "optional": false,
+              "tsType": {
+                "repr": "string",
+                "kind": "keyword",
+                "keyword": "string"
+              }
+            }
+          ],
+          "returnType": {
+            "repr": "Promise",
+            "kind": "typeRef",
+            "typeRef": {
+              "typeParams": [
+                {
+                  "repr": "void",
+                  "kind": "keyword",
+                  "keyword": "void"
+                }
+              ],
+              "typeName": "Promise"
+            }
+          },
+          "typeParams": []
+        },
+        {
+          "name": "get",
+          "kind": "method",
+          "location": {
+            "filename": "file:///home/whiteshoulders/Personnel/frugal/packages/core/Persistance.ts",
+            "line": 17,
+            "col": 4
+          },
+          "jsDoc": {
+            "doc": "Set the content at the given path"
+          },
+          "optional": false,
+          "params": [
+            {
+              "kind": "identifier",
+              "name": "path",
+              "optional": false,
+              "tsType": {
+                "repr": "string",
+                "kind": "keyword",
+                "keyword": "string"
+              }
+            }
+          ],
+          "returnType": {
+            "repr": "Promise",
+            "kind": "typeRef",
+            "typeRef": {
+              "typeParams": [
+                {
+                  "repr": "string",
+                  "kind": "keyword",
+                  "keyword": "string"
+                }
+              ],
+              "typeName": "Promise"
+            }
+          },
+          "typeParams": []
+        },
+        {
+          "name": "delete",
+          "kind": "method",
+          "location": {
+            "filename": "file:///home/whiteshoulders/Personnel/frugal/packages/core/Persistance.ts",
+            "line": 21,
+            "col": 4
+          },
+          "jsDoc": {
+            "doc": "delete the content at the given path"
+          },
+          "optional": false,
+          "params": [
+            {
+              "kind": "identifier",
+              "name": "path",
+              "optional": false,
+              "tsType": {
+                "repr": "string",
+                "kind": "keyword",
+                "keyword": "string"
+              }
+            }
+          ],
+          "returnType": {
+            "repr": "Promise",
+            "kind": "typeRef",
+            "typeRef": {
+              "typeParams": [
+                {
+                  "repr": "void",
+                  "kind": "keyword",
+                  "keyword": "void"
+                }
+              ],
+              "typeName": "Promise"
+            }
+          },
+          "typeParams": []
+        }
+      ],
+      "properties": [],
+      "callSignatures": [],
+      "indexSignatures": [],
+      "typeParams": []
+    }
+  },
+  {
+    "kind": "class",
+    "name": "FilesystemPersistance",
+    "location": {
+      "filename": "file:///home/whiteshoulders/Personnel/frugal/packages/core/Persistance.ts",
+      "line": 27,
+      "col": 0
+    },
+    "declarationKind": "export",
+    "jsDoc": {
+      "doc": "A persistance layer using the filesystem"
+    },
+    "classDef": {
+      "isAbstract": false,
+      "constructors": [
+        {
+          "accessibility": null,
+          "name": "constructor",
+          "params": [],
+          "location": {
+            "filename": "file:///home/whiteshoulders/Personnel/frugal/packages/core/Persistance.ts",
+            "line": 28,
+            "col": 4
+          }
+        }
+      ],
+      "properties": [],
+      "indexSignatures": [],
+      "methods": [
+        {
+          "accessibility": null,
+          "optional": false,
+          "isAbstract": false,
+          "isStatic": false,
+          "name": "set",
+          "kind": "method",
+          "functionDef": {
+            "params": [
+              {
+                "kind": "identifier",
+                "name": "path",
+                "optional": false,
+                "tsType": {
+                  "repr": "string",
+                  "kind": "keyword",
+                  "keyword": "string"
+                }
+              },
+              {
+                "kind": "identifier",
+                "name": "content",
+                "optional": false,
+                "tsType": {
+                  "repr": "string",
+                  "kind": "keyword",
+                  "keyword": "string"
+                }
+              }
+            ],
+            "returnType": null,
+            "isAsync": true,
+            "isGenerator": false,
+            "typeParams": []
+          },
+          "location": {
+            "filename": "file:///home/whiteshoulders/Personnel/frugal/packages/core/Persistance.ts",
+            "line": 30,
+            "col": 4
+          }
+        },
+        {
+          "accessibility": null,
+          "optional": false,
+          "isAbstract": false,
+          "isStatic": false,
+          "name": "get",
+          "kind": "method",
+          "functionDef": {
+            "params": [
+              {
+                "kind": "identifier",
+                "name": "path",
+                "optional": false,
+                "tsType": {
+                  "repr": "string",
+                  "kind": "keyword",
+                  "keyword": "string"
+                }
+              }
+            ],
+            "returnType": null,
+            "isAsync": true,
+            "isGenerator": false,
+            "typeParams": []
+          },
+          "location": {
+            "filename": "file:///home/whiteshoulders/Personnel/frugal/packages/core/Persistance.ts",
+            "line": 35,
+            "col": 4
+          }
+        },
+        {
+          "accessibility": null,
+          "optional": false,
+          "isAbstract": false,
+          "isStatic": false,
+          "name": "delete",
+          "kind": "method",
+          "functionDef": {
+            "params": [
+              {
+                "kind": "identifier",
+                "name": "path",
+                "optional": false,
+                "tsType": {
+                  "repr": "string",
+                  "kind": "keyword",
+                  "keyword": "string"
+                }
+              }
+            ],
+            "returnType": null,
+            "isAsync": true,
+            "isGenerator": false,
+            "typeParams": []
+          },
+          "location": {
+            "filename": "file:///home/whiteshoulders/Personnel/frugal/packages/core/Persistance.ts",
+            "line": 46,
+            "col": 4
+          }
+        }
+      ],
+      "extends": null,
+      "implements": [
+        {
+          "repr": "Persistance",
+          "kind": "typeRef",
+          "typeRef": {
+            "typeParams": null,
+            "typeName": "Persistance"
+          }
+        }
+      ],
+      "typeParams": [],
+      "superTypeParams": []
+    }
+  },
+  {
+    "kind": "class",
+    "name": "UpstashPersistance",
+    "location": {
+      "filename": "file:///home/whiteshoulders/Personnel/frugal/packages/core/Persistance.ts",
+      "line": 54,
+      "col": 0
+    },
+    "declarationKind": "export",
+    "jsDoc": {
+      "doc": "A persistance layer using Upstash"
+    },
+    "classDef": {
+      "isAbstract": false,
+      "constructors": [
+        {
+          "accessibility": null,
+          "name": "constructor",
+          "params": [
+            {
+              "kind": "identifier",
+              "name": "url",
+              "optional": false,
+              "tsType": {
+                "repr": "string",
+                "kind": "keyword",
+                "keyword": "string"
+              }
+            },
+            {
+              "kind": "identifier",
+              "name": "token",
+              "optional": false,
+              "tsType": {
+                "repr": "string",
+                "kind": "keyword",
+                "keyword": "string"
+              }
+            }
+          ],
+          "location": {
+            "filename": "file:///home/whiteshoulders/Personnel/frugal/packages/core/Persistance.ts",
+            "line": 58,
+            "col": 4
+          }
+        }
+      ],
+      "properties": [],
+      "indexSignatures": [],
+      "methods": [
+        {
+          "accessibility": null,
+          "optional": false,
+          "isAbstract": false,
+          "isStatic": false,
+          "name": "set",
+          "kind": "method",
+          "functionDef": {
+            "params": [
+              {
+                "kind": "identifier",
+                "name": "path",
+                "optional": false,
+                "tsType": {
+                  "repr": "string",
+                  "kind": "keyword",
+                  "keyword": "string"
+                }
+              },
+              {
+                "kind": "identifier",
+                "name": "content",
+                "optional": false,
+                "tsType": {
+                  "repr": "string",
+                  "kind": "keyword",
+                  "keyword": "string"
+                }
+              }
+            ],
+            "returnType": null,
+            "isAsync": true,
+            "isGenerator": false,
+            "typeParams": []
+          },
+          "location": {
+            "filename": "file:///home/whiteshoulders/Personnel/frugal/packages/core/Persistance.ts",
+            "line": 77,
+            "col": 4
+          }
+        },
+        {
+          "accessibility": null,
+          "optional": false,
+          "isAbstract": false,
+          "isStatic": false,
+          "name": "get",
+          "kind": "method",
+          "functionDef": {
+            "params": [
+              {
+                "kind": "identifier",
+                "name": "path",
+                "optional": false,
+                "tsType": {
+                  "repr": "string",
+                  "kind": "keyword",
+                  "keyword": "string"
+                }
+              }
+            ],
+            "returnType": null,
+            "isAsync": true,
+            "isGenerator": false,
+            "typeParams": []
+          },
+          "location": {
+            "filename": "file:///home/whiteshoulders/Personnel/frugal/packages/core/Persistance.ts",
+            "line": 85,
+            "col": 4
+          }
+        },
+        {
+          "accessibility": null,
+          "optional": false,
+          "isAbstract": false,
+          "isStatic": false,
+          "name": "delete",
+          "kind": "method",
+          "functionDef": {
+            "params": [
+              {
+                "kind": "identifier",
+                "name": "path",
+                "optional": false,
+                "tsType": {
+                  "repr": "string",
+                  "kind": "keyword",
+                  "keyword": "string"
+                }
+              }
+            ],
+            "returnType": null,
+            "isAsync": true,
+            "isGenerator": false,
+            "typeParams": []
+          },
+          "location": {
+            "filename": "file:///home/whiteshoulders/Personnel/frugal/packages/core/Persistance.ts",
+            "line": 97,
+            "col": 4
+          }
+        }
+      ],
+      "extends": null,
+      "implements": [
+        {
+          "repr": "Persistance",
+          "kind": "typeRef",
+          "typeRef": {
+            "typeParams": null,
+            "typeName": "Persistance"
+          }
+        }
+      ],
+      "typeParams": [],
+      "superTypeParams": []
+    }
+  },
+  {
+    "kind": "import",
+    "name": "fs",
+    "location": {
+      "filename": "file:///home/whiteshoulders/Personnel/frugal/packages/core/Persistance.ts",
+      "line": 1,
+      "col": 0
+    },
+    "declarationKind": "private",
+    "importDef": {
+      "src": "file:///home/whiteshoulders/Personnel/frugal/dep/std/fs.ts",
+      "imported": null
+    }
+  },
+  {
+    "kind": "import",
+    "name": "FrugalError",
+    "location": {
+      "filename": "file:///home/whiteshoulders/Personnel/frugal/packages/core/Persistance.ts",
+      "line": 2,
+      "col": 0
+    },
+    "declarationKind": "private",
+    "importDef": {
+      "src": "file:///home/whiteshoulders/Personnel/frugal/packages/core/FrugalError.ts",
+      "imported": "FrugalError"
+    }
+  },
+  {
+    "kind": "typeAlias",
+    "name": "PathObject",
+    "location": {
+      "filename": "file:///home/whiteshoulders/Personnel/frugal/packages/core/PathObject.ts",
+      "line": 1,
+      "col": 0
+    },
+    "declarationKind": "export",
+    "typeAliasDef": {
+      "tsType": {
+        "repr": "Collapse",
+        "kind": "typeRef",
+        "typeRef": {
+          "typeParams": [
+            {
+              "repr": "",
+              "kind": "indexedAccess",
+              "indexedAccess": {
+                "readonly": false,
+                "objType": {
+                  "repr": "Consume",
+                  "kind": "typeRef",
+                  "typeRef": {
+                    "typeParams": [
+                      {
+                        "repr": "",
+                        "kind": "typeLiteral",
+                        "typeLiteral": {
+                          "methods": [],
+                          "properties": [
+                            {
+                              "name": "rest",
+                              "params": [],
+                              "computed": false,
+                              "optional": false,
+                              "tsType": {
+                                "repr": "PATH",
+                                "kind": "typeRef",
+                                "typeRef": {
+                                  "typeParams": null,
+                                  "typeName": "PATH"
+                                }
+                              },
+                              "typeParams": []
+                            },
+                            {
+                              "name": "object",
+                              "params": [],
+                              "computed": false,
+                              "optional": false,
+                              "tsType": {
+                                "repr": "unknown",
+                                "kind": "keyword",
+                                "keyword": "unknown"
+                              },
+                              "typeParams": []
+                            },
+                            {
+                              "name": "index",
+                              "params": [],
+                              "computed": false,
+                              "optional": false,
+                              "tsType": {
+                                "repr": "",
+                                "kind": "tuple",
+                                "tuple": []
+                              },
+                              "typeParams": []
+                            }
+                          ],
+                          "callSignatures": [],
+                          "indexSignatures": []
+                        }
+                      }
+                    ],
+                    "typeName": "Consume"
+                  }
+                },
+                "indexType": {
+                  "repr": "object",
+                  "kind": "literal",
+                  "literal": {
+                    "kind": "string",
+                    "string": "object"
+                  }
+                }
+              }
+            }
+          ],
+          "typeName": "Collapse"
+        }
+      },
+      "typeParams": [
+        {
+          "name": "PATH",
+          "constraint": {
+            "repr": "string",
+            "kind": "keyword",
+            "keyword": "string"
+          }
+        }
+      ]
+    }
+  },
+  {
+    "kind": "typeAlias",
+    "name": "Asset",
+    "location": {
+      "filename": "file:///home/whiteshoulders/Personnel/frugal/packages/core/loader.ts",
+      "line": 4,
+      "col": 0
+    },
+    "declarationKind": "export",
+    "typeAliasDef": {
+      "tsType": {
+        "repr": "",
+        "kind": "typeLiteral",
+        "typeLiteral": {
+          "methods": [],
+          "properties": [
+            {
+              "name": "loader",
+              "params": [],
+              "computed": false,
+              "optional": false,
+              "tsType": {
+                "repr": "string",
+                "kind": "keyword",
+                "keyword": "string"
+              },
+              "typeParams": []
+            },
+            {
+              "name": "module",
+              "params": [],
+              "computed": false,
+              "optional": false,
+              "tsType": {
+                "repr": "string",
+                "kind": "keyword",
+                "keyword": "string"
+              },
+              "typeParams": []
+            },
+            {
+              "name": "hash",
+              "params": [],
+              "computed": false,
+              "optional": false,
+              "tsType": {
+                "repr": "string",
+                "kind": "keyword",
+                "keyword": "string"
+              },
+              "typeParams": []
+            },
+            {
+              "name": "entrypoint",
+              "params": [],
+              "computed": false,
+              "optional": false,
+              "tsType": {
+                "repr": "string",
+                "kind": "keyword",
+                "keyword": "string"
+              },
+              "typeParams": []
+            }
+          ],
+          "callSignatures": [],
+          "indexSignatures": []
+        }
+      },
+      "typeParams": []
+    }
+  },
+  {
+    "kind": "typeAlias",
+    "name": "GenerateParams",
+    "location": {
+      "filename": "file:///home/whiteshoulders/Personnel/frugal/packages/core/loader.ts",
+      "line": 11,
+      "col": 0
+    },
+    "declarationKind": "export",
+    "typeAliasDef": {
+      "tsType": {
+        "repr": "",
+        "kind": "typeLiteral",
+        "typeLiteral": {
+          "methods": [],
+          "properties": [
+            {
+              "name": "getCache",
+              "params": [],
+              "computed": false,
+              "optional": false,
+              "tsType": {
+                "repr": "",
+                "kind": "fnOrConstructor",
+                "fnOrConstructor": {
+                  "constructor": false,
+                  "tsType": {
+                    "repr": "Promise",
+                    "kind": "typeRef",
+                    "typeRef": {
+                      "typeParams": [
+                        {
+                          "repr": "PersistantCache",
+                          "kind": "typeRef",
+                          "typeRef": {
+                            "typeParams": [
+                              {
+                                "repr": "CACHED",
+                                "kind": "typeRef",
+                                "typeRef": {
+                                  "typeParams": null,
+                                  "typeName": "CACHED"
+                                }
+                              }
+                            ],
+                            "typeName": "PersistantCache"
+                          }
+                        }
+                      ],
+                      "typeName": "Promise"
+                    }
+                  },
+                  "params": [],
+                  "typeParams": []
+                }
+              },
+              "typeParams": []
+            },
+            {
+              "name": "assets",
+              "params": [],
+              "computed": false,
+              "optional": false,
+              "tsType": {
+                "repr": "",
+                "kind": "array",
+                "array": {
+                  "repr": "Asset",
+                  "kind": "typeRef",
+                  "typeRef": {
+                    "typeParams": null,
+                    "typeName": "Asset"
+                  }
+                }
+              },
+              "typeParams": []
+            },
+            {
+              "name": "config",
+              "params": [],
+              "computed": false,
+              "optional": false,
+              "tsType": {
+                "repr": "CleanConfig",
+                "kind": "typeRef",
+                "typeRef": {
+                  "typeParams": null,
+                  "typeName": "CleanConfig"
+                }
+              },
+              "typeParams": []
+            }
+          ],
+          "callSignatures": [],
+          "indexSignatures": []
+        }
+      },
+      "typeParams": [
+        {
+          "name": "CACHED",
+          "default": {
+            "repr": "unknown",
+            "kind": "keyword",
+            "keyword": "unknown"
+          }
+        }
+      ]
+    }
+  },
+  {
+    "kind": "typeAlias",
+    "name": "Loader",
+    "location": {
+      "filename": "file:///home/whiteshoulders/Personnel/frugal/packages/core/loader.ts",
+      "line": 17,
+      "col": 0
+    },
+    "declarationKind": "export",
+    "typeAliasDef": {
+      "tsType": {
+        "repr": "",
+        "kind": "typeLiteral",
+        "typeLiteral": {
+          "methods": [
+            {
+              "name": "generate",
+              "kind": "method",
+              "params": [
+                {
+                  "kind": "identifier",
+                  "name": "params",
+                  "optional": false,
+                  "tsType": {
+                    "repr": "GenerateParams",
+                    "kind": "typeRef",
+                    "typeRef": {
+                      "typeParams": [
+                        {
+                          "repr": "CACHED",
+                          "kind": "typeRef",
+                          "typeRef": {
+                            "typeParams": null,
+                            "typeName": "CACHED"
+                          }
+                        }
+                      ],
+                      "typeName": "GenerateParams"
+                    }
+                  }
+                }
+              ],
+              "optional": false,
+              "returnType": {
+                "repr": "Promise",
+                "kind": "typeRef",
+                "typeRef": {
+                  "typeParams": [
+                    {
+                      "repr": "GENERATED",
+                      "kind": "typeRef",
+                      "typeRef": {
+                        "typeParams": null,
+                        "typeName": "GENERATED"
+                      }
+                    }
+                  ],
+                  "typeName": "Promise"
+                }
+              },
+              "typeParams": []
+            },
+            {
+              "name": "onWatchStart",
+              "kind": "method",
+              "params": [
+                {
+                  "kind": "identifier",
+                  "name": "config",
+                  "optional": false,
+                  "tsType": {
+                    "repr": "CleanConfig",
+                    "kind": "typeRef",
+                    "typeRef": {
+                      "typeParams": null,
+                      "typeName": "CleanConfig"
+                    }
+                  }
+                }
+              ],
+              "optional": true,
+              "returnType": {
+                "repr": "",
+                "kind": "union",
+                "union": [
+                  {
+                    "repr": "Promise",
+                    "kind": "typeRef",
+                    "typeRef": {
+                      "typeParams": [
+                        {
+                          "repr": "void",
+                          "kind": "keyword",
+                          "keyword": "void"
+                        }
+                      ],
+                      "typeName": "Promise"
+                    }
+                  },
+                  {
+                    "repr": "void",
+                    "kind": "keyword",
+                    "keyword": "void"
+                  }
+                ]
+              },
+              "typeParams": []
+            },
+            {
+              "name": "onBuildContextStart",
+              "kind": "method",
+              "params": [
+                {
+                  "kind": "identifier",
+                  "name": "config",
+                  "optional": false,
+                  "tsType": {
+                    "repr": "CleanConfig",
+                    "kind": "typeRef",
+                    "typeRef": {
+                      "typeParams": null,
+                      "typeName": "CleanConfig"
+                    }
+                  }
+                }
+              ],
+              "optional": true,
+              "returnType": {
+                "repr": "",
+                "kind": "union",
+                "union": [
+                  {
+                    "repr": "Promise",
+                    "kind": "typeRef",
+                    "typeRef": {
+                      "typeParams": [
+                        {
+                          "repr": "void",
+                          "kind": "keyword",
+                          "keyword": "void"
+                        }
+                      ],
+                      "typeName": "Promise"
+                    }
+                  },
+                  {
+                    "repr": "void",
+                    "kind": "keyword",
+                    "keyword": "void"
+                  }
+                ]
+              },
+              "typeParams": []
+            },
+            {
+              "name": "onBuildContextEnd",
+              "kind": "method",
+              "params": [
+                {
+                  "kind": "identifier",
+                  "name": "config",
+                  "optional": false,
+                  "tsType": {
+                    "repr": "CleanConfig",
+                    "kind": "typeRef",
+                    "typeRef": {
+                      "typeParams": null,
+                      "typeName": "CleanConfig"
+                    }
+                  }
+                }
+              ],
+              "optional": true,
+              "returnType": {
+                "repr": "",
+                "kind": "union",
+                "union": [
+                  {
+                    "repr": "Promise",
+                    "kind": "typeRef",
+                    "typeRef": {
+                      "typeParams": [
+                        {
+                          "repr": "void",
+                          "kind": "keyword",
+                          "keyword": "void"
+                        }
+                      ],
+                      "typeName": "Promise"
+                    }
+                  },
+                  {
+                    "repr": "void",
+                    "kind": "keyword",
+                    "keyword": "void"
+                  }
+                ]
+              },
+              "typeParams": []
+            },
+            {
+              "name": "onWatchEnd",
+              "kind": "method",
+              "params": [
+                {
+                  "kind": "identifier",
+                  "name": "config",
+                  "optional": false,
+                  "tsType": {
+                    "repr": "CleanConfig",
+                    "kind": "typeRef",
+                    "typeRef": {
+                      "typeParams": null,
+                      "typeName": "CleanConfig"
+                    }
+                  }
+                }
+              ],
+              "optional": true,
+              "returnType": {
+                "repr": "",
+                "kind": "union",
+                "union": [
+                  {
+                    "repr": "Promise",
+                    "kind": "typeRef",
+                    "typeRef": {
+                      "typeParams": [
+                        {
+                          "repr": "void",
+                          "kind": "keyword",
+                          "keyword": "void"
+                        }
+                      ],
+                      "typeName": "Promise"
+                    }
+                  },
+                  {
+                    "repr": "void",
+                    "kind": "keyword",
+                    "keyword": "void"
+                  }
+                ]
+              },
+              "typeParams": []
+            }
+          ],
+          "properties": [
+            {
+              "name": "name",
+              "params": [],
+              "computed": false,
+              "optional": false,
+              "tsType": {
+                "repr": "string",
+                "kind": "keyword",
+                "keyword": "string"
+              },
+              "typeParams": []
+            },
+            {
+              "name": "test",
+              "params": [],
+              "computed": false,
+              "optional": false,
+              "tsType": {
+                "repr": "",
+                "kind": "fnOrConstructor",
+                "fnOrConstructor": {
+                  "constructor": false,
+                  "tsType": {
+                    "repr": "boolean",
+                    "kind": "keyword",
+                    "keyword": "boolean"
+                  },
+                  "params": [
+                    {
+                      "kind": "identifier",
+                      "name": "url",
+                      "optional": false,
+                      "tsType": {
+                        "repr": "URL",
+                        "kind": "typeRef",
+                        "typeRef": {
+                          "typeParams": null,
+                          "typeName": "URL"
+                        }
+                      }
+                    }
+                  ],
+                  "typeParams": []
+                }
+              },
+              "typeParams": []
+            }
+          ],
+          "callSignatures": [],
+          "indexSignatures": []
+        }
+      },
+      "typeParams": [
+        {
+          "name": "GENERATED"
+        },
+        {
+          "name": "CACHED",
+          "default": {
+            "repr": "unknown",
+            "kind": "keyword",
+            "keyword": "unknown"
+          }
+        }
+      ]
+    }
+  },
+  {
+    "kind": "typeAlias",
+    "name": "Config",
+    "location": {
+      "filename": "file:///home/whiteshoulders/Personnel/frugal/packages/core/Config.ts",
+      "line": 10,
+      "col": 0
+    },
+    "declarationKind": "export",
+    "typeAliasDef": {
+      "tsType": {
+        "repr": "",
+        "kind": "typeLiteral",
+        "typeLiteral": {
+          "methods": [],
+          "properties": [
+            {
+              "name": "self",
+              "params": [],
+              "computed": false,
+              "optional": false,
+              "tsType": {
+                "repr": "URL",
+                "kind": "typeRef",
+                "typeRef": {
+                  "typeParams": null,
+                  "typeName": "URL"
+                }
+              },
+              "typeParams": []
+            },
+            {
+              "name": "root",
+              "params": [],
+              "computed": false,
+              "optional": true,
+              "tsType": {
+                "repr": "URL",
+                "kind": "typeRef",
+                "typeRef": {
+                  "typeParams": null,
+                  "typeName": "URL"
+                }
+              },
+              "typeParams": []
+            },
+            {
+              "name": "importMap",
+              "params": [],
+              "computed": false,
+              "optional": true,
+              "tsType": {
+                "repr": "string",
+                "kind": "keyword",
+                "keyword": "string"
+              },
+              "typeParams": []
+            },
+            {
+              "name": "loaders",
+              "params": [],
+              "computed": false,
+              "optional": true,
+              "tsType": {
+                "repr": "",
+                "kind": "array",
+                "array": {
+                  "repr": "Loader",
+                  "kind": "typeRef",
+                  "typeRef": {
+                    "typeParams": [
+                      {
+                        "repr": "unknown",
+                        "kind": "keyword",
+                        "keyword": "unknown"
+                      }
+                    ],
+                    "typeName": "Loader"
+                  }
+                }
+              },
+              "typeParams": []
+            },
+            {
+              "name": "outputDir",
+              "params": [],
+              "computed": false,
+              "optional": false,
+              "tsType": {
+                "repr": "string",
+                "kind": "keyword",
+                "keyword": "string"
+              },
+              "typeParams": []
+            },
+            {
+              "name": "pages",
+              "params": [],
+              "computed": false,
+              "optional": false,
+              "tsType": {
+                "repr": "",
+                "kind": "array",
+                "array": {
+                  "repr": "Page",
+                  "kind": "typeRef",
+                  "typeRef": {
+                    "typeParams": [
+                      {
+                        "repr": "any",
+                        "kind": "keyword",
+                        "keyword": "any"
+                      },
+                      {
+                        "repr": "any",
+                        "kind": "keyword",
+                        "keyword": "any"
+                      },
+                      {
+                        "repr": "any",
+                        "kind": "keyword",
+                        "keyword": "any"
+                      }
+                    ],
+                    "typeName": "Page"
+                  }
+                }
+              },
+              "typeParams": []
+            },
+            {
+              "name": "pagePersistance",
+              "params": [],
+              "computed": false,
+              "optional": true,
+              "tsType": {
+                "repr": "Persistance",
+                "kind": "typeRef",
+                "typeRef": {
+                  "typeParams": null,
+                  "typeName": "Persistance"
+                }
+              },
+              "typeParams": []
+            },
+            {
+              "name": "cachePersistance",
+              "params": [],
+              "computed": false,
+              "optional": true,
+              "tsType": {
+                "repr": "Persistance",
+                "kind": "typeRef",
+                "typeRef": {
+                  "typeParams": null,
+                  "typeName": "Persistance"
+                }
+              },
+              "typeParams": []
+            },
+            {
+              "name": "logging",
+              "params": [],
+              "computed": false,
+              "optional": true,
+              "tsType": {
+                "repr": "log.Config",
+                "kind": "typeRef",
+                "typeRef": {
+                  "typeParams": null,
+                  "typeName": "log.Config"
+                }
+              },
+              "typeParams": []
+            }
+          ],
+          "callSignatures": [],
+          "indexSignatures": []
+        }
+      },
+      "typeParams": []
+    }
+  },
+  {
+    "kind": "variable",
+    "name": "DEFAULT_LOGGER_CONFIG",
+    "location": {
+      "filename": "file:///home/whiteshoulders/Personnel/frugal/packages/core/Config.ts",
+      "line": 67,
+      "col": 0
+    },
+    "declarationKind": "export",
+    "variableDef": {
+      "tsType": {
+        "repr": "log.Config",
+        "kind": "typeRef",
+        "typeRef": {
+          "typeParams": null,
+          "typeName": "log.Config"
+        }
+      },
+      "kind": "const"
+    }
+  },
+  {
+    "kind": "variable",
+    "name": "OFF_LOGGER_CONFIG",
+    "location": {
+      "filename": "file:///home/whiteshoulders/Personnel/frugal/packages/core/Config.ts",
+      "line": 62,
+      "col": 0
+    },
+    "declarationKind": "export",
+    "variableDef": {
+      "tsType": {
+        "repr": "log.Config",
+        "kind": "typeRef",
+        "typeRef": {
+          "typeParams": null,
+          "typeName": "log.Config"
+        }
+      },
+      "kind": "const"
+    }
+  },
+  {
+    "kind": "class",
+    "name": "PageBuilder",
+    "location": {
+      "filename": "file:///home/whiteshoulders/Personnel/frugal/packages/core/PageBuilder.ts",
+      "line": 22,
+      "col": 0
+    },
+    "declarationKind": "export",
+    "jsDoc": {
+      "doc": "Class handling the page building process (offloading the actual generation to\nPageGenerator)"
+    },
+    "classDef": {
+      "isAbstract": false,
+      "constructors": [
+        {
+          "accessibility": null,
+          "name": "constructor",
+          "params": [
+            {
+              "kind": "identifier",
+              "name": "page",
+              "optional": false,
+              "tsType": {
+                "repr": "Page",
+                "kind": "typeRef",
+                "typeRef": {
+                  "typeParams": [
+                    {
+                      "repr": "PATH",
+                      "kind": "typeRef",
+                      "typeRef": {
+                        "typeParams": null,
+                        "typeName": "PATH"
+                      }
+                    },
+                    {
+                      "repr": "DATA",
+                      "kind": "typeRef",
+                      "typeRef": {
+                        "typeParams": null,
+                        "typeName": "DATA"
+                      }
+                    },
+                    {
+                      "repr": "BODY",
+                      "kind": "typeRef",
+                      "typeRef": {
+                        "typeParams": null,
+                        "typeName": "BODY"
+                      }
+                    }
+                  ],
+                  "typeName": "Page"
+                }
+              }
+            },
+            {
+              "kind": "identifier",
+              "name": "hash",
+              "optional": false,
+              "tsType": {
+                "repr": "string",
+                "kind": "keyword",
+                "keyword": "string"
+              }
+            },
+            {
+              "kind": "identifier",
+              "name": "generator",
+              "optional": false,
+              "tsType": {
+                "repr": "PageGenerator",
+                "kind": "typeRef",
+                "typeRef": {
+                  "typeParams": [
+                    {
+                      "repr": "PATH",
+                      "kind": "typeRef",
+                      "typeRef": {
+                        "typeParams": null,
+                        "typeName": "PATH"
+                      }
+                    },
+                    {
+                      "repr": "DATA",
+                      "kind": "typeRef",
+                      "typeRef": {
+                        "typeParams": null,
+                        "typeName": "DATA"
+                      }
+                    },
+                    {
+                      "repr": "BODY",
+                      "kind": "typeRef",
+                      "typeRef": {
+                        "typeParams": null,
+                        "typeName": "BODY"
+                      }
+                    }
+                  ],
+                  "typeName": "PageGenerator"
+                }
+              }
+            },
+            {
+              "kind": "identifier",
+              "name": "config",
+              "optional": false,
+              "tsType": {
+                "repr": "PageBuilderConfig",
+                "kind": "typeRef",
+                "typeRef": {
+                  "typeParams": null,
+                  "typeName": "PageBuilderConfig"
+                }
+              }
+            }
+          ],
+          "location": {
+            "filename": "file:///home/whiteshoulders/Personnel/frugal/packages/core/PageBuilder.ts",
+            "line": 32,
+            "col": 4
+          }
+        }
+      ],
+      "properties": [],
+      "indexSignatures": [],
+      "methods": [
+        {
+          "jsDoc": {
+            "doc": "Build the page for all the path returned by `getPathList`."
+          },
+          "accessibility": null,
+          "optional": false,
+          "isAbstract": false,
+          "isStatic": false,
+          "name": "buildAll",
+          "kind": "method",
+          "functionDef": {
+            "params": [],
+            "returnType": null,
+            "isAsync": true,
+            "isGenerator": false,
+            "typeParams": []
+          },
+          "location": {
+            "filename": "file:///home/whiteshoulders/Personnel/frugal/packages/core/PageBuilder.ts",
+            "line": 47,
+            "col": 4
+          }
+        },
+        {
+          "accessibility": null,
+          "optional": false,
+          "isAbstract": false,
+          "isStatic": false,
+          "name": "getHeaders",
+          "kind": "method",
+          "functionDef": {
+            "params": [
+              {
+                "kind": "identifier",
+                "name": "path",
+                "optional": false,
+                "tsType": {
+                  "repr": "PATH",
+                  "kind": "typeRef",
+                  "typeRef": {
+                    "typeParams": null,
+                    "typeName": "PATH"
+                  }
+                }
+              },
+              {
+                "kind": "identifier",
+                "name": "phase",
+                "optional": false,
+                "tsType": {
+                  "repr": "Phase",
+                  "kind": "typeRef",
+                  "typeRef": {
+                    "typeParams": null,
+                    "typeName": "Phase"
+                  }
+                }
+              }
+            ],
+            "returnType": null,
+            "isAsync": false,
+            "isGenerator": false,
+            "typeParams": []
+          },
+          "location": {
+            "filename": "file:///home/whiteshoulders/Personnel/frugal/packages/core/PageBuilder.ts",
+            "line": 84,
+            "col": 4
+          }
+        },
+        {
+          "jsDoc": {
+            "doc": "Build the page for a given path and return the output path.\n\nThe build process id memoized and will be skiped if nothing has changed\nsince the last build."
+          },
+          "accessibility": null,
+          "optional": false,
+          "isAbstract": false,
+          "isStatic": false,
+          "name": "build",
+          "kind": "method",
+          "functionDef": {
+            "params": [
+              {
+                "kind": "identifier",
+                "name": "path",
+                "optional": false,
+                "tsType": {
+                  "repr": "PATH",
+                  "kind": "typeRef",
+                  "typeRef": {
+                    "typeParams": null,
+                    "typeName": "PATH"
+                  }
+                }
+              },
+              {
+                "kind": "identifier",
+                "name": "phase",
+                "optional": false,
+                "tsType": {
+                  "repr": "Phase",
+                  "kind": "typeRef",
+                  "typeRef": {
+                    "typeParams": null,
+                    "typeName": "Phase"
+                  }
+                }
+              }
+            ],
+            "returnType": {
+              "repr": "Promise",
+              "kind": "typeRef",
+              "typeRef": {
+                "typeParams": [
+                  {
+                    "repr": "string",
+                    "kind": "keyword",
+                    "keyword": "string"
+                  }
+                ],
+                "typeName": "Promise"
+              }
+            },
+            "isAsync": true,
+            "isGenerator": false,
+            "typeParams": []
+          },
+          "location": {
+            "filename": "file:///home/whiteshoulders/Personnel/frugal/packages/core/PageBuilder.ts",
+            "line": 98,
+            "col": 4
+          }
+        }
+      ],
+      "extends": null,
+      "implements": [],
+      "typeParams": [
+        {
+          "name": "PATH",
+          "constraint": {
+            "repr": "Record",
+            "kind": "typeRef",
+            "typeRef": {
+              "typeParams": [
+                {
+                  "repr": "string",
+                  "kind": "keyword",
+                  "keyword": "string"
+                },
+                {
+                  "repr": "string",
+                  "kind": "keyword",
+                  "keyword": "string"
+                }
+              ],
+              "typeName": "Record"
+            }
+          },
+          "default": {
+            "repr": "Record",
+            "kind": "typeRef",
+            "typeRef": {
+              "typeParams": [
+                {
+                  "repr": "string",
+                  "kind": "keyword",
+                  "keyword": "string"
+                },
+                {
+                  "repr": "string",
+                  "kind": "keyword",
+                  "keyword": "string"
+                }
+              ],
+              "typeName": "Record"
+            }
+          }
+        },
+        {
+          "name": "DATA",
+          "default": {
+            "repr": "unknown",
+            "kind": "keyword",
+            "keyword": "unknown"
+          }
+        },
+        {
+          "name": "BODY",
+          "default": {
+            "repr": "unknown",
+            "kind": "keyword",
+            "keyword": "unknown"
+          }
+        }
+      ],
+      "superTypeParams": []
+    }
+  },
+  {
+    "kind": "function",
+    "name": "build",
+    "location": {
+      "filename": "file:///home/whiteshoulders/Personnel/frugal/packages/core/Frugal.ts",
+      "line": 432,
+      "col": 0
+    },
+    "declarationKind": "export",
+    "jsDoc": {
+      "doc": "Convenience function building a FrugalBuilder, a FrugalInsance, and starting\nthe build process."
+    },
+    "functionDef": {
+      "params": [
+        {
+          "kind": "identifier",
+          "name": "config",
+          "optional": false,
+          "tsType": {
+            "repr": "Config",
+            "kind": "typeRef",
+            "typeRef": {
+              "typeParams": null,
+              "typeName": "Config"
+            }
+          }
+        }
+      ],
+      "returnType": null,
+      "isAsync": true,
+      "isGenerator": false,
+      "typeParams": []
+    }
+  },
+  {
+    "kind": "class",
+    "name": "FrugalBuilder",
+    "location": {
+      "filename": "file:///home/whiteshoulders/Personnel/frugal/packages/core/Frugal.ts",
+      "line": 233,
+      "col": 0
+    },
+    "declarationKind": "export",
+    "jsDoc": {
+      "doc": "FrugalBuilder does everything needed to build or load a Frugal instance. This\nclass orchestrates config loading, dependency graph building, cache loading\nand loaders."
+    },
+    "classDef": {
+      "isAbstract": false,
+      "constructors": [
+        {
+          "accessibility": null,
+          "name": "constructor",
+          "params": [
+            {
+              "kind": "identifier",
+              "name": "config",
+              "optional": false,
+              "tsType": {
+                "repr": "Config",
+                "kind": "typeRef",
+                "typeRef": {
+                  "typeParams": null,
+                  "typeName": "Config"
+                }
+              }
+            }
+          ],
+          "location": {
+            "filename": "file:///home/whiteshoulders/Personnel/frugal/packages/core/Frugal.ts",
+            "line": 238,
+            "col": 4
+          }
+        }
+      ],
+      "properties": [
+        {
+          "tsType": {
+            "repr": "boolean",
+            "kind": "keyword",
+            "keyword": "boolean"
+          },
+          "readonly": false,
+          "accessibility": null,
+          "optional": true,
+          "isAbstract": false,
+          "isStatic": false,
+          "name": "_watch",
+          "location": {
+            "filename": "file:///home/whiteshoulders/Personnel/frugal/packages/core/Frugal.ts",
+            "line": 234,
+            "col": 4
+          }
+        }
+      ],
+      "indexSignatures": [],
+      "methods": [
+        {
+          "jsDoc": {
+            "doc": "Create a Frugal instance based on a given config object. This leverages\ncached information from previous build (some operation might be skiped if\nnothing has changed since the last build) :\n\n- dependency graph build (run each time) to gather the list of loadable\n  modules\n- cache loading (run each time)\n- loader pass on loadable modules (some loader might partially or\n  entirely skip some tasks based on cached info)"
+          },
+          "accessibility": null,
+          "optional": false,
+          "isAbstract": false,
+          "isStatic": false,
+          "name": "create",
+          "kind": "method",
+          "functionDef": {
+            "params": [],
+            "returnType": null,
+            "isAsync": true,
+            "isGenerator": false,
+            "typeParams": []
+          },
+          "location": {
+            "filename": "file:///home/whiteshoulders/Personnel/frugal/packages/core/Frugal.ts",
+            "line": 255,
+            "col": 4
+          }
+        },
+        {
+          "jsDoc": {
+            "doc": "Load a Frugal instance based on the previous build. Everything is loaded\nfrom cache (no loader pass, no dependency graph built).\n\nThis is usefull in order to run a server needing access to a Frugal\ninstance after a build process. The two process can be separated (a build\nin CI, an server in the clouds), because all the information needed to\nsetup the Frugal instance was serialized during the build"
+          },
+          "accessibility": null,
+          "optional": false,
+          "isAbstract": false,
+          "isStatic": false,
+          "name": "load",
+          "kind": "method",
+          "functionDef": {
+            "params": [],
+            "returnType": null,
+            "isAsync": true,
+            "isGenerator": false,
+            "typeParams": []
+          },
+          "location": {
+            "filename": "file:///home/whiteshoulders/Personnel/frugal/packages/core/Frugal.ts",
+            "line": 325,
+            "col": 4
+          }
+        },
+        {
+          "accessibility": null,
+          "optional": false,
+          "isAbstract": false,
+          "isStatic": false,
+          "name": "_getCleanConfig",
+          "kind": "method",
+          "functionDef": {
+            "params": [],
+            "returnType": null,
+            "isAsync": true,
+            "isGenerator": false,
+            "typeParams": []
+          },
+          "location": {
+            "filename": "file:///home/whiteshoulders/Personnel/frugal/packages/core/Frugal.ts",
+            "line": 409,
+            "col": 4
+          }
+        }
+      ],
+      "extends": null,
+      "implements": [],
+      "typeParams": [],
+      "superTypeParams": []
+    }
+  },
+  {
+    "kind": "class",
+    "name": "FrugalInstance",
+    "location": {
+      "filename": "file:///home/whiteshoulders/Personnel/frugal/packages/core/Frugal.ts",
+      "line": 24,
+      "col": 0
+    },
+    "declarationKind": "export",
+    "jsDoc": {
+      "doc": "A Frugal instance."
+    },
+    "classDef": {
+      "isAbstract": false,
+      "constructors": [
+        {
+          "accessibility": null,
+          "name": "constructor",
+          "params": [
+            {
+              "kind": "identifier",
+              "name": "config",
+              "optional": false,
+              "tsType": {
+                "repr": "CleanConfig",
+                "kind": "typeRef",
+                "typeRef": {
+                  "typeParams": null,
+                  "typeName": "CleanConfig"
+                }
+              }
+            },
+            {
+              "kind": "identifier",
+              "name": "moduleList",
+              "optional": false,
+              "tsType": {
+                "repr": "ModuleList",
+                "kind": "typeRef",
+                "typeRef": {
+                  "typeParams": null,
+                  "typeName": "ModuleList"
+                }
+              }
+            },
+            {
+              "kind": "identifier",
+              "name": "cache",
+              "optional": false,
+              "tsType": {
+                "repr": "PersistantCache",
+                "kind": "typeRef",
+                "typeRef": {
+                  "typeParams": null,
+                  "typeName": "PersistantCache"
+                }
+              }
+            },
+            {
+              "kind": "identifier",
+              "name": "loaderContext",
+              "optional": false,
+              "tsType": {
+                "repr": "LoaderContext",
+                "kind": "typeRef",
+                "typeRef": {
+                  "typeParams": null,
+                  "typeName": "LoaderContext"
+                }
+              }
+            }
+          ],
+          "location": {
+            "filename": "file:///home/whiteshoulders/Personnel/frugal/packages/core/Frugal.ts",
+            "line": 37,
+            "col": 4
+          }
+        }
+      ],
+      "properties": [],
+      "indexSignatures": [],
+      "methods": [
+        {
+          "accessibility": null,
+          "optional": false,
+          "isAbstract": false,
+          "isStatic": false,
+          "name": "config",
+          "kind": "getter",
+          "functionDef": {
+            "params": [],
+            "returnType": null,
+            "isAsync": false,
+            "isGenerator": false,
+            "typeParams": []
+          },
+          "location": {
+            "filename": "file:///home/whiteshoulders/Personnel/frugal/packages/core/Frugal.ts",
+            "line": 50,
+            "col": 4
+          }
+        },
+        {
+          "accessibility": null,
+          "optional": false,
+          "isAbstract": false,
+          "isStatic": false,
+          "name": "routes",
+          "kind": "getter",
+          "functionDef": {
+            "params": [],
+            "returnType": null,
+            "isAsync": false,
+            "isGenerator": false,
+            "typeParams": []
+          },
+          "location": {
+            "filename": "file:///home/whiteshoulders/Personnel/frugal/packages/core/Frugal.ts",
+            "line": 54,
+            "col": 4
+          }
+        },
+        {
+          "jsDoc": {
+            "doc": "Save the current Frugal instance, so it can be loaded with the\n{@link Frugal.load} method"
+          },
+          "accessibility": null,
+          "optional": false,
+          "isAbstract": false,
+          "isStatic": false,
+          "name": "save",
+          "kind": "method",
+          "functionDef": {
+            "params": [
+              {
+                "kind": "assign",
+                "left": {
+                  "kind": "identifier",
+                  "name": "options",
+                  "optional": false,
+                  "tsType": {
+                    "repr": "",
+                    "kind": "typeLiteral",
+                    "typeLiteral": {
+                      "methods": [],
+                      "properties": [
+                        {
+                          "name": "runtime",
+                          "params": [],
+                          "computed": false,
+                          "optional": true,
+                          "tsType": {
+                            "repr": "boolean",
+                            "kind": "keyword",
+                            "keyword": "boolean"
+                          },
+                          "typeParams": []
+                        }
+                      ],
+                      "callSignatures": [],
+                      "indexSignatures": []
+                    }
+                  }
+                },
+                "right": "[UNSUPPORTED]",
+                "tsType": null
+              }
+            ],
+            "returnType": null,
+            "isAsync": true,
+            "isGenerator": false,
+            "typeParams": []
+          },
+          "location": {
+            "filename": "file:///home/whiteshoulders/Personnel/frugal/packages/core/Frugal.ts",
+            "line": 62,
+            "col": 4
+          }
+        },
+        {
+          "jsDoc": {
+            "doc": "Build all the registered static pages.\n\nA page might be skipped if nothing has changed since the last build or\nrefresh of the page"
+          },
+          "accessibility": null,
+          "optional": false,
+          "isAbstract": false,
+          "isStatic": false,
+          "name": "build",
+          "kind": "method",
+          "functionDef": {
+            "params": [],
+            "returnType": null,
+            "isAsync": true,
+            "isGenerator": false,
+            "typeParams": []
+          },
+          "location": {
+            "filename": "file:///home/whiteshoulders/Personnel/frugal/packages/core/Frugal.ts",
+            "line": 80,
+            "col": 4
+          }
+        },
+        {
+          "jsDoc": {
+            "doc": "Refresh the static page matching the given `pathname` if it exists.\n\nEvent if the page match, it might be skipped if nothing has changed since\nthe last build or refresh of the page"
+          },
+          "accessibility": null,
+          "optional": false,
+          "isAbstract": false,
+          "isStatic": false,
+          "name": "refresh",
+          "kind": "method",
+          "functionDef": {
+            "params": [
+              {
+                "kind": "identifier",
+                "name": "pathname",
+                "optional": false,
+                "tsType": {
+                  "repr": "string",
+                  "kind": "keyword",
+                  "keyword": "string"
+                }
+              }
+            ],
+            "returnType": null,
+            "isAsync": true,
+            "isGenerator": false,
+            "typeParams": []
+          },
+          "location": {
+            "filename": "file:///home/whiteshoulders/Personnel/frugal/packages/core/Frugal.ts",
+            "line": 115,
+            "col": 4
+          }
+        },
+        {
+          "jsDoc": {
+            "doc": "Generate the page (static or dynamic) matching the given `pathname` if it\nexists.\n\nIf a page match, the generation will always run, even if nothing has\nchanged since the las build, refresh or generate."
+          },
+          "accessibility": null,
+          "optional": false,
+          "isAbstract": false,
+          "isStatic": false,
+          "name": "generate",
+          "kind": "method",
+          "functionDef": {
+            "params": [
+              {
+                "kind": "identifier",
+                "name": "request",
+                "optional": false,
+                "tsType": {
+                  "repr": "GenerationRequest",
+                  "kind": "typeRef",
+                  "typeRef": {
+                    "typeParams": [
+                      {
+                        "repr": "unknown",
+                        "kind": "keyword",
+                        "keyword": "unknown"
+                      }
+                    ],
+                    "typeName": "GenerationRequest"
+                  }
+                }
+              }
+            ],
+            "returnType": null,
+            "isAsync": true,
+            "isGenerator": false,
+            "typeParams": []
+          },
+          "location": {
+            "filename": "file:///home/whiteshoulders/Personnel/frugal/packages/core/Frugal.ts",
+            "line": 164,
+            "col": 4
+          }
+        },
+        {
+          "jsDoc": {
+            "doc": "Wipe the `outputDir`.\n\nif `justCache` is set to `true`, the `outputDir` is\nleft untouched, and only the cache directory is wiped"
+          },
+          "accessibility": null,
+          "optional": false,
+          "isAbstract": false,
+          "isStatic": false,
+          "name": "clean",
+          "kind": "method",
+          "functionDef": {
+            "params": [
+              {
+                "kind": "assign",
+                "left": {
+                  "kind": "object",
+                  "props": [
+                    {
+                      "kind": "assign",
+                      "key": "justCache",
+                      "value": "[UNSUPPORTED]"
+                    }
+                  ],
+                  "optional": false,
+                  "tsType": {
+                    "repr": "",
+                    "kind": "typeLiteral",
+                    "typeLiteral": {
+                      "methods": [],
+                      "properties": [
+                        {
+                          "name": "justCache",
+                          "params": [],
+                          "computed": false,
+                          "optional": true,
+                          "tsType": {
+                            "repr": "boolean",
+                            "kind": "keyword",
+                            "keyword": "boolean"
+                          },
+                          "typeParams": []
+                        }
+                      ],
+                      "callSignatures": [],
+                      "indexSignatures": []
+                    }
+                  }
+                },
+                "right": "[UNSUPPORTED]",
+                "tsType": null
+              }
+            ],
+            "returnType": null,
+            "isAsync": true,
+            "isGenerator": false,
+            "typeParams": []
+          },
+          "location": {
+            "filename": "file:///home/whiteshoulders/Personnel/frugal/packages/core/Frugal.ts",
+            "line": 212,
+            "col": 4
+          }
+        }
+      ],
+      "extends": null,
+      "implements": [],
+      "typeParams": [],
+      "superTypeParams": []
+    }
+  },
+  {
+    "kind": "class",
+    "name": "PageGenerator",
+    "location": {
+      "filename": "file:///home/whiteshoulders/Personnel/frugal/packages/core/PageGenerator.ts",
+      "line": 33,
+      "col": 0
+    },
+    "declarationKind": "export",
+    "jsDoc": {
+      "doc": "Class handling the page generation process."
+    },
+    "classDef": {
+      "isAbstract": false,
+      "constructors": [
+        {
+          "accessibility": null,
+          "name": "constructor",
+          "params": [
+            {
+              "kind": "identifier",
+              "name": "page",
+              "optional": false,
+              "tsType": {
+                "repr": "Page",
+                "kind": "typeRef",
+                "typeRef": {
+                  "typeParams": [
+                    {
+                      "repr": "PATH",
+                      "kind": "typeRef",
+                      "typeRef": {
+                        "typeParams": null,
+                        "typeName": "PATH"
+                      }
+                    },
+                    {
+                      "repr": "DATA",
+                      "kind": "typeRef",
+                      "typeRef": {
+                        "typeParams": null,
+                        "typeName": "DATA"
+                      }
+                    },
+                    {
+                      "repr": "BODY",
+                      "kind": "typeRef",
+                      "typeRef": {
+                        "typeParams": null,
+                        "typeName": "BODY"
+                      }
+                    }
+                  ],
+                  "typeName": "Page"
+                }
+              }
+            },
+            {
+              "kind": "identifier",
+              "name": "config",
+              "optional": false,
+              "tsType": {
+                "repr": "PageGeneratorConfig",
+                "kind": "typeRef",
+                "typeRef": {
+                  "typeParams": null,
+                  "typeName": "PageGeneratorConfig"
+                }
+              }
+            }
+          ],
+          "location": {
+            "filename": "file:///home/whiteshoulders/Personnel/frugal/packages/core/PageGenerator.ts",
+            "line": 41,
+            "col": 4
+          }
+        }
+      ],
+      "properties": [],
+      "indexSignatures": [],
+      "methods": [
+        {
+          "jsDoc": {
+            "doc": "Generate the page given a request object.\n\nWill throw if the request pathname does not match the page pattern."
+          },
+          "accessibility": null,
+          "optional": false,
+          "isAbstract": false,
+          "isStatic": false,
+          "name": "generate",
+          "kind": "method",
+          "functionDef": {
+            "params": [
+              {
+                "kind": "identifier",
+                "name": "request",
+                "optional": false,
+                "tsType": {
+                  "repr": "GenerationRequest",
+                  "kind": "typeRef",
+                  "typeRef": {
+                    "typeParams": [
+                      {
+                        "repr": "BODY",
+                        "kind": "typeRef",
+                        "typeRef": {
+                          "typeParams": null,
+                          "typeName": "BODY"
+                        }
+                      }
+                    ],
+                    "typeName": "GenerationRequest"
+                  }
+                }
+              }
+            ],
+            "returnType": {
+              "repr": "Promise",
+              "kind": "typeRef",
+              "typeRef": {
+                "typeParams": [
+                  {
+                    "repr": "",
+                    "kind": "typeLiteral",
+                    "typeLiteral": {
+                      "methods": [],
+                      "properties": [
+                        {
+                          "name": "pagePath",
+                          "params": [],
+                          "computed": false,
+                          "optional": false,
+                          "tsType": {
+                            "repr": "string",
+                            "kind": "keyword",
+                            "keyword": "string"
+                          },
+                          "typeParams": []
+                        },
+                        {
+                          "name": "content",
+                          "params": [],
+                          "computed": false,
+                          "optional": false,
+                          "tsType": {
+                            "repr": "string",
+                            "kind": "keyword",
+                            "keyword": "string"
+                          },
+                          "typeParams": []
+                        },
+                        {
+                          "name": "headers",
+                          "params": [],
+                          "computed": false,
+                          "optional": false,
+                          "tsType": {
+                            "repr": "Headers",
+                            "kind": "typeRef",
+                            "typeRef": {
+                              "typeParams": null,
+                              "typeName": "Headers"
+                            }
+                          },
+                          "typeParams": []
+                        }
+                      ],
+                      "callSignatures": [],
+                      "indexSignatures": []
+                    }
+                  }
+                ],
+                "typeName": "Promise"
+              }
+            },
+            "isAsync": true,
+            "isGenerator": false,
+            "typeParams": []
+          },
+          "location": {
+            "filename": "file:///home/whiteshoulders/Personnel/frugal/packages/core/PageGenerator.ts",
+            "line": 54,
+            "col": 4
+          }
+        },
+        {
+          "accessibility": null,
+          "optional": false,
+          "isAbstract": false,
+          "isStatic": false,
+          "name": "getHeaders",
+          "kind": "method",
+          "functionDef": {
+            "params": [
+              {
+                "kind": "identifier",
+                "name": "request",
+                "optional": false,
+                "tsType": {
+                  "repr": "GenerationRequest",
+                  "kind": "typeRef",
+                  "typeRef": {
+                    "typeParams": [
+                      {
+                        "repr": "BODY",
+                        "kind": "typeRef",
+                        "typeRef": {
+                          "typeParams": null,
+                          "typeName": "BODY"
+                        }
+                      }
+                    ],
+                    "typeName": "GenerationRequest"
+                  }
+                }
+              }
+            ],
+            "returnType": null,
+            "isAsync": true,
+            "isGenerator": false,
+            "typeParams": []
+          },
+          "location": {
+            "filename": "file:///home/whiteshoulders/Personnel/frugal/packages/core/PageGenerator.ts",
+            "line": 84,
+            "col": 4
+          }
+        },
+        {
+          "jsDoc": {
+            "doc": "Generate the content of a page form its data and path"
+          },
+          "accessibility": null,
+          "optional": false,
+          "isAbstract": false,
+          "isStatic": false,
+          "name": "generateContentFromData",
+          "kind": "method",
+          "functionDef": {
+            "params": [
+              {
+                "kind": "identifier",
+                "name": "pathname",
+                "optional": false,
+                "tsType": {
+                  "repr": "string",
+                  "kind": "keyword",
+                  "keyword": "string"
+                }
+              },
+              {
+                "kind": "object",
+                "props": [
+                  {
+                    "kind": "assign",
+                    "key": "data",
+                    "value": null
+                  },
+                  {
+                    "kind": "assign",
+                    "key": "path",
+                    "value": null
+                  },
+                  {
+                    "kind": "assign",
+                    "key": "phase",
+                    "value": null
+                  },
+                  {
+                    "kind": "assign",
+                    "key": "method",
+                    "value": null
+                  }
+                ],
+                "optional": false,
+                "tsType": {
+                  "repr": "ContentGenerationContext",
+                  "kind": "typeRef",
+                  "typeRef": {
+                    "typeParams": [
+                      {
+                        "repr": "DATA",
+                        "kind": "typeRef",
+                        "typeRef": {
+                          "typeParams": null,
+                          "typeName": "DATA"
+                        }
+                      },
+                      {
+                        "repr": "PATH",
+                        "kind": "typeRef",
+                        "typeRef": {
+                          "typeParams": null,
+                          "typeName": "PATH"
+                        }
+                      }
+                    ],
+                    "typeName": "ContentGenerationContext"
+                  }
+                }
+              }
+            ],
+            "returnType": {
+              "repr": "Promise",
+              "kind": "typeRef",
+              "typeRef": {
+                "typeParams": [
+                  {
+                    "repr": "",
+                    "kind": "typeLiteral",
+                    "typeLiteral": {
+                      "methods": [],
+                      "properties": [
+                        {
+                          "name": "pagePath",
+                          "params": [],
+                          "computed": false,
+                          "optional": false,
+                          "tsType": {
+                            "repr": "string",
+                            "kind": "keyword",
+                            "keyword": "string"
+                          },
+                          "typeParams": []
+                        },
+                        {
+                          "name": "content",
+                          "params": [],
+                          "computed": false,
+                          "optional": false,
+                          "tsType": {
+                            "repr": "string",
+                            "kind": "keyword",
+                            "keyword": "string"
+                          },
+                          "typeParams": []
+                        }
+                      ],
+                      "callSignatures": [],
+                      "indexSignatures": []
+                    }
+                  }
+                ],
+                "typeName": "Promise"
+              }
+            },
+            "isAsync": true,
+            "isGenerator": false,
+            "typeParams": []
+          },
+          "location": {
+            "filename": "file:///home/whiteshoulders/Personnel/frugal/packages/core/PageGenerator.ts",
+            "line": 127,
+            "col": 4
+          }
+        }
+      ],
+      "extends": null,
+      "implements": [],
+      "typeParams": [
+        {
+          "name": "PATH",
+          "constraint": {
+            "repr": "Record",
+            "kind": "typeRef",
+            "typeRef": {
+              "typeParams": [
+                {
+                  "repr": "string",
+                  "kind": "keyword",
+                  "keyword": "string"
+                },
+                {
+                  "repr": "string",
+                  "kind": "keyword",
+                  "keyword": "string"
+                }
+              ],
+              "typeName": "Record"
+            }
+          },
+          "default": {
+            "repr": "Record",
+            "kind": "typeRef",
+            "typeRef": {
+              "typeParams": [
+                {
+                  "repr": "string",
+                  "kind": "keyword",
+                  "keyword": "string"
+                },
+                {
+                  "repr": "string",
+                  "kind": "keyword",
+                  "keyword": "string"
+                }
+              ],
+              "typeName": "Record"
+            }
+          }
+        },
+        {
+          "name": "DATA",
+          "default": {
+            "repr": "unknown",
+            "kind": "keyword",
+            "keyword": "unknown"
+          }
+        },
+        {
+          "name": "BODY",
+          "default": {
+            "repr": "unknown",
+            "kind": "keyword",
+            "keyword": "unknown"
+          }
+        }
+      ],
+      "superTypeParams": []
+    }
+  },
+  {
+    "kind": "class",
+    "name": "LoaderContext",
+    "location": {
+      "filename": "file:///home/whiteshoulders/Personnel/frugal/packages/core/LoaderContext.ts",
+      "line": 16,
+      "col": 0
+    },
+    "declarationKind": "export",
+    "jsDoc": {
+      "doc": "Class holding the result of all loaders generation"
+    },
+    "classDef": {
+      "isAbstract": false,
+      "constructors": [
+        {
+          "accessibility": null,
+          "name": "constructor",
+          "params": [
+            {
+              "kind": "identifier",
+              "name": "context",
+              "optional": false,
+              "tsType": {
+                "repr": "Context",
+                "kind": "typeRef",
+                "typeRef": {
+                  "typeParams": null,
+                  "typeName": "Context"
+                }
+              }
+            }
+          ],
+          "location": {
+            "filename": "file:///home/whiteshoulders/Personnel/frugal/packages/core/LoaderContext.ts",
+            "line": 58,
+            "col": 4
+          }
+        }
+      ],
+      "properties": [],
+      "indexSignatures": [],
+      "methods": [
+        {
+          "accessibility": null,
+          "optional": false,
+          "isAbstract": false,
+          "isStatic": true,
+          "name": "build",
+          "kind": "method",
+          "functionDef": {
+            "params": [
+              {
+                "kind": "identifier",
+                "name": "config",
+                "optional": false,
+                "tsType": {
+                  "repr": "CleanConfig",
+                  "kind": "typeRef",
+                  "typeRef": {
+                    "typeParams": null,
+                    "typeName": "CleanConfig"
+                  }
+                }
+              },
+              {
+                "kind": "identifier",
+                "name": "assets",
+                "optional": false,
+                "tsType": {
+                  "repr": "",
+                  "kind": "array",
+                  "array": {
+                    "repr": "Asset",
+                    "kind": "typeRef",
+                    "typeRef": {
+                      "typeParams": null,
+                      "typeName": "Asset"
+                    }
+                  }
+                }
+              },
+              {
+                "kind": "identifier",
+                "name": "getLoaderCache",
+                "optional": false,
+                "tsType": {
+                  "repr": "",
+                  "kind": "fnOrConstructor",
+                  "fnOrConstructor": {
+                    "constructor": false,
+                    "tsType": {
+                      "repr": "Promise",
+                      "kind": "typeRef",
+                      "typeRef": {
+                        "typeParams": [
+                          {
+                            "repr": "PersistantCache",
+                            "kind": "typeRef",
+                            "typeRef": {
+                              "typeParams": null,
+                              "typeName": "PersistantCache"
+                            }
+                          }
+                        ],
+                        "typeName": "Promise"
+                      }
+                    },
+                    "params": [
+                      {
+                        "kind": "identifier",
+                        "name": "name",
+                        "optional": false,
+                        "tsType": {
+                          "repr": "string",
+                          "kind": "keyword",
+                          "keyword": "string"
+                        }
+                      }
+                    ],
+                    "typeParams": []
+                  }
+                }
+              }
+            ],
+            "returnType": null,
+            "isAsync": true,
+            "isGenerator": false,
+            "typeParams": []
+          },
+          "location": {
+            "filename": "file:///home/whiteshoulders/Personnel/frugal/packages/core/LoaderContext.ts",
+            "line": 19,
+            "col": 4
+          }
+        },
+        {
+          "accessibility": null,
+          "optional": false,
+          "isAbstract": false,
+          "isStatic": true,
+          "name": "load",
+          "kind": "method",
+          "functionDef": {
+            "params": [
+              {
+                "kind": "identifier",
+                "name": "filePath",
+                "optional": false,
+                "tsType": {
+                  "repr": "string",
+                  "kind": "keyword",
+                  "keyword": "string"
+                }
+              }
+            ],
+            "returnType": null,
+            "isAsync": true,
+            "isGenerator": false,
+            "typeParams": []
+          },
+          "location": {
+            "filename": "file:///home/whiteshoulders/Personnel/frugal/packages/core/LoaderContext.ts",
+            "line": 49,
+            "col": 4
+          }
+        },
+        {
+          "accessibility": null,
+          "optional": false,
+          "isAbstract": false,
+          "isStatic": false,
+          "name": "save",
+          "kind": "method",
+          "functionDef": {
+            "params": [
+              {
+                "kind": "identifier",
+                "name": "filePath",
+                "optional": false,
+                "tsType": {
+                  "repr": "string",
+                  "kind": "keyword",
+                  "keyword": "string"
+                }
+              }
+            ],
+            "returnType": null,
+            "isAsync": true,
+            "isGenerator": false,
+            "typeParams": []
+          },
+          "location": {
+            "filename": "file:///home/whiteshoulders/Personnel/frugal/packages/core/LoaderContext.ts",
+            "line": 62,
+            "col": 4
+          }
+        },
+        {
+          "jsDoc": {
+            "doc": "Get the generation result of a loader"
+          },
+          "accessibility": null,
+          "optional": false,
+          "isAbstract": false,
+          "isStatic": false,
+          "name": "get",
+          "kind": "method",
+          "functionDef": {
+            "params": [
+              {
+                "kind": "identifier",
+                "name": "name",
+                "optional": false,
+                "tsType": {
+                  "repr": "string",
+                  "kind": "keyword",
+                  "keyword": "string"
+                }
+              }
+            ],
+            "returnType": {
+              "repr": "",
+              "kind": "union",
+              "union": [
+                {
+                  "repr": "VALUE",
+                  "kind": "typeRef",
+                  "typeRef": {
+                    "typeParams": null,
+                    "typeName": "VALUE"
+                  }
+                },
+                {
+                  "repr": "undefined",
+                  "kind": "keyword",
+                  "keyword": "undefined"
+                }
+              ]
+            },
+            "isAsync": false,
+            "isGenerator": false,
+            "typeParams": [
+              {
+                "name": "VALUE",
+                "default": {
+                  "repr": "unknown",
+                  "kind": "keyword",
+                  "keyword": "unknown"
+                }
+              }
+            ]
+          },
+          "location": {
+            "filename": "file:///home/whiteshoulders/Personnel/frugal/packages/core/LoaderContext.ts",
+            "line": 72,
+            "col": 4
+          }
+        }
+      ],
+      "extends": null,
+      "implements": [],
+      "typeParams": [],
+      "superTypeParams": []
+    }
+  },
+  {
+    "kind": "class",
+    "name": "PageRefresher",
+    "location": {
+      "filename": "file:///home/whiteshoulders/Personnel/frugal/packages/core/PageRefresher.ts",
+      "line": 14,
+      "col": 0
+    },
+    "declarationKind": "export",
+    "jsDoc": {
+      "doc": "Class handling the page refreshing process (offloading the actual building to\nPageBuilder)"
+    },
+    "classDef": {
+      "isAbstract": false,
+      "constructors": [
+        {
+          "accessibility": null,
+          "name": "constructor",
+          "params": [
+            {
+              "kind": "identifier",
+              "name": "page",
+              "optional": false,
+              "tsType": {
+                "repr": "Page",
+                "kind": "typeRef",
+                "typeRef": {
+                  "typeParams": [
+                    {
+                      "repr": "PATH",
+                      "kind": "typeRef",
+                      "typeRef": {
+                        "typeParams": null,
+                        "typeName": "PATH"
+                      }
+                    },
+                    {
+                      "repr": "DATA",
+                      "kind": "typeRef",
+                      "typeRef": {
+                        "typeParams": null,
+                        "typeName": "DATA"
+                      }
+                    },
+                    {
+                      "repr": "BODY",
+                      "kind": "typeRef",
+                      "typeRef": {
+                        "typeParams": null,
+                        "typeName": "BODY"
+                      }
+                    }
+                  ],
+                  "typeName": "Page"
+                }
+              }
+            },
+            {
+              "kind": "identifier",
+              "name": "builder",
+              "optional": false,
+              "tsType": {
+                "repr": "PageBuilder",
+                "kind": "typeRef",
+                "typeRef": {
+                  "typeParams": [
+                    {
+                      "repr": "PATH",
+                      "kind": "typeRef",
+                      "typeRef": {
+                        "typeParams": null,
+                        "typeName": "PATH"
+                      }
+                    },
+                    {
+                      "repr": "DATA",
+                      "kind": "typeRef",
+                      "typeRef": {
+                        "typeParams": null,
+                        "typeName": "DATA"
+                      }
+                    },
+                    {
+                      "repr": "BODY",
+                      "kind": "typeRef",
+                      "typeRef": {
+                        "typeParams": null,
+                        "typeName": "BODY"
+                      }
+                    }
+                  ],
+                  "typeName": "PageBuilder"
+                }
+              }
+            }
+          ],
+          "location": {
+            "filename": "file:///home/whiteshoulders/Personnel/frugal/packages/core/PageRefresher.ts",
+            "line": 22,
+            "col": 4
+          }
+        }
+      ],
+      "properties": [],
+      "indexSignatures": [],
+      "methods": [
+        {
+          "jsDoc": {
+            "doc": "Refresh the page for a given matching pathname.\n\nThe build process id memoized and will be skiped if nothing has changed\nsince the last build."
+          },
+          "accessibility": null,
+          "optional": false,
+          "isAbstract": false,
+          "isStatic": false,
+          "name": "refresh",
+          "kind": "method",
+          "functionDef": {
+            "params": [
+              {
+                "kind": "identifier",
+                "name": "pathname",
+                "optional": false,
+                "tsType": {
+                  "repr": "string",
+                  "kind": "keyword",
+                  "keyword": "string"
+                }
+              }
+            ],
+            "returnType": {
+              "repr": "Promise",
+              "kind": "typeRef",
+              "typeRef": {
+                "typeParams": [
+                  {
+                    "repr": "string",
+                    "kind": "keyword",
+                    "keyword": "string"
+                  }
+                ],
+                "typeName": "Promise"
+              }
+            },
+            "isAsync": true,
+            "isGenerator": false,
+            "typeParams": []
+          },
+          "location": {
+            "filename": "file:///home/whiteshoulders/Personnel/frugal/packages/core/PageRefresher.ts",
+            "line": 36,
+            "col": 4
+          }
+        }
+      ],
+      "extends": null,
+      "implements": [],
+      "typeParams": [
+        {
+          "name": "PATH",
+          "constraint": {
+            "repr": "Record",
+            "kind": "typeRef",
+            "typeRef": {
+              "typeParams": [
+                {
+                  "repr": "string",
+                  "kind": "keyword",
+                  "keyword": "string"
+                },
+                {
+                  "repr": "string",
+                  "kind": "keyword",
+                  "keyword": "string"
+                }
+              ],
+              "typeName": "Record"
+            }
+          },
+          "default": {
+            "repr": "Record",
+            "kind": "typeRef",
+            "typeRef": {
+              "typeParams": [
+                {
+                  "repr": "string",
+                  "kind": "keyword",
+                  "keyword": "string"
+                },
+                {
+                  "repr": "string",
+                  "kind": "keyword",
+                  "keyword": "string"
+                }
+              ],
+              "typeName": "Record"
+            }
+          }
+        },
+        {
+          "name": "DATA",
+          "default": {
+            "repr": "unknown",
+            "kind": "keyword",
+            "keyword": "unknown"
+          }
+        },
+        {
+          "name": "BODY",
+          "default": {
+            "repr": "unknown",
+            "kind": "keyword",
+            "keyword": "unknown"
+          }
+        }
+      ],
+      "superTypeParams": []
+    }
+  },
+  {
+    "kind": "typeAlias",
+    "name": "DynamicPageDescriptor",
+    "location": {
+      "filename": "file:///home/whiteshoulders/Personnel/frugal/packages/core/Page.ts",
+      "line": 192,
+      "col": 0
+    },
+    "declarationKind": "export",
+    "typeAliasDef": {
+      "tsType": {
+        "repr": "",
+        "kind": "typeLiteral",
+        "typeLiteral": {
+          "methods": [],
+          "properties": [
+            {
+              "name": "self",
+              "params": [],
+              "computed": false,
+              "optional": false,
+              "tsType": {
+                "repr": "URL",
+                "kind": "typeRef",
+                "typeRef": {
+                  "typeParams": null,
+                  "typeName": "URL"
+                }
+              },
+              "typeParams": []
+            },
+            {
+              "name": "pattern",
+              "params": [],
+              "computed": false,
+              "optional": false,
+              "tsType": {
+                "repr": "string",
+                "kind": "keyword",
+                "keyword": "string"
+              },
+              "typeParams": []
+            },
+            {
+              "name": "getDynamicData",
+              "params": [],
+              "computed": false,
+              "optional": false,
+              "tsType": {
+                "repr": "GetDynamicData",
+                "kind": "typeRef",
+                "typeRef": {
+                  "typeParams": [
+                    {
+                      "repr": "PATH",
+                      "kind": "typeRef",
+                      "typeRef": {
+                        "typeParams": null,
+                        "typeName": "PATH"
+                      }
+                    },
+                    {
+                      "repr": "DATA",
+                      "kind": "typeRef",
+                      "typeRef": {
+                        "typeParams": null,
+                        "typeName": "DATA"
+                      }
+                    },
+                    {
+                      "repr": "BODY",
+                      "kind": "typeRef",
+                      "typeRef": {
+                        "typeParams": null,
+                        "typeName": "BODY"
+                      }
+                    }
+                  ],
+                  "typeName": "GetDynamicData"
+                }
+              },
+              "typeParams": []
+            },
+            {
+              "name": "postDynamicData",
+              "params": [],
+              "computed": false,
+              "optional": true,
+              "tsType": {
+                "repr": "PostDynamicData",
+                "kind": "typeRef",
+                "typeRef": {
+                  "typeParams": [
+                    {
+                      "repr": "PATH",
+                      "kind": "typeRef",
+                      "typeRef": {
+                        "typeParams": null,
+                        "typeName": "PATH"
+                      }
+                    },
+                    {
+                      "repr": "DATA",
+                      "kind": "typeRef",
+                      "typeRef": {
+                        "typeParams": null,
+                        "typeName": "DATA"
+                      }
+                    },
+                    {
+                      "repr": "BODY",
+                      "kind": "typeRef",
+                      "typeRef": {
+                        "typeParams": null,
+                        "typeName": "BODY"
+                      }
+                    }
+                  ],
+                  "typeName": "PostDynamicData"
+                }
+              },
+              "typeParams": []
+            },
+            {
+              "name": "getContent",
+              "params": [],
+              "computed": false,
+              "optional": false,
+              "tsType": {
+                "repr": "GetContent",
+                "kind": "typeRef",
+                "typeRef": {
+                  "typeParams": [
+                    {
+                      "repr": "PATH",
+                      "kind": "typeRef",
+                      "typeRef": {
+                        "typeParams": null,
+                        "typeName": "PATH"
+                      }
+                    },
+                    {
+                      "repr": "DATA",
+                      "kind": "typeRef",
+                      "typeRef": {
+                        "typeParams": null,
+                        "typeName": "DATA"
+                      }
+                    }
+                  ],
+                  "typeName": "GetContent"
+                }
+              },
+              "typeParams": []
+            },
+            {
+              "name": "getDynamicHeaders",
+              "params": [],
+              "computed": false,
+              "optional": true,
+              "tsType": {
+                "repr": "GetDynamicHeaders",
+                "kind": "typeRef",
+                "typeRef": {
+                  "typeParams": [
+                    {
+                      "repr": "PATH",
+                      "kind": "typeRef",
+                      "typeRef": {
+                        "typeParams": null,
+                        "typeName": "PATH"
+                      }
+                    },
+                    {
+                      "repr": "BODY",
+                      "kind": "typeRef",
+                      "typeRef": {
+                        "typeParams": null,
+                        "typeName": "BODY"
+                      }
+                    }
+                  ],
+                  "typeName": "GetDynamicHeaders"
+                }
+              },
+              "typeParams": []
+            },
+            {
+              "name": "postDynamicHeaders",
+              "params": [],
+              "computed": false,
+              "optional": true,
+              "tsType": {
+                "repr": "PostDynamicHeaders",
+                "kind": "typeRef",
+                "typeRef": {
+                  "typeParams": [
+                    {
+                      "repr": "PATH",
+                      "kind": "typeRef",
+                      "typeRef": {
+                        "typeParams": null,
+                        "typeName": "PATH"
+                      }
+                    },
+                    {
+                      "repr": "BODY",
+                      "kind": "typeRef",
+                      "typeRef": {
+                        "typeParams": null,
+                        "typeName": "BODY"
+                      }
+                    }
+                  ],
+                  "typeName": "PostDynamicHeaders"
+                }
+              },
+              "typeParams": []
+            }
+          ],
+          "callSignatures": [],
+          "indexSignatures": []
+        }
+      },
+      "typeParams": [
+        {
+          "name": "PATH",
+          "constraint": {
+            "repr": "Record",
+            "kind": "typeRef",
+            "typeRef": {
+              "typeParams": [
+                {
+                  "repr": "string",
+                  "kind": "keyword",
+                  "keyword": "string"
+                },
+                {
+                  "repr": "string",
+                  "kind": "keyword",
+                  "keyword": "string"
+                }
+              ],
+              "typeName": "Record"
+            }
+          },
+          "default": {
+            "repr": "Record",
+            "kind": "typeRef",
+            "typeRef": {
+              "typeParams": [
+                {
+                  "repr": "string",
+                  "kind": "keyword",
+                  "keyword": "string"
+                },
+                {
+                  "repr": "string",
+                  "kind": "keyword",
+                  "keyword": "string"
+                }
+              ],
+              "typeName": "Record"
+            }
+          }
+        },
+        {
+          "name": "DATA",
+          "default": {
+            "repr": "unknown",
+            "kind": "keyword",
+            "keyword": "unknown"
+          }
+        },
+        {
+          "name": "BODY",
+          "default": {
+            "repr": "unknown",
+            "kind": "keyword",
+            "keyword": "unknown"
+          }
+        }
+      ]
+    }
+  },
+  {
+    "kind": "typeAlias",
+    "name": "GenerationRequest",
+    "location": {
+      "filename": "file:///home/whiteshoulders/Personnel/frugal/packages/core/Page.ts",
+      "line": 15,
+      "col": 0
+    },
+    "declarationKind": "export",
+    "typeAliasDef": {
+      "tsType": {
+        "repr": "",
+        "kind": "typeLiteral",
+        "typeLiteral": {
+          "methods": [],
+          "properties": [
+            {
+              "name": "method",
+              "params": [],
+              "computed": false,
+              "optional": false,
+              "tsType": {
+                "repr": "",
+                "kind": "union",
+                "union": [
+                  {
+                    "repr": "POST",
+                    "kind": "literal",
+                    "literal": {
+                      "kind": "string",
+                      "string": "POST"
+                    }
+                  },
+                  {
+                    "repr": "GET",
+                    "kind": "literal",
+                    "literal": {
+                      "kind": "string",
+                      "string": "GET"
+                    }
+                  }
+                ]
+              },
+              "typeParams": []
+            },
+            {
+              "name": "url",
+              "params": [],
+              "computed": false,
+              "optional": false,
+              "tsType": {
+                "repr": "URL",
+                "kind": "typeRef",
+                "typeRef": {
+                  "typeParams": null,
+                  "typeName": "URL"
+                }
+              },
+              "typeParams": []
+            },
+            {
+              "name": "body",
+              "params": [],
+              "computed": false,
+              "optional": false,
+              "tsType": {
+                "repr": "BODY",
+                "kind": "typeRef",
+                "typeRef": {
+                  "typeParams": null,
+                  "typeName": "BODY"
+                }
+              },
+              "typeParams": []
+            },
+            {
+              "name": "headers",
+              "params": [],
+              "computed": false,
+              "optional": false,
+              "tsType": {
+                "repr": "Headers",
+                "kind": "typeRef",
+                "typeRef": {
+                  "typeParams": null,
+                  "typeName": "Headers"
+                }
+              },
+              "typeParams": []
+            }
+          ],
+          "callSignatures": [],
+          "indexSignatures": []
+        }
+      },
+      "typeParams": [
+        {
+          "name": "BODY",
+          "default": {
+            "repr": "unknown",
+            "kind": "keyword",
+            "keyword": "unknown"
+          }
+        }
+      ]
+    }
+  },
+  {
+    "kind": "typeAlias",
+    "name": "GetContent",
+    "location": {
+      "filename": "file:///home/whiteshoulders/Personnel/frugal/packages/core/Page.ts",
+      "line": 170,
+      "col": 0
+    },
+    "declarationKind": "export",
+    "jsDoc": {
+      "doc": "Get the content of a page given its path object and data object."
+    },
+    "typeAliasDef": {
+      "tsType": {
+        "repr": "",
+        "kind": "fnOrConstructor",
+        "fnOrConstructor": {
+          "constructor": false,
+          "tsType": {
+            "repr": "",
+            "kind": "union",
+            "union": [
+              {
+                "repr": "Promise",
+                "kind": "typeRef",
+                "typeRef": {
+                  "typeParams": [
+                    {
+                      "repr": "string",
+                      "kind": "keyword",
+                      "keyword": "string"
+                    }
+                  ],
+                  "typeName": "Promise"
+                }
+              },
+              {
+                "repr": "string",
+                "kind": "keyword",
+                "keyword": "string"
+              }
+            ]
+          },
+          "params": [
+            {
+              "kind": "identifier",
+              "name": "params",
+              "optional": false,
+              "tsType": {
+                "repr": "GetContentParams",
+                "kind": "typeRef",
+                "typeRef": {
+                  "typeParams": [
+                    {
+                      "repr": "PATH",
+                      "kind": "typeRef",
+                      "typeRef": {
+                        "typeParams": null,
+                        "typeName": "PATH"
+                      }
+                    },
+                    {
+                      "repr": "DATA",
+                      "kind": "typeRef",
+                      "typeRef": {
+                        "typeParams": null,
+                        "typeName": "DATA"
+                      }
+                    }
+                  ],
+                  "typeName": "GetContentParams"
+                }
+              }
+            }
+          ],
+          "typeParams": []
+        }
+      },
+      "typeParams": [
+        {
+          "name": "PATH",
+          "constraint": {
+            "repr": "Record",
+            "kind": "typeRef",
+            "typeRef": {
+              "typeParams": [
+                {
+                  "repr": "string",
+                  "kind": "keyword",
+                  "keyword": "string"
+                },
+                {
+                  "repr": "string",
+                  "kind": "keyword",
+                  "keyword": "string"
+                }
+              ],
+              "typeName": "Record"
+            }
+          },
+          "default": {
+            "repr": "Record",
+            "kind": "typeRef",
+            "typeRef": {
+              "typeParams": [
+                {
+                  "repr": "string",
+                  "kind": "keyword",
+                  "keyword": "string"
+                },
+                {
+                  "repr": "string",
+                  "kind": "keyword",
+                  "keyword": "string"
+                }
+              ],
+              "typeName": "Record"
+            }
+          }
+        },
+        {
+          "name": "DATA",
+          "default": {
+            "repr": "unknown",
+            "kind": "keyword",
+            "keyword": "unknown"
+          }
+        }
+      ]
+    }
+  },
+  {
+    "kind": "typeAlias",
+    "name": "GetContentParams",
+    "location": {
+      "filename": "file:///home/whiteshoulders/Personnel/frugal/packages/core/Page.ts",
+      "line": 85,
+      "col": 0
+    },
+    "declarationKind": "export",
+    "typeAliasDef": {
+      "tsType": {
+        "repr": "",
+        "kind": "typeLiteral",
+        "typeLiteral": {
+          "methods": [],
+          "properties": [
+            {
+              "name": "method",
+              "params": [],
+              "computed": false,
+              "optional": false,
+              "tsType": {
+                "repr": "",
+                "kind": "union",
+                "union": [
+                  {
+                    "repr": "POST",
+                    "kind": "literal",
+                    "literal": {
+                      "kind": "string",
+                      "string": "POST"
+                    }
+                  },
+                  {
+                    "repr": "GET",
+                    "kind": "literal",
+                    "literal": {
+                      "kind": "string",
+                      "string": "GET"
+                    }
+                  }
+                ]
+              },
+              "typeParams": []
+            },
+            {
+              "name": "phase",
+              "params": [],
+              "computed": false,
+              "optional": false,
+              "tsType": {
+                "repr": "Phase",
+                "kind": "typeRef",
+                "typeRef": {
+                  "typeParams": null,
+                  "typeName": "Phase"
+                }
+              },
+              "typeParams": []
+            },
+            {
+              "name": "path",
+              "params": [],
+              "computed": false,
+              "optional": false,
+              "tsType": {
+                "repr": "PATH",
+                "kind": "typeRef",
+                "typeRef": {
+                  "typeParams": null,
+                  "typeName": "PATH"
+                }
+              },
+              "typeParams": []
+            },
+            {
+              "name": "data",
+              "params": [],
+              "computed": false,
+              "optional": false,
+              "tsType": {
+                "repr": "DATA",
+                "kind": "typeRef",
+                "typeRef": {
+                  "typeParams": null,
+                  "typeName": "DATA"
+                }
+              },
+              "typeParams": []
+            },
+            {
+              "name": "pathname",
+              "params": [],
+              "computed": false,
+              "optional": false,
+              "tsType": {
+                "repr": "string",
+                "kind": "keyword",
+                "keyword": "string"
+              },
+              "typeParams": []
+            },
+            {
+              "name": "entrypoint",
+              "params": [],
+              "computed": false,
+              "optional": false,
+              "tsType": {
+                "repr": "URL",
+                "kind": "typeRef",
+                "typeRef": {
+                  "typeParams": null,
+                  "typeName": "URL"
+                }
+              },
+              "typeParams": []
+            },
+            {
+              "name": "loaderContext",
+              "params": [],
+              "computed": false,
+              "optional": false,
+              "tsType": {
+                "repr": "LoaderContext",
+                "kind": "typeRef",
+                "typeRef": {
+                  "typeParams": null,
+                  "typeName": "LoaderContext"
+                }
+              },
+              "typeParams": []
+            }
+          ],
+          "callSignatures": [],
+          "indexSignatures": []
+        }
+      },
+      "typeParams": [
+        {
+          "name": "PATH",
+          "constraint": {
+            "repr": "Record",
+            "kind": "typeRef",
+            "typeRef": {
+              "typeParams": [
+                {
+                  "repr": "string",
+                  "kind": "keyword",
+                  "keyword": "string"
+                },
+                {
+                  "repr": "string",
+                  "kind": "keyword",
+                  "keyword": "string"
+                }
+              ],
+              "typeName": "Record"
+            }
+          },
+          "default": {
+            "repr": "Record",
+            "kind": "typeRef",
+            "typeRef": {
+              "typeParams": [
+                {
+                  "repr": "string",
+                  "kind": "keyword",
+                  "keyword": "string"
+                },
+                {
+                  "repr": "string",
+                  "kind": "keyword",
+                  "keyword": "string"
+                }
+              ],
+              "typeName": "Record"
+            }
+          }
+        },
+        {
+          "name": "DATA",
+          "default": {
+            "repr": "unknown",
+            "kind": "keyword",
+            "keyword": "unknown"
+          }
+        }
+      ]
+    }
+  },
+  {
+    "kind": "typeAlias",
+    "name": "GetDynamicData",
+    "location": {
+      "filename": "file:///home/whiteshoulders/Personnel/frugal/packages/core/Page.ts",
+      "line": 127,
+      "col": 0
+    },
+    "declarationKind": "export",
+    "jsDoc": {
+      "doc": "Method returning the data for a given path and GET request for a dynamic page"
+    },
+    "typeAliasDef": {
+      "tsType": {
+        "repr": "",
+        "kind": "fnOrConstructor",
+        "fnOrConstructor": {
+          "constructor": false,
+          "tsType": {
+            "repr": "",
+            "kind": "union",
+            "union": [
+              {
+                "repr": "Promise",
+                "kind": "typeRef",
+                "typeRef": {
+                  "typeParams": [
+                    {
+                      "repr": "DATA",
+                      "kind": "typeRef",
+                      "typeRef": {
+                        "typeParams": null,
+                        "typeName": "DATA"
+                      }
+                    }
+                  ],
+                  "typeName": "Promise"
+                }
+              },
+              {
+                "repr": "DATA",
+                "kind": "typeRef",
+                "typeRef": {
+                  "typeParams": null,
+                  "typeName": "DATA"
+                }
+              }
+            ]
+          },
+          "params": [
+            {
+              "kind": "identifier",
+              "name": "params",
+              "optional": false,
+              "tsType": {
+                "repr": "GetDynamicDataParams",
+                "kind": "typeRef",
+                "typeRef": {
+                  "typeParams": [
+                    {
+                      "repr": "PATH",
+                      "kind": "typeRef",
+                      "typeRef": {
+                        "typeParams": null,
+                        "typeName": "PATH"
+                      }
+                    },
+                    {
+                      "repr": "BODY",
+                      "kind": "typeRef",
+                      "typeRef": {
+                        "typeParams": null,
+                        "typeName": "BODY"
+                      }
+                    }
+                  ],
+                  "typeName": "GetDynamicDataParams"
+                }
+              }
+            }
+          ],
+          "typeParams": []
+        }
+      },
+      "typeParams": [
+        {
+          "name": "PATH",
+          "constraint": {
+            "repr": "Record",
+            "kind": "typeRef",
+            "typeRef": {
+              "typeParams": [
+                {
+                  "repr": "string",
+                  "kind": "keyword",
+                  "keyword": "string"
+                },
+                {
+                  "repr": "string",
+                  "kind": "keyword",
+                  "keyword": "string"
+                }
+              ],
+              "typeName": "Record"
+            }
+          },
+          "default": {
+            "repr": "Record",
+            "kind": "typeRef",
+            "typeRef": {
+              "typeParams": [
+                {
+                  "repr": "string",
+                  "kind": "keyword",
+                  "keyword": "string"
+                },
+                {
+                  "repr": "string",
+                  "kind": "keyword",
+                  "keyword": "string"
+                }
+              ],
+              "typeName": "Record"
+            }
+          }
+        },
+        {
+          "name": "DATA",
+          "default": {
+            "repr": "unknown",
+            "kind": "keyword",
+            "keyword": "unknown"
+          }
+        },
+        {
+          "name": "BODY",
+          "default": {
+            "repr": "unknown",
+            "kind": "keyword",
+            "keyword": "unknown"
+          }
+        }
+      ]
+    }
+  },
+  {
+    "kind": "typeAlias",
+    "name": "GetDynamicDataParams",
+    "location": {
+      "filename": "file:///home/whiteshoulders/Personnel/frugal/packages/core/Page.ts",
+      "line": 36,
+      "col": 0
+    },
+    "declarationKind": "export",
+    "typeAliasDef": {
+      "tsType": {
+        "repr": "",
+        "kind": "typeLiteral",
+        "typeLiteral": {
+          "methods": [],
+          "properties": [
+            {
+              "name": "phase",
+              "params": [],
+              "computed": false,
+              "optional": false,
+              "tsType": {
+                "repr": "generate",
+                "kind": "literal",
+                "literal": {
+                  "kind": "string",
+                  "string": "generate"
+                }
+              },
+              "typeParams": []
+            },
+            {
+              "name": "path",
+              "params": [],
+              "computed": false,
+              "optional": false,
+              "tsType": {
+                "repr": "PATH",
+                "kind": "typeRef",
+                "typeRef": {
+                  "typeParams": null,
+                  "typeName": "PATH"
+                }
+              },
+              "typeParams": []
+            },
+            {
+              "name": "request",
+              "params": [],
+              "computed": false,
+              "optional": false,
+              "tsType": {
+                "repr": "GenerationRequest",
+                "kind": "typeRef",
+                "typeRef": {
+                  "typeParams": [
+                    {
+                      "repr": "BODY",
+                      "kind": "typeRef",
+                      "typeRef": {
+                        "typeParams": null,
+                        "typeName": "BODY"
+                      }
+                    }
+                  ],
+                  "typeName": "GenerationRequest"
+                }
+              },
+              "typeParams": []
+            }
+          ],
+          "callSignatures": [],
+          "indexSignatures": []
+        }
+      },
+      "typeParams": [
+        {
+          "name": "PATH",
+          "constraint": {
+            "repr": "Record",
+            "kind": "typeRef",
+            "typeRef": {
+              "typeParams": [
+                {
+                  "repr": "string",
+                  "kind": "keyword",
+                  "keyword": "string"
+                },
+                {
+                  "repr": "string",
+                  "kind": "keyword",
+                  "keyword": "string"
+                }
+              ],
+              "typeName": "Record"
+            }
+          },
+          "default": {
+            "repr": "Record",
+            "kind": "typeRef",
+            "typeRef": {
+              "typeParams": [
+                {
+                  "repr": "string",
+                  "kind": "keyword",
+                  "keyword": "string"
+                },
+                {
+                  "repr": "string",
+                  "kind": "keyword",
+                  "keyword": "string"
+                }
+              ],
+              "typeName": "Record"
+            }
+          }
+        },
+        {
+          "name": "BODY",
+          "default": {
+            "repr": "unknown",
+            "kind": "keyword",
+            "keyword": "unknown"
+          }
+        }
+      ]
+    }
+  },
+  {
+    "kind": "typeAlias",
+    "name": "GetPathList",
+    "location": {
+      "filename": "file:///home/whiteshoulders/Personnel/frugal/packages/core/Page.ts",
+      "line": 108,
+      "col": 0
+    },
+    "declarationKind": "export",
+    "jsDoc": {
+      "doc": "Method returning the list of all path for this static page that frugal needs\nto build"
+    },
+    "typeAliasDef": {
+      "tsType": {
+        "repr": "",
+        "kind": "fnOrConstructor",
+        "fnOrConstructor": {
+          "constructor": false,
+          "tsType": {
+            "repr": "",
+            "kind": "union",
+            "union": [
+              {
+                "repr": "Promise",
+                "kind": "typeRef",
+                "typeRef": {
+                  "typeParams": [
+                    {
+                      "repr": "",
+                      "kind": "array",
+                      "array": {
+                        "repr": "PATH",
+                        "kind": "typeRef",
+                        "typeRef": {
+                          "typeParams": null,
+                          "typeName": "PATH"
+                        }
+                      }
+                    }
+                  ],
+                  "typeName": "Promise"
+                }
+              },
+              {
+                "repr": "",
+                "kind": "array",
+                "array": {
+                  "repr": "PATH",
+                  "kind": "typeRef",
+                  "typeRef": {
+                    "typeParams": null,
+                    "typeName": "PATH"
+                  }
+                }
+              }
+            ]
+          },
+          "params": [
+            {
+              "kind": "identifier",
+              "name": "params",
+              "optional": false,
+              "tsType": {
+                "repr": "GetPathListParams",
+                "kind": "typeRef",
+                "typeRef": {
+                  "typeParams": null,
+                  "typeName": "GetPathListParams"
+                }
+              }
+            }
+          ],
+          "typeParams": []
+        }
+      },
+      "typeParams": [
+        {
+          "name": "PATH",
+          "constraint": {
+            "repr": "Record",
+            "kind": "typeRef",
+            "typeRef": {
+              "typeParams": [
+                {
+                  "repr": "string",
+                  "kind": "keyword",
+                  "keyword": "string"
+                },
+                {
+                  "repr": "string",
+                  "kind": "keyword",
+                  "keyword": "string"
+                }
+              ],
+              "typeName": "Record"
+            }
+          },
+          "default": {
+            "repr": "Record",
+            "kind": "typeRef",
+            "typeRef": {
+              "typeParams": [
+                {
+                  "repr": "string",
+                  "kind": "keyword",
+                  "keyword": "string"
+                },
+                {
+                  "repr": "string",
+                  "kind": "keyword",
+                  "keyword": "string"
+                }
+              ],
+              "typeName": "Record"
+            }
+          }
+        }
+      ]
+    }
+  },
+  {
+    "kind": "typeAlias",
+    "name": "GetPathListParams",
+    "location": {
+      "filename": "file:///home/whiteshoulders/Personnel/frugal/packages/core/Page.ts",
+      "line": 22,
+      "col": 0
+    },
+    "declarationKind": "export",
+    "typeAliasDef": {
+      "tsType": {
+        "repr": "",
+        "kind": "typeLiteral",
+        "typeLiteral": {
+          "methods": [],
+          "properties": [
+            {
+              "name": "phase",
+              "params": [],
+              "computed": false,
+              "optional": false,
+              "tsType": {
+                "repr": "Phase",
+                "kind": "typeRef",
+                "typeRef": {
+                  "typeParams": null,
+                  "typeName": "Phase"
+                }
+              },
+              "typeParams": []
+            }
+          ],
+          "callSignatures": [],
+          "indexSignatures": []
+        }
+      },
+      "typeParams": []
+    }
+  },
+  {
+    "kind": "typeAlias",
+    "name": "GetStaticData",
+    "location": {
+      "filename": "file:///home/whiteshoulders/Personnel/frugal/packages/core/Page.ts",
+      "line": 117,
+      "col": 0
+    },
+    "declarationKind": "export",
+    "jsDoc": {
+      "doc": "Method returning the data for a given path for a static page"
+    },
+    "typeAliasDef": {
+      "tsType": {
+        "repr": "",
+        "kind": "fnOrConstructor",
+        "fnOrConstructor": {
+          "constructor": false,
+          "tsType": {
+            "repr": "",
+            "kind": "union",
+            "union": [
+              {
+                "repr": "Promise",
+                "kind": "typeRef",
+                "typeRef": {
+                  "typeParams": [
+                    {
+                      "repr": "DATA",
+                      "kind": "typeRef",
+                      "typeRef": {
+                        "typeParams": null,
+                        "typeName": "DATA"
+                      }
+                    }
+                  ],
+                  "typeName": "Promise"
+                }
+              },
+              {
+                "repr": "DATA",
+                "kind": "typeRef",
+                "typeRef": {
+                  "typeParams": null,
+                  "typeName": "DATA"
+                }
+              }
+            ]
+          },
+          "params": [
+            {
+              "kind": "identifier",
+              "name": "params",
+              "optional": false,
+              "tsType": {
+                "repr": "GetStaticDataParams",
+                "kind": "typeRef",
+                "typeRef": {
+                  "typeParams": [
+                    {
+                      "repr": "PATH",
+                      "kind": "typeRef",
+                      "typeRef": {
+                        "typeParams": null,
+                        "typeName": "PATH"
+                      }
+                    }
+                  ],
+                  "typeName": "GetStaticDataParams"
+                }
+              }
+            }
+          ],
+          "typeParams": []
+        }
+      },
+      "typeParams": [
+        {
+          "name": "PATH",
+          "constraint": {
+            "repr": "Record",
+            "kind": "typeRef",
+            "typeRef": {
+              "typeParams": [
+                {
+                  "repr": "string",
+                  "kind": "keyword",
+                  "keyword": "string"
+                },
+                {
+                  "repr": "string",
+                  "kind": "keyword",
+                  "keyword": "string"
+                }
+              ],
+              "typeName": "Record"
+            }
+          },
+          "default": {
+            "repr": "Record",
+            "kind": "typeRef",
+            "typeRef": {
+              "typeParams": [
+                {
+                  "repr": "string",
+                  "kind": "keyword",
+                  "keyword": "string"
+                },
+                {
+                  "repr": "string",
+                  "kind": "keyword",
+                  "keyword": "string"
+                }
+              ],
+              "typeName": "Record"
+            }
+          }
+        },
+        {
+          "name": "DATA",
+          "default": {
+            "repr": "unknown",
+            "kind": "keyword",
+            "keyword": "unknown"
+          }
+        }
+      ]
+    }
+  },
+  {
+    "kind": "typeAlias",
+    "name": "GetStaticDataParams",
+    "location": {
+      "filename": "file:///home/whiteshoulders/Personnel/frugal/packages/core/Page.ts",
+      "line": 27,
+      "col": 0
+    },
+    "declarationKind": "export",
+    "typeAliasDef": {
+      "tsType": {
+        "repr": "",
+        "kind": "typeLiteral",
+        "typeLiteral": {
+          "methods": [],
+          "properties": [
+            {
+              "name": "phase",
+              "params": [],
+              "computed": false,
+              "optional": false,
+              "tsType": {
+                "repr": "Phase",
+                "kind": "typeRef",
+                "typeRef": {
+                  "typeParams": null,
+                  "typeName": "Phase"
+                }
+              },
+              "typeParams": []
+            },
+            {
+              "name": "path",
+              "params": [],
+              "computed": false,
+              "optional": false,
+              "tsType": {
+                "repr": "PATH",
+                "kind": "typeRef",
+                "typeRef": {
+                  "typeParams": null,
+                  "typeName": "PATH"
+                }
+              },
+              "typeParams": []
+            }
+          ],
+          "callSignatures": [],
+          "indexSignatures": []
+        }
+      },
+      "typeParams": [
+        {
+          "name": "PATH",
+          "constraint": {
+            "repr": "Record",
+            "kind": "typeRef",
+            "typeRef": {
+              "typeParams": [
+                {
+                  "repr": "string",
+                  "kind": "keyword",
+                  "keyword": "string"
+                },
+                {
+                  "repr": "string",
+                  "kind": "keyword",
+                  "keyword": "string"
+                }
+              ],
+              "typeName": "Record"
+            }
+          },
+          "default": {
+            "repr": "Record",
+            "kind": "typeRef",
+            "typeRef": {
+              "typeParams": [
+                {
+                  "repr": "string",
+                  "kind": "keyword",
+                  "keyword": "string"
+                },
+                {
+                  "repr": "string",
+                  "kind": "keyword",
+                  "keyword": "string"
+                }
+              ],
+              "typeName": "Record"
+            }
+          }
+        }
+      ]
+    }
+  },
+  {
+    "kind": "typeAlias",
+    "name": "Phase",
+    "location": {
+      "filename": "file:///home/whiteshoulders/Personnel/frugal/packages/core/Page.ts",
+      "line": 13,
+      "col": 0
+    },
+    "declarationKind": "export",
+    "jsDoc": {
+      "doc": "The different phases of Frugal.\n\nA page descriptor method can be called in a build phase (during the Frugal\ninstance build), during the refresh phase (at runtime in a refresh call) or\nduring the generate phase (at runtime in a generate call)."
+    },
+    "typeAliasDef": {
+      "tsType": {
+        "repr": "",
+        "kind": "union",
+        "union": [
+          {
+            "repr": "build",
+            "kind": "literal",
+            "literal": {
+              "kind": "string",
+              "string": "build"
+            }
+          },
+          {
+            "repr": "refresh",
+            "kind": "literal",
+            "literal": {
+              "kind": "string",
+              "string": "refresh"
+            }
+          },
+          {
+            "repr": "generate",
+            "kind": "literal",
+            "literal": {
+              "kind": "string",
+              "string": "generate"
+            }
+          }
+        ]
+      },
+      "typeParams": []
+    }
+  },
+  {
+    "kind": "typeAlias",
+    "name": "PostDynamicData",
+    "location": {
+      "filename": "file:///home/whiteshoulders/Personnel/frugal/packages/core/Page.ts",
+      "line": 139,
+      "col": 0
+    },
+    "declarationKind": "export",
+    "jsDoc": {
+      "doc": "Method returning the data for a given path and POST request (for both static\nand dynamic pages)"
+    },
+    "typeAliasDef": {
+      "tsType": {
+        "repr": "",
+        "kind": "fnOrConstructor",
+        "fnOrConstructor": {
+          "constructor": false,
+          "tsType": {
+            "repr": "",
+            "kind": "union",
+            "union": [
+              {
+                "repr": "Promise",
+                "kind": "typeRef",
+                "typeRef": {
+                  "typeParams": [
+                    {
+                      "repr": "DATA",
+                      "kind": "typeRef",
+                      "typeRef": {
+                        "typeParams": null,
+                        "typeName": "DATA"
+                      }
+                    }
+                  ],
+                  "typeName": "Promise"
+                }
+              },
+              {
+                "repr": "DATA",
+                "kind": "typeRef",
+                "typeRef": {
+                  "typeParams": null,
+                  "typeName": "DATA"
+                }
+              }
+            ]
+          },
+          "params": [
+            {
+              "kind": "identifier",
+              "name": "params",
+              "optional": false,
+              "tsType": {
+                "repr": "PostDynamicDataParams",
+                "kind": "typeRef",
+                "typeRef": {
+                  "typeParams": [
+                    {
+                      "repr": "PATH",
+                      "kind": "typeRef",
+                      "typeRef": {
+                        "typeParams": null,
+                        "typeName": "PATH"
+                      }
+                    },
+                    {
+                      "repr": "BODY",
+                      "kind": "typeRef",
+                      "typeRef": {
+                        "typeParams": null,
+                        "typeName": "BODY"
+                      }
+                    }
+                  ],
+                  "typeName": "PostDynamicDataParams"
+                }
+              }
+            }
+          ],
+          "typeParams": []
+        }
+      },
+      "typeParams": [
+        {
+          "name": "PATH",
+          "constraint": {
+            "repr": "Record",
+            "kind": "typeRef",
+            "typeRef": {
+              "typeParams": [
+                {
+                  "repr": "string",
+                  "kind": "keyword",
+                  "keyword": "string"
+                },
+                {
+                  "repr": "string",
+                  "kind": "keyword",
+                  "keyword": "string"
+                }
+              ],
+              "typeName": "Record"
+            }
+          },
+          "default": {
+            "repr": "Record",
+            "kind": "typeRef",
+            "typeRef": {
+              "typeParams": [
+                {
+                  "repr": "string",
+                  "kind": "keyword",
+                  "keyword": "string"
+                },
+                {
+                  "repr": "string",
+                  "kind": "keyword",
+                  "keyword": "string"
+                }
+              ],
+              "typeName": "Record"
+            }
+          }
+        },
+        {
+          "name": "DATA",
+          "default": {
+            "repr": "unknown",
+            "kind": "keyword",
+            "keyword": "unknown"
+          }
+        },
+        {
+          "name": "BODY",
+          "default": {
+            "repr": "unknown",
+            "kind": "keyword",
+            "keyword": "unknown"
+          }
+        }
+      ]
+    }
+  },
+  {
+    "kind": "typeAlias",
+    "name": "PostDynamicDataParams",
+    "location": {
+      "filename": "file:///home/whiteshoulders/Personnel/frugal/packages/core/Page.ts",
+      "line": 48,
+      "col": 0
+    },
+    "declarationKind": "export",
+    "typeAliasDef": {
+      "tsType": {
+        "repr": "",
+        "kind": "typeLiteral",
+        "typeLiteral": {
+          "methods": [],
+          "properties": [
+            {
+              "name": "phase",
+              "params": [],
+              "computed": false,
+              "optional": false,
+              "tsType": {
+                "repr": "generate",
+                "kind": "literal",
+                "literal": {
+                  "kind": "string",
+                  "string": "generate"
+                }
+              },
+              "typeParams": []
+            },
+            {
+              "name": "path",
+              "params": [],
+              "computed": false,
+              "optional": false,
+              "tsType": {
+                "repr": "PATH",
+                "kind": "typeRef",
+                "typeRef": {
+                  "typeParams": null,
+                  "typeName": "PATH"
+                }
+              },
+              "typeParams": []
+            },
+            {
+              "name": "request",
+              "params": [],
+              "computed": false,
+              "optional": false,
+              "tsType": {
+                "repr": "GenerationRequest",
+                "kind": "typeRef",
+                "typeRef": {
+                  "typeParams": [
+                    {
+                      "repr": "BODY",
+                      "kind": "typeRef",
+                      "typeRef": {
+                        "typeParams": null,
+                        "typeName": "BODY"
+                      }
+                    }
+                  ],
+                  "typeName": "GenerationRequest"
+                }
+              },
+              "typeParams": []
+            }
+          ],
+          "callSignatures": [],
+          "indexSignatures": []
+        }
+      },
+      "typeParams": [
+        {
+          "name": "PATH",
+          "constraint": {
+            "repr": "Record",
+            "kind": "typeRef",
+            "typeRef": {
+              "typeParams": [
+                {
+                  "repr": "string",
+                  "kind": "keyword",
+                  "keyword": "string"
+                },
+                {
+                  "repr": "string",
+                  "kind": "keyword",
+                  "keyword": "string"
+                }
+              ],
+              "typeName": "Record"
+            }
+          },
+          "default": {
+            "repr": "Record",
+            "kind": "typeRef",
+            "typeRef": {
+              "typeParams": [
+                {
+                  "repr": "string",
+                  "kind": "keyword",
+                  "keyword": "string"
+                },
+                {
+                  "repr": "string",
+                  "kind": "keyword",
+                  "keyword": "string"
+                }
+              ],
+              "typeName": "Record"
+            }
+          }
+        },
+        {
+          "name": "BODY",
+          "default": {
+            "repr": "unknown",
+            "kind": "keyword",
+            "keyword": "unknown"
+          }
+        }
+      ]
+    }
+  },
+  {
+    "kind": "typeAlias",
+    "name": "StaticPageDescriptor",
+    "location": {
+      "filename": "file:///home/whiteshoulders/Personnel/frugal/packages/core/Page.ts",
+      "line": 177,
+      "col": 0
+    },
+    "declarationKind": "export",
+    "typeAliasDef": {
+      "tsType": {
+        "repr": "",
+        "kind": "typeLiteral",
+        "typeLiteral": {
+          "methods": [],
+          "properties": [
+            {
+              "name": "self",
+              "params": [],
+              "computed": false,
+              "optional": false,
+              "tsType": {
+                "repr": "URL",
+                "kind": "typeRef",
+                "typeRef": {
+                  "typeParams": null,
+                  "typeName": "URL"
+                }
+              },
+              "typeParams": []
+            },
+            {
+              "name": "pattern",
+              "params": [],
+              "computed": false,
+              "optional": false,
+              "tsType": {
+                "repr": "string",
+                "kind": "keyword",
+                "keyword": "string"
+              },
+              "typeParams": []
+            },
+            {
+              "name": "getPathList",
+              "params": [],
+              "computed": false,
+              "optional": true,
+              "tsType": {
+                "repr": "GetPathList",
+                "kind": "typeRef",
+                "typeRef": {
+                  "typeParams": [
+                    {
+                      "repr": "PATH",
+                      "kind": "typeRef",
+                      "typeRef": {
+                        "typeParams": null,
+                        "typeName": "PATH"
+                      }
+                    }
+                  ],
+                  "typeName": "GetPathList"
+                }
+              },
+              "typeParams": []
+            },
+            {
+              "name": "postDynamicData",
+              "params": [],
+              "computed": false,
+              "optional": true,
+              "tsType": {
+                "repr": "PostDynamicData",
+                "kind": "typeRef",
+                "typeRef": {
+                  "typeParams": [
+                    {
+                      "repr": "PATH",
+                      "kind": "typeRef",
+                      "typeRef": {
+                        "typeParams": null,
+                        "typeName": "PATH"
+                      }
+                    },
+                    {
+                      "repr": "DATA",
+                      "kind": "typeRef",
+                      "typeRef": {
+                        "typeParams": null,
+                        "typeName": "DATA"
+                      }
+                    },
+                    {
+                      "repr": "BODY",
+                      "kind": "typeRef",
+                      "typeRef": {
+                        "typeParams": null,
+                        "typeName": "BODY"
+                      }
+                    }
+                  ],
+                  "typeName": "PostDynamicData"
+                }
+              },
+              "typeParams": []
+            },
+            {
+              "name": "getStaticData",
+              "params": [],
+              "computed": false,
+              "optional": true,
+              "tsType": {
+                "repr": "GetStaticData",
+                "kind": "typeRef",
+                "typeRef": {
+                  "typeParams": [
+                    {
+                      "repr": "PATH",
+                      "kind": "typeRef",
+                      "typeRef": {
+                        "typeParams": null,
+                        "typeName": "PATH"
+                      }
+                    },
+                    {
+                      "repr": "DATA",
+                      "kind": "typeRef",
+                      "typeRef": {
+                        "typeParams": null,
+                        "typeName": "DATA"
+                      }
+                    }
+                  ],
+                  "typeName": "GetStaticData"
+                }
+              },
+              "typeParams": []
+            },
+            {
+              "name": "getContent",
+              "params": [],
+              "computed": false,
+              "optional": false,
+              "tsType": {
+                "repr": "GetContent",
+                "kind": "typeRef",
+                "typeRef": {
+                  "typeParams": [
+                    {
+                      "repr": "PATH",
+                      "kind": "typeRef",
+                      "typeRef": {
+                        "typeParams": null,
+                        "typeName": "PATH"
+                      }
+                    },
+                    {
+                      "repr": "DATA",
+                      "kind": "typeRef",
+                      "typeRef": {
+                        "typeParams": null,
+                        "typeName": "DATA"
+                      }
+                    }
+                  ],
+                  "typeName": "GetContent"
+                }
+              },
+              "typeParams": []
+            },
+            {
+              "name": "getStaticHeaders",
+              "params": [],
+              "computed": false,
+              "optional": true,
+              "tsType": {
+                "repr": "GetStaticHeaders",
+                "kind": "typeRef",
+                "typeRef": {
+                  "typeParams": [
+                    {
+                      "repr": "PATH",
+                      "kind": "typeRef",
+                      "typeRef": {
+                        "typeParams": null,
+                        "typeName": "PATH"
+                      }
+                    }
+                  ],
+                  "typeName": "GetStaticHeaders"
+                }
+              },
+              "typeParams": []
+            },
+            {
+              "name": "postDynamicHeaders",
+              "params": [],
+              "computed": false,
+              "optional": true,
+              "tsType": {
+                "repr": "PostDynamicHeaders",
+                "kind": "typeRef",
+                "typeRef": {
+                  "typeParams": [
+                    {
+                      "repr": "PATH",
+                      "kind": "typeRef",
+                      "typeRef": {
+                        "typeParams": null,
+                        "typeName": "PATH"
+                      }
+                    },
+                    {
+                      "repr": "BODY",
+                      "kind": "typeRef",
+                      "typeRef": {
+                        "typeParams": null,
+                        "typeName": "BODY"
+                      }
+                    }
+                  ],
+                  "typeName": "PostDynamicHeaders"
+                }
+              },
+              "typeParams": []
+            }
+          ],
+          "callSignatures": [],
+          "indexSignatures": []
+        }
+      },
+      "typeParams": [
+        {
+          "name": "PATH",
+          "constraint": {
+            "repr": "Record",
+            "kind": "typeRef",
+            "typeRef": {
+              "typeParams": [
+                {
+                  "repr": "string",
+                  "kind": "keyword",
+                  "keyword": "string"
+                },
+                {
+                  "repr": "string",
+                  "kind": "keyword",
+                  "keyword": "string"
+                }
+              ],
+              "typeName": "Record"
+            }
+          },
+          "default": {
+            "repr": "Record",
+            "kind": "typeRef",
+            "typeRef": {
+              "typeParams": [
+                {
+                  "repr": "string",
+                  "kind": "keyword",
+                  "keyword": "string"
+                },
+                {
+                  "repr": "string",
+                  "kind": "keyword",
+                  "keyword": "string"
+                }
+              ],
+              "typeName": "Record"
+            }
+          }
+        },
+        {
+          "name": "DATA",
+          "default": {
+            "repr": "unknown",
+            "kind": "keyword",
+            "keyword": "unknown"
+          }
+        },
+        {
+          "name": "BODY",
+          "default": {
+            "repr": "unknown",
+            "kind": "keyword",
+            "keyword": "unknown"
+          }
+        }
+      ]
+    }
+  },
+  {
+    "kind": "class",
+    "name": "DynamicPage",
+    "location": {
+      "filename": "file:///home/whiteshoulders/Personnel/frugal/packages/core/Page.ts",
+      "line": 422,
+      "col": 0
+    },
+    "declarationKind": "export",
+    "classDef": {
+      "isAbstract": false,
+      "constructors": [
+        {
+          "accessibility": null,
+          "name": "constructor",
+          "params": [
+            {
+              "kind": "identifier",
+              "name": "descriptor",
+              "optional": false,
+              "tsType": {
+                "repr": "DynamicPageDescriptor",
+                "kind": "typeRef",
+                "typeRef": {
+                  "typeParams": [
+                    {
+                      "repr": "PATH",
+                      "kind": "typeRef",
+                      "typeRef": {
+                        "typeParams": null,
+                        "typeName": "PATH"
+                      }
+                    },
+                    {
+                      "repr": "DATA",
+                      "kind": "typeRef",
+                      "typeRef": {
+                        "typeParams": null,
+                        "typeName": "DATA"
+                      }
+                    },
+                    {
+                      "repr": "BODY",
+                      "kind": "typeRef",
+                      "typeRef": {
+                        "typeParams": null,
+                        "typeName": "BODY"
+                      }
+                    }
+                  ],
+                  "typeName": "DynamicPageDescriptor"
+                }
+              }
+            }
+          ],
+          "location": {
+            "filename": "file:///home/whiteshoulders/Personnel/frugal/packages/core/Page.ts",
+            "line": 432,
+            "col": 4
+          }
+        }
+      ],
+      "properties": [],
+      "indexSignatures": [],
+      "methods": [
+        {
+          "accessibility": null,
+          "optional": false,
+          "isAbstract": false,
+          "isStatic": false,
+          "name": "getDynamicData",
+          "kind": "method",
+          "functionDef": {
+            "params": [
+              {
+                "kind": "identifier",
+                "name": "params",
+                "optional": false,
+                "tsType": {
+                  "repr": "GetDynamicDataParams",
+                  "kind": "typeRef",
+                  "typeRef": {
+                    "typeParams": [
+                      {
+                        "repr": "PATH",
+                        "kind": "typeRef",
+                        "typeRef": {
+                          "typeParams": null,
+                          "typeName": "PATH"
+                        }
+                      },
+                      {
+                        "repr": "BODY",
+                        "kind": "typeRef",
+                        "typeRef": {
+                          "typeParams": null,
+                          "typeName": "BODY"
+                        }
+                      }
+                    ],
+                    "typeName": "GetDynamicDataParams"
+                  }
+                }
+              }
+            ],
+            "returnType": null,
+            "isAsync": false,
+            "isGenerator": false,
+            "typeParams": []
+          },
+          "location": {
+            "filename": "file:///home/whiteshoulders/Personnel/frugal/packages/core/Page.ts",
+            "line": 438,
+            "col": 4
+          }
+        },
+        {
+          "accessibility": null,
+          "optional": false,
+          "isAbstract": false,
+          "isStatic": false,
+          "name": "getDynamicHeaders",
+          "kind": "method",
+          "functionDef": {
+            "params": [
+              {
+                "kind": "identifier",
+                "name": "params",
+                "optional": false,
+                "tsType": {
+                  "repr": "GetDynamicHeadersParams",
+                  "kind": "typeRef",
+                  "typeRef": {
+                    "typeParams": [
+                      {
+                        "repr": "PATH",
+                        "kind": "typeRef",
+                        "typeRef": {
+                          "typeParams": null,
+                          "typeName": "PATH"
+                        }
+                      },
+                      {
+                        "repr": "BODY",
+                        "kind": "typeRef",
+                        "typeRef": {
+                          "typeParams": null,
+                          "typeName": "BODY"
+                        }
+                      }
+                    ],
+                    "typeName": "GetDynamicHeadersParams"
+                  }
+                }
+              }
+            ],
+            "returnType": null,
+            "isAsync": false,
+            "isGenerator": false,
+            "typeParams": []
+          },
+          "location": {
+            "filename": "file:///home/whiteshoulders/Personnel/frugal/packages/core/Page.ts",
+            "line": 442,
+            "col": 4
+          }
+        }
+      ],
+      "extends": "BasePage",
+      "implements": [
+        {
+          "repr": "DynamicPageDescriptor",
+          "kind": "typeRef",
+          "typeRef": {
+            "typeParams": [
+              {
+                "repr": "PATH",
+                "kind": "typeRef",
+                "typeRef": {
+                  "typeParams": null,
+                  "typeName": "PATH"
+                }
+              },
+              {
+                "repr": "DATA",
+                "kind": "typeRef",
+                "typeRef": {
+                  "typeParams": null,
+                  "typeName": "DATA"
+                }
+              },
+              {
+                "repr": "BODY",
+                "kind": "typeRef",
+                "typeRef": {
+                  "typeParams": null,
+                  "typeName": "BODY"
+                }
+              }
+            ],
+            "typeName": "DynamicPageDescriptor"
+          }
+        }
+      ],
+      "typeParams": [
+        {
+          "name": "PATH",
+          "constraint": {
+            "repr": "Record",
+            "kind": "typeRef",
+            "typeRef": {
+              "typeParams": [
+                {
+                  "repr": "string",
+                  "kind": "keyword",
+                  "keyword": "string"
+                },
+                {
+                  "repr": "string",
+                  "kind": "keyword",
+                  "keyword": "string"
+                }
+              ],
+              "typeName": "Record"
+            }
+          },
+          "default": {
+            "repr": "Record",
+            "kind": "typeRef",
+            "typeRef": {
+              "typeParams": [
+                {
+                  "repr": "string",
+                  "kind": "keyword",
+                  "keyword": "string"
+                },
+                {
+                  "repr": "string",
+                  "kind": "keyword",
+                  "keyword": "string"
+                }
+              ],
+              "typeName": "Record"
+            }
+          }
+        },
+        {
+          "name": "DATA",
+          "default": {
+            "repr": "unknown",
+            "kind": "keyword",
+            "keyword": "unknown"
+          }
+        },
+        {
+          "name": "BODY",
+          "default": {
+            "repr": "unknown",
+            "kind": "keyword",
+            "keyword": "unknown"
+          }
+        }
+      ],
+      "superTypeParams": [
+        {
+          "repr": "PATH",
+          "kind": "typeRef",
+          "typeRef": {
+            "typeParams": null,
+            "typeName": "PATH"
+          }
+        },
+        {
+          "repr": "DATA",
+          "kind": "typeRef",
+          "typeRef": {
+            "typeParams": null,
+            "typeName": "DATA"
+          }
+        },
+        {
+          "repr": "BODY",
+          "kind": "typeRef",
+          "typeRef": {
+            "typeParams": null,
+            "typeName": "BODY"
+          }
+        },
+        {
+          "repr": "DynamicPageDescriptor",
+          "kind": "typeRef",
+          "typeRef": {
+            "typeParams": [
+              {
+                "repr": "PATH",
+                "kind": "typeRef",
+                "typeRef": {
+                  "typeParams": null,
+                  "typeName": "PATH"
+                }
+              },
+              {
+                "repr": "DATA",
+                "kind": "typeRef",
+                "typeRef": {
+                  "typeParams": null,
+                  "typeName": "DATA"
+                }
+              },
+              {
+                "repr": "BODY",
+                "kind": "typeRef",
+                "typeRef": {
+                  "typeParams": null,
+                  "typeName": "BODY"
+                }
+              }
+            ],
+            "typeName": "DynamicPageDescriptor"
+          }
+        }
+      ]
+    }
+  },
+  {
+    "kind": "function",
+    "name": "page",
+    "location": {
+      "filename": "file:///home/whiteshoulders/Personnel/frugal/packages/core/Page.ts",
+      "line": 217,
+      "col": 0
+    },
+    "declarationKind": "export",
+    "jsDoc": {
+      "doc": "Build a page object from a page descriptor"
+    },
+    "functionDef": {
+      "params": [
+        {
+          "kind": "identifier",
+          "name": "descriptor",
+          "optional": false,
+          "tsType": {
+            "repr": "StaticPageDescriptor",
+            "kind": "typeRef",
+            "typeRef": {
+              "typeParams": [
+                {
+                  "repr": "PATH",
+                  "kind": "typeRef",
+                  "typeRef": {
+                    "typeParams": null,
+                    "typeName": "PATH"
+                  }
+                },
+                {
+                  "repr": "DATA",
+                  "kind": "typeRef",
+                  "typeRef": {
+                    "typeParams": null,
+                    "typeName": "DATA"
+                  }
+                },
+                {
+                  "repr": "BODY",
+                  "kind": "typeRef",
+                  "typeRef": {
+                    "typeParams": null,
+                    "typeName": "BODY"
+                  }
+                }
+              ],
+              "typeName": "StaticPageDescriptor"
+            }
+          }
+        }
+      ],
+      "returnType": {
+        "repr": "Page",
+        "kind": "typeRef",
+        "typeRef": {
+          "typeParams": [
+            {
+              "repr": "PATH",
+              "kind": "typeRef",
+              "typeRef": {
+                "typeParams": null,
+                "typeName": "PATH"
+              }
+            },
+            {
+              "repr": "DATA",
+              "kind": "typeRef",
+              "typeRef": {
+                "typeParams": null,
+                "typeName": "DATA"
+              }
+            },
+            {
+              "repr": "BODY",
+              "kind": "typeRef",
+              "typeRef": {
+                "typeParams": null,
+                "typeName": "BODY"
+              }
+            }
+          ],
+          "typeName": "Page"
+        }
+      },
+      "isAsync": false,
+      "isGenerator": false,
+      "typeParams": [
+        {
+          "name": "PATH",
+          "constraint": {
+            "repr": "Record",
+            "kind": "typeRef",
+            "typeRef": {
+              "typeParams": [
+                {
+                  "repr": "string",
+                  "kind": "keyword",
+                  "keyword": "string"
+                },
+                {
+                  "repr": "string",
+                  "kind": "keyword",
+                  "keyword": "string"
+                }
+              ],
+              "typeName": "Record"
+            }
+          },
+          "default": {
+            "repr": "Record",
+            "kind": "typeRef",
+            "typeRef": {
+              "typeParams": [
+                {
+                  "repr": "string",
+                  "kind": "keyword",
+                  "keyword": "string"
+                },
+                {
+                  "repr": "string",
+                  "kind": "keyword",
+                  "keyword": "string"
+                }
+              ],
+              "typeName": "Record"
+            }
+          }
+        },
+        {
+          "name": "DATA",
+          "default": {
+            "repr": "unknown",
+            "kind": "keyword",
+            "keyword": "unknown"
+          }
+        },
+        {
+          "name": "BODY",
+          "default": {
+            "repr": "unknown",
+            "kind": "keyword",
+            "keyword": "unknown"
+          }
+        }
+      ]
+    }
+  },
+  {
+    "kind": "function",
+    "name": "page",
+    "location": {
+      "filename": "file:///home/whiteshoulders/Personnel/frugal/packages/core/Page.ts",
+      "line": 224,
+      "col": 0
+    },
+    "declarationKind": "export",
+    "functionDef": {
+      "params": [
+        {
+          "kind": "identifier",
+          "name": "descriptor",
+          "optional": false,
+          "tsType": {
+            "repr": "DynamicPageDescriptor",
+            "kind": "typeRef",
+            "typeRef": {
+              "typeParams": [
+                {
+                  "repr": "PATH",
+                  "kind": "typeRef",
+                  "typeRef": {
+                    "typeParams": null,
+                    "typeName": "PATH"
+                  }
+                },
+                {
+                  "repr": "DATA",
+                  "kind": "typeRef",
+                  "typeRef": {
+                    "typeParams": null,
+                    "typeName": "DATA"
+                  }
+                },
+                {
+                  "repr": "BODY",
+                  "kind": "typeRef",
+                  "typeRef": {
+                    "typeParams": null,
+                    "typeName": "BODY"
+                  }
+                }
+              ],
+              "typeName": "DynamicPageDescriptor"
+            }
+          }
+        }
+      ],
+      "returnType": {
+        "repr": "Page",
+        "kind": "typeRef",
+        "typeRef": {
+          "typeParams": [
+            {
+              "repr": "PATH",
+              "kind": "typeRef",
+              "typeRef": {
+                "typeParams": null,
+                "typeName": "PATH"
+              }
+            },
+            {
+              "repr": "DATA",
+              "kind": "typeRef",
+              "typeRef": {
+                "typeParams": null,
+                "typeName": "DATA"
+              }
+            },
+            {
+              "repr": "BODY",
+              "kind": "typeRef",
+              "typeRef": {
+                "typeParams": null,
+                "typeName": "BODY"
+              }
+            }
+          ],
+          "typeName": "Page"
+        }
+      },
+      "isAsync": false,
+      "isGenerator": false,
+      "typeParams": [
+        {
+          "name": "PATH",
+          "constraint": {
+            "repr": "Record",
+            "kind": "typeRef",
+            "typeRef": {
+              "typeParams": [
+                {
+                  "repr": "string",
+                  "kind": "keyword",
+                  "keyword": "string"
+                },
+                {
+                  "repr": "string",
+                  "kind": "keyword",
+                  "keyword": "string"
+                }
+              ],
+              "typeName": "Record"
+            }
+          },
+          "default": {
+            "repr": "Record",
+            "kind": "typeRef",
+            "typeRef": {
+              "typeParams": [
+                {
+                  "repr": "string",
+                  "kind": "keyword",
+                  "keyword": "string"
+                },
+                {
+                  "repr": "string",
+                  "kind": "keyword",
+                  "keyword": "string"
+                }
+              ],
+              "typeName": "Record"
+            }
+          }
+        },
+        {
+          "name": "DATA",
+          "default": {
+            "repr": "unknown",
+            "kind": "keyword",
+            "keyword": "unknown"
+          }
+        },
+        {
+          "name": "BODY",
+          "default": {
+            "repr": "unknown",
+            "kind": "keyword",
+            "keyword": "unknown"
+          }
+        }
+      ]
+    }
+  },
+  {
+    "kind": "function",
+    "name": "page",
+    "location": {
+      "filename": "file:///home/whiteshoulders/Personnel/frugal/packages/core/Page.ts",
+      "line": 231,
+      "col": 0
+    },
+    "declarationKind": "export",
+    "functionDef": {
+      "params": [
+        {
+          "kind": "identifier",
+          "name": "descriptor",
+          "optional": false,
+          "tsType": {
+            "repr": "any",
+            "kind": "keyword",
+            "keyword": "any"
+          }
+        }
+      ],
+      "returnType": {
+        "repr": "Page",
+        "kind": "typeRef",
+        "typeRef": {
+          "typeParams": [
+            {
+              "repr": "PATH",
+              "kind": "typeRef",
+              "typeRef": {
+                "typeParams": null,
+                "typeName": "PATH"
+              }
+            },
+            {
+              "repr": "DATA",
+              "kind": "typeRef",
+              "typeRef": {
+                "typeParams": null,
+                "typeName": "DATA"
+              }
+            },
+            {
+              "repr": "BODY",
+              "kind": "typeRef",
+              "typeRef": {
+                "typeParams": null,
+                "typeName": "BODY"
+              }
+            }
+          ],
+          "typeName": "Page"
+        }
+      },
+      "isAsync": false,
+      "isGenerator": false,
+      "typeParams": [
+        {
+          "name": "PATH",
+          "constraint": {
+            "repr": "Record",
+            "kind": "typeRef",
+            "typeRef": {
+              "typeParams": [
+                {
+                  "repr": "string",
+                  "kind": "keyword",
+                  "keyword": "string"
+                },
+                {
+                  "repr": "string",
+                  "kind": "keyword",
+                  "keyword": "string"
+                }
+              ],
+              "typeName": "Record"
+            }
+          },
+          "default": {
+            "repr": "Record",
+            "kind": "typeRef",
+            "typeRef": {
+              "typeParams": [
+                {
+                  "repr": "string",
+                  "kind": "keyword",
+                  "keyword": "string"
+                },
+                {
+                  "repr": "string",
+                  "kind": "keyword",
+                  "keyword": "string"
+                }
+              ],
+              "typeName": "Record"
+            }
+          }
+        },
+        {
+          "name": "DATA",
+          "default": {
+            "repr": "unknown",
+            "kind": "keyword",
+            "keyword": "unknown"
+          }
+        },
+        {
+          "name": "BODY",
+          "default": {
+            "repr": "unknown",
+            "kind": "keyword",
+            "keyword": "unknown"
+          }
+        }
+      ]
+    }
+  },
+  {
+    "kind": "class",
+    "name": "StaticPage",
+    "location": {
+      "filename": "file:///home/whiteshoulders/Personnel/frugal/packages/core/Page.ts",
+      "line": 384,
+      "col": 0
+    },
+    "declarationKind": "export",
+    "classDef": {
+      "isAbstract": false,
+      "constructors": [
+        {
+          "accessibility": null,
+          "name": "constructor",
+          "params": [
+            {
+              "kind": "identifier",
+              "name": "descriptor",
+              "optional": false,
+              "tsType": {
+                "repr": "StaticPageDescriptor",
+                "kind": "typeRef",
+                "typeRef": {
+                  "typeParams": [
+                    {
+                      "repr": "PATH",
+                      "kind": "typeRef",
+                      "typeRef": {
+                        "typeParams": null,
+                        "typeName": "PATH"
+                      }
+                    },
+                    {
+                      "repr": "DATA",
+                      "kind": "typeRef",
+                      "typeRef": {
+                        "typeParams": null,
+                        "typeName": "DATA"
+                      }
+                    },
+                    {
+                      "repr": "BODY",
+                      "kind": "typeRef",
+                      "typeRef": {
+                        "typeParams": null,
+                        "typeName": "BODY"
+                      }
+                    }
+                  ],
+                  "typeName": "StaticPageDescriptor"
+                }
+              }
+            }
+          ],
+          "location": {
+            "filename": "file:///home/whiteshoulders/Personnel/frugal/packages/core/Page.ts",
+            "line": 394,
+            "col": 4
+          }
+        }
+      ],
+      "properties": [],
+      "indexSignatures": [],
+      "methods": [
+        {
+          "accessibility": null,
+          "optional": false,
+          "isAbstract": false,
+          "isStatic": false,
+          "name": "getStaticData",
+          "kind": "method",
+          "functionDef": {
+            "params": [
+              {
+                "kind": "identifier",
+                "name": "params",
+                "optional": false,
+                "tsType": {
+                  "repr": "GetStaticDataParams",
+                  "kind": "typeRef",
+                  "typeRef": {
+                    "typeParams": [
+                      {
+                        "repr": "PATH",
+                        "kind": "typeRef",
+                        "typeRef": {
+                          "typeParams": null,
+                          "typeName": "PATH"
+                        }
+                      }
+                    ],
+                    "typeName": "GetStaticDataParams"
+                  }
+                }
+              }
+            ],
+            "returnType": null,
+            "isAsync": false,
+            "isGenerator": false,
+            "typeParams": []
+          },
+          "location": {
+            "filename": "file:///home/whiteshoulders/Personnel/frugal/packages/core/Page.ts",
+            "line": 400,
+            "col": 4
+          }
+        },
+        {
+          "accessibility": null,
+          "optional": false,
+          "isAbstract": false,
+          "isStatic": false,
+          "name": "getPathList",
+          "kind": "method",
+          "functionDef": {
+            "params": [
+              {
+                "kind": "identifier",
+                "name": "params",
+                "optional": false,
+                "tsType": {
+                  "repr": "GetPathListParams",
+                  "kind": "typeRef",
+                  "typeRef": {
+                    "typeParams": null,
+                    "typeName": "GetPathListParams"
+                  }
+                }
+              }
+            ],
+            "returnType": null,
+            "isAsync": false,
+            "isGenerator": false,
+            "typeParams": []
+          },
+          "location": {
+            "filename": "file:///home/whiteshoulders/Personnel/frugal/packages/core/Page.ts",
+            "line": 407,
+            "col": 4
+          }
+        },
+        {
+          "accessibility": null,
+          "optional": false,
+          "isAbstract": false,
+          "isStatic": false,
+          "name": "getStaticHeaders",
+          "kind": "method",
+          "functionDef": {
+            "params": [
+              {
+                "kind": "identifier",
+                "name": "params",
+                "optional": false,
+                "tsType": {
+                  "repr": "GetStaticHeadersParams",
+                  "kind": "typeRef",
+                  "typeRef": {
+                    "typeParams": [
+                      {
+                        "repr": "PATH",
+                        "kind": "typeRef",
+                        "typeRef": {
+                          "typeParams": null,
+                          "typeName": "PATH"
+                        }
+                      }
+                    ],
+                    "typeName": "GetStaticHeadersParams"
+                  }
+                }
+              }
+            ],
+            "returnType": null,
+            "isAsync": false,
+            "isGenerator": false,
+            "typeParams": []
+          },
+          "location": {
+            "filename": "file:///home/whiteshoulders/Personnel/frugal/packages/core/Page.ts",
+            "line": 414,
+            "col": 4
+          }
+        }
+      ],
+      "extends": "BasePage",
+      "implements": [
+        {
+          "repr": "StaticPageDescriptor",
+          "kind": "typeRef",
+          "typeRef": {
+            "typeParams": [
+              {
+                "repr": "PATH",
+                "kind": "typeRef",
+                "typeRef": {
+                  "typeParams": null,
+                  "typeName": "PATH"
+                }
+              },
+              {
+                "repr": "DATA",
+                "kind": "typeRef",
+                "typeRef": {
+                  "typeParams": null,
+                  "typeName": "DATA"
+                }
+              },
+              {
+                "repr": "BODY",
+                "kind": "typeRef",
+                "typeRef": {
+                  "typeParams": null,
+                  "typeName": "BODY"
+                }
+              }
+            ],
+            "typeName": "StaticPageDescriptor"
+          }
+        }
+      ],
+      "typeParams": [
+        {
+          "name": "PATH",
+          "constraint": {
+            "repr": "Record",
+            "kind": "typeRef",
+            "typeRef": {
+              "typeParams": [
+                {
+                  "repr": "string",
+                  "kind": "keyword",
+                  "keyword": "string"
+                },
+                {
+                  "repr": "string",
+                  "kind": "keyword",
+                  "keyword": "string"
+                }
+              ],
+              "typeName": "Record"
+            }
+          },
+          "default": {
+            "repr": "Record",
+            "kind": "typeRef",
+            "typeRef": {
+              "typeParams": [
+                {
+                  "repr": "string",
+                  "kind": "keyword",
+                  "keyword": "string"
+                },
+                {
+                  "repr": "string",
+                  "kind": "keyword",
+                  "keyword": "string"
+                }
+              ],
+              "typeName": "Record"
+            }
+          }
+        },
+        {
+          "name": "DATA",
+          "default": {
+            "repr": "unknown",
+            "kind": "keyword",
+            "keyword": "unknown"
+          }
+        },
+        {
+          "name": "BODY",
+          "default": {
+            "repr": "unknown",
+            "kind": "keyword",
+            "keyword": "unknown"
+          }
+        }
+      ],
+      "superTypeParams": [
+        {
+          "repr": "PATH",
+          "kind": "typeRef",
+          "typeRef": {
+            "typeParams": null,
+            "typeName": "PATH"
+          }
+        },
+        {
+          "repr": "DATA",
+          "kind": "typeRef",
+          "typeRef": {
+            "typeParams": null,
+            "typeName": "DATA"
+          }
+        },
+        {
+          "repr": "BODY",
+          "kind": "typeRef",
+          "typeRef": {
+            "typeParams": null,
+            "typeName": "BODY"
+          }
+        },
+        {
+          "repr": "StaticPageDescriptor",
+          "kind": "typeRef",
+          "typeRef": {
+            "typeParams": [
+              {
+                "repr": "PATH",
+                "kind": "typeRef",
+                "typeRef": {
+                  "typeParams": null,
+                  "typeName": "PATH"
+                }
+              },
+              {
+                "repr": "DATA",
+                "kind": "typeRef",
+                "typeRef": {
+                  "typeParams": null,
+                  "typeName": "DATA"
+                }
+              },
+              {
+                "repr": "BODY",
+                "kind": "typeRef",
+                "typeRef": {
+                  "typeParams": null,
+                  "typeName": "BODY"
+                }
+              }
+            ],
+            "typeName": "StaticPageDescriptor"
+          }
+        }
+      ]
+    }
+  },
+  {
+    "kind": "class",
+    "name": "FrugalWatcher",
+    "location": {
+      "filename": "file:///home/whiteshoulders/Personnel/frugal/packages/core/watch/FrugalWatcher.ts",
+      "line": 11,
+      "col": 0
+    },
+    "declarationKind": "export",
+    "jsDoc": {
+      "doc": "Wrap a FrugalBuilder in a watcher instance. Internally, this class will spawn\na child deno process in watch mode actually running the FrugalBuilder and the\nproduced instance."
+    },
+    "classDef": {
+      "isAbstract": false,
+      "constructors": [
+        {
+          "accessibility": null,
+          "name": "constructor",
+          "params": [
+            {
+              "kind": "identifier",
+              "name": "builder",
+              "optional": false,
+              "tsType": {
+                "repr": "FrugalBuilder",
+                "kind": "typeRef",
+                "typeRef": {
+                  "typeParams": null,
+                  "typeName": "FrugalBuilder"
+                }
+              }
+            }
+          ],
+          "location": {
+            "filename": "file:///home/whiteshoulders/Personnel/frugal/packages/core/watch/FrugalWatcher.ts",
+            "line": 14,
+            "col": 4
+          }
+        }
+      ],
+      "properties": [],
+      "indexSignatures": [],
+      "methods": [
+        {
+          "jsDoc": {
+            "doc": "start the watch process. By default all modules in the dependency graph\nare watched (see\nhttps://deno.land/manual/getting_started/command_line_interface#watch-mode).\nIf you want to watch additionnal files/folders, pass them to the `paths`\noption."
+          },
+          "accessibility": null,
+          "optional": false,
+          "isAbstract": false,
+          "isStatic": false,
+          "name": "watch",
+          "kind": "method",
+          "functionDef": {
+            "params": [
+              {
+                "kind": "assign",
+                "left": {
+                  "kind": "identifier",
+                  "name": "paths",
+                  "optional": false,
+                  "tsType": {
+                    "repr": "",
+                    "kind": "array",
+                    "array": {
+                      "repr": "string",
+                      "kind": "keyword",
+                      "keyword": "string"
+                    }
+                  }
+                },
+                "right": "[UNSUPPORTED]",
+                "tsType": null
+              }
+            ],
+            "returnType": null,
+            "isAsync": true,
+            "isGenerator": false,
+            "typeParams": []
+          },
+          "location": {
+            "filename": "file:///home/whiteshoulders/Personnel/frugal/packages/core/watch/FrugalWatcher.ts",
+            "line": 26,
+            "col": 4
+          }
+        }
+      ],
+      "extends": null,
+      "implements": [],
+      "typeParams": [],
+      "superTypeParams": []
+    }
+  },
+  {
+    "kind": "function",
+    "name": "watch",
+    "location": {
+      "filename": "file:///home/whiteshoulders/Personnel/frugal/packages/core/watch/FrugalWatcher.ts",
+      "line": 69,
+      "col": 0
+    },
+    "declarationKind": "export",
+    "jsDoc": {
+      "doc": "Convenience function building a FrugalBuilder, a FrugalWatcher, and starting\nthe watch process. By default all modules in the dependency graph are watched\n(see\nhttps://deno.land/manual/getting_started/command_line_interface#watch-mode).\nIf you want to watch additionnal files/folders, pass them to the `paths`\noption."
+    },
+    "functionDef": {
+      "params": [
+        {
+          "kind": "identifier",
+          "name": "config",
+          "optional": false,
+          "tsType": {
+            "repr": "Config",
+            "kind": "typeRef",
+            "typeRef": {
+              "typeParams": null,
+              "typeName": "Config"
+            }
+          }
+        },
+        {
+          "kind": "identifier",
+          "name": "watch",
+          "optional": false,
+          "tsType": {
+            "repr": "",
+            "kind": "array",
+            "array": {
+              "repr": "string",
+              "kind": "keyword",
+              "keyword": "string"
+            }
+          }
+        }
+      ],
+      "returnType": null,
+      "isAsync": true,
+      "isGenerator": false,
+      "typeParams": []
+    }
+  },
+  {
+    "kind": "class",
+    "name": "PersistantCache",
+    "location": {
+      "filename": "file:///home/whiteshoulders/Personnel/frugal/packages/core/Cache.ts",
+      "line": 148,
+      "col": 0
+    },
+    "declarationKind": "export",
+    "jsDoc": {
+      "doc": "A Cache that can be persisted using a `Persistance` layer (filesystem, Redis,\netc...)"
+    },
+    "classDef": {
+      "isAbstract": false,
+      "constructors": [
+        {
+          "accessibility": null,
+          "name": "constructor",
+          "params": [
+            {
+              "kind": "identifier",
+              "name": "cachePath",
+              "optional": false,
+              "tsType": {
+                "repr": "string",
+                "kind": "keyword",
+                "keyword": "string"
+              }
+            },
+            {
+              "kind": "identifier",
+              "name": "serializedCache",
+              "optional": false,
+              "tsType": {
+                "repr": "SerializedCache",
+                "kind": "typeRef",
+                "typeRef": {
+                  "typeParams": null,
+                  "typeName": "SerializedCache"
+                }
+              }
+            },
+            {
+              "kind": "identifier",
+              "name": "config",
+              "optional": false,
+              "tsType": {
+                "repr": "PersistantCacheConfig",
+                "kind": "typeRef",
+                "typeRef": {
+                  "typeParams": null,
+                  "typeName": "PersistantCacheConfig"
+                }
+              }
+            }
+          ],
+          "location": {
+            "filename": "file:///home/whiteshoulders/Personnel/frugal/packages/core/Cache.ts",
+            "line": 189,
+            "col": 4
+          }
+        }
+      ],
+      "properties": [],
+      "indexSignatures": [],
+      "methods": [
+        {
+          "jsDoc": {
+            "doc": "Load the cache from persistance. All persisted data is cold data, and\nhot data is empty at first."
+          },
+          "accessibility": null,
+          "optional": false,
+          "isAbstract": false,
+          "isStatic": true,
+          "name": "load",
+          "kind": "method",
+          "functionDef": {
+            "params": [
+              {
+                "kind": "identifier",
+                "name": "cachePath",
+                "optional": false,
+                "tsType": {
+                  "repr": "string",
+                  "kind": "keyword",
+                  "keyword": "string"
+                }
+              },
+              {
+                "kind": "identifier",
+                "name": "config",
+                "optional": false,
+                "tsType": {
+                  "repr": "PersistantCacheConfig",
+                  "kind": "typeRef",
+                  "typeRef": {
+                    "typeParams": null,
+                    "typeName": "PersistantCacheConfig"
+                  }
+                }
+              }
+            ],
+            "returnType": null,
+            "isAsync": true,
+            "isGenerator": false,
+            "typeParams": []
+          },
+          "location": {
+            "filename": "file:///home/whiteshoulders/Personnel/frugal/packages/core/Cache.ts",
+            "line": 156,
+            "col": 4
+          }
+        },
+        {
+          "jsDoc": {
+            "doc": "Save the hot data to the persistance layer"
+          },
+          "accessibility": null,
+          "optional": false,
+          "isAbstract": false,
+          "isStatic": false,
+          "name": "save",
+          "kind": "method",
+          "functionDef": {
+            "params": [],
+            "returnType": {
+              "repr": "Promise",
+              "kind": "typeRef",
+              "typeRef": {
+                "typeParams": [
+                  {
+                    "repr": "void",
+                    "kind": "keyword",
+                    "keyword": "void"
+                  }
+                ],
+                "typeName": "Promise"
+              }
+            },
+            "isAsync": true,
+            "isGenerator": false,
+            "typeParams": []
+          },
+          "location": {
+            "filename": "file:///home/whiteshoulders/Personnel/frugal/packages/core/Cache.ts",
+            "line": 202,
+            "col": 4
+          }
+        }
+      ],
+      "extends": "Cache",
+      "implements": [],
+      "typeParams": [
+        {
+          "name": "VALUE",
+          "default": {
+            "repr": "unknown",
+            "kind": "keyword",
+            "keyword": "unknown"
+          }
+        }
+      ],
+      "superTypeParams": [
+        {
+          "repr": "VALUE",
+          "kind": "typeRef",
+          "typeRef": {
+            "typeParams": null,
+            "typeName": "VALUE"
+          }
+        }
+      ]
+    }
+  }
+]

@@ -51,8 +51,6 @@ Deno.test('styled: ScopedRule generate the expected css and className', async (t
         const parent2 = new ScopedRules('parent2', 'parent1', []);
         const rules = new ScopedRules('hint', properties, [parent1, parent2]);
 
-        console.log(rules.css);
-
         asserts.assertEquals(rules.selector, '.hint-15ij1xx');
         asserts.assertEquals(rules.toCss(), `.hint-15ij1xx{${properties}}`);
         asserts.assertEquals(
@@ -167,7 +165,6 @@ Deno.test('styled: output', () => {
     createGlobalStyle`globalStyle2`;
     createGlobalStyle`globalStyle3`;
 
-    console.log(output());
     asserts.assertEquals(
         output(),
         `@keyframes a-13x8mt9 {keyframe1}

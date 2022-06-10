@@ -12,6 +12,14 @@ export type EventNames<EVENT_MAP extends Record<string, Event>> =
 export type Events<EVENT_MAP extends Record<string, Event>> =
     EVENT_MAP[EventNames<EVENT_MAP>];
 
+type ListenerConfig = {
+    /** Remove the listener immediatly after the first dispatch */
+    once?: boolean;
+};
+
+/**
+ * Event emitter class, able to dispatch an typed event to some listeners
+ */
 export class EventEmitter<EVENT_MAP extends Record<string, Event>> {
     #listeners: { [K in keyof EVENT_MAP & string]: Listener<EVENT_MAP[K]>[] };
 
@@ -23,10 +31,14 @@ export class EventEmitter<EVENT_MAP extends Record<string, Event>> {
         this.#listeners = listeners;
     }
 
+    /**
+     * Add a listener to a specific event. Returns a cleanup function to remove
+     * the listener
+     */
     addEventListener<EVENT extends keyof EVENT_MAP & string>(
         event: EVENT,
         listener: Listener<EVENT_MAP[EVENT]>,
-        config: { once?: boolean } = {},
+        config: ListenerConfig = {},
     ): () => void {
         const listeners = this.#listeners[event];
         if (config.once) {
@@ -45,6 +57,9 @@ export class EventEmitter<EVENT_MAP extends Record<string, Event>> {
         return () => this.removeEventListener(event, listener);
     }
 
+    /**
+     * Remove a specific listener for a specific event
+     */
     removeEventListener<EVENT extends keyof EVENT_MAP & string>(
         event: EVENT,
         listener: Listener<EVENT_MAP[EVENT]>,
@@ -58,6 +73,9 @@ export class EventEmitter<EVENT_MAP extends Record<string, Event>> {
         }
     }
 
+    /**
+     * Dispatch the given event to all listener for this event
+     */
     dispatch<EVENT extends EVENT_MAP[keyof EVENT_MAP & string]>(
         event: EVENT,
     ) {

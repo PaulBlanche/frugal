@@ -6,66 +6,11 @@ import { Data, Path } from './type.ts';
 import { App } from '../App.tsx';
 import { Page } from './Page.tsx';
 
-const TOC: Toc = {
-    children: [
-        {
-            slug: '/introduction',
-            name: 'introduction',
-        },
-        {
-            slug: '/getting-started',
-            name: 'getting started',
-        },
-        {
-            slug: '/concepts',
-            name: 'concepts',
-            children: [
-                {
-                    slug: '/concepts/page-descriptor',
-                    name: 'page descriptor',
-                    children: [
-                        {
-                            slug: '/concepts/page-descriptor/static-page',
-                            name: 'static page',
-                        },
-                        {
-                            slug: '/concepts/page-descriptor/dynamic-page',
-                            name: 'dynamic page',
-                        },
-                    ],
-                },
-                {
-                    slug: '/concepts/loaders',
-                    name: 'loaders',
-                    children: [
-                        {
-                            slug: '/concepts/loaders/style-loader',
-                            name: 'style loader',
-                        },
-                        {
-                            slug: '/concepts/loaders/script-loader',
-                            name: 'script loader',
-                        },
-                    ],
-                },
-            ],
-        },
-        {
-            slug: '/integration',
-            name: 'integration',
-            children: [
-                {
-                    slug: '/integration/preact-integration',
-                    name: 'preact integration',
-                },
-                {
-                    slug: '/integration/oak-integration',
-                    name: 'oak integration',
-                },
-            ],
-        },
-    ],
-};
+const TOC: Toc = JSON.parse(
+    await Deno.readTextFile(
+        new URL('../../data/toc.json', import.meta.url).pathname,
+    ),
+);
 
 export function getPathList(): Path[] {
     const slugs = flattenToc(TOC).map((node) => node.slug).filter((

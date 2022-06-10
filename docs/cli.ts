@@ -6,7 +6,6 @@ if (Deno.env.get('CI') === undefined) {
         export: true,
         path: new URL('.env', import.meta.url).pathname,
     });
-    console.log(Deno.env.toObject());
 }
 
 if (import.meta.main) {

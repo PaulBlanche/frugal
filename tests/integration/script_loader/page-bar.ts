@@ -41,11 +41,11 @@ export const pattern = 'bar/:slug.html';
 export const self = new URL(import.meta.url);
 
 export function getContent(
-    { loaderContext, entrypoint }: frugal.GetContentParams<Path, Data>,
+    { loaderContext, descriptor }: frugal.GetContentParams<Path, Data>,
 ) {
     const scriptBodyGenerated = loaderContext.get<Generated>('script');
 
-    const esmScriptSrc = scriptBodyGenerated?.[String(entrypoint)]?.['body'];
+    const esmScriptSrc = scriptBodyGenerated?.[String(descriptor)]?.['body'];
 
     return `<html>
     <head>
