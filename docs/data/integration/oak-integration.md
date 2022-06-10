@@ -8,7 +8,7 @@ But with the `oak` integration, you can have a server that uses frugal in order 
 - refresh static pages on demand
 - handle POST request with a POST-redirect-GET pattern
 
-Oak integration rely on you providing the preact version you want via an [import map](https://deno.land/manual/linking_to_external_code/import_maps) :
+Oak integration rely on you providing the oak version you want via an [import map](https://deno.land/manual/linking_to_external_code/import_maps) :
 
 ```json
 {
@@ -29,7 +29,7 @@ import { serve } from 'https://deno.land/x/frugal/packages/frugal_oak/mod.ts';
 await serve(config);
 ```
 
-The `serve` function handles everything for you (loading the frugal instance and setting up the server). If you want more control, you can use `FrugalServerBuilder` :
+The `serve` function handles everything for you (loading the frugal instance and setting up the server). If you want more control you can use `FrugalServerBuilder` :
 
 ```ts
 import { config } from './frugal.config.ts';
@@ -46,11 +46,28 @@ You can add any middleware you want to the underlying oak application. Be cautio
 
 ## Features
 
-### POST-redirect-GET pattern
+### Dynamic pages
 
-For page descriptor with a `postDynamicData` function, the server will setup a `POST` routes. When recieving a `POST` request, the server will generate the response using the `postDynamicData` instead of `getStaticData/getDynamicData`. This response will be stored in a session (using a persistance provider that can be passed in `frugalMiddleware`, defaulting on file system). The server answers with a `307` redirection and a session cookie.
+By definition, [dynamic pages](/docs/concepts/page-descriptor/dynamic-page) are only generated server-side.
 
-The `GET` handler is triggered by the redirection. The server get the session cookie, get the response stored previously (and delete it from storage), and send it in response to the `GET` request.
+### Header control
+
+For both static and dynamic pages, you can define additional methods :
+
+- a `getStaticHeaders` function on static page descriptor, that will return headers for a given _path object_
+- a `getDynamicHeaders` function on dynamic page descriptor, that will return headers for a given _path object_ and generation request.
+
+### POST handling
+
+For both static and dynamic pages, you can define an additional `postDynamicData`, that will recive a _path object_ and a generation request in response to a POST request.
+
+With this method, you can handle POST request on any of your pages.
+
+You can also define a `postDynamicHeaders` function that will return headers for a given _path object_ and generation request.
+
+For page descriptor (static or dynamic) with a `postDynamicData` function, the server will setup a `POST` routes. When recieving a `POST` request, the server will generate the response using the `postDynamicData` instead of `getStaticData/getDynamicData`. This response will be stored in a session (using a persistance provider that can be passed in `frugalMiddleware`, defaulting on file system). The server answers with a `307` redirection and a session cookie.
+
+The `GET` handler is triggered by the redirection. The server get the session cookie, get the response stored previously (and delete it from storage), and send it in response to the `GET` request (with headers returned by the `postDynamicHeaders`).
 
 That way, after a form submission, the user recive the answer on a `GET` request. The user can refresh the page without submitting the form again.
 
@@ -58,9 +75,9 @@ That way, after a form submission, the user recive the answer on a `GET` request
 
 For all static pages, the server will trigger a rerender of the page with fresh data if the page is requested with a `?force_refresh` query parameter.
 
-The server will answer with the newly generated page, and will also cache the page (using the persistance provider configured on frugal).
+The server will answer with the newly generated page, and will also cache the page (using the page persistance provider configured on frugal).
 
-You can restrict this feature if you pass a `refreshKey` to `furglaMiddleware` :
+You can protect this feature if you pass a `refreshKey` to `furglaMiddleware` :
 
 ```ts
 const frugal = await Frugal.load(config);

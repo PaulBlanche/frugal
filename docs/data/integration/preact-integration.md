@@ -71,7 +71,9 @@ With this, your are set to write any JSX you want in the `Page` component. It w
 
 ## Preact client-side
 
-First, since we want to bundle script, you need to setup the [`script` loader](/docs/concepts/loaders/script-loader).
+First, since we want to bundle script, you need to setup the [script loader](/docs/concepts/loaders/script-loader).
+
+> ⚠️ Since the script loader bundle client code with esbuild, and given that esbuild [does not support `@jsxImportSource` annotation](https://github.com/evanw/esbuild/issues/718), you will have to import `preact` and use `@jsx` and `@jsxFrag` annotations.
 
 Then, you need to create a _Island_ version of the component you want to execute client-side :
 
@@ -87,7 +89,7 @@ export function MyComponentIsland(props: MyComponentProps) {
 
 When the `<Island>` component is rendered in the server or during the build, the `props` object is serialized and embeded in the generated html markup, to be picked up when the javascript client-side kicks in. This means the `props` object needs to be a JSON object.
 
-You need to create a script module (a module matching the [`script` loader](/docs/concepts/loaders/script-loader) pattern) that `hydrate` your module (the `./myComponent.script.ts` module in the previous code block) :
+You need to create a script module (the `./myComponent.script.ts` module in the previous code block, a module matching the [`script` loader](/docs/concepts/loaders/script-loader) pattern) that `hydrate` your module :
 
 ```ts
 import { MyComponent } from './MyComponent.tsx';
@@ -113,8 +115,6 @@ export function main() {
     hydrate(NAME, async () => (await import('./MyComponent.tsx')).MyComponent);
 }
 ```
-
-> ⚠️ Since the client code will be bundle with esbuild, and given that esbuild [does not support `@jsxImportSource` annotation](https://github.com/evanw/esbuild/issues/718), you will have to import `preact` and use `@jsx` and `@jsxFrag` annotations.
 
 ## Hydration strategy
 
@@ -184,6 +184,28 @@ export function MyComponentIsland(props: MyComponentProps) {
 }
 ```
 
+## Client-side only islands
+
+By defautl, the component in the island is rendered server side to populate the html page. If you want your island to be rendered only client-side, you can disable rendering server side with the props `clientOnly` :
+
+```tsx
+import { Island } from 'https://deno.land/x/frugal/packages/frugal_preact/mod.client.ts';
+import { MyComponent, MyComponentProps } from './MyComponent.tsx';
+import { NAME } from './MyComponent.script.ts';
+
+export function MyComponentIsland(props: MyComponentProps) {
+    return (
+        <Island
+            props={props}
+            Component={MyComponent}
+            name={NAME}
+            clientOnly
+            strategy='visible'
+        />
+    );
+}
+```
+
 ## Hooks
 
 Preact integration comes with two hooks : `usePathname` and `useData`.
@@ -196,9 +218,9 @@ For a page with the pattern `/:foo/:bar` that was rendered with the _path object
 
 ### `useData`
 
-This hook will return the `data` used to generate the current page. To be passed to the _islands_, the `data` is serialized and embeded in the html as JSON. If you want to use `useData`, your `data` muste be serializable.
+This hook will return the _data object_ used to generate the current page. To be passed to the _islands_, the _data object_ is serialized and embeded in the html as JSON. If you want to use `useData`, your _data object_ muste be serializable.
 
-If you don't need access to the `data` in any of your _islands_ and don't want the extra weight of a serialized JSON in your html pages, you can disabled `data` embeding in the `getContentFrom` function :
+If you don't need access to the `data` in any of your _islands_ and don't want the extra weight of a serialized JSON in your html pages, you can disabled _data object_ embeding in the `getContentFrom` function :
 
 ```ts
 export const getContent = getContentFrom(Page, {
@@ -206,3 +228,5 @@ export const getContent = getContentFrom(Page, {
     embedData: false,
 });
 ```
+
+You should use this hooks instead of relying on island props. Since the page _data object_ is embeded once for the whole page, it is better to use it instead of having bits derivred from this object embeded near each islands, leading to data duplication and heavier markup.

@@ -7,10 +7,6 @@ In a module (`/pages/hello-world.ts` for example), create a [static page descrip
 ```tsx
 import type * as frugal from 'https://deno.land/x/frugal/packages/core/mod.ts';
 
-export function getPathList() {
-    return [{}];
-}
-
 export const pattern = '/hello-world';
 
 export function getStaticData(): string {
@@ -34,8 +30,8 @@ In a module (`/pages/hello-world.style.ts` for example), define some styles usin
 
 ```tsx
 import {
+    className,
     createGlobalStyle,
-    styled,
 } from 'https://deno.land/x/frugal/packages/loader_style/styled.ts';
 
 createGlobalStyle`
@@ -44,13 +40,13 @@ createGlobalStyle`
     }
 `;
 
-export const paragraph = styled('paragraph')`
+export const paragraph = className('paragraph').styled`
     color: red;
     font-weight: bold;
 `;
 ```
 
-The `styled` function will generate a unique classname based on the css properties and name (`'paragraph'`) given.
+The `className` function will generate a unique classname based on the css properties and name (`'paragraph'`) given.
 
 The `createGlobalStyle` function is used to define global styles. This is usefull to apply styles to elements you don't have access to (like `body` or `html`).
 
