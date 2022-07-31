@@ -1,6 +1,6 @@
-/* @jsx preact.h */
-/* @jsxFrag preact.Fragment */
-import * as preact from 'preact';
+/* @jsxRuntime automatic */
+/* @jsxImportSource preact */
+
 import { Navigation } from './Navigation.tsx';
 import { Footer } from './Footer.tsx';
 

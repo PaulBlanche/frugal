@@ -1,7 +1,10 @@
-import * as log from '../log/mod.ts';
-import { Loader } from './loader.ts';
 import * as importmap from '../../dep/importmap.ts';
 import * as path from '../../dep/std/path.ts';
+
+import { ScriptLoader } from '../loader_script/ScriptLoader.ts';
+
+import * as log from '../log/mod.ts';
+import { Loader } from './loader.ts';
 import { Page } from './Page.ts';
 import { FilesystemPersistance, Persistance } from './Persistance.ts';
 
@@ -22,9 +25,8 @@ export type Config = {
     /** the output directory (where frugal will setup its cache and public
      * directory) */
     outputDir: string;
-    /** The lis of registered pages */
-    // deno-lint-ignore no-explicit-any
-    pages: Page<any, any, any>[];
+    /** The list of registered pages */
+    pages: Page[];
     /** An optional persistance layer for page cache, if you run frugal in a
      * distributed environment. Default on Filesystem */
     pagePersistance?: Persistance;
@@ -42,6 +44,7 @@ const LOGGERS = [
     'frugal:FrugalBuilder',
     'frugal:FrugalContext',
     'frugal:LoaderContext',
+    'frugal:Page',
     'frugal:PageBuilder',
     'frugal:PageGenerator',
     'frugal:PageRefresher',
@@ -52,7 +55,7 @@ const LOGGERS = [
     'frugal:loader:style',
 ];
 
-function logger(level: log.Config['loggers'][string]) {
+function loggers(level: log.Config['loggers'][string]) {
     return LOGGERS.reduce<log.Config['loggers']>((loggers, logger) => {
         loggers[logger] = level;
         return loggers;
@@ -61,13 +64,17 @@ function logger(level: log.Config['loggers'][string]) {
 
 export const OFF_LOGGER_CONFIG: log.Config = {
     type: 'human',
-    loggers: logger('NOTSET'),
+    loggers: loggers('NOTSET'),
 };
 
 export const DEFAULT_LOGGER_CONFIG: log.Config = {
     type: 'human',
-    loggers: logger('INFO'),
+    loggers: loggers('INFO'),
 };
+
+await log.setup(DEFAULT_LOGGER_CONFIG);
+
+const FS_PERSISTANCE = new FilesystemPersistance();
 
 /**
  * A config object, wrapping the actual config with convinence methods.
@@ -102,7 +109,31 @@ export class CleanConfig {
         watch?: boolean,
     ) {
         this.#watch = watch;
-        this.#config = config;
+
+        if (!watch) {
+            this.#config = config;
+        } else {
+            // inject a script loader in the config to be able to inject the
+            // livereload client in the pages
+            const scriptLoader = new ScriptLoader({
+                bundles: [{
+                    name: 'inject-watch-script',
+                    test: (url) => {
+                        return /injected-watch-script\.ts$/.test(
+                            url.toString(),
+                        );
+                    },
+                }],
+            });
+
+            scriptLoader.name = 'inject-watch-script';
+
+            this.#config = {
+                ...config,
+                loaders: [scriptLoader, ...config.loaders ?? []],
+            };
+        }
+
         this.#importMap = importmap.resolveImportMap(importMap, this.root);
         this.#importMapURL = importMapFile
             ? new URL(importMapFile, this.root)
@@ -127,16 +158,14 @@ export class CleanConfig {
      * Get the page persistance layer (with automatic fallbakc on Filesystem)
      */
     get pagePersistance() {
-        return this.#config.pagePersistance ??
-            new FilesystemPersistance();
+        return this.#config.pagePersistance ?? FS_PERSISTANCE;
     }
 
     /**
      * Get the cache persistance layer (with automatic fallbakc on Filesystem)
      */
     get cachePersistance() {
-        return this.#config.cachePersistance ??
-            new FilesystemPersistance();
+        return this.#config.cachePersistance ?? FS_PERSISTANCE;
     }
 
     /**

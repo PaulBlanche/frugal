@@ -6,7 +6,7 @@ import { spy } from '../../../dep/std/mock.ts';
 import * as dependency from '../../../packages/dependency_graph/mod.ts';
 import * as graph from '../../../packages/dependency_graph/graph.ts';
 
-Deno.test('dependency_graph: file without dependencies', async () => {
+Deno.test('dependency_graph: files without dependencies', async () => {
     const ffs = new FakeEnvironment({
         'file:///entrypoint1.ts': `
             //entrypoint1.ts
@@ -487,6 +487,7 @@ Deno.test('dependency_graph: files with basic tree dependency and excludes', asy
         }),
     );
 });
+
 class FakeEnvironment {
     env: Map<string, string>;
 
@@ -594,7 +595,9 @@ function root(
 
 function module(
     ffs: FakeEnvironment,
-    moduleConfig: (LightModule & { entrypoint: URL }) | graph.Module,
+    moduleConfig:
+        | (LightModule & { entrypoint: URL; loader?: string })
+        | graph.Module,
 ): graph.Module {
     const dependencies = (moduleConfig.dependencies ?? []).map((dependency) => {
         if ('type' in dependency) {
@@ -616,6 +619,7 @@ function module(
         moduleHash: dependencies.reduce((hash, node) => {
             return hash.update(node.moduleHash);
         }, new murmur.Hash().update(contentHash)).digest(),
+        loader: moduleConfig.loader,
         contentHash,
         dependencies,
     };

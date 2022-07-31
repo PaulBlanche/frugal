@@ -13,15 +13,14 @@ import { spy } from '../../../../dep/std/mock.ts';
 type FakePageBuilderConfig<
     PATH extends Record<string, string> = Record<string, string>,
     DATA = unknown,
-    BODY = unknown,
 > = {
-    page?: Page<PATH, DATA, BODY>;
+    page?: Page<PATH, DATA>;
     hash?: string;
-    generator?: PageGenerator<PATH, DATA, BODY>;
+    generator?: PageGenerator<PATH, DATA>;
     config?: PageBuilderConfig;
     mock?: {
-        build?: PageBuilder<PATH, DATA, BODY>['build'];
-        buildAll?: PageBuilder<PATH, DATA, BODY>['buildAll'];
+        build?: PageBuilder<PATH, DATA>['build'];
+        buildAll?: PageBuilder<PATH, DATA>['buildAll'];
     };
 };
 
@@ -39,9 +38,9 @@ export function fakePageBuilder<
             persistance: fakePersistance(),
         },
         mock = {},
-    }: FakePageBuilderConfig<PATH, DATA, BODY> = {},
+    }: FakePageBuilderConfig<PATH, DATA> = {},
 ) {
-    const builder = new PageBuilder<PATH, DATA, BODY>(
+    const builder = new PageBuilder<PATH, DATA>(
         page,
         hash,
         generator,

@@ -1,5 +1,5 @@
-import { Session } from '../dep/frugal/frugal_preact.client.ts';
+import { Session } from '../dep/frugal/frugal_session.ts';
 
 export function main() {
-    new Session();
+    Session.getInstance().start();
 }

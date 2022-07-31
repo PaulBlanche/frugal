@@ -1,6 +1,5 @@
-/* @jsx preact.h */
-/* @jsxFrag preact.Fragment */
-import * as preact from 'preact';
+/* @jsxRuntime automatic */
+/* @jsxImportSource preact */
 import { Island } from '../../dep/frugal/frugal_preact.client.ts';
 
 import { NAME } from './Form.script.ts';

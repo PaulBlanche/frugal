@@ -6,28 +6,28 @@ type Consume<
     CONTEXT extends ContextBase,
 > = CONTEXT['rest'] extends `${infer CHAR}${infer REST}`
     ? CONTEXT['escape'] extends true ? Consume<
-        { rest: REST; index: CONTEXT['index']; object: CONTEXT['object'] }
-    >
+            { rest: REST; index: CONTEXT['index']; object: CONTEXT['object'] }
+        >
     : CHAR extends ':' ? Consume<ConsumeNamedParameter<CONTEXT>>
     : CHAR extends '(' ? Consume<ConsumeUnnamedParameter<CONTEXT>>
     : CHAR extends '{' ? REST extends `${infer PARAM}}${infer REST}` ? Consume<
-        {
-            rest: `${PARAM}${REST}`;
-            index: CONTEXT['index'];
-            object: CONTEXT['object'];
-        }
-    >
-    : Consume<
-        { rest: REST; index: CONTEXT['index']; object: CONTEXT['object'] }
-    >
+                {
+                    rest: `${PARAM}${REST}`;
+                    index: CONTEXT['index'];
+                    object: CONTEXT['object'];
+                }
+            >
+        : Consume<
+            { rest: REST; index: CONTEXT['index']; object: CONTEXT['object'] }
+        >
     : CHAR extends '\\' ? Consume<
-        {
-            rest: REST;
-            index: CONTEXT['index'];
-            object: CONTEXT['object'];
-            escape: true;
-        }
-    >
+            {
+                rest: REST;
+                index: CONTEXT['index'];
+                object: CONTEXT['object'];
+                escape: true;
+            }
+        >
     : Consume<
         { rest: REST; index: CONTEXT['index']; object: CONTEXT['object'] }
     >
@@ -45,14 +45,14 @@ type ConsumeNamedParameter<
     rest: infer REST;
     index: infer INDEX;
 } ? NAME extends string | number ? {
-    object:
-        & CONTEXT['object']
-        & (OPTIONNAL extends true ? { [key in NAME]?: string }
-            : { [key in NAME]: string });
-    rest: REST;
-    index: INDEX;
-}
-: never
+            object:
+                & CONTEXT['object']
+                & (OPTIONNAL extends true ? { [key in NAME]?: string }
+                    : { [key in NAME]: string });
+            rest: REST;
+            index: INDEX;
+        }
+    : never
     : never;
 
 type ConsumeUnnamedParameter<
@@ -63,14 +63,14 @@ type ConsumeUnnamedParameter<
     rest: infer REST;
     index: infer INDEX;
 } ? NAME extends string | number ? {
-    object:
-        & CONTEXT['object']
-        & (OPTIONNAL extends true ? { [key in NAME]?: string }
-            : { [key in NAME]: string });
-    rest: REST;
-    index: INDEX;
-}
-: never
+            object:
+                & CONTEXT['object']
+                & (OPTIONNAL extends true ? { [key in NAME]?: string }
+                    : { [key in NAME]: string });
+            rest: REST;
+            index: INDEX;
+        }
+    : never
     : CONTEXT['rest'] extends `(${infer REST}`
         ? { object: CONTEXT['object']; index: CONTEXT['index']; rest: REST }
     : { object: CONTEXT['object']; index: CONTEXT['index']; rest: '' };
@@ -84,27 +84,27 @@ type ParameterContextBase = {
 
 type ConsumeModifier<INPUT extends ParameterContextBase> = INPUT['rest'] extends
     `?${infer REST}` ? {
-    name: INPUT['name'];
-    index: INPUT['index'];
-    optionnal: true;
-    rest: REST;
-}
-    : INPUT['rest'] extends `*${infer REST}` ? {
         name: INPUT['name'];
         index: INPUT['index'];
         optionnal: true;
         rest: REST;
     }
+    : INPUT['rest'] extends `*${infer REST}` ? {
+            name: INPUT['name'];
+            index: INPUT['index'];
+            optionnal: true;
+            rest: REST;
+        }
     : INPUT;
 
 type ConsumePattern<
     INPUT extends ParameterContextBase,
 > = INPUT['rest'] extends `(${infer _PATTERN})${infer REST}`
     ? INPUT['name'] extends string ? {
-        name: INPUT['name'];
-        rest: REST;
-        index: INPUT['index'];
-    }
+            name: INPUT['name'];
+            rest: REST;
+            index: INPUT['index'];
+        }
     : {
         name: INPUT['index']['length'];
         rest: REST;
@@ -114,10 +114,10 @@ type ConsumePattern<
 
 type ConsumeParameterName<INPUT extends ParameterContextBase> =
     INPUT['rest'] extends `:${infer REST}` ? {
-        index: INPUT['index'];
-        name: ConsumeWord<REST>['word'];
-        rest: ConsumeWord<REST>['rest'];
-    }
+            index: INPUT['index'];
+            name: ConsumeWord<REST>['word'];
+            rest: ConsumeWord<REST>['rest'];
+        }
         : never;
 
 type ConsumeWord<INPUT extends string, WORD extends string = ''> =

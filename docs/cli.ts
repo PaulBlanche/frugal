@@ -1,4 +1,9 @@
 import * as dotenv from './dep/std/dotenv.ts';
+import { build } from './dep/frugal/core.ts';
+import { serve, watch } from './dep/frugal/frugal_server.ts';
+import * as path from './dep/std/path.ts';
+
+import { config } from './frugal.config.ts';
 
 if (Deno.env.get('CI') === undefined) {
     await dotenv.config({
@@ -13,15 +18,16 @@ if (import.meta.main) {
 
     switch (command) {
         case 'build': {
-            await import('./build.ts');
+            await build(config);
             break;
         }
         case 'dev': {
-            await import('./dev.ts');
+            console.log();
+            await watch(config, [path.resolve(Deno.cwd(), 'docs/data')]);
             break;
         }
         case 'serve': {
-            await import('./serve.ts');
+            await serve(config);
             break;
         }
     }

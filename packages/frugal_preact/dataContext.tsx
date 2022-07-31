@@ -1,5 +1,5 @@
-/* @jsx preact.h */
-/* @jsxFrag preact.Fragment */
+/* @jsxRuntime automatic */
+/* @jsxImportSource preact */
 import * as preact from 'preact';
 import * as hooks from 'preact/hooks';
 import './types.ts';
@@ -40,28 +40,18 @@ export function DataProvider(
     { embedData = false, context, children }: DataProviderProps,
 ) {
     if (typeof document === 'undefined') {
-        const configScript = ['window.__FRUGAL__ = window.__FRUGAL__ || {};'];
-
+        const script =
+            `window.__FRUGAL__ = window.__FRUGAL__ || {}; window.__FRUGAL__.context = ${
+                JSON.stringify(context)
+            };`.replace(
+                /<\/script>/g,
+                '<\\/script>',
+            );
         return (
             <>
                 <Head>
-                    <script
-                        dangerouslySetInnerHTML={{
-                            __html: configScript.join(''),
-                        }}
-                    />
                     {context && embedData && (
-                        <script
-                            dangerouslySetInnerHTML={{
-                                __html: `window.__FRUGAL__.context = ${
-                                    JSON.stringify(context)
-                                };`
-                                    .replace(
-                                        /<\/script>/g,
-                                        '<\\/script>',
-                                    ),
-                            }}
-                        />
+                        <script dangerouslySetInnerHTML={{ __html: script }} />
                     )}
                 </Head>
                 <dataContext.Provider value={context}>

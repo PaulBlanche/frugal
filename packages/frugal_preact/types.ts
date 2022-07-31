@@ -11,12 +11,6 @@ declare global {
         // deno-lint-ignore no-var
         var __FRUGAL__: FrugalGlobalNamespace;
     }
-
-    interface WindowEventMap {
-        'frugal:readystatechange': CustomEvent<
-            { readystate: DocumentReadyState }
-        >;
-    }
 }
 
 export type HydrationStrategy =

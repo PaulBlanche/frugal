@@ -20,17 +20,21 @@ export function getPathList(): Path[] {
 
 // For each request, we generate the data needed to render the page
 export function getStaticData(
-    { path }: frugal.GetStaticDataParams<Path>,
-): Data {
+    { path }: frugal.GetDataContext<Path>,
+): frugal.DataResult<Data> {
     if (path.slug === 'article-1') {
         return {
-            title: 'first article !',
-            content: 'this is the first article',
+            data:{
+                title: 'first article !',
+                content: 'this is the first article',
+            }
         };
     }
     return {
-        title: 'another article',
-        content: 'this is another article',
+        data: {
+            title: 'another article',
+            content: 'this is another article',
+        }
     };
 }
 
@@ -63,7 +67,7 @@ export function getContent(
     <body>
         <h1>${data.title}</h1>
         <p>${data.content}</p>    
-        <script module src="${bodyScriptSrc}"></script>
+        <script type="module" src="${bodyScriptSrc}"></script>
     </body>
 </html>
 `;

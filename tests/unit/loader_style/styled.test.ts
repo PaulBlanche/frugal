@@ -76,8 +76,8 @@ Deno.test('styled: css interpolation', () => {
     const rules = new Rules('hint', 'rule-properties');
     const keyframes = new KeyFrames('keyframes-properties');
 
-    const generated = css
-        `s1 ${'string'} s2 ${12} s3 ${rules} s4 ${keyframes} s5`;
+    const generated =
+        css`s1 ${'string'} s2 ${12} s3 ${rules} s4 ${keyframes} s5`;
     asserts.assertEquals(
         generated,
         `s1 string s2 12 s3 ${rules.selector} s4 ${keyframes.name} s5`,
@@ -89,8 +89,8 @@ Deno.test('styled: ScopedClassName', () => {
     const parent2 = new ScopedRules('parent2', 'parent1', []);
     const scopedClassname = new ScopedClassName('hint');
     scopedClassname.extends(parent1, parent2);
-    const rules = scopedClassname.styled
-        `s1 ${'string'} s2 ${12} s3 ${parent1} s4`;
+    const rules = scopedClassname
+        .styled`s1 ${'string'} s2 ${12} s3 ${parent1} s4`;
     const expectedRules = new ScopedRules(
         'hint',
         css`s1 ${'string'} s2 ${12} s3 ${parent1} s4`,
@@ -107,8 +107,8 @@ Deno.test('styled: ScopedClassName', () => {
 Deno.test('styled: GlobalClassName', () => {
     const otherRules = new Rules('className', 'content');
     const scopedClassname = new GlobalClassName('className');
-    const rules = scopedClassname.styled
-        `s1 ${'string'} s2 ${12} s3 ${otherRules} s4`;
+    const rules = scopedClassname
+        .styled`s1 ${'string'} s2 ${12} s3 ${otherRules} s4`;
     const expectedRules = new Rules(
         'className',
         css`s1 ${'string'} s2 ${12} s3 ${otherRules} s4`,

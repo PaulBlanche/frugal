@@ -1,5 +1,3 @@
-import * as oak from 'oak';
-
 type Field<VALUE> = {
     value: VALUE;
     errors: string[];
@@ -50,7 +48,7 @@ export function validateAge(age: Form['age']): Form['age'] {
         errors.push('Age must be a number');
     }
     if (ageAsNumber < 18) {
-        errors.push('Age must be greater than 18');
+        errors.push('Age must be greater than 18 or more');
     }
     return { ...age, errors };
 }
@@ -79,16 +77,20 @@ export function validateForm(form: Form): Form {
     };
 }
 
-export function fromFormData(formDataBody: oak.FormDataBody): Form {
+export function fromFormData(formDataBody?: FormData): Form {
+    const ageField = formDataBody?.get('age');
+    const usernameField = formDataBody?.get('username');
     return {
         ...initialForm(),
         age: {
-            ...initialField(formDataBody.fields.age ?? ''),
+            ...initialField(typeof ageField === 'string' ? ageField : ''),
             touched: true,
             dirty: true,
         },
         username: {
-            ...initialField(formDataBody.fields.username ?? ''),
+            ...initialField(
+                typeof usernameField === 'string' ? usernameField : '',
+            ),
             touched: true,
             dirty: true,
         },

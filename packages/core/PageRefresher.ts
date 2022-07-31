@@ -14,14 +14,13 @@ function logger() {
 export class PageRefresher<
     PATH extends Record<string, string> = Record<string, string>,
     DATA = unknown,
-    BODY = unknown,
 > {
-    #builder: PageBuilder<PATH, DATA, BODY>;
-    #page: Page<PATH, DATA, BODY>;
+    #builder: PageBuilder<PATH, DATA>;
+    #page: Page<PATH, DATA>;
 
     constructor(
-        page: Page<PATH, DATA, BODY>,
-        builder: PageBuilder<PATH, DATA, BODY>,
+        page: Page<PATH, DATA>,
+        builder: PageBuilder<PATH, DATA>,
     ) {
         this.#page = page;
         this.#builder = builder;

@@ -23,14 +23,14 @@ export async function getPathList(): Promise<Path[]> {
 
 export async function getStaticData(
     { path }: frugal.GetStaticDataParams<Path>,
-): Promise<Data> {
+): Promise<frugal.DataResult<Data>> {
     const data = await getData();
 
     if (!(path.slug in data)) {
         throw Error();
     }
 
-    return data[path.slug];
+    return { data: data[path.slug] };
 }
 
 export const pattern = 'foo/:slug.html';

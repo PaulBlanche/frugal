@@ -1,9 +1,10 @@
-/* @jsx preact.h */
-/* @jsxFrag preact.Fragment */
+/* @jsxRuntime automatic */
+/* @jsxImportSource preact */
 import * as preact from 'preact';
+import { onReadyStateChange } from '../frugal_session/mod.ts';
+
 import { DataProvider } from './dataContext.tsx';
 import type { HydrationStrategy } from './types.ts';
-import { onReadyStateChange } from './session/Navigator.ts';
 
 export type App<PROPS> = (props: PROPS) => preact.VNode;
 
@@ -94,7 +95,7 @@ export function queryHydratables(
 
 export function hydrateElement<PROPS>(root: Element, App: App<PROPS>) {
     const data = root.querySelector('[type="application/json"]')!;
-    const props: PROPS = JSON.parse(data.textContent!);
+    const props: preact.RenderableProps<PROPS> = JSON.parse(data.textContent!);
 
     preact.render(
         <DataProvider>

@@ -10,16 +10,14 @@ import { spy } from '../../../../dep/std/mock.ts';
 type FakePageGeneratorConfig<
     PATH extends Record<string, string> = Record<string, string>,
     DATA = unknown,
-    BODY = unknown,
 > = {
-    page?: Page<PATH, DATA, BODY>;
+    page?: Page<PATH, DATA>;
     config?: PageGeneratorConfig;
     mock?: {
-        generate?: PageGenerator<PATH, DATA, BODY>['generate'];
+        generate?: PageGenerator<PATH, DATA>['generate'];
         generateContentFromData?: PageGenerator<
             PATH,
-            DATA,
-            BODY
+            DATA
         >['generateContentFromData'];
     };
 };
@@ -27,7 +25,6 @@ type FakePageGeneratorConfig<
 export function fakePageGenerator<
     PATH extends Record<string, string> = Record<string, string>,
     DATA = unknown,
-    BODY = unknown,
 >(
     {
         page = fakeDynamicPage(),
@@ -36,9 +33,9 @@ export function fakePageGenerator<
             publicDir: '',
         },
         mock = {},
-    }: FakePageGeneratorConfig<PATH, DATA, BODY> = {},
+    }: FakePageGeneratorConfig<PATH, DATA> = {},
 ) {
-    const generator = new PageGenerator<PATH, DATA, BODY>(page, config);
+    const generator = new PageGenerator<PATH, DATA>(page, config);
 
     const originalGenerate = generator.generate;
     generator.generate = spy(mock.generate ?? originalGenerate.bind(generator));

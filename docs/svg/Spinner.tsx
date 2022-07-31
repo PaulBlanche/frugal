@@ -1,6 +1,6 @@
-/* @jsx preact.h */
-/* @jsxFrag preact.Fragment */
-import * as preact from 'preact';
+/* @jsxRuntime automatic */
+/* @jsxImportSource preact */
+
 import { cx } from '../dep/frugal/styled.ts';
 
 import { SvgProps } from './type.ts';
@@ -11,7 +11,10 @@ export function Spinner({ class: className, ...props }: SvgProps) {
     return (
         <svg
             {...props}
-            class={cx(className, s.spinner)}
+            class={cx(
+                typeof className === 'object' ? className.peek() : className,
+                s.spinner,
+            )}
             viewBox='0 0 100 100'
             xmlns='http://www.w3.org/2000/svg'
             fill='currentColor'

@@ -1,10 +1,10 @@
 import { PageGenerator } from '../../../packages/core/PageGenerator.ts';
-import { GenerationRequest } from '../../../packages/core/Page.ts';
 import { fakeDynamicPage, fakeStaticPage } from './__fixtures__/Page.ts';
 import { fakeLoaderContext } from './__fixtures__/LoaderContext.ts';
 import { asSpy } from '../../test_util/mod.ts';
 import * as asserts from '../../../dep/std/asserts.ts';
 import { assertSpyCall, assertSpyCalls } from '../../../dep/std/mock.ts';
+import { assert } from 'https://deno.land/std@0.159.0/_util/assert.ts';
 
 Deno.test('PageGenerator: generateContentFromData call page.getContent', async () => {
     const content = 'page content';
@@ -62,7 +62,9 @@ Deno.test('PageGenerator: generate orchestrate the generation of DynamicPage', a
     const data = { foo: 'bar' };
     const page = fakeDynamicPage({
         pattern: '/foo/:id',
-        getDynamicData: () => data,
+        getDynamicData: () => ({
+            data,
+        }),
         getContent: () => content,
     });
 
@@ -77,12 +79,9 @@ Deno.test('PageGenerator: generate orchestrate the generation of DynamicPage', a
         },
     );
 
-    const request: GenerationRequest<unknown> = {
-        url: new URL('http://0.0.0.0/foo/345'),
+    const request = new Request(new URL('http://0.0.0.0/foo/345'), {
         method: 'GET',
-        headers: new Headers(),
-        body: undefined,
-    };
+    });
 
     const result = await generator.generate(request);
 
@@ -91,14 +90,13 @@ Deno.test('PageGenerator: generate orchestrate the generation of DynamicPage', a
 
     assertSpyCalls(asSpy(page.getDynamicData), 1);
     assertSpyCall(asSpy(page.getDynamicData), 0, {
-        args: [{
+        args: [request, {
             phase: 'generate',
             path: {
                 id: '345',
             },
-            request,
         }],
-        returned: data,
+        returned: { data },
     });
 
     assertSpyCalls(asSpy(page.getContent), 1);
@@ -131,12 +129,9 @@ Deno.test('PageGenerator: generate throws if pathname does not match', async () 
         },
     );
 
-    const request: GenerationRequest<unknown> = {
-        url: new URL('http://0.0.0.0/foo/345'),
+    const request = new Request(new URL('http://0.0.0.0/foo/345'), {
         method: 'GET',
-        headers: new Headers(),
-        body: undefined,
-    };
+    });
 
     await asserts.assertRejects(async () => {
         await generator.generate(request);
@@ -157,12 +152,9 @@ Deno.test('PageGenerator: generate throws for StaticPage', async () => {
         },
     );
 
-    const request: GenerationRequest<unknown> = {
-        url: new URL('http://0.0.0.0/foo/345'),
+    const request = new Request(new URL('http://0.0.0.0/foo/345'), {
         method: 'GET',
-        headers: new Headers(),
-        body: undefined,
-    };
+    });
 
     await asserts.assertRejects(async () => {
         await generator.generate(request);
@@ -174,7 +166,7 @@ Deno.test('PageGenerator: generate generates StaticPage in watch mode', async ()
     const data = { foo: 'bar' };
     const page = fakeStaticPage({
         pattern: '/foo/:id',
-        getStaticData: () => data,
+        getStaticData: () => ({ data }),
         getContent: () => content,
     });
 
@@ -190,12 +182,9 @@ Deno.test('PageGenerator: generate generates StaticPage in watch mode', async ()
         },
     );
 
-    const request: GenerationRequest<unknown> = {
-        url: new URL('http://0.0.0.0/foo/345'),
+    const request = new Request(new URL('http://0.0.0.0/foo/345'), {
         method: 'GET',
-        headers: new Headers(),
-        body: undefined,
-    };
+    });
 
     const result = await generator.generate(request);
 
@@ -210,7 +199,7 @@ Deno.test('PageGenerator: generate generates StaticPage in watch mode', async ()
                 id: '345',
             },
         }],
-        returned: data,
+        returned: { data },
     });
 
     assertSpyCalls(asSpy(page.getContent), 1);
@@ -236,17 +225,16 @@ Deno.test('PageGenerator: generate generates pages with POST request', async (t)
     const loaderContext = fakeLoaderContext();
     const publicDir = 'public/dir';
 
-    const request: GenerationRequest<unknown> = {
-        url: new URL('http://0.0.0.0/foo/345'),
+    const request = new Request(new URL('http://0.0.0.0/foo/345'), {
         method: 'POST',
-        headers: new Headers(),
-        body: undefined,
-    };
+    });
 
     await t.step('DynamicPage', async () => {
         const dynamicPage = fakeDynamicPage({
             pattern: '/foo/:id',
-            postDynamicData: () => data,
+            handlers: {
+                POST: () => ({ data }),
+            },
             getContent: () => content,
         });
 
@@ -266,16 +254,16 @@ Deno.test('PageGenerator: generate generates pages with POST request', async (t)
         );
         asserts.assertEquals(dynamicResult.content, content);
 
-        assertSpyCalls(asSpy(dynamicPage.postDynamicData), 1);
-        assertSpyCall(asSpy(dynamicPage.postDynamicData), 0, {
-            args: [{
+        assert(dynamicPage.handlers.POST);
+        assertSpyCalls(asSpy(dynamicPage.handlers.POST), 1);
+        assertSpyCall(asSpy(dynamicPage.handlers.POST), 0, {
+            args: [request, {
                 phase: 'generate',
                 path: {
                     id: '345',
                 },
-                request,
             }],
-            returned: data,
+            returned: { data },
         });
 
         assertSpyCalls(asSpy(dynamicPage.getContent), 1);
@@ -297,7 +285,9 @@ Deno.test('PageGenerator: generate generates pages with POST request', async (t)
     await t.step('StaticPage', async () => {
         const staticPage = fakeStaticPage({
             pattern: '/foo/:id',
-            postDynamicData: () => data,
+            handlers: {
+                POST: () => ({ data }),
+            },
             getContent: () => content,
         });
 
@@ -317,16 +307,16 @@ Deno.test('PageGenerator: generate generates pages with POST request', async (t)
         );
         asserts.assertEquals(staticResult.content, content);
 
-        assertSpyCalls(asSpy(staticPage.postDynamicData), 1);
-        assertSpyCall(asSpy(staticPage.postDynamicData), 0, {
-            args: [{
+        assert(staticPage.handlers.POST);
+        assertSpyCalls(asSpy(staticPage.handlers.POST), 1);
+        assertSpyCall(asSpy(staticPage.handlers.POST), 0, {
+            args: [request, {
                 phase: 'generate',
                 path: {
                     id: '345',
                 },
-                request,
             }],
-            returned: data,
+            returned: { data },
         });
 
         assertSpyCalls(asSpy(staticPage.getContent), 1);
@@ -351,7 +341,7 @@ Deno.test('PageGenerator: generate with a .html pattern', async () => {
     const data = { foo: 'bar' };
     const page = fakeDynamicPage({
         pattern: '/foo/:id.html',
-        getDynamicData: () => data,
+        getDynamicData: () => ({ data }),
         getContent: () => content,
     });
 
@@ -366,12 +356,9 @@ Deno.test('PageGenerator: generate with a .html pattern', async () => {
         },
     );
 
-    const request: GenerationRequest<unknown> = {
-        url: new URL('http://0.0.0.0/foo/345.html'),
+    const request = new Request(new URL('http://0.0.0.0/foo/345.html'), {
         method: 'GET',
-        headers: new Headers(),
-        body: undefined,
-    };
+    });
 
     const result = await generator.generate(request);
 

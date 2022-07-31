@@ -1,0 +1,1 @@
+function o(i){let e=document.getElementById("log"),t=document.createElement("span");t.textContent=i,e.appendChild(t)}function n(){o("shared")}function m(){o("bar")}function r(){o("component")}n();m();r();

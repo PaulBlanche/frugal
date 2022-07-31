@@ -10,6 +10,7 @@ import * as path from '../../dep/std/path.ts';
 type Precursor = {
     type: 'precursor';
     url: URL;
+    loader?: string;
     parent?: graph.Module;
 };
 
@@ -76,7 +77,7 @@ export async function build(
      * changes if the code of the module or any of its dependencies changes.
      */
     async function buildForEntrypoint(resolvedEntrypoint: URL) {
-        const cache = new Map<string, Promise<graph.Module>>();
+        const cache = new Map<string, graph.Module>();
 
         let root: graph.Module | undefined = undefined;
 
@@ -126,14 +127,35 @@ export async function build(
             precursor: Precursor,
         ): Promise<graph.Module> {
             const id = `${resolvedEntrypoint}:${precursor.url}`;
-            if (!cache.has(id)) {
-                cache.set(id, generateModule(resolvedEntrypoint, precursor));
+            const { module, dependencies } = await generateModule(
+                resolvedEntrypoint,
+                precursor,
+            );
+            const cachedModule = cache.get(id);
+
+            if (cachedModule !== undefined) {
+                assert(
+                    module.loader === cachedModule.loader,
+                    `The module ${precursor.url} can't be loaded with two different loaders (${module.loader} and ${cachedModule.loader})`,
+                );
+                return cachedModule;
             }
 
-            const node = await cache.get(id);
-            assert(node !== undefined);
+            queue.push(module);
 
-            return node;
+            dependencies.reverse().forEach((dependency) => {
+                if (!excluded(dependency.url)) {
+                    queue.push({
+                        type: 'precursor',
+                        url: dependency.url,
+                        loader: dependency.loader,
+                        parent: module,
+                    });
+                }
+            });
+
+            cache.set(id, module);
+            return module;
         }
 
         /**
@@ -142,7 +164,12 @@ export async function build(
         async function generateModule(
             resolvedEntrypoint: URL,
             precursor: Precursor,
-        ): Promise<graph.Module> {
+        ): Promise<
+            {
+                module: graph.Module;
+                dependencies: { url: URL; loader?: string }[];
+            }
+        > {
             const { dependencies, contentHash } = await analyzeMemoized(
                 precursor.url,
             );
@@ -152,24 +179,13 @@ export async function build(
                 id: `${resolvedEntrypoint}:${precursor.url}`,
                 entrypoint: resolvedEntrypoint,
                 url: precursor.url,
+                loader: precursor.loader,
                 moduleHash: contentHash,
                 contentHash,
                 dependencies: [],
             };
 
-            queue.push(module);
-
-            dependencies.reverse().forEach((dependency) => {
-                if (!excluded(dependency)) {
-                    queue.push({
-                        type: 'precursor',
-                        url: dependency,
-                        parent: module,
-                    });
-                }
-            });
-
-            return module;
+            return { module, dependencies };
         }
     }
 
@@ -200,7 +216,7 @@ export async function build(
 }
 
 type AnalysisResult = {
-    dependencies: URL[];
+    dependencies: { url: URL; loader?: string }[];
     contentHash: string;
 };
 
@@ -220,7 +236,7 @@ async function analyze(
     resolvedModuleSpecifier: URL,
     config: Config,
 ): Promise<AnalysisResult> {
-    const dependencies: URL[] = [];
+    const dependencies: { url: URL; loader?: string }[] = [];
 
     logger().debug({
         op: 'analysing',
@@ -250,7 +266,10 @@ async function analyze(
                 typeOnly: boolean;
             };
             if (!importDeclaration.typeOnly) {
-                handleImport(importDeclaration.source.value);
+                handleImport(
+                    importDeclaration.source.value,
+                    importDeclaration.asserts,
+                );
             }
         },
         visitExportNamedDeclaration(node) {
@@ -259,7 +278,7 @@ async function analyze(
             };
             const identifier = exportDeclaration.source?.value;
             if (identifier !== undefined && !exportDeclaration.typeOnly) {
-                handleImport(identifier);
+                handleImport(identifier, exportDeclaration.asserts);
             }
         },
         visitExportAllDeclaration(node) {
@@ -268,21 +287,41 @@ async function analyze(
             };
             const identifier = exportDeclaration.source.value;
             if (identifier !== undefined && !exportDeclaration.typeOnly) {
-                handleImport(identifier);
+                handleImport(identifier, exportDeclaration.asserts);
             }
         },
     });
 
     return { dependencies, contentHash };
 
-    function handleImport(specifier: string) {
+    function handleImport(specifier: string, assert?: swc.ObjectExpression) {
         const resolvedDependency = resolveModule(
             specifier,
             resolvedModuleSpecifier,
             config.resolve,
         );
 
-        dependencies.push(resolvedDependency);
+        dependencies.push({
+            url: resolvedDependency,
+            loader: getLoaderFromImportAssert(assert),
+        });
+    }
+}
+
+function getLoaderFromImportAssert(
+    assert?: swc.ObjectExpression,
+): string | undefined {
+    for (const property of (assert?.properties ?? [])) {
+        if (property.type === 'KeyValueProperty') {
+            if (
+                property.key.type === 'Identifier' &&
+                property.key.value === 'loader'
+            ) {
+                if (property.value.type === 'StringLiteral') {
+                    return property.value.value;
+                }
+            }
+        }
     }
 }
 

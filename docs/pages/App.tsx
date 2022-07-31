@@ -1,14 +1,18 @@
-/* @jsx preact.h */
-/* @jsxFrag preact.Fragment */
-import * as preact from 'preact';
+/* @jsxRuntime automatic */
+/* @jsxImportSource preact */
+
 import { cx } from '../dep/frugal/styled.ts';
-import { AppProps, Head } from '../dep/frugal/frugal_preact.server.ts';
+import { Head, PageProps } from '../dep/frugal/frugal_preact.server.ts';
 import type { Generated } from '../dep/frugal/loader_script.ts';
 
 import { Spinner } from '../svg/Spinner.tsx';
 
 import { loadingSpinner } from './App.style.ts';
 import './session.script.ts';
+
+type AppProps = PageProps & {
+    children: preact.ComponentChildren;
+};
 
 export function App({ descriptor, loaderContext, children }: AppProps) {
     const scriptGenerated = loaderContext.get<Generated>('script');

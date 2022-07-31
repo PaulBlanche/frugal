@@ -23,6 +23,10 @@
                         {
                             "slug": "/concepts/page-descriptor/dynamic-page",
                             "name": "dynamic page"
+                        },
+                        {
+                            "slug": "/concepts/page-descriptor/handlers",
+                            "name": "handlers"
                         }
                     ]
                 },
@@ -39,22 +43,24 @@
                             "name": "script loader"
                         }
                     ]
+                },
+                {
+                    "slug": "/concepts/persistance",
+                    "name": "persistance"
                 }
             ]
         },
         {
-            "slug": "/integration",
-            "name": "integration",
-            "children": [
-                {
-                    "slug": "/integration/preact-integration",
-                    "name": "preact integration"
-                },
-                {
-                    "slug": "/integration/oak-integration",
-                    "name": "oak integration"
-                }
-            ]
+            "slug": "/server",
+            "name": "server"
+        },
+        {
+            "slug": "/using-preact",
+            "name": "using preact"
+        },
+        {
+            "slug": "/client-session",
+            "name": "client session"
         }
     ]
 }

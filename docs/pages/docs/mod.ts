@@ -2,8 +2,7 @@ import * as frugal from '../../dep/frugal/core.ts';
 import { getContentFrom } from '../../dep/frugal/frugal_preact.server.ts';
 
 import { flattenToc, Toc } from '../../toc.ts';
-import { Data, Path } from './type.ts';
-import { App } from '../App.tsx';
+import { Data, Path, PATTERN } from './type.ts';
 import { Page } from './Page.tsx';
 
 const TOC: Toc = JSON.parse(
@@ -37,26 +36,24 @@ async function getMarkup(slug: string) {
 }
 
 export async function getStaticData(
-    { path }: frugal.GetStaticDataParams<frugal.PathObject<typeof pattern>>,
-): Promise<Data> {
+    { path }: frugal.GetDataContext<Path>,
+): Promise<frugal.DataResult<Data>> {
     const markup = await getMarkup(path.slug);
     return {
-        toc: TOC,
-        markup,
+        data: {
+            toc: TOC,
+            markup,
+        },
+        headers: {
+            'Cache-Control': 'public, max-age=3600, must-revalidate', // cached for the hour
+        },
     };
 }
 
-export function getStaticHeaders() {
-    return new Headers({
-        'Cache-Control': 'public, max-age=3600, must-revalidate', // cached for the hour
-    });
-}
-
-export const pattern = `/docs:slug(.*)`;
+export const pattern = PATTERN;
 
 export const self = new URL(import.meta.url);
 
 export const getContent = getContentFrom<Path, Data>(Page, {
-    App,
     embedData: false,
 });

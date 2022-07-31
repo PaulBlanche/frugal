@@ -7,14 +7,16 @@ export function fakeLoader<GENERATED, CACHED>(
         name = '',
         test = () => true,
         generate = () => Promise.resolve({} as GENERATED),
-        end = () => {},
+        onBuildContextStart,
+        onBuildContextEnd,
     }: FakeLoaderConfig<GENERATED, CACHED> = {},
 ) {
     return {
         name,
         test,
         generate,
-        end,
+        onBuildContextStart,
+        onBuildContextEnd,
     };
 }
 

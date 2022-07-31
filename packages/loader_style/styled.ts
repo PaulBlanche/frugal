@@ -93,7 +93,7 @@ export class KeyFrames {
     }
 }
 
-type Interpolable = (string | number | Rules | KeyFrames);
+type Interpolable = string | number | Rules | KeyFrames;
 
 /**
  * Rules and KeyFrames aware tagged template :

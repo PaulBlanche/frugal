@@ -1,7 +1,12 @@
-import { LoaderContext } from './LoaderContext.ts';
-import { assert } from '../../dep/std/asserts.ts';
+import * as zod from '../../dep/zod.ts';
 import * as pathToRegexp from '../../dep/path-to-regexp.ts';
-import { FrugalError } from './FrugalError.ts';
+
+import { LoaderContext } from './LoaderContext.ts';
+import * as log from '../log/mod.ts';
+
+function logger() {
+    return log.getLogger('frugal:Page');
+}
 
 /**
  * The different phases of Frugal.
@@ -12,19 +17,12 @@ import { FrugalError } from './FrugalError.ts';
  */
 export type Phase = 'build' | 'refresh' | 'generate';
 
-export type GenerationRequest<BODY = unknown> = {
-    method: 'POST' | 'GET';
-    url: URL;
-    body: BODY;
-    headers: Headers;
-};
-
 export type GetPathListParams = {
     /** The current phase (build, refresh or generate) */
     phase: Phase;
 };
 
-export type GetStaticDataParams<
+export type GetDataContext<
     PATH extends Record<string, string> = Record<string, string>,
 > = {
     /** The current phase (build, refresh or generate) */
@@ -33,78 +31,12 @@ export type GetStaticDataParams<
     path: PATH;
 };
 
-export type GetDynamicDataParams<
-    PATH extends Record<string, string> = Record<string, string>,
-    BODY = unknown,
-> = {
-    /** The current phase (build, refresh or generate) */
-    phase: 'generate';
-
-    /** The path object we need the data from */
-    path: PATH;
-
-    /** The request that triggered the generation  */
-    request: GenerationRequest<BODY>;
-};
-
-export type PostDynamicDataParams<
-    PATH extends Record<string, string> = Record<string, string>,
-    BODY = unknown,
-> = {
-    /** The current phase (build, refresh or generate) */
-    phase: 'generate';
-
-    /** The path object we need the data from */
-    path: PATH;
-
-    /** The request that triggered the generation  */
-    request: GenerationRequest<BODY>;
-};
-
-export type GetStaticHeadersParams<
-    PATH extends Record<string, string> = Record<string, string>,
-> = {
-    /** The current phase (build, refresh or generate) */
-    phase: Phase;
-
-    /** The path object we need the headers from */
-    path: PATH;
-};
-
-export type GetDynamicHeadersParams<
-    PATH extends Record<string, string> = Record<string, string>,
-    BODY = unknown,
-> = {
-    /** The current phase (build, refresh or generate) */
-    phase: 'generate';
-
-    /** The path object we need the headers from */
-    path: PATH;
-
-    /** The request that triggered the generation  */
-    request: GenerationRequest<BODY>;
-};
-
-export type PostDynamicHeadersParams<
-    PATH extends Record<string, string> = Record<string, string>,
-    BODY = unknown,
-> = {
-    /** The current phase (build, refresh or generate) */
-    phase: 'generate';
-
-    /** The path object we need the headers from */
-    path: PATH;
-
-    /** The request that triggered the generation  */
-    request: GenerationRequest<BODY>;
-};
-
 export type GetContentParams<
     PATH extends Record<string, string> = Record<string, string>,
     DATA = unknown,
 > = {
     /** the method of the request that caused the call to `getContent`  */
-    method: 'POST' | 'GET';
+    method: string;
 
     /** The current phase (build, refresh or generate) */
     phase: Phase;
@@ -132,48 +64,22 @@ export type GetPathList<
     params: GetPathListParams,
 ) => Promise<PATH[]> | PATH[];
 
+export type DataResult<DATA> = { data?: DATA; headers?: HeadersInit };
+
 export type GetStaticData<
     PATH extends Record<string, string> = Record<string, string>,
     DATA = unknown,
 > = (
-    params: GetStaticDataParams<PATH>,
-) => Promise<DATA> | DATA;
+    context: GetDataContext<PATH>,
+) => Promise<DataResult<DATA>> | DataResult<DATA>;
 
 export type GetDynamicData<
     PATH extends Record<string, string> = Record<string, string>,
     DATA = unknown,
-    BODY = unknown,
 > = (
-    params: GetDynamicDataParams<PATH, BODY>,
-) => Promise<DATA> | DATA;
-
-export type PostDynamicData<
-    PATH extends Record<string, string> = Record<string, string>,
-    DATA = unknown,
-    BODY = unknown,
-> = (
-    params: PostDynamicDataParams<PATH, BODY>,
-) => Promise<DATA> | DATA;
-
-export type GetStaticHeaders<
-    PATH extends Record<string, string> = Record<string, string>,
-> = (
-    params: GetStaticHeadersParams<PATH>,
-) => Promise<Headers> | Headers;
-
-export type GetDynamicHeaders<
-    PATH extends Record<string, string> = Record<string, string>,
-    BODY = unknown,
-> = (
-    params: GetDynamicHeadersParams<PATH, BODY>,
-) => Promise<Headers> | Headers;
-
-export type PostDynamicHeaders<
-    PATH extends Record<string, string> = Record<string, string>,
-    BODY = unknown,
-> = (
-    params: PostDynamicHeadersParams<PATH, BODY>,
-) => Promise<Headers> | Headers;
+    request: Request,
+    context: GetDataContext<PATH>,
+) => Promise<DataResult<DATA>> | DataResult<DATA>;
 
 export type GetContent<
     PATH extends Record<string, string> = Record<string, string>,
@@ -182,10 +88,19 @@ export type GetContent<
     params: GetContentParams<PATH, DATA>,
 ) => Promise<string> | string;
 
-type BaseDescriptor<
+export type Handlers<
     PATH extends Record<string, string> = Record<string, string>,
     DATA = unknown,
-    BODY = unknown,
+> = Partial<
+    Record<
+        'POST' | 'PUT' | 'PATCH' | 'DELETE',
+        GetDynamicData<PATH, DATA>
+    >
+>;
+
+type BasePageDescriptor<
+    PATH extends Record<string, string> = Record<string, string>,
+    DATA = unknown,
 > = {
     /** The url (in your codebase) of the descriptor. Unless you know what you
      * are doing, it should always be `new URL(import.meta.url)` */
@@ -203,80 +118,160 @@ type BaseDescriptor<
     getContent: GetContent<PATH, DATA>;
 
     /**
-     * Function returning a data object for a given path object in response to a
-     * POST request.
-     *
-     * This method will only be called if you use a server.
+     * Dictionnary of function dynamically generating a data object in response to
+     * a POST, PUT, PATCH or DELETE
      */
-    postDynamicData?: PostDynamicData<PATH, DATA, BODY>;
-
+    handlers?: Handlers<PATH, DATA>;
+};
+export type DynamicPageDescriptor<
+    PATH extends Record<string, string> = Record<string, string>,
+    DATA = unknown,
+> = BasePageDescriptor<PATH, DATA> & {
     /**
-     * Function returning the headers for a given path object in response to a
-     * POST request.
+     * function returning a data object for a given path object and a
+     * generation request.
      *
-     * This method will only be called if you use a server.
+     * This method will only be called if you use a server. For dynamic
+     * pages, this method will be called on each requests. For static pages,
+     * this method will be called for each non `GET` requests. This method
+     * will return an empty data object if not defined.
      */
-    postDynamicHeaders?: PostDynamicHeaders<PATH, BODY>;
+    getDynamicData: GetDynamicData<PATH, DATA>;
 };
 
 export type StaticPageDescriptor<
-    PATH extends Record<string, string> = Record<string, string>,
+    PATH extends Record<string, string> = Record<
+        string,
+        string
+    >,
     DATA = unknown,
-    BODY = unknown,
-> = BaseDescriptor<PATH, DATA, BODY> & {
+> = BasePageDescriptor<PATH, DATA> & {
     /**
      * A function returning the list of all path object (matching the `pattern`)
      * that will be used to generate each page.
      *
-     * By default, will return an array containing an empty path object.
+     * If not defined, this method will return an empty array by default.
      */
     getPathList?: GetPathList<PATH>;
 
     /**
      * function returning a data object for a given path object.
      *
-     * By default, will return an empty data object.
+     * If not defined, this method will return an empty data object if not
+     * defined.
      */
     getStaticData?: GetStaticData<PATH, DATA>;
-
-    /**
-     * Function returning the headers for a given path object.
-     *
-     * This method will only be called if you use a server.
-     */
-    getStaticHeaders?: GetStaticHeaders<PATH>;
-};
-
-export type DynamicPageDescriptor<
-    PATH extends Record<string, string> = Record<string, string>,
-    DATA = unknown,
-    BODY = unknown,
-> = BaseDescriptor<PATH, DATA, BODY> & {
-    /**
-     * function returning a data object for a given path object and a generation
-     * request.
-     *
-     * This method will only be called if you use a server.
-     */
-    getDynamicData: GetDynamicData<PATH, DATA, BODY>;
-
-    /**
-     * Function returning the headers for a given path object and a generation
-     * request.
-     *
-     * This method will only be called if you use a server.
-     */
-
-    getDynamicHeaders?: GetDynamicHeaders<PATH, BODY>;
 };
 
 export type PageDescriptor<
-    PATH extends Record<string, string> = Record<string, string>,
+    PATH extends Record<string, string> = Record<
+        string,
+        string
+    >,
     DATA = unknown,
-    BODY = unknown,
-> =
-    | StaticPageDescriptor<PATH, DATA, BODY>
-    | DynamicPageDescriptor<PATH, DATA, BODY>;
+> = StaticPageDescriptor<PATH, DATA> | DynamicPageDescriptor<PATH, DATA>;
+
+const handlers = zod.object({
+    'POST': zod.optional(zod.function(zod.tuple([]), zod.any(), {
+        invalid_type_error:
+            'Expected a page descriptor with a POST handler as a function',
+    })),
+    'PUT': zod.optional(zod.function(zod.tuple([]), zod.any(), {
+        invalid_type_error:
+            'Expected a page descriptor with a PUT handler as a function',
+    })),
+    'PATCH': zod.optional(zod.function(zod.tuple([]), zod.any(), {
+        invalid_type_error:
+            'Expected a page descriptor with a PATCH handler as a function',
+    })),
+    'DELETE': zod.optional(zod.function(zod.tuple([]), zod.any(), {
+        invalid_type_error:
+            'Expected a page descriptor with a DELETE handler as a function',
+    })),
+}, {
+    invalid_type_error:
+        'Expected a page descriptor with "handlers" as an object',
+});
+
+const baseDescriptorSchema = zod.object({
+    pattern: zod.string({
+        required_error: 'A page descriptor must have a string "pattern"',
+        invalid_type_error:
+            'Expected a page descriptor with "pattern" as a string',
+    }),
+    self: zod.instanceof(URL, {
+        message: 'A page descriptor must have a URL "self"',
+    }),
+    getContent: zod.function(zod.tuple([]), zod.any(), {
+        required_error: 'A page descriptor must have a function "getContent"',
+        invalid_type_error:
+            'Expected a page descriptor with "getContent" as a function',
+    }),
+    handlers: zod.optional(handlers),
+}, {
+    invalid_type_error: 'Expected a page descriptor object',
+});
+
+const dynamicDescriptorSchema: zod.Schema<DynamicPageDescriptor> =
+    baseDescriptorSchema.extend({
+        getDynamicData: zod.function(zod.tuple([]), zod.any(), {
+            required_error:
+                'A dynamic page descriptor must have a function "getDynamicData"',
+            invalid_type_error:
+                'Expected a dynamic page descriptor with "getDynamicData" as a function',
+        }),
+    });
+
+const staticDescriptorSchema: zod.Schema<StaticPageDescriptor> =
+    baseDescriptorSchema.extend({
+        getPathList: zod.optional(zod.function(zod.tuple([]), zod.any(), {
+            invalid_type_error:
+                'Expected a static page descriptor with "getPathList" as a function',
+        })),
+        getStaticData: zod.optional(zod.function(zod.tuple([]), zod.any(), {
+            invalid_type_error:
+                'Expected a static page descriptor with "getStaticData" as a function',
+        })),
+    });
+
+type ValidationResult<T> = { success: true; data: T } | {
+    success: false;
+    error: string;
+};
+
+function parseStaticDescriptor<
+    PATH extends Record<string, string> = Record<
+        string,
+        string
+    >,
+    DATA = unknown,
+>(descriptor: unknown): ValidationResult<StaticPageDescriptor<PATH, DATA>> {
+    const result = staticDescriptorSchema.safeParse(descriptor);
+    if (!result.success) {
+        return { success: false, error: result.error.errors[0].message };
+    }
+    return {
+        success: true,
+        data: result.data as StaticPageDescriptor<PATH, DATA>,
+    };
+}
+
+function parseDynamicDescriptor<
+    PATH extends Record<string, string> = Record<
+        string,
+        string
+    >,
+    DATA = unknown,
+>(descriptor: unknown): ValidationResult<DynamicPageDescriptor<PATH, DATA>> {
+    const result = dynamicDescriptorSchema.safeParse(descriptor);
+    if (!result.success) {
+        return { success: false, error: result.error.errors[0].message };
+    }
+    return {
+        success: true,
+        data: result.data as DynamicPageDescriptor<PATH, DATA>,
+    };
+}
 
 /**
  * Build a page object from a page descriptor
@@ -284,137 +279,87 @@ export type PageDescriptor<
 export function page<
     PATH extends Record<string, string> = Record<string, string>,
     DATA = unknown,
-    BODY = unknown,
 >(
-    descriptor: StaticPageDescriptor<PATH, DATA, BODY>,
-): Page<PATH, DATA, BODY>;
-export function page<
-    PATH extends Record<string, string> = Record<string, string>,
-    DATA = unknown,
-    BODY = unknown,
->(
-    descriptor: DynamicPageDescriptor<PATH, DATA, BODY>,
-): Page<PATH, DATA, BODY>;
-export function page<
-    PATH extends Record<string, string> = Record<string, string>,
-    DATA = unknown,
-    BODY = unknown,
->(
-    // deno-lint-ignore no-explicit-any
-    descriptor: any,
-): Page<PATH, DATA, BODY> {
-    if (isDynamicDescriptor<PATH, DATA, BODY>(descriptor)) {
-        validateDynamicDescriptor(descriptor);
-        return new DynamicPage(descriptor);
-    }
-    validateStaticDescriptor(descriptor);
-    return new StaticPage(descriptor);
-}
-
-function isDynamicDescriptor<
-    PATH extends Record<string, string> = Record<string, string>,
-    DATA = unknown,
-    BODY = unknown,
->(
-    // deno-lint-ignore no-explicit-any
-    descriptor: any,
-): descriptor is DynamicPageDescriptor<PATH, DATA, BODY> {
-    if (typeof descriptor === 'object' && descriptor !== null) {
-        if ('getDynamicData' in descriptor) {
-            return true;
+    descriptor: PageDescriptor<PATH, DATA>,
+): Page {
+    if (
+        typeof descriptor === 'object' && descriptor !== null &&
+        'getDynamicData' in descriptor
+    ) {
+        const result = parseDynamicDescriptor(descriptor);
+        if (result.success) {
+            return new DynamicPage<PATH, DATA>(descriptor) as unknown as Page;
+        } else {
+            logger().error({
+                descriptor,
+                msg() {
+                    return `Error while parsing descriptor ${
+                        descriptor.pattern ?? descriptor.self.href ??
+                            'unknown'
+                    }: ${result.error}`;
+                },
+            });
+            Deno.exit();
         }
     }
-    return false;
-}
 
-function validateStaticDescriptor<
-    PATH extends Record<string, string> = Record<string, string>,
-    DATA = unknown,
-    BODY = unknown,
->(
-    descriptor: StaticPageDescriptor<PATH, DATA, BODY>,
-): void {
-    assert(
-        descriptor.self instanceof URL,
-        `Page descriptor has no self`,
-    );
-    assert(
-        typeof descriptor.pattern === 'string',
-        `Page descriptor ${String(descriptor.self)} has no pattern`,
-    );
-    assert(
-        typeof descriptor.getContent === 'function',
-        `Page descriptor "${descriptor.pattern}" has no getContent function`,
-    );
-}
-
-function validateDynamicDescriptor<
-    PATH extends Record<string, string> = Record<string, string>,
-    DATA = unknown,
-    BODY = unknown,
->(
-    descriptor: DynamicPageDescriptor<PATH, DATA, BODY>,
-): void {
-    assert(
-        descriptor.self instanceof URL,
-        `Page descriptor has no self`,
-    );
-    assert(
-        typeof descriptor.pattern === 'string',
-        `Page descriptor ${String(descriptor.self)} has no pattern`,
-    );
-    assert(
-        typeof descriptor.getDynamicData === 'function',
-        `Page descriptor "${descriptor.pattern}" has no getData function`,
-    );
-    assert(
-        typeof descriptor.getContent === 'function',
-        `Page descriptor "${descriptor.pattern}" has no getContent function`,
-    );
+    const result = parseStaticDescriptor(descriptor);
+    if (result.success) {
+        return new StaticPage<PATH, DATA>(descriptor) as unknown as Page;
+    } else {
+        logger().error({
+            descriptor,
+            msg() {
+                return `Error while parsing descriptor ${
+                    descriptor.pattern ?? descriptor.self.href ??
+                        'unknown'
+                }: ${result.error}`;
+            },
+        });
+        Deno.exit();
+    }
 }
 
 export type Page<
     PATH extends Record<string, string> = Record<string, string>,
     DATA = unknown,
-    BODY = unknown,
 > =
-    | StaticPage<PATH, DATA, BODY>
-    | DynamicPage<PATH, DATA, BODY>;
+    | StaticPage<PATH, DATA>
+    | DynamicPage<PATH, DATA>;
 
-export class BasePage<
+class BasePage<
     PATH extends Record<string, string> = Record<string, string>,
     DATA = unknown,
-    BODY = unknown,
-    DESCRIPTOR extends PageDescriptor<PATH, DATA, BODY> = PageDescriptor<
-        PATH,
-        DATA,
-        BODY
-    >,
+    DESCRIPTOR extends PageDescriptor<PATH, DATA> = PageDescriptor<PATH, DATA>,
 > {
-    _descriptor: DESCRIPTOR;
+    #descriptor: DESCRIPTOR;
     #urlCompiler: pathToRegexp.PathFunction<PATH>;
     #urlMatcher: pathToRegexp.MatchFunction<PATH>;
 
     constructor(
         descriptor: DESCRIPTOR,
     ) {
-        this._descriptor = descriptor;
-        this.#urlCompiler = pathToRegexp.compile(this._descriptor.pattern);
-        this.#urlMatcher = pathToRegexp.match(this._descriptor.pattern);
+        this.#descriptor = descriptor;
+        this.#urlCompiler = pathToRegexp.compile(this.#descriptor.pattern);
+        this.#urlMatcher = pathToRegexp.match(this.#descriptor.pattern);
     }
 
     get pattern() {
-        return this._descriptor.pattern;
+        return this.#descriptor.pattern;
     }
 
     get self() {
-        return this._descriptor.self;
+        return this.#descriptor.self;
+    }
+
+    get handlers(): Record<string, GetDynamicData<PATH, DATA> | undefined> {
+        return this.#descriptor.handlers ?? {};
     }
 
     getContent(params: Omit<GetContentParams<PATH, DATA>, 'descriptor'>) {
-        return this._descriptor.getContent({
+        return this.#descriptor.getContent({
             ...params,
-            descriptor: this._descriptor.self,
+            descriptor: this.#descriptor.self,
         });
     }
 
@@ -425,91 +370,60 @@ export class BasePage<
     match(path: string) {
         return this.#urlMatcher(path);
     }
+}
 
-    get canPostDynamicData() {
-        return this._descriptor.postDynamicData !== undefined;
+export class DynamicPage<
+    PATH extends Record<string, string> = Record<string, string>,
+    DATA = unknown,
+    DESCRIPTOR extends DynamicPageDescriptor<PATH, DATA> =
+        DynamicPageDescriptor<PATH, DATA>,
+> extends BasePage<PATH, DATA, DESCRIPTOR> {
+    #descriptor: DESCRIPTOR;
+
+    constructor(
+        descriptor: DESCRIPTOR,
+    ) {
+        super(descriptor);
+        this.#descriptor = descriptor;
     }
 
-    postDynamicData(params: PostDynamicDataParams<PATH, BODY>) {
-        if (this._descriptor.postDynamicData === undefined) {
-            throw new FrugalError(
-                `Unable to handle post, descriptor ${this._descriptor.pattern} has no postDynamicData`,
-            );
+    getDynamicData(request: Request, context: GetDataContext<PATH>) {
+        if (this.#descriptor.getDynamicData === undefined) {
+            return { data: {} } as DataResult<DATA>;
         }
 
-        return this._descriptor.postDynamicData(params);
-    }
-
-    postDynamicHeaders(params: PostDynamicHeadersParams<PATH, BODY>) {
-        if (this._descriptor.postDynamicHeaders === undefined) {
-            return new Headers();
-        }
-        return this._descriptor.postDynamicHeaders(params);
+        return this.#descriptor.getDynamicData(request, context);
     }
 }
 
 export class StaticPage<
     PATH extends Record<string, string> = Record<string, string>,
     DATA = unknown,
-    BODY = unknown,
-> extends BasePage<
-    PATH,
-    DATA,
-    BODY,
-    StaticPageDescriptor<PATH, DATA, BODY>
-> implements StaticPageDescriptor<PATH, DATA, BODY> {
+    DESCRIPTOR extends StaticPageDescriptor<PATH, DATA> = StaticPageDescriptor<
+        PATH,
+        DATA
+    >,
+> extends BasePage<PATH, DATA, DESCRIPTOR> {
+    #descriptor: StaticPageDescriptor<PATH, DATA>;
+
     constructor(
-        descriptor: StaticPageDescriptor<PATH, DATA, BODY>,
+        descriptor: DESCRIPTOR,
     ) {
         super(descriptor);
+        this.#descriptor = descriptor;
     }
 
-    getStaticData(params: GetStaticDataParams<PATH>) {
-        if (this._descriptor.getStaticData === undefined) {
-            return {} as DATA;
+    getStaticData(context: GetDataContext<PATH>) {
+        if (this.#descriptor.getStaticData === undefined) {
+            return { data: {} } as DataResult<DATA>;
         }
-        return this._descriptor.getStaticData(params);
+        return this.#descriptor.getStaticData(context);
     }
 
     getPathList(params: GetPathListParams) {
-        if (this._descriptor.getPathList === undefined) {
+        if (this.#descriptor.getPathList === undefined) {
             return [{} as PATH];
         }
-        return this._descriptor.getPathList(params);
-    }
-
-    getStaticHeaders(params: GetStaticHeadersParams<PATH>) {
-        if (this._descriptor.getStaticHeaders === undefined) {
-            return new Headers();
-        }
-        return this._descriptor.getStaticHeaders(params);
-    }
-}
-
-export class DynamicPage<
-    PATH extends Record<string, string> = Record<string, string>,
-    DATA = unknown,
-    BODY = unknown,
-> extends BasePage<
-    PATH,
-    DATA,
-    BODY,
-    DynamicPageDescriptor<PATH, DATA, BODY>
-> implements DynamicPageDescriptor<PATH, DATA, BODY> {
-    constructor(
-        descriptor: DynamicPageDescriptor<PATH, DATA, BODY>,
-    ) {
-        super(descriptor);
-    }
-
-    getDynamicData(params: GetDynamicDataParams<PATH, BODY>) {
-        return this._descriptor.getDynamicData(params);
-    }
-
-    getDynamicHeaders(params: GetDynamicHeadersParams<PATH, BODY>) {
-        if (this._descriptor.getDynamicHeaders === undefined) {
-            return new Headers();
-        }
-        return this._descriptor.getDynamicHeaders(params);
+        return this.#descriptor.getPathList(params);
     }
 }

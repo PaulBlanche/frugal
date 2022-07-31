@@ -69,8 +69,8 @@ export class LoaderContext {
     /**
      * Get the generation result of a loader
      */
-    get<VALUE = unknown>(name: string): VALUE | undefined {
-        return this.#context[name] as VALUE | undefined;
+    get<VALUE = any>(name: string): VALUE {
+        return this.#context[name] as VALUE;
     }
 }
 

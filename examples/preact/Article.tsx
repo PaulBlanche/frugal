@@ -1,6 +1,6 @@
-/* @jsx preact.h */
-/* @jsxFrag preact.Fragment */
-import * as preact from 'preact';
+/* @jsxRuntime automatic */
+/* @jsxImportSource preact */
+
 
 export type ArticleProps = {
     title: string;

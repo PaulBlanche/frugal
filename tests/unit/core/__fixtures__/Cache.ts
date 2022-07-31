@@ -1,15 +1,18 @@
 import {
     Cache,
+    CacheConfig,
     CacheData,
     PersistantCache,
+    PersistantCacheConfig,
+    SerializedCache,
 } from '../../../../packages/core/Cache.ts';
 import { Persistance } from '../../../../packages/core/Persistance.ts';
 import { spy } from '../../../../dep/std/mock.ts';
 import { fakePersistance } from './Persistance.ts';
 
 type FakeCacheConfig = {
-    previousData?: CacheData;
-    nextData?: CacheData;
+    serialized?: SerializedCache;
+    config?: CacheConfig;
     mock?: {
         has?: Cache['has'];
         had?: Cache['had'];
@@ -22,9 +25,9 @@ type FakeCacheConfig = {
 };
 
 export function fakeCache(
-    { previousData = {}, nextData, mock = {} }: FakeCacheConfig = {},
+    { serialized, config, mock = {} }: FakeCacheConfig = {},
 ) {
-    const cache = new Cache(previousData, nextData);
+    const cache = Cache.unserialize(serialized, config);
 
     const _has = cache.has;
     cache.has = spy(mock.has ?? _has.bind(cache));
@@ -50,9 +53,9 @@ export function fakeCache(
     return cache;
 }
 
-type FakPersistantCacheConfig = FakeCacheConfig & {
-    persistance?: Persistance;
+type FakPersistantCacheConfig = Omit<FakeCacheConfig, 'config'> & {
     cachePath?: string;
+    config?: PersistantCacheConfig;
     mock?: FakeCacheConfig['mock'] & {
         save?: PersistantCache['save'];
     };
@@ -60,18 +63,18 @@ type FakPersistantCacheConfig = FakeCacheConfig & {
 
 export function fakePersistantCache(
     {
-        persistance = fakePersistance(),
+        config = {
+            persistance: fakePersistance(),
+        },
+        serialized = { hash: config?.hash ?? '', data: {} },
         cachePath = '',
-        previousData = {},
-        nextData,
         mock = {},
     }: FakPersistantCacheConfig = {},
 ) {
     const peristantCache = new PersistantCache(
-        persistance,
         cachePath,
-        previousData,
-        nextData,
+        serialized,
+        config,
     );
 
     const _has = peristantCache.has;
@@ -100,7 +103,7 @@ export function fakePersistantCache(
     );
 
     const _save = peristantCache.save;
-    peristantCache.serialize = spy(
+    peristantCache.save = spy(
         mock.save ?? _save.bind(peristantCache),
     );
 

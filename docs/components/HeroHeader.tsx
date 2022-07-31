@@ -1,6 +1,6 @@
-/* @jsx preact.h */
-/* @jsxFrag preact.Fragment */
-import * as preact from 'preact';
+/* @jsxRuntime automatic */
+/* @jsxImportSource preact */
+
 import { cx } from '../dep/frugal/styled.ts';
 import * as s from './HeroHeader.style.ts';
 
