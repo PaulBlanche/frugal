@@ -1,7 +1,8 @@
 import * as log from '../../../log/mod.ts';
 import * as frugal from '../../../core/mod.ts';
 
-import { Next, RouterContext } from '../../types.ts';
+import { Next } from '../../types.ts';
+import { RouterContext } from '../types.ts';
 
 function logger() {
     return log.getLogger(`frugal_server:forceRefreshMiddleware`);

@@ -1,10 +1,11 @@
 import * as log from '../../log/mod.ts';
 
-import { Context, Next, RouterContext } from '../types.ts';
+import { Next } from '../types.ts';
+import { composeMiddleware } from '../composeMiddleware.ts';
+import { Context, RouterContext } from './types.ts';
 import { dynamicPageMiddleware } from './dynamicPageMiddleware/mod.ts';
 import { staticPageMiddleware } from './staticPageMiddleware/mod.ts';
 import { etagMiddleware } from './etagMiddleware.ts';
-import { composeMiddleware } from '../composeMiddleware.ts';
 
 function logger() {
     return log.getLogger(`frugal_server:pageRouterMiddleware`);

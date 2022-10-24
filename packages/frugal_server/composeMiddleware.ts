@@ -1,6 +1,6 @@
-import { Context, Middleware, Next } from './types.ts';
+import { Middleware, Next } from './types.ts';
 
-export function composeMiddleware<CONTEXT extends Context = Context>(
+export function composeMiddleware<CONTEXT>(
     ...middlewares: Middleware<CONTEXT>[]
 ): Middleware<CONTEXT> {
     return (context: CONTEXT, next: Next<CONTEXT>) => {

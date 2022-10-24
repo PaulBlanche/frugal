@@ -2,7 +2,9 @@ import * as http from '../../../dep/std/http.ts';
 
 import * as log from '../../log/mod.ts';
 
-import { Context, Next } from '../types.ts';
+import { Next } from '../types.ts';
+
+import { Context } from './types.ts';
 
 const HEADERS_304 = [
     'Content-Location',

@@ -2,7 +2,7 @@ import * as http from '../../../../dep/std/http.ts';
 import * as log from '../../../log/mod.ts';
 
 import * as etag from '../../etag.ts';
-import { RouterContext } from '../../types.ts';
+import { RouterContext } from '../types.ts';
 
 function logger() {
     return log.getLogger(`frugal_server:generateMiddleware`);
@@ -43,7 +43,6 @@ export async function generateMiddleware(
     const response = new Response(result.content, {
         status: http.Status.OK,
         statusText: http.STATUS_TEXT[http.Status.OK],
-
         headers,
     });
 

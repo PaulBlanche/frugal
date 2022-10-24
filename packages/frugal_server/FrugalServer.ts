@@ -8,7 +8,8 @@ import { SessionManager } from './SessionManager.ts';
 import { pageRouterMiddleware } from './middleware/pageRouterMiddleware.ts';
 import { CleanConfig } from './Config.ts';
 import { filesystemMiddleware } from './middleware/filesystemMiddleware.ts';
-import { Context, Middleware } from './types.ts';
+import { Middleware } from './types.ts';
+import { Context } from './middleware/types.ts';
 
 function logger() {
     return log.getLogger(`frugal_server:FrugalServer`);

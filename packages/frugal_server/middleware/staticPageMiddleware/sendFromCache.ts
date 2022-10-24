@@ -4,7 +4,7 @@ import * as path from '../../../../dep/std/path.ts';
 import * as frugal from '../../../core/mod.ts';
 
 import * as etag from '../../etag.ts';
-import { RouterContext } from '../../types.ts';
+import { RouterContext } from '../types.ts';
 
 export async function sendFromCache(
     context: RouterContext<frugal.StaticRoute>,

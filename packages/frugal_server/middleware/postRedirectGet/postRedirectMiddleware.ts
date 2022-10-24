@@ -2,7 +2,8 @@ import * as http from '../../../../dep/std/http.ts';
 import * as frugal from '../../../core/mod.ts';
 import * as log from '../../../log/mod.ts';
 
-import { Next, RouterContext } from '../../types.ts';
+import { Next } from '../../types.ts';
+import { RouterContext } from '../types.ts';
 
 import { SESSION_COOKIE_NAME } from './const.ts';
 
