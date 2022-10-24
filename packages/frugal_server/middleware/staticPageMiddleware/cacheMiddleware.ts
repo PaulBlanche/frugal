@@ -1,5 +1,3 @@
-import * as path from '../../../../dep/std/path.ts';
-
 import * as log from '../../../log/mod.ts';
 import * as frugal from '../../../core/mod.ts';
 

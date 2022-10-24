@@ -16,7 +16,7 @@ export class LiveReloadServer {
         this.#dispatchMessage({ type: 'reload' });
     }
 
-    #dispatchMessage(message: any) {
+    #dispatchMessage(message: { type: 'suspend' | 'reload' }) {
         const payload = `data: ${JSON.stringify(message)}\n\n`;
         for (const controller of this.#controllers.values()) {
             controller.enqueue(ENCODER.encode(payload));

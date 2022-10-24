@@ -69,6 +69,7 @@ export class LoaderContext {
     /**
      * Get the generation result of a loader
      */
+    // deno-lint-ignore no-explicit-any
     get<VALUE = any>(name: string): VALUE {
         return this.#context[name] as VALUE;
     }
