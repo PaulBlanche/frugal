@@ -22,10 +22,10 @@ if (import.meta.main) {
             break;
         }
         case 'dev': {
-            console.log();
             await watch(config, [path.resolve(Deno.cwd(), 'docs/data')]);
             break;
         }
+        default:
         case 'serve': {
             await serve(config);
             break;
