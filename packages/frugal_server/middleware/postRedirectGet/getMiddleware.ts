@@ -88,6 +88,8 @@ export async function getMiddleware<ROUTE extends frugal.Route>(
                     SESSION_COOKIE_NAME,
                 );
             }
+
+            return response;
         }
 
         throw error;

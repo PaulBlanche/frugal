@@ -3,8 +3,6 @@ import { build } from './dep/frugal/core.ts';
 import { serve, watch } from './dep/frugal/frugal_server.ts';
 import * as path from './dep/std/path.ts';
 
-import { config } from './frugal.config.ts';
-
 if (Deno.env.get('CI') === undefined) {
     await dotenv.config({
         safe: true,
@@ -12,6 +10,8 @@ if (Deno.env.get('CI') === undefined) {
         path: new URL('.env', import.meta.url).pathname,
     });
 }
+
+const config = (await import('./frugal.config.ts')).config;
 
 if (import.meta.main) {
     const command = Deno.args[0];
