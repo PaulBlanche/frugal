@@ -4,7 +4,7 @@ import * as log from '../../log/mod.ts';
 
 import { Next } from '../types.ts';
 
-import { Context } from './types.ts';
+import { FrugalContext } from './types.ts';
 
 const HEADERS_304 = [
     'Content-Location',
@@ -19,7 +19,7 @@ function logger() {
     return log.getLogger(`frugal_server:etagMiddleware`);
 }
 
-export async function etagMiddleware<CONTEXT extends Context>(
+export async function etagMiddleware<CONTEXT extends FrugalContext>(
     context: CONTEXT,
     next: Next<CONTEXT>,
 ) {

@@ -22,7 +22,7 @@ export async function getPathList(): Promise<Path[]> {
 }
 
 export async function getStaticData(
-    { path }: frugal.GetStaticDataParams<Path>,
+    { path }: frugal.GetStaticDataContext<Path>,
 ): Promise<frugal.DataResult<Data>> {
     const data = await getData();
 

@@ -39,7 +39,7 @@ export function getPathList(): Path[] {
 export const pattern = '/:slug';
 
 export function getStaticData(
-    { path }: frugal.GetDataContext<Path>,
+    { path }: frugal.GetStaticDataContext<Path>,
 ): frugal.DataResult<Data> {
     return { data: store[path.slug] };
 }
@@ -66,7 +66,7 @@ If you want the response to contain specific headers, you can return them from t
 //...
 
 export function getStaticData(
-    { path }: frugal.GetDataContext<Path>,
+    { path }: frugal.GetStaticDataContext<Path>,
 ): frugal.DataResult<Data> {
     return {
         data: await queryMyApiForDataGivenSlug(path.slug),

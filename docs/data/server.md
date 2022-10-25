@@ -29,7 +29,7 @@ For both static and dynamic pages, you can define return some headers alongside 
 //...
 
 export function getStaticData(
-    { path }: frugal.GetDataContext<Path>,
+    { path }: frugal.GetStaticDataContetx<Path>,
 ): frugal.DataResult<Data> {
     return {
         data: {

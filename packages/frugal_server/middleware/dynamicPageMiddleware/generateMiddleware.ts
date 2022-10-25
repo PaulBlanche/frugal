@@ -21,7 +21,10 @@ export async function generateMiddleware(
         },
     });
 
-    const result = await context.route.generator.generate(context.request);
+    const result = await context.route.generator.generate(
+        context.request,
+        context.state,
+    );
 
     logger().debug({
         method: context.request.method,

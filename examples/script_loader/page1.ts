@@ -20,7 +20,7 @@ export function getPathList(): Path[] {
 
 // For each request, we generate the data needed to render the page
 export function getStaticData(
-    { path }: frugal.GetDataContext<Path>,
+    { path }: frugal.GetStaticDataContext<Path>,
 ): frugal.DataResult<Data> {
     if (path.slug === 'article-1') {
         return {

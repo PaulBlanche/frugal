@@ -25,7 +25,7 @@ export async function getPathList(): Promise<Path[]> {
 }
 
 export async function getStaticData(
-    { path }: frugal.GetDataContext<Path>,
+    { path }: frugal.GetStaticDataContext<Path>,
 ): Promise<frugal.DataResult<Data>> {
     const data = await getData();
 

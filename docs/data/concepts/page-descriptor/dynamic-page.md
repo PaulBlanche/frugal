@@ -27,7 +27,7 @@ export const pattern = '/:slug';
 
 export function getDynamicData(
     request: Request,
-    { path }: frugal.GetDataContext<Path>,
+    { path }: frugal.GetDynamicDataContext<Path>,
 ): frugal.DataResult<Data> {
     return { data: await queryMyApiForDataGivenSlug(path.slug) };
 }
@@ -55,7 +55,7 @@ If you want the response to contain specific headers, you can return them from t
 
 export function getDynamicData(
     request: Request,
-    { path }: frugal.GetDataContext<Path>,
+    { path }: frugal.GetDynamicDataContext<Path>,
 ): frugal.DataResult<Data> {
     return {
         data: await queryMyApiForDataGivenSlug(path.slug),

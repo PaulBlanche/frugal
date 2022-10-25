@@ -22,13 +22,19 @@ export type GetPathListParams = {
     phase: Phase;
 };
 
-export type GetDataContext<
+export type GetStaticDataContext<
     PATH extends Record<string, string> = Record<string, string>,
 > = {
     /** The current phase (build, refresh or generate) */
     phase: Phase;
     /** The path for which we need the data */
     path: PATH;
+};
+
+export type GetDynamicDataContext<
+    PATH extends Record<string, string> = Record<string, string>,
+> = GetStaticDataContext<PATH> & {
+    state: Record<string, unknown>;
 };
 
 export type GetContentParams<
@@ -70,7 +76,7 @@ export type GetStaticData<
     PATH extends Record<string, string> = Record<string, string>,
     DATA = unknown,
 > = (
-    context: GetDataContext<PATH>,
+    context: GetStaticDataContext<PATH>,
 ) => Promise<DataResult<DATA>> | DataResult<DATA>;
 
 export type GetDynamicData<
@@ -78,7 +84,7 @@ export type GetDynamicData<
     DATA = unknown,
 > = (
     request: Request,
-    context: GetDataContext<PATH>,
+    context: GetDynamicDataContext<PATH>,
 ) => Promise<DataResult<DATA>> | DataResult<DATA>;
 
 export type GetContent<
@@ -387,7 +393,7 @@ export class DynamicPage<
         this.#descriptor = descriptor;
     }
 
-    getDynamicData(request: Request, context: GetDataContext<PATH>) {
+    getDynamicData(request: Request, context: GetDynamicDataContext<PATH>) {
         if (this.#descriptor.getDynamicData === undefined) {
             return { data: {} } as DataResult<DATA>;
         }
@@ -413,7 +419,7 @@ export class StaticPage<
         this.#descriptor = descriptor;
     }
 
-    getStaticData(context: GetDataContext<PATH>) {
+    getStaticData(context: GetStaticDataContext<PATH>) {
         if (this.#descriptor.getStaticData === undefined) {
             return { data: {} } as DataResult<DATA>;
         }

@@ -8,7 +8,7 @@ import * as form from './form.ts';
 //...
 
 export function getStaticData(
-    { path }: frugal.GetDataContext<Path>,
+    { path }: frugal.GetDynamicDataContext<Path>,
 ): frugal.DataResult<Data> {
     return {
         data: { foo: 'foo' },

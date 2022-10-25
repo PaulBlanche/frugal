@@ -2,7 +2,7 @@ import * as log from '../../log/mod.ts';
 
 import { Next } from '../types.ts';
 import { composeMiddleware } from '../composeMiddleware.ts';
-import { Context, RouterContext } from './types.ts';
+import { FrugalContext, RouterContext } from './types.ts';
 import { dynamicPageMiddleware } from './dynamicPageMiddleware/mod.ts';
 import { staticPageMiddleware } from './staticPageMiddleware/mod.ts';
 import { etagMiddleware } from './etagMiddleware.ts';
@@ -12,8 +12,8 @@ function logger() {
 }
 
 export function pageRouterMiddleware(
-    context: Context,
-    next: Next<Context>,
+    context: FrugalContext,
+    next: Next<FrugalContext>,
 ) {
     const url = new URL(context.request.url);
     const route = context.frugal.getMatchingRoute(url.pathname);

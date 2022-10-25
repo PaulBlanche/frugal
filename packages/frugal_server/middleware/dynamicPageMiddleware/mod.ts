@@ -19,6 +19,7 @@ export function _dynamicPageMiddlewareMaker(
     ) => {
         // route is not dynamic (or static in watch mode), yield
         if (
+            context.request.method === 'GET' &&
             context.route.type === 'static' &&
             !context.frugal.config.watch
         ) {

@@ -36,7 +36,7 @@ async function getMarkup(slug: string) {
 }
 
 export async function getStaticData(
-    { path }: frugal.GetDataContext<Path>,
+    { path }: frugal.GetStaticDataContext<Path>,
 ): Promise<frugal.DataResult<Data>> {
     const markup = await getMarkup(path.slug);
     return {

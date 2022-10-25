@@ -10,11 +10,12 @@ export type {
     DynamicPageDescriptor,
     GetContent,
     GetContentParams,
-    GetDataContext,
     GetDynamicData,
+    GetDynamicDataContext,
     GetPathList,
     GetPathListParams,
     GetStaticData,
+    GetStaticDataContext,
     Phase,
     StaticPageDescriptor,
 } from './Page.ts';

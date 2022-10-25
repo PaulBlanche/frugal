@@ -15,7 +15,7 @@ type Data = {
 // of the client request. The `request` object contains the url parameters.
 export function getDynamicData(
     request: Request,
-    { path }: frugal.GetDataContext<Path>,
+    { path }: frugal.GetDynamicDataContext<Path>,
 ): frugal.DataResult<Data> {
     return {
         data: {

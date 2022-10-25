@@ -5,7 +5,7 @@ import { Generated } from '../loader_script/ScriptLoader.ts';
 import * as log from '../log/mod.ts';
 
 import { LoaderContext } from './LoaderContext.ts';
-import { GetDataContext, Page, Phase, StaticPage } from './Page.ts';
+import { GetDynamicDataContext, Page, Phase, StaticPage } from './Page.ts';
 
 export type PageGeneratorConfig = {
     loaderContext: LoaderContext;
@@ -49,6 +49,7 @@ export class PageGenerator<
      */
     async generate(
         request: Request,
+        state: Record<string, unknown>,
     ): Promise<{ pagePath: string; content: string; headers: Headers }> {
         const pathname = new URL(request.url).pathname;
         const match = this.#page.match(pathname);
@@ -66,6 +67,7 @@ export class PageGenerator<
         const { data, headers } = await this.#getData(request, {
             phase: 'generate',
             path,
+            state,
         });
 
         const { pagePath, content } = await this.generateContentFromData(
@@ -156,7 +158,7 @@ export class PageGenerator<
 
     #getData(
         request: Request,
-        context: GetDataContext<PATH>,
+        context: GetDynamicDataContext<PATH>,
     ) {
         const handler = this.#page.handlers[request.method];
         if (handler !== undefined) {

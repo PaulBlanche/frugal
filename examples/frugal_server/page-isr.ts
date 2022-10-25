@@ -15,7 +15,7 @@ export function getPathList(): Path[] {
 }
 
 export function getStaticData(
-    { path }: frugal.GetDataContext<Path>,
+    { path }: frugal.GetStaticDataContext<Path>,
 ): frugal.DataResult<Data> {
     if (path.slug === '1') {
         return {
