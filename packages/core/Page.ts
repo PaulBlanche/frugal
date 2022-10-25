@@ -373,6 +373,7 @@ class BasePage<
     compile(path: PATH) {
         try {
             return this.#urlCompiler(path);
+            // deno-lint-ignore no-explicit-any
         } catch (error: any) {
             throw new PageDescriptorError(
                 `Error while compiling pattern "${this.pattern}" with path "${
