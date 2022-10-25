@@ -128,10 +128,10 @@ export class PageBuilder<
                         phase,
                     });
 
-                const serializedHeaders = Object.fromEntries(
+                const serializedHeaders = Array.from(
                     new Headers(headers).entries(),
                 );
-                const hasHeaders = Object.keys(serializedHeaders).length > 0;
+                const hasHeaders = serializedHeaders.length > 0;
 
                 await Promise.all([
                     this.#config.persistance.set(
@@ -140,9 +140,7 @@ export class PageBuilder<
                     ),
                     hasHeaders && this.#config.persistance.set(
                         headersPath(pagePath),
-                        JSON.stringify(
-                            Object.fromEntries(new Headers(headers).entries()),
-                        ),
+                        JSON.stringify(serializedHeaders),
                     ),
                 ]);
 

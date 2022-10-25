@@ -3,6 +3,7 @@ import * as pathToRegexp from '../../dep/path-to-regexp.ts';
 
 import { LoaderContext } from './LoaderContext.ts';
 import * as log from '../log/mod.ts';
+import { FrugalError } from './FrugalError.ts';
 
 function logger() {
     return log.getLogger('frugal:Page');
@@ -370,7 +371,16 @@ class BasePage<
     }
 
     compile(path: PATH) {
-        return this.#urlCompiler(path);
+        try {
+            return this.#urlCompiler(path);
+        } catch (error: any) {
+            throw new PageDescriptorError(
+                `Error while compiling pattern "${this.pattern}" with path "${
+                    JSON.stringify(path)
+                }": ${error.message}`,
+                this,
+            );
+        }
     }
 
     match(path: string) {
@@ -431,5 +441,16 @@ export class StaticPage<
             return [{} as PATH];
         }
         return this.#descriptor.getPathList(params);
+    }
+}
+
+export class PageDescriptorError extends FrugalError {
+    // deno-lint-ignore no-explicit-any
+    page: BasePage<any, any, any>;
+
+    // deno-lint-ignore no-explicit-any
+    constructor(message: string, page: BasePage<any, any, any>) {
+        super(message);
+        this.page = page;
     }
 }

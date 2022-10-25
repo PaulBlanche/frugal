@@ -143,7 +143,7 @@ export async function build(
 
             queue.push(module);
 
-            dependencies.reverse().forEach((dependency) => {
+            [...dependencies].reverse().forEach((dependency) => {
                 if (!excluded(dependency.url)) {
                     queue.push({
                         type: 'precursor',
@@ -291,6 +291,8 @@ async function analyze(
             }
         },
     });
+
+    //dependencies.sort((a, b) => a.url.href.localeCompare(b.url.href));
 
     return { dependencies, contentHash };
 

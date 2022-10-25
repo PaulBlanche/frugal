@@ -8,6 +8,7 @@ import { ModuleList } from './DependencyGraph.ts';
 import { PersistantCache } from './Cache.ts';
 import { Router } from './Router.ts';
 import * as FILENAMES from './filenames.ts';
+import { PageDescriptorError } from './Page.ts';
 
 function logger() {
     return log.getLogger('frugal:Frugal');
@@ -90,22 +91,35 @@ export class Frugal {
             },
         });
 
-        await Promise.all(this.#router.routes.map(async (route) => {
-            if (route.type === 'static') {
-                await route.builder.buildAll();
-            }
-        }));
-        await this.save();
+        try {
+            await Promise.all(this.#router.routes.map(async (route) => {
+                if (route.type === 'static') {
+                    await route.builder.buildAll();
+                }
+            }));
+            await this.save();
 
-        logger().info({
-            op: 'done',
-            msg() {
-                return `${this.op} ${this.logger!.timerEnd}`;
-            },
-            logger: {
-                timerEnd: 'build',
-            },
-        });
+            logger().info({
+                op: 'done',
+                msg() {
+                    return `${this.op} ${this.logger!.timerEnd}`;
+                },
+                logger: {
+                    timerEnd: 'build',
+                },
+            });
+        } catch (error: unknown) {
+            if (error instanceof PageDescriptorError) {
+                logger().error({
+                    self: error.page.self,
+                    error: error.message,
+                    msg() {
+                        return `Error on page descriptor ${this.self}: ${this.error}`;
+                    },
+                });
+            }
+            throw error;
+        }
     }
 
     /**
@@ -115,9 +129,16 @@ export class Frugal {
      * left untouched, and only the cache directory is wiped
      */
     async clean({ justCache = false }: { justCache?: boolean } = {}) {
-        if (justCache) {
-            await Deno.remove(this.#config.cacheDir, { recursive: true });
+        try {
+            if (justCache) {
+                await Deno.remove(this.#config.cacheDir, { recursive: true });
+            }
+            await Deno.remove(this.#config.outputDir, { recursive: true });
+        } catch (error: unknown) {
+            if (error instanceof Deno.errors.NotFound) {
+                return;
+            }
+            throw error;
         }
-        await Deno.remove(this.#config.outputDir, { recursive: true });
     }
 }

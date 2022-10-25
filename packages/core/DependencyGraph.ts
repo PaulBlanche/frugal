@@ -155,7 +155,7 @@ export class ModuleList {
     }
 
     async save(filePath: string) {
-        const serializedData = JSON.stringify(this.#modules);
+        const serializedData = JSON.stringify(this.#modules, null, 2);
 
         await fs.ensureFile(filePath);
         await Deno.writeTextFile(filePath, serializedData);

@@ -40,9 +40,9 @@
     },
     "importMap": "./import_map.json",
     "tasks": {
-        "test:unit": "DENO_FUTURE_CHECK=1 deno test --no-check --allow-all --coverage=tests/cov_profile/unit --parallel --shuffle tests/unit",
+        "test:unit": "DENO_FUTURE_CHECK=1 deno test --no-check --allow-all  tests/unit",
         "test:unit:snapshot": "DENO_FUTURE_CHECK=1 deno test --no-check --allow-all tests/unit -- --update",
-        "test:integration": "DENO_FUTURE_CHECK=1 deno test --no-check --allow-all --coverage=tests/cov_profile/integration --parallel --shuffle tests/integration",
+        "test:integration": "DENO_FUTURE_CHECK=1 deno test --no-check --allow-all  tests/integration",
         "test:integration:snapshot": "DENO_FUTURE_CHECK=1 deno test --no-check --allow-all tests/integration --  --update",
         "test:snapshot": "deno task test:unit:snapshot && deno task test:integration:snapshot",
         "test": "deno task test:unit && deno task test:integration",
