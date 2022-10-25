@@ -1,15 +1,12 @@
-import * as http from '../../../dep/std/http.ts';
 import * as mock from '../../../dep/std/mock.ts';
-import * as asserts from '../../../dep/std/asserts.ts';
 
-import { dynamicPageMiddlewareMaker } from '../../../packages/frugal_server/middleware/dynamicPageMiddleware/mod.ts';
+import { _dynamicPageMiddlewareMaker } from '../../../packages/frugal_server/middleware/dynamicPageMiddleware/mod.ts';
 import { RouterContext } from '../../../packages/frugal_server/middleware/types.ts';
-import { compute } from '../../../packages/frugal_server/etag.ts';
 
 Deno.test('dynamicPageMiddleware: rejects static routes in non watch', async () => {
     const next = mock.spy(async () => new Response());
     const childrenMiddleware = mock.spy(async () => new Response());
-    const dynamicPageMiddleware = dynamicPageMiddlewareMaker(
+    const dynamicPageMiddleware = _dynamicPageMiddlewareMaker(
         childrenMiddleware,
     );
 
@@ -31,7 +28,7 @@ Deno.test('dynamicPageMiddleware: rejects static routes in non watch', async () 
 Deno.test('dynamicPageMiddleware: accept dynamic routes in non watch', async () => {
     const next = mock.spy(async () => new Response());
     const childrenMiddleware = mock.spy(async () => new Response());
-    const dynamicPageMiddleware = dynamicPageMiddlewareMaker(
+    const dynamicPageMiddleware = _dynamicPageMiddlewareMaker(
         childrenMiddleware,
     );
 
@@ -53,7 +50,7 @@ Deno.test('dynamicPageMiddleware: accept dynamic routes in non watch', async () 
 Deno.test('dynamicPageMiddleware: accept static routes in watch', async () => {
     const next = mock.spy(async () => new Response());
     const childrenMiddleware = mock.spy(async () => new Response());
-    const dynamicPageMiddleware = dynamicPageMiddlewareMaker(
+    const dynamicPageMiddleware = _dynamicPageMiddlewareMaker(
         childrenMiddleware,
     );
 

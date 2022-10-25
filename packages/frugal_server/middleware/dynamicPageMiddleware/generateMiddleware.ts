@@ -38,7 +38,10 @@ export async function generateMiddleware(
         headers.set('content-type', 'text/html; charset=utf-8');
     }
 
-    headers.set('Etag', etag.compute(result.content));
+    const Etag = headers.get('etag');
+    if (Etag === null) {
+        headers.set('Etag', etag.compute(result.content));
+    }
 
     const response = new Response(result.content, {
         status: http.Status.OK,

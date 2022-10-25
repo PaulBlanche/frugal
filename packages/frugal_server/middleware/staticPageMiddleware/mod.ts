@@ -36,4 +36,5 @@ const composedMiddleware = composeMiddleware<RouterContext<frugal.StaticRoute>>(
     postRedirectGet.postRedirectMiddleware,
     cacheMiddleware,
     refreshJitMiddleware,
+    cacheMiddleware,
 );

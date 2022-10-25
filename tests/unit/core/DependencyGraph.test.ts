@@ -4,7 +4,7 @@ import { DependencyGraph } from '../../../packages/core/DependencyGraph.ts';
 import * as graph from '../../../packages/dependency_graph/mod.ts';
 import * as murmur from '../../../packages/murmur/mod.ts';
 
-Deno.test('gather only modules matched by loaders with entrypoint', () => {
+Deno.test('DependencyGraph: gather only modules matched by loaders with entrypoint', () => {
     const tree = dependencyTree({
         dependencies: [{
             url: new URL('file:///entrypoint1.ts'),

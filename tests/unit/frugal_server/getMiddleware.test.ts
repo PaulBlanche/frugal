@@ -85,6 +85,28 @@ Deno.test('postRedirectGet:getMiddleware: should bail out on GET request with ex
     );
 });
 
+Deno.test('postRedirectGet:getMiddleware: should throw on non NotFound error in sessionManager', async () => {
+    const next = mock.spy(async () => new Response());
+    const sessionManagerGet = mock.spy(() => {
+        throw new Error();
+    });
+    const sessionId = 'sessionId';
+    await asserts.assertRejects(async () => {
+        await getMiddleware({
+            request: {
+                url: 'http://example.com',
+                method: 'GET',
+                headers: new Headers({
+                    'Cookie': `${SESSION_COOKIE_NAME}=${sessionId}`,
+                }),
+            },
+            sessionManager: {
+                get: sessionManagerGet,
+            },
+        } as unknown as RouterContext, next);
+    });
+});
+
 Deno.test('postRedirectGet:getMiddleware: should answer with data in session', async () => {
     const next = mock.spy(async () => new Response());
     const responseHeaders = {

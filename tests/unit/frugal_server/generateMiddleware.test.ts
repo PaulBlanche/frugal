@@ -25,14 +25,35 @@ Deno.test('generateMiddleware: generate return the expected response', async () 
     } as unknown as RouterContext);
 
     asserts.assertEquals(await response.text(), generated.content);
-    asserts.assertEquals(await response.status, http.Status.OK);
-    asserts.assertEquals(
-        await response.statusText,
-        http.STATUS_TEXT[http.Status.OK],
-    );
+    asserts.assertEquals(response.status, http.Status.OK);
+    asserts.assertEquals(response.statusText, http.STATUS_TEXT[http.Status.OK]);
     asserts.assertEquals(Array.from(response.headers.entries()), [
         ['content-type', 'text/html; charset=utf-8'],
         ['etag', compute(generated.content)],
+        ...Object.entries(generated.headers),
+    ]);
+});
+
+Deno.test('generateMiddleware: headers can be overwritten', async () => {
+    const generated = {
+        pagePath: '',
+        content: 'page-content',
+        headers: {
+            'content-type': 'foo',
+            'etag': 'bar',
+        },
+    };
+
+    const response = await generateMiddleware({
+        request: new Request('http://foo.bar'),
+        route: {
+            generator: {
+                generate: mock.spy(async () => generated),
+            },
+        },
+    } as unknown as RouterContext);
+
+    asserts.assertEquals(Array.from(response.headers.entries()), [
         ...Object.entries(generated.headers),
     ]);
 });

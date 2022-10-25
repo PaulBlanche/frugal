@@ -10,7 +10,7 @@ function logger() {
     return log.getLogger(`frugal_server:dynamicPageMiddleware`);
 }
 
-export function dynamicPageMiddlewareMaker(
+export function _dynamicPageMiddlewareMaker(
     childrenMiddleware: Middleware<RouterContext>,
 ) {
     return (
@@ -33,7 +33,7 @@ export function dynamicPageMiddlewareMaker(
     };
 }
 
-export const dynamicPageMiddleware = dynamicPageMiddlewareMaker(
+export const dynamicPageMiddleware = _dynamicPageMiddlewareMaker(
     composeMiddleware<RouterContext>(
         postRedirectGet.getMiddleware,
         postRedirectGet.postRedirectMiddleware,
