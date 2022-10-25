@@ -11,6 +11,9 @@ Deno.test('dynamicPageMiddleware: rejects static routes in non watch', async () 
     );
 
     await dynamicPageMiddleware({
+        request: {
+            method: 'GET',
+        },
         frugal: {
             config: {
                 watch: false,
@@ -33,6 +36,9 @@ Deno.test('dynamicPageMiddleware: accept dynamic routes in non watch', async () 
     );
 
     await dynamicPageMiddleware({
+        request: {
+            method: 'GET',
+        },
         frugal: {
             config: {
                 watch: false,
@@ -55,6 +61,9 @@ Deno.test('dynamicPageMiddleware: accept static routes in watch', async () => {
     );
 
     await dynamicPageMiddleware({
+        request: {
+            method: 'GET',
+        },
         frugal: {
             config: {
                 watch: true,

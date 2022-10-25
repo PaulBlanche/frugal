@@ -83,7 +83,9 @@ Deno.test('PageGenerator: generate orchestrate the generation of DynamicPage', a
         method: 'GET',
     });
 
-    const result = await generator.generate(request);
+    const state = {};
+
+    const result = await generator.generate(request, state);
 
     asserts.assertEquals(result.pagePath, 'public/dir/foo/345/index.html');
     asserts.assertEquals(result.content, content);
@@ -95,6 +97,7 @@ Deno.test('PageGenerator: generate orchestrate the generation of DynamicPage', a
             path: {
                 id: '345',
             },
+            state,
         }],
         returned: { data },
     });
@@ -133,8 +136,10 @@ Deno.test('PageGenerator: generate throws if pathname does not match', async () 
         method: 'GET',
     });
 
+    const state = {};
+
     await asserts.assertRejects(async () => {
-        await generator.generate(request);
+        await generator.generate(request, state);
     });
 });
 
@@ -156,8 +161,10 @@ Deno.test('PageGenerator: generate throws for StaticPage', async () => {
         method: 'GET',
     });
 
+    const state = {};
+
     await asserts.assertRejects(async () => {
-        await generator.generate(request);
+        await generator.generate(request, state);
     });
 });
 
@@ -186,7 +193,9 @@ Deno.test('PageGenerator: generate generates StaticPage in watch mode', async ()
         method: 'GET',
     });
 
-    const result = await generator.generate(request);
+    const state = {};
+
+    const result = await generator.generate(request, state);
 
     asserts.assertEquals(result.pagePath, 'public/dir/foo/345/index.html');
     asserts.assertEquals(result.content, content);
@@ -198,7 +207,8 @@ Deno.test('PageGenerator: generate generates StaticPage in watch mode', async ()
             path: {
                 id: '345',
             },
-        }],
+            state,
+        } as any],
         returned: { data },
     });
 
@@ -229,6 +239,8 @@ Deno.test('PageGenerator: generate generates pages with POST request', async (t)
         method: 'POST',
     });
 
+    const state = {};
+
     await t.step('DynamicPage', async () => {
         const dynamicPage = fakeDynamicPage({
             pattern: '/foo/:id',
@@ -246,7 +258,7 @@ Deno.test('PageGenerator: generate generates pages with POST request', async (t)
             },
         );
 
-        const dynamicResult = await dynamicGenerator.generate(request);
+        const dynamicResult = await dynamicGenerator.generate(request, state);
 
         asserts.assertEquals(
             dynamicResult.pagePath,
@@ -262,6 +274,7 @@ Deno.test('PageGenerator: generate generates pages with POST request', async (t)
                 path: {
                     id: '345',
                 },
+                state,
             }],
             returned: { data },
         });
@@ -299,7 +312,7 @@ Deno.test('PageGenerator: generate generates pages with POST request', async (t)
             },
         );
 
-        const staticResult = await staticGenerator.generate(request);
+        const staticResult = await staticGenerator.generate(request, state);
 
         asserts.assertEquals(
             staticResult.pagePath,
@@ -315,6 +328,7 @@ Deno.test('PageGenerator: generate generates pages with POST request', async (t)
                 path: {
                     id: '345',
                 },
+                state,
             }],
             returned: { data },
         });
@@ -360,7 +374,9 @@ Deno.test('PageGenerator: generate with a .html pattern', async () => {
         method: 'GET',
     });
 
-    const result = await generator.generate(request);
+    const state = {};
+
+    const result = await generator.generate(request, state);
 
     asserts.assertEquals(result.pagePath, 'public/dir/foo/345.html');
 });
