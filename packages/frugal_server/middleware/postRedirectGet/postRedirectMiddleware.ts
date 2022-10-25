@@ -51,7 +51,7 @@ export async function postRedirectMiddleware<ROUTE extends frugal.Route>(
 
     const sessionId = await context.sessionManager.set(JSON.stringify({
         content: result.content,
-        headers: Object.fromEntries(result.headers.entries()),
+        headers: Array.from(result.headers.entries()),
     }));
 
     logger().debug({
