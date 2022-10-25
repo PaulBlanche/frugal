@@ -1,5 +1,5 @@
 import { Config } from '../Config.ts';
-import { FrugalBuilder } from '../Frugal.ts';
+import { FrugalBuilder } from '../FrugalBuilder.ts';
 import * as path from '../../../dep/std/path.ts';
 import * as fs from '../../../dep/std/fs.ts';
 

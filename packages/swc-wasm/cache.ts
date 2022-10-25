@@ -2,7 +2,7 @@
  * Simple script fetching/caching the wasm source of `@swc/wasm-web`. This script, for a given version of `swc`, will outut the wasm source and a `mod.ts` that initialize the wasm module and re-exports the `swc` api.
  */
 
-const version = '1.2.172';
+const version = '1.3.9';
 const wasmFile = 'swc.wasm';
 
 const swcWasmWeb = await fetch(

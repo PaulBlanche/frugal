@@ -9,18 +9,18 @@ Each loader defines a regexp pattern, and frugal will provide all imported modul
 For example, with the given `frugal.config.ts` :
 
 ```ts
-import { Config, page } from 'https://deno.land/x/frugal/packages/core/mod.ts';
+import * as frugal from 'https://deno.land/x/frugal/packages/core/mod.ts';
 import { StyleLoader } from 'https://deno.land/x/frugal/packages/loader_style/mod.ts';
 
 import * as myPage from './pages/myPage.ts';
 
 const self = new URL(import.meta.url);
 
-export const config: Config = {
+export const config: frugal.Config = {
     self,
     outputDir: './dist',
     pages: [
-        page(myPage),
+        frugal.page(myPage),
     ],
     loader: [
         new StyleLoader({
@@ -30,7 +30,7 @@ export const config: Config = {
 };
 ```
 
-frugal will find in `frugal.config.ts` or in any of its dependencies any static imports of modules ending with `.style.ts`, and provide them to the `style` loader.
+frugal will find in `frugal.config.ts` or in any of its dependencies all the way down any static imports of modules ending with `.style.ts`, and provide them to the `style` loader.
 
 Then the loader, according to its own logic, will generate some static assets from those modules.
 

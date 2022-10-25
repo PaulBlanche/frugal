@@ -1,6 +1,6 @@
-/* @jsx preact.h */
-/* @jsxFrag preact.Fragment */
-import * as preact from 'preact';
+/* @jsxRuntime automatic */
+/* @jsxImportSource preact */
+
 import { SvgProps } from './type.ts';
 import { carretUrl } from './SpriteSheet.svg.tsx';
 

@@ -4,12 +4,12 @@ const isServer = typeof document === 'undefined';
 
 export type Manager = {
     update(state: preact.VNode[]): void;
-    instanceStack: Set<preact.VNode<unknown>>;
+    instanceStack: Set<Effect>;
 };
 
 type SideEffectProps = {
     reduceComponentsToState: (
-        components: preact.VNode<unknown>[],
+        components: Effect[],
     ) => preact.VNode[];
     manager: Manager;
 };

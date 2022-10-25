@@ -1,6 +1,6 @@
-/* @jsx preact.h */
-/* @jsxFrag preact.Fragment */
-import * as preact from 'preact';
+/* @jsxRuntime automatic */
+/* @jsxImportSource preact */
+
 import { cx } from '../dep/frugal/styled.ts';
 import { usePathname } from '../dep/frugal/frugal_preact.server.ts';
 import * as s from './Navigation.style.ts';

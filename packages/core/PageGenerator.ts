@@ -1,14 +1,11 @@
-import { LoaderContext } from './LoaderContext.ts';
-import {
-    DynamicPage,
-    GenerationRequest,
-    Page,
-    Phase,
-    StaticPage,
-} from './Page.ts';
-import * as pathUtils from '../../dep/std/path.ts';
-import * as log from '../log/mod.ts';
 import { assert } from '../../dep/std/asserts.ts';
+import * as pathUtils from '../../dep/std/path.ts';
+import { Generated } from '../loader_script/ScriptLoader.ts';
+
+import * as log from '../log/mod.ts';
+
+import { LoaderContext } from './LoaderContext.ts';
+import { GetDynamicDataContext, Page, Phase, StaticPage } from './Page.ts';
 
 export type PageGeneratorConfig = {
     loaderContext: LoaderContext;
@@ -21,7 +18,7 @@ function logger() {
 }
 
 type ContentGenerationContext<DATA, PATH> = {
-    method: 'POST' | 'GET';
+    method: string;
     data: DATA;
     path: PATH;
     phase: Phase;
@@ -33,13 +30,12 @@ type ContentGenerationContext<DATA, PATH> = {
 export class PageGenerator<
     PATH extends Record<string, string> = Record<string, string>,
     DATA = unknown,
-    BODY = unknown,
 > {
-    #page: Page<PATH, DATA, BODY>;
+    #page: Page<PATH, DATA>;
     #config: PageGeneratorConfig;
 
     constructor(
-        page: Page<PATH, DATA, BODY>,
+        page: Page<PATH, DATA>,
         config: PageGeneratorConfig,
     ) {
         this.#page = page;
@@ -52,10 +48,13 @@ export class PageGenerator<
      * Will throw if the request pathname does not match the page pattern.
      */
     async generate(
-        request: GenerationRequest<BODY>,
+        request: Request,
+        state: Record<string, unknown>,
     ): Promise<{ pagePath: string; content: string; headers: Headers }> {
-        const path = this.#getPath(request);
         const pathname = new URL(request.url).pathname;
+        const match = this.#page.match(pathname);
+        assert(match !== false);
+        const path = match.params;
 
         logger().debug({
             pattern: this.#page.pattern,
@@ -65,60 +64,23 @@ export class PageGenerator<
             },
         });
 
-        const data = await this.#getData(path, request);
-        const headers = await this.#getHeaders(path, request);
+        const { data, headers } = await this.#getData(request, {
+            phase: 'generate',
+            path,
+            state,
+        });
 
         const { pagePath, content } = await this.generateContentFromData(
             pathname,
             {
-                data,
+                data: data ?? {} as DATA,
                 path,
                 phase: 'generate',
                 method: request.method,
             },
         );
 
-        return { pagePath, content, headers };
-    }
-
-    async getHeaders(request: GenerationRequest<BODY>) {
-        const path = this.#getPath(request);
-        return await this.#getHeaders(path, request);
-    }
-
-    #getPath(request: GenerationRequest<BODY>): PATH {
-        const pathname = new URL(request.url).pathname;
-        const match = this.#page.match(pathname);
-        assert(match !== false);
-        return match.params;
-    }
-
-    async #getHeaders(path: PATH, request: GenerationRequest<BODY>) {
-        if (request.method === 'GET') {
-            if (this.#config.watch && this.#page instanceof StaticPage) {
-                return await this.#page.getStaticHeaders({
-                    phase: 'generate',
-                    path,
-                });
-            }
-
-            assert(
-                this.#page instanceof DynamicPage,
-                `Can't dynamically generate StaticPage ${this.#page.pattern}`,
-            );
-
-            return await this.#page.getDynamicHeaders({
-                phase: 'generate',
-                path,
-                request,
-            });
-        }
-
-        return await this.#page.postDynamicHeaders({
-            phase: 'generate',
-            path,
-            request,
-        });
+        return { pagePath, content, headers: new Headers(headers) };
     }
 
     /**
@@ -170,37 +132,49 @@ export class PageGenerator<
             },
         });
 
-        return { pagePath, content };
+        if (!this.#config.watch) {
+            return { pagePath, content };
+        } else {
+            const injectWatchScript = this.#config.loaderContext.get<Generated>(
+                'inject-watch-script',
+            );
+            if (injectWatchScript) {
+                return {
+                    pagePath,
+                    // browsers are very forgiving, we can simply add the watch
+                    // script after the whole document
+                    content:
+                        `${content}<script>var script = document.createElement('script'); script.type="module"; script.src="${
+                            injectWatchScript[String(this.#page.self)][
+                                'inject-watch-script'
+                            ]
+                        }"; document.head.appendChild(script);</script>`,
+                };
+            } else {
+                return { pagePath, content };
+            }
+        }
     }
 
-    async #getData(
-        path: PATH,
-        request: GenerationRequest<BODY>,
+    #getData(
+        request: Request,
+        context: GetDynamicDataContext<PATH>,
     ) {
-        if (request.method === 'GET') {
-            if (this.#config.watch && this.#page instanceof StaticPage) {
-                return await this.#page.getStaticData({
-                    phase: 'generate',
-                    path,
-                });
-            }
-
-            assert(
-                this.#page instanceof DynamicPage,
-                `Can't dynamically generate StaticPage ${this.#page.pattern}`,
-            );
-
-            return await this.#page.getDynamicData({
-                phase: 'generate',
-                path,
-                request,
-            });
+        const handler = this.#page.handlers[request.method];
+        if (handler !== undefined) {
+            return handler(request, context);
         }
 
-        return await this.#page.postDynamicData({
-            phase: 'generate',
-            path,
-            request,
-        });
+        if (this.#page instanceof StaticPage) {
+            if (!this.#config.watch) {
+                assert(
+                    false,
+                    `Can't dynamically generate StaticPage ${this.#page.pattern} for GET method`,
+                );
+            }
+            return this.#page.getStaticData(context);
+        }
+
+        return this.#page.getDynamicData(request, context);
     }
 }

@@ -1,7 +1,7 @@
 import {
     Config,
+    Frugal,
     FrugalBuilder,
-    FrugalInstance,
     OFF_LOGGER_CONFIG,
     page,
 } from '../../../packages/core/mod.ts';
@@ -62,7 +62,7 @@ function relativeUrl(file: string) {
     return new URL(file, import.meta.url);
 }
 
-function publicFileUrl(frugal: FrugalInstance, file: string) {
+function publicFileUrl(frugal: Frugal, file: string) {
     return relativeUrl(
         path.join(frugal.config.publicDir, file),
     );

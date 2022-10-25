@@ -34,22 +34,20 @@ export function MyComponent() {
 That way you can couple scripts and html easily without having to keep ids
 synchronised through the codebase.
 
-During the bundling process, only the `main` function will be imported. This means that any code outside of the `main` function and not used in the `main` function will not be bundled (thanks to tree-shaking).
-
 ## Bundling
 
 Under the hood, the script loader uses [`esbuild`](https://esbuild.github.io). This means that you could enable code splitting and minification, or use any other option [`esbuild` supports](https://esbuild.github.io/api/#build-api)
 
-> ⚠️ Since esbuild does not transform code lower than ES6, only ES6-compatible browser will be able to execute it. If you want code splitting, only browsers able to execute ES6 modules will be able to execute it. `esbuild` does not polyfill missing features, you will have to do it yourself with [`core-js`](https://github.com/zloirock/core-js).
+> ⚠️ Since esbuild does not transform code lower than ES6, only ES6-compatible browser will be able to execute it. If you want code splitting, only browsers able to execute ES6 modules will be able to execute it. `esbuild` does not polyfill missing features. If you want to support browser without them you will have to import polyfills yourself.
 >
-> If you want to support older browser, you can leverage form submission and `postDynamicData` to have server-side functionnality.
+> If you want to support older browser without polyfills, you can leverage form submission and `handlers` to have server-side functionnality for older browsers.
 
-The script loader will generate a bundle for each page descriptor. If a page descriptor `a` imports some scripts `foo.script.ts` and `bar.script.ts` and a page descriptor only import `foo.script.ts`, and those scripts matches the bundle `'body'`, you should get two output bundles :
+The script loader will generate a bundle for each page descriptor. If a page descriptor `a` imports some scripts `foo.script.ts` and `bar.script.ts` and a page descriptor `b` only import `foo.script.ts`, and those scripts matches the bundle `'body'`, you should get two output bundles :
 
 - a bundle `'body'` for the page descriptor `a` containing `foo.script.ts` and `bar.script.ts`
 - a bundle `'body'` for the page descriptor `b` containing `foo.script.ts`.
 
-The script loader will provide to the `loaderContext` an object with this shape : `{ [descriptor]: { [format]: src } }`. You can therefore get the url of a bundle in the `getContent` function of your [page descriptor](/docs/concepts/page-descriptor) :
+The script loader will provide to the `loaderContext` an object with this shape : `{ [descriptor]: { [bundle]: src } }`. You can therefore get the url of a bundle in the `getContent` function of your [page descriptor](/docs/concepts/page-descriptor) :
 
 ```ts
 export function getContent(
@@ -72,9 +70,6 @@ new ScriptLoader({
         name: 'head',
         test: (url) => /\.head-script\.ts$/.test(url.toString()),
     }],
-    formats: ['esm'],
-    minify: true,
-    splitting: true,
 });
 ```
 
@@ -90,3 +85,13 @@ export function getContent(
     // ...
 }
 ```
+
+## Why the `main` function ?
+
+Encapsulating everything in a `main` function serves three goals:
+
+- For your script to be loaded by the script loader, you need to import it in your page or a dependency of your page. Since your pages are imported in the config, this means that if you run any code at top level, this code will run during the build process, and on server startup. If you place everything inside a function that is only exported, nothing will run if the exported function is not called.
+
+- The `main` function serves as a "well known" symbol for frugal. Like the `getStaticData` of a page descriptor. In order to do its work, the loader has to expect something from your module
+
+- Since the scripts might be tree-shaken durging bundling, this convention gides you away from side effects (that are at odds with tree-shaking)

@@ -4,7 +4,7 @@ import {
     GetDynamicData,
     GetPathList,
     GetStaticData,
-    PostDynamicData,
+    Handlers,
     StaticPage,
 } from '../../../../packages/core/Page.ts';
 import { spy } from '../../../../dep/std/mock.ts';
@@ -12,38 +12,36 @@ import { spy } from '../../../../dep/std/mock.ts';
 type FakeDynamicPageConfig<
     PATH extends Record<string, string> = Record<string, string>,
     DATA = unknown,
-    BODY = unknown,
 > = {
     self?: URL;
     pattern?: string;
-    getDynamicData?: GetDynamicData<PATH, DATA, BODY>;
-    postDynamicData?: PostDynamicData<PATH, DATA, BODY>;
+    getDynamicData?: GetDynamicData<PATH, DATA>;
+    handlers?: Handlers<PATH, DATA>;
     getContent?: GetContent<PATH, DATA>;
     mock?: {
-        getDynamicData?: DynamicPage<PATH, DATA, BODY>['getDynamicData'];
-        postDynamicData?: DynamicPage<PATH, DATA, BODY>['postDynamicData'];
-        getContent?: DynamicPage<PATH, DATA, BODY>['getContent'];
+        getDynamicData?: DynamicPage<PATH, DATA>['getDynamicData'];
+        handlers?: DynamicPage<PATH, DATA>['handlers'];
+        getContent?: DynamicPage<PATH, DATA>['getContent'];
     };
 };
 
 export function fakeDynamicPage<
     PATH extends Record<string, string> = Record<string, string>,
     DATA = unknown,
-    BODY = unknown,
 >(
     {
         self = new URL('file:///'),
         pattern = '',
-        postDynamicData,
+        handlers,
         getDynamicData = () => ({} as any),
         getContent = () => '',
         mock = {},
-    }: FakeDynamicPageConfig<PATH, DATA, BODY> = {},
+    }: FakeDynamicPageConfig<PATH, DATA> = {},
 ) {
-    const page = new DynamicPage<PATH, DATA, BODY>({
+    const page = new DynamicPage<PATH, DATA>({
         self,
         pattern,
-        postDynamicData,
+        handlers,
         getDynamicData,
         getContent,
     });
@@ -56,10 +54,14 @@ export function fakeDynamicPage<
         mock.getDynamicData ?? originalGetDynamicData.bind(page),
     );
 
-    const originalPostDynamicData = page.postDynamicData;
-    page.postDynamicData = spy(
-        mock.getDynamicData ?? originalPostDynamicData.bind(page),
-    );
+    for (const method of Object.keys(page.handlers)) {
+        const originalHandler = page.handlers[method];
+        if (originalHandler) {
+            page.handlers[method] = spy(
+                mock.handlers?.[method] ?? originalHandler,
+            );
+        }
+    }
 
     return page;
 }
@@ -67,41 +69,39 @@ export function fakeDynamicPage<
 type FakeStaticPageConfig<
     PATH extends Record<string, string> = Record<string, string>,
     DATA = unknown,
-    BODY = unknown,
 > = {
     self?: URL;
     pattern?: string;
     getPathList?: GetPathList<PATH>;
-    postDynamicData?: PostDynamicData<PATH, DATA, BODY>;
+    handlers?: Handlers<PATH, DATA>;
     getStaticData?: GetStaticData<PATH, DATA>;
     getContent?: GetContent<PATH, DATA>;
     mock?: {
-        getPathList?: StaticPage<PATH, DATA, BODY>['getPathList'];
-        postDynamicData?: StaticPage<PATH, DATA, BODY>['postDynamicData'];
-        getStaticData?: StaticPage<PATH, DATA, BODY>['getStaticData'];
-        getContent?: StaticPage<PATH, DATA, BODY>['getContent'];
+        getPathList?: StaticPage<PATH, DATA>['getPathList'];
+        handlers?: DynamicPage<PATH, DATA>['handlers'];
+        getStaticData?: StaticPage<PATH, DATA>['getStaticData'];
+        getContent?: StaticPage<PATH, DATA>['getContent'];
     };
 };
 
 export function fakeStaticPage<
     PATH extends Record<string, string> = Record<string, string>,
     DATA = unknown,
-    BODY = unknown,
 >(
     {
         self = new URL('file:///'),
         pattern = '',
         getPathList = () => [],
-        postDynamicData,
+        handlers,
         getStaticData = () => ({} as any),
         getContent = () => '',
         mock = {},
-    }: FakeStaticPageConfig<PATH, DATA, BODY> = {},
+    }: FakeStaticPageConfig<PATH, DATA> = {},
 ) {
-    const page = new StaticPage<PATH, DATA, BODY>({
+    const page = new StaticPage<PATH, DATA>({
         self,
         pattern,
-        postDynamicData,
+        handlers,
         getPathList,
         getStaticData,
         getContent,
@@ -120,10 +120,14 @@ export function fakeStaticPage<
         mock.getPathList ?? originalGetPathList.bind(page),
     );
 
-    const originalPostDynamicData = page.postDynamicData;
-    page.postDynamicData = spy(
-        mock.postDynamicData ?? originalPostDynamicData.bind(page),
-    );
+    for (const method of Object.keys(page.handlers)) {
+        const originalHandler = page.handlers[method];
+        if (originalHandler) {
+            page.handlers[method] = spy(
+                mock.handlers?.[method] ?? originalHandler,
+            );
+        }
+    }
 
     return page;
 }

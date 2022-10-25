@@ -44,25 +44,6 @@ type Config = {
     importMapURL?: URL;
 };
 
-declare module '../core/Config.ts' {
-    interface ServiceInMessageMap {
-        'loader_script:done': {
-            type: 'loader_script:done';
-            url: Record<string, Record<string, string>>;
-        };
-    }
-
-    interface ServiceOutMessageMap {
-        'loader_script:build': {
-            type: 'loader_script:build';
-            config: {
-                facadeToEntrypoint: FacadeToEntrypoint;
-                entryPoints: string[];
-            };
-        };
-    }
-}
-
 export type BundleConfig = Config & EsbuildConfig;
 
 export async function bundle(
@@ -103,7 +84,9 @@ async function generateEntrypoints(config: Config) {
 
     const entryPoints = await Promise.all(
         config.facades.map(async (facade, i) => {
-            const facadeId = new murmur.Hash().update(String(i)).digest();
+            const facadeId = new murmur.Hash().update(facade.bundle).update(
+                String(i),
+            ).digest();
 
             const facadePath = path.join(
                 config.cacheDir,

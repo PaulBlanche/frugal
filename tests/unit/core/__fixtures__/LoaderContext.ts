@@ -18,7 +18,7 @@ export function fakeLoaderContext(
     loaderContext.save = spy(mock.save ?? originalSave.bind(loaderContext));
 
     const originalGet = loaderContext.get;
-    loaderContext.get = spy(mock.get ?? originalGet.bind(loaderContext));
+    loaderContext.get = spy(mock.get ?? originalGet.bind(loaderContext)) as any;
 
     return loaderContext;
 }

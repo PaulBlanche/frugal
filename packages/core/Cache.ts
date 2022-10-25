@@ -20,7 +20,7 @@ function logger() {
     return log.getLogger('frugal:Cache');
 }
 
-type CacheConfig = {
+export type CacheConfig = {
     hash?: string;
 };
 
@@ -136,9 +136,8 @@ export class Cache<VALUE = unknown> {
     }
 }
 
-type PersistantCacheConfig = {
+export type PersistantCacheConfig = CacheConfig & {
     persistance: Persistance;
-    hash?: string;
 };
 
 /**
@@ -164,7 +163,7 @@ export class PersistantCache<VALUE = unknown> extends Cache<VALUE> {
             },
         });
         try {
-            const data = await config.persistance.get(cachePath);
+            const data = await config.persistance.read(cachePath);
             const serializedCache: SerializedCache = JSON.parse(data);
             return new PersistantCache(
                 cachePath,

@@ -1,6 +1,6 @@
-/* @jsx preact.h */
-/* @jsxFrag preact.Fragment */
-import * as preact from 'preact';
+/* @jsxRuntime automatic */
+/* @jsxImportSource preact */
+
 import { cx } from '../dep/frugal/styled.ts';
 import {
     flattenToc,
@@ -53,9 +53,13 @@ type TocNavigationLinkProps = {
 function TocNavigationLink({ type, node }: TocNavigationLinkProps) {
     return (
         <a
-            class={cx(s.tocLink, type === 'next' ? s.linkNext : s.linkPrevious)}
+            class={cx(
+                s.tocLink,
+                type === 'next' ? s.linkNext : s.linkPrevious,
+            )}
             href={nodeHref(node)}
         >
+            <span tabIndex={0}>test</span>
             {type === 'previous' && <Carret class={cx(s.carret)} />}
             {nodeFullLabel(node)}
             {type === 'next' && <Carret class={cx(s.carret)} />}

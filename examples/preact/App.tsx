@@ -1,8 +1,13 @@
-/* @jsx preact.h */
-/* @jsxFrag preact.Fragment */
-import * as preact from 'preact';
-import { AppProps, Head } from '../../packages/frugal_preact/mod.server.ts';
+/* @jsxRuntime automatic */
+/* @jsxImportSource preact */
+
+import { PageProps, Head } from '../../packages/frugal_preact/mod.server.ts';
 import type { Generated } from '../../packages/loader_script/mod.ts';
+
+
+type AppProps = PageProps & {
+    children: preact.ComponentChildren;
+};
 
 // This component will wrap the whole application. This is the best place to
 // insert data from the `loaderContext`. This component will only ever render

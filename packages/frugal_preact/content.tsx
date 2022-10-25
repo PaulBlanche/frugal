@@ -1,6 +1,6 @@
-/* @jsx preact.h */
-/* @jsxFrag preact.Fragment */
-import * as preact from 'preact';
+/* @jsxRuntime automatic */
+/* @jsxImportSource preact */
+
 import * as server from 'preact-render-to-string';
 import { HeadProvider } from './Head.tsx';
 
@@ -15,16 +15,6 @@ export type PageProps = {
 
 export type Page = preact.ComponentType<PageProps>;
 
-export type App = (
-    props: AppProps,
-) => preact.VNode;
-
-export type AppProps = {
-    descriptor: string;
-    loaderContext: frugal.LoaderContext;
-    children: preact.ComponentChildren;
-};
-
 export type Document = preact.ComponentType<DocumentProps>;
 
 export type DocumentProps = {
@@ -35,13 +25,8 @@ export type DocumentProps = {
 };
 
 type ContentConfig = {
-    App: App;
     Document: Document;
     embedData: boolean;
-};
-
-const DEFAULT_APP: App = ({ children }) => {
-    return <>{children}</>;
 };
 
 const DEFAULT_DOCUMENT: Document = (
@@ -67,10 +52,10 @@ const DEFAULT_DOCUMENT: Document = (
 
 export function getContentFrom<PATH extends Record<string, string>, DATA>(
     Page: Page,
-    { App = DEFAULT_APP, Document = DEFAULT_DOCUMENT, embedData = true }:
-        Partial<
-            ContentConfig
-        > = {},
+    {
+        Document = DEFAULT_DOCUMENT,
+        embedData = true,
+    }: Partial<ContentConfig> = {},
 ): frugal.GetContent<PATH, DATA> {
     return ({
         data,
@@ -86,20 +71,15 @@ export function getContentFrom<PATH extends Record<string, string>, DATA>(
                     head = nextHead;
                 }}
             >
-                <App
-                    descriptor={String(descriptor)}
-                    loaderContext={loaderContext}
+                <DataProvider
+                    embedData={embedData}
+                    context={{ data, pathname }}
                 >
-                    <DataProvider
-                        embedData={embedData}
-                        context={{ data, pathname }}
-                    >
-                        <Page
-                            descriptor={String(descriptor)}
-                            loaderContext={loaderContext}
-                        />
-                    </DataProvider>
-                </App>
+                    <Page
+                        descriptor={String(descriptor)}
+                        loaderContext={loaderContext}
+                    />
+                </DataProvider>
             </HeadProvider>,
         );
 

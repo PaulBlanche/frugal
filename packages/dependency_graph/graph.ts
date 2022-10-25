@@ -11,6 +11,7 @@ export type Module = {
     id: string;
     entrypoint: URL;
     url: URL;
+    loader?: string;
     moduleHash: string;
     contentHash: string;
     dependencies: Module[];

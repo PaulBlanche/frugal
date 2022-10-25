@@ -14,13 +14,6 @@ import {
 } from './types.ts';
 import { WatchServiceEvents } from './WatchService.ts';
 
-type Child = Deno.Child<{
-    cmd: string[];
-    stderr: 'piped';
-    stdout: 'piped';
-    stdin: 'piped';
-}>;
-
 type WatchChildConfig = Omit<
     Deno.SpawnOptions,
     'stdin' | 'stdout' | 'stderr'
@@ -45,7 +38,7 @@ export class WatchChild<
     OUT_MESSAGE extends Message,
 > {
     #eventEmitter: EventEmitter<EventMap<IN_MESSAGE>>;
-    #child: Child | undefined;
+    #child: Deno.Child | undefined;
     #config: WatchChildConfig;
     #cmd: string | URL;
 

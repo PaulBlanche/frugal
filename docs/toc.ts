@@ -8,7 +8,7 @@ export type TocNode = {
     children?: TocNode[];
 };
 
-export type FlatTocNode = (TocNode & { parent?: TocNode });
+export type FlatTocNode = TocNode & { parent?: TocNode };
 
 export type FlatToc = FlatTocNode[];
 

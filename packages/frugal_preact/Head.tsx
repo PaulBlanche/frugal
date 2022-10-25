@@ -1,5 +1,5 @@
-/* @jsx preact.h */
-/* @jsxFrag preact.Fragment */
+/* @jsxRuntime automatic */
+/* @jsxImportSource preact */
 import * as preact from 'preact';
 import * as hooks from 'preact/hooks';
 import * as effect from './Effect.tsx';
@@ -21,9 +21,6 @@ export function HeadProvider(props: HeadProviderProps) {
                 instanceStack: new Set(),
             }}
         >
-            <Head>
-                <meta charSet='utf-8' />
-            </Head>
             {props.children}
         </headManagerContext.Provider>
     );
@@ -51,12 +48,12 @@ export function Head({ children }: HeadProps) {
 }
 
 function reduceComponents(
-    effects: preact.VNode[],
+    effects: effect.Effect[],
 ) {
     return effects
-        .reduce<preact.ComponentChild[]>((list, effect) => {
+        .reduce<preact.ComponentChild[]>((allChilren, effect) => {
             const effectChildren = effect.props.children;
-            return list.concat(effectChildren);
+            return allChilren.concat(effectChildren);
         }, []).reduce<preact.VNode[]>((list, node) => {
             if (preact.isValidElement(node)) {
                 return list.concat(node);
@@ -113,7 +110,7 @@ function unique() {
                         }
                     } else {
                         const category = node.props[metatype];
-                        const categories = metaCategories[metatype] ||
+                        const categories = metaCategories[metatype] ??
                             new Set();
                         if (metatype !== 'name' && categories.has(category)) {
                             isUnique = false;

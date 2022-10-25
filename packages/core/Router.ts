@@ -15,7 +15,7 @@ type BaseRoute = {
 /**
  * A page and its generator, builder and refresher
  */
-type StaticRoute = BaseRoute & {
+export type StaticRoute = BaseRoute & {
     type: 'static';
     page: StaticPage;
     builder: PageBuilder;
@@ -25,12 +25,12 @@ type StaticRoute = BaseRoute & {
 /**
  * A page and its generator
  */
-type DynamicRoute = BaseRoute & {
+export type DynamicRoute = BaseRoute & {
     type: 'dynamic';
     page: DynamicPage;
 };
 
-type Route = StaticRoute | DynamicRoute;
+export type Route = StaticRoute | DynamicRoute;
 
 /**
  * A class handling the matching of a pathname with a page
@@ -47,16 +47,6 @@ export class Router {
         this.#routes = [];
 
         for (const page of config.pages) {
-            if (isDynamicPage(page)) {
-                const generator = new PageGenerator(page, {
-                    loaderContext,
-                    publicDir: config.publicDir,
-                });
-
-                assert(!(page.pattern in this.#routes));
-                this.#routes.push({ type: 'dynamic', page, generator });
-            }
-
             if (isStaticPage(page)) {
                 const generator = new PageGenerator(page, {
                     loaderContext,
@@ -85,6 +75,14 @@ export class Router {
                     builder,
                     refresher,
                 });
+            } else if (isDynamicPage(page)) {
+                const generator = new PageGenerator(page, {
+                    loaderContext,
+                    publicDir: config.publicDir,
+                });
+
+                assert(!(page.pattern in this.#routes));
+                this.#routes.push({ type: 'dynamic', page, generator });
             }
         }
     }

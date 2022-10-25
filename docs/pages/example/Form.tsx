@@ -1,13 +1,11 @@
-/* @jsx preact.h */
-/* @jsxFrag preact.Fragment */
-import * as preact from 'preact';
+/* @jsxRuntime automatic */
+/* @jsxImportSource preact */
 import * as hooks from 'preact/hooks';
-import { Form, submitForm, validateForm } from './Form.ts';
 import { cx } from '../../dep/frugal/styled.ts';
-
 import { useData } from '../../dep/frugal/frugal_preact.client.ts';
-import { Data } from './type.ts';
 
+import { Form, submitForm, validateForm } from './Form.ts';
+import { Data } from './type.ts';
 import * as s from './Form.style.ts';
 
 export function Form() {

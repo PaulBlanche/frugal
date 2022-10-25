@@ -1,6 +1,7 @@
 import { Page, Phase, StaticPage } from './Page.ts';
 import * as mumur from '../murmur/mod.ts';
 import * as log from '../log/mod.ts';
+import * as path from '../../dep/std/path.ts';
 import { PageGenerator } from './PageGenerator.ts';
 import { assert } from '../../dep/std/asserts.ts';
 import { Cache } from './Cache.ts';
@@ -22,17 +23,16 @@ function logger() {
 export class PageBuilder<
     PATH extends Record<string, string> = Record<string, string>,
     DATA = unknown,
-    BODY = unknown,
 > {
-    #generator: PageGenerator<PATH, DATA, BODY>;
-    #page: Page<PATH, DATA, BODY>;
+    #generator: PageGenerator<PATH, DATA>;
+    #page: Page<PATH, DATA>;
     #hash: string;
     #config: PageBuilderConfig;
 
     constructor(
-        page: Page<PATH, DATA, BODY>,
+        page: Page<PATH, DATA>,
         hash: string,
-        generator: PageGenerator<PATH, DATA, BODY>,
+        generator: PageGenerator<PATH, DATA>,
         config: PageBuilderConfig,
     ) {
         this.#page = page;
@@ -81,26 +81,18 @@ export class PageBuilder<
         });
     }
 
-    getHeaders(path: PATH, phase: Phase) {
-        assert(
-            this.#page instanceof StaticPage,
-            `Can't statically build DynamicPage ${this.#page.pattern}`,
-        );
-        return this.#page.getStaticHeaders({ phase, path });
-    }
-
     /**
      * Build the page for a given path and return the output path.
      *
      * The build process id memoized and will be skiped if nothing has changed
      * since the last build.
      */
-    async build(path: PATH, phase: Phase): Promise<string> {
+    async build(buildPath: PATH, phase: Phase): Promise<string> {
         assert(
             this.#page instanceof StaticPage,
             `Can't statically build DynamicPage ${this.#page.pattern}`,
         );
-        const url = this.#page.compile(path);
+        const url = this.#page.compile(buildPath);
 
         logger().debug({
             op: 'start',
@@ -114,13 +106,13 @@ export class PageBuilder<
             },
         });
 
-        const data = await this.#page.getStaticData({
+        const { data, headers } = await this.#page.getStaticData({
             phase,
-            path,
+            path: buildPath,
         });
 
         const pageInstanceHash = new mumur.Hash()
-            .update(JSON.stringify(data))
+            .update(JSON.stringify(data) ?? '')
             .update(url)
             .update(this.#hash)
             .digest();
@@ -131,12 +123,26 @@ export class PageBuilder<
                 const { pagePath, content } = await this.#generator
                     .generateContentFromData(url, {
                         method: 'GET',
-                        data,
-                        path,
+                        data: data ?? {} as DATA,
+                        path: buildPath,
                         phase,
                     });
 
-                await this.#config.persistance.set(pagePath, content);
+                const serializedHeaders = Array.from(
+                    new Headers(headers).entries(),
+                );
+                const hasHeaders = serializedHeaders.length > 0;
+
+                await Promise.all([
+                    this.#config.persistance.set(
+                        pagePath,
+                        content,
+                    ),
+                    hasHeaders && this.#config.persistance.set(
+                        headersPath(pagePath),
+                        JSON.stringify(serializedHeaders),
+                    ),
+                ]);
 
                 logger().debug({
                     op: 'done',
@@ -169,4 +175,11 @@ export class PageBuilder<
             },
         });
     }
+}
+
+export function headersPath(pagePath: string) {
+    return path.join(
+        path.dirname(pagePath),
+        path.basename(pagePath) + '.headers',
+    );
 }

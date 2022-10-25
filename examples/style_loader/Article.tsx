@@ -1,6 +1,6 @@
-/* @jsx preact.h */
-/* @jsxFrag preact.Fragment */
-import * as preact from 'preact';
+/* @jsxRuntime automatic */
+/* @jsxImportSource preact */
+
 import * as hooks from 'preact/hooks';
 import { cx } from '../../packages/loader_style/styled.ts';
 

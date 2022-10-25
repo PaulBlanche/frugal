@@ -1,6 +1,6 @@
-/* @jsx preact.h */
-/* @jsxFrag preact.Fragment */
-import * as preact from 'preact';
+/* @jsxRuntime automatic */
+/* @jsxImportSource preact */
+
 import { cx } from '../loader_style/styled.ts';
 
 import type { HydrationStrategy } from './types.ts';
@@ -12,14 +12,18 @@ export type IslandProps<PROPS> = {
     query?: string;
     name: string;
     Component: preact.ComponentType<PROPS>;
-    props: PROPS;
+    props: preact.RenderableProps<PROPS>;
 };
 
 export function Island<PROPS>(
-    { className, name, clientOnly = false, Component, props, ...rest }:
-        IslandProps<
-            PROPS
-        >,
+    {
+        className,
+        name,
+        clientOnly = false,
+        Component,
+        props,
+        ...rest
+    }: IslandProps<PROPS>,
 ) {
     if (typeof document === 'undefined') {
         return (

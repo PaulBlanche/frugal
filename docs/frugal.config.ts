@@ -1,10 +1,11 @@
+import * as preact from 'preact';
+
 import { page, UpstashPersistance } from './dep/frugal/core.ts';
-import { Config } from './dep/frugal/frugal_oak.ts';
+import { Config } from './dep/frugal/frugal_server.ts';
 import { ScriptLoader } from './dep/frugal/loader_script.ts';
 import { StyleLoader, styleTransformer } from './dep/frugal/loader_style.ts';
 import * as stylis from './dep/stylis.ts';
 import { svg, svgTransformer } from './dep/frugal/loader_jsx_svg.ts';
-import * as preact from 'preact';
 
 import * as home from './pages/home/mod.ts';
 import * as docs from './pages/docs/mod.ts';
@@ -79,18 +80,13 @@ export const config: Config = {
             'frugal:loader:script': 'DEBUG',
             'frugal:loader:style': 'DEBUG',
 
-            'frugal_oak:DynamicRouter': 'DEBUG',
-            'frugal_oak:DynamicRouter:generateMiddleware': 'DEBUG',
-            'frugal_oak:PrgOrchestrator': 'DEBUG',
-            'frugal_oak:PrgOrchestrator:postMiddleware': 'DEBUG',
-            'frugal_oak:PrgOrchestrator:getRedirectionMiddleware': 'DEBUG',
-            'frugal_oak:staticFileMiddleware': 'DEBUG',
-            'frugal_oak:staticFileMiddleware:filesystemMiddleware': 'DEBUG',
-            'frugal_oak:staticFileMiddleware:autoIndexMiddleware': 'DEBUG',
-            'frugal_oak:StaticRouter': 'DEBUG',
-            'frugal_oak:StaticRouter:forceRefreshMiddleware': 'DEBUG',
-            'frugal_oak:StaticRouter:cachedMiddleware': 'DEBUG',
-            'frugal_oak:StaticRouter:refreshJitMiddleware': 'DEBUG',
+            'frugal_server:FrugalServer': 'DEBUG',
+            'frugal_server:RouterHandler': 'DEBUG',
+            'frugal_server:DynamicHandler': 'DEBUG',
+            'frugal_server:DynamicHandler:generateMiddleware': 'DEBUG',
+            'frugal_server:PostRedirectGetHandler:postRedirectMiddleware':
+                'DEBUG',
+            'frugal_server:PostRedirectGetHandler:getMiddleware': 'DEBUG',
         },
     },
 

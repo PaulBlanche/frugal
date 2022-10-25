@@ -157,8 +157,11 @@ class HumanHandler extends FrugalHandler {
         switch (level) {
             case 'CRITICAL':
             case 'ERROR': {
-                return colors.bgRed(
-                    colors.black(this.#message(time, level, scope, record)),
+                return this.#message(
+                    time,
+                    level,
+                    scope,
+                    record,
                 );
             }
             case 'WARNING': {
@@ -211,6 +214,7 @@ class HumanHandler extends FrugalHandler {
  */
 type FrugalLogEntry = {
     msg?: string | (() => string);
+    $$stack?: string[];
     logger?: {
         timerStart?: string;
         timerEnd?: string;
@@ -233,7 +237,10 @@ export class FrugalLogger {
         level: 'info' | 'debug' | 'warning' | 'error' | 'critical',
         entry: T,
     ): Omit<T, 'msg'> & { msg?: string } {
-        const msg = typeof entry.msg === 'function' ? entry.msg() : entry.msg;
+        let msg = typeof entry.msg === 'function' ? entry.msg() : entry.msg;
+        if (entry.$$stack) {
+            msg += `\n${entry.$$stack.slice(1).join('\n')}`;
+        }
         if (this.logger.level === 0) {
             return { ...entry, msg };
         }
@@ -262,14 +269,22 @@ export class FrugalLogger {
 
     error<T extends FrugalLogEntry>(
         entry: T,
+        error?: Error,
     ): Omit<T, 'msg'> & { msg?: string } {
-        return this.#log('error', entry);
+        return this.#log('error', {
+            ...entry,
+            '$$stack': error?.stack?.split('\n'),
+        });
     }
 
     critical<T extends FrugalLogEntry>(
         entry: T,
+        error?: Error,
     ): Omit<T, 'msg'> & { msg?: string } {
-        return this.#log('critical', entry);
+        return this.#log('critical', {
+            ...entry,
+            '$$stack': error?.stack?.split('\n'),
+        });
     }
 }
 

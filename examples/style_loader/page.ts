@@ -16,17 +16,21 @@ export function getPathList(): Path[] {
 }
 
 export function getStaticData(
-    { path }: frugal.GetStaticDataParams<Path>,
-): Data {
+    { path }: frugal.GetStaticDataContext<Path>,
+): frugal.DataResult<Data> {
     if (path.slug === 'article-1') {
         return {
-            title: 'first article !',
-            content: 'this is the first article',
+            data: {
+                title: 'first article !',
+                content: 'this is the first article',
+            }
         };
     }
     return {
-        title: 'another article',
-        content: 'this is another article',
+        data: {
+            title: 'another article',
+            content: 'this is another article',
+        }
     };
 }
 
@@ -34,4 +38,4 @@ export const pattern = `/:slug.html`;
 
 export const self = new URL(import.meta.url);
 
-export const getContent = getContentFrom(Page, { App });
+export const getContent = getContentFrom(Page);

@@ -53,5 +53,5 @@ jobs:
       if: matrix.coverage
       uses: codecov/codecov-action@v2
       with: 
-        files: ./tests/cov_profile/unit/cov_profile.lcov
+        files: ./tests/cov_profile/integration/cov_profile.lcov
         flags: integration

@@ -3,8 +3,6 @@ import { ScriptLoader } from '../../packages/loader_script/mod.ts';
 
 import * as myPage from './page.ts';
 
-const IMPORT_MAP = new URL('../../import_map.json', import.meta.url).pathname;
-
 build({
     // since deno does not have any notion of "root of module", frugal needs to
     // rely on you giving a root directory. Every relative path in the
@@ -17,7 +15,7 @@ build({
     // an import map file, relative to `root`. This is needed for preact integration
     // to let you define the version of preact you wish to use. The `frugal_preact`
     // module use bare imports `preact`, `preact/hooks` and `preact-render-to-string`.
-    importMap: IMPORT_MAP,
+    importMap: '../../import_map.json',
 
     // registered loaders. We register the script loader with the name "body",
     // and configured to catch all import ending in `.script.ts`. The bundles
@@ -30,7 +28,6 @@ build({
         }],
         format: 'esm',
         splitting: true,
-        importMapFile: IMPORT_MAP,
     })],
 
     // the pages that need to be built
