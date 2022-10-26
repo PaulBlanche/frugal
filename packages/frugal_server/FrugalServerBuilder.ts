@@ -16,6 +16,7 @@ const DEFAULT_LOGGER_CONFIG: log.Config['loggers'] = {
     'frugal_server:filesystemMiddleware': 'INFO',
     'frugal_server:pageRouterMiddleware': 'INFO',
     'frugal_server:FrugalServer': 'INFO',
+    'frugal_server:statusRewriteMiddleware': 'INFO',
 };
 
 export async function serve(config: Config) {
@@ -29,16 +30,10 @@ export class FrugalServerBuilder {
     #builder: frugal.FrugalBuilder;
 
     constructor({
-        refreshKey,
-        sessionPersistance,
-        listen,
+        server,
         ...frugalConfig
     }: Config) {
-        this.#config = new CleanConfig({
-            refreshKey,
-            sessionPersistance,
-            listen,
-        });
+        this.#config = new CleanConfig(server);
 
         this.#builder = new frugal.FrugalBuilder({
             ...frugalConfig,

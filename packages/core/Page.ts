@@ -1,4 +1,5 @@
 import * as zod from '../../dep/zod.ts';
+import * as http from '../../dep/std/http.ts';
 import * as pathToRegexp from '../../dep/path-to-regexp.ts';
 
 import { LoaderContext } from './LoaderContext.ts';
@@ -71,7 +72,36 @@ export type GetPathList<
     params: GetPathListParams,
 ) => Promise<PATH[]> | PATH[];
 
-export type DataResult<DATA> = { data?: DATA; headers?: HeadersInit };
+export type NoDataResult = {
+    status:
+        | http.Status.MovedPermanently
+        | http.Status.Found
+        | http.Status.SeeOther
+        | http.Status.TemporaryRedirect
+        | http.Status.PermanentRedirect;
+    location: URL | string;
+    headers?: HeadersInit;
+} | {
+    status:
+        | http.Status.Unauthorized
+        | http.Status.PaymentRequired
+        | http.Status.Forbidden
+        | http.Status.NotFound
+        | http.Status.RequestTimeout
+        | http.Status.Conflict
+        | http.Status.Gone
+        | http.Status.Teapot
+        | http.Status.TooManyRequests
+        | http.Status.UnavailableForLegalReasons
+        | http.Status.InternalServerError
+        | http.Status.ServiceUnavailable;
+    headers?: HeadersInit;
+};
+
+// deno-lint-ignore no-explicit-any
+export type DataResult<DATA = any> =
+    | { data?: DATA; headers?: HeadersInit }
+    | NoDataResult;
 
 export type GetStaticData<
     PATH extends Record<string, string> = Record<string, string>,

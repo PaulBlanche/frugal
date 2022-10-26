@@ -71,10 +71,21 @@ export async function sendFileFromCache(
     pathname: string,
 ) {
     const pagePath = path.join(context.frugal.config.publicDir, pathname);
-    const [content, headers] = await Promise.all([
-        context.frugal.config.pagePersistance.read(pagePath),
+
+    const [headers, status] = await Promise.all([
         getHeaders(context, pagePath),
+        getStatus(context, pagePath),
     ]);
+
+    if (status !== undefined) {
+        return new Response(null, {
+            status,
+            statusText: http.STATUS_TEXT[status],
+            headers,
+        });
+    }
+
+    const content = await context.frugal.config.pagePersistance.read(pagePath);
 
     const Etag = headers.get('etag');
     if (Etag === null) {
@@ -104,5 +115,25 @@ async function getHeaders(
         return new Headers(JSON.parse(headers));
     } catch {
         return new Headers();
+    }
+}
+
+async function getStatus(
+    context: RouterContext<frugal.StaticRoute>,
+    pagePath: string,
+): Promise<http.Status | undefined> {
+    try {
+        const stringStatus = await context.frugal.config.pagePersistance.read(
+            frugal.statusPath(pagePath),
+        );
+
+        const status = Number(stringStatus);
+        if (Number.isNaN(status)) {
+            return undefined;
+        }
+
+        return status;
+    } catch {
+        return undefined;
     }
 }

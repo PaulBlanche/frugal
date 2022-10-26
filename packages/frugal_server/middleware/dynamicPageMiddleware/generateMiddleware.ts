@@ -26,7 +26,7 @@ export async function generateMiddleware(
         context.state,
     );
 
-    logger().debug({
+    logger().info({
         method: context.request.method,
         pathname: url.pathname,
         msg() {
@@ -35,6 +35,14 @@ export async function generateMiddleware(
     });
 
     const headers = new Headers(result.headers);
+
+    if ('status' in result) {
+        return new Response(null, {
+            status: result.status,
+            statusText: http.STATUS_TEXT[result.status],
+            headers: result.headers,
+        });
+    }
 
     const contentType = headers.get('content-type');
     if (contentType === null) {
