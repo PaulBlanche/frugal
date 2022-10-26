@@ -10,7 +10,6 @@ import { svg, svgTransformer } from './dep/frugal/loader_jsx_svg.ts';
 import * as home from './pages/home/mod.ts';
 import * as docs from './pages/docs/mod.ts';
 import * as example from './pages/example/mod.ts';
-import * as error from './pages/error.tsx';
 
 const self = new URL(import.meta.url);
 

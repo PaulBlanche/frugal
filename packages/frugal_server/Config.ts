@@ -9,7 +9,7 @@ export type ServerConfig = {
     sessionPersistance?: frugal.Persistance;
     listen: http.ServeInit;
     statusRewrite?: Partial<
-        Record<http.Status | 'error', (url: URL) => string>
+        Record<http.Status, (url: URL) => string>
     >;
 };
 

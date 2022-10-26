@@ -1,3 +1,4 @@
+import * as http from '../../dep/std/http.ts';
 import * as log from '../log/mod.ts';
 
 import { Middleware, Next } from './types.ts';
@@ -7,12 +8,27 @@ function logger() {
     return log.getLogger(`frugal_server:statusRewriteMiddleware`);
 }
 
+async function safeNext(context: FrugalContext, next: Next<FrugalContext>) {
+    try {
+        return await next(context);
+    } catch (error: any) {
+        logger().error({
+            msg: `Error in some middleware transformed in a 500 status response`,
+        }, error);
+
+        return new Response(null, {
+            status: http.Status.InternalServerError,
+            statusText: http.STATUS_TEXT[http.Status.InternalServerError],
+        });
+    }
+}
+
 export function statusRewriteMiddleware(middleware: Middleware<FrugalContext>) {
     return async (
         context: FrugalContext,
         next: Next<FrugalContext>,
     ) => {
-        const response = await next(context);
+        const response = await safeNext(context, next);
 
         const pathname = context.config.statusRewrite[response.status];
         if (pathname !== undefined) {
@@ -32,7 +48,11 @@ export function statusRewriteMiddleware(middleware: Middleware<FrugalContext>) {
                 new URL(path, url),
                 context.request,
             );
-            const newResponse = await middleware({ ...context, request }, next);
+
+            const rewriteResponse = await middleware(
+                { ...context, request },
+                next,
+            );
 
             logger().info({
                 status: response.status,
@@ -43,20 +63,16 @@ export function statusRewriteMiddleware(middleware: Middleware<FrugalContext>) {
                 },
             });
 
-            return new Response(newResponse.body, {
-                status: response.status,
-                statusText: response.statusText,
-                headers: newResponse.headers,
-            });
+            return rewriteResponse;
         }
 
         logger().debug({
             status: response.status,
             msg() {
-                return `No rewrites found. Yield`;
+                return `No rewrites found.`;
             },
         });
 
-        return next(context);
+        return response;
     };
 }
