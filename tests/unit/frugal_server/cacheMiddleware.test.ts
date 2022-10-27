@@ -166,3 +166,44 @@ Deno.test('cacheMiddleware: headers can be overwritten', async () => {
     ]);
     asserts.assertEquals(await response.text(), 'content');
 });
+
+Deno.test('cacheMiddleware: return naked status', async () => {
+    const next = mock.spy(async () => new Response());
+
+    const generated = {
+        status: http.Status.NotFound,
+        headers: [
+            ['foo', 'bar'],
+        ],
+    };
+
+    const request = new Request('http://example.com/foo/bar.html');
+    const pagePersistanceRead = mock.spy((path: string) => {
+        if (path.endsWith('.metadata')) {
+            return JSON.stringify(generated);
+        }
+    });
+
+    const response = await cacheMiddleware({
+        frugal: {
+            config: {
+                publicDir: '/public',
+                pagePersistance: {
+                    read: pagePersistanceRead,
+                },
+            },
+        },
+        request,
+    } as unknown as RouterContext<frugal.StaticRoute>, next);
+
+    asserts.assertEquals(await response.text(), '');
+    asserts.assertEquals(response.status, generated.status);
+    asserts.assertEquals(
+        response.statusText,
+        http.STATUS_TEXT[404],
+    );
+    asserts.assertEquals(
+        Array.from(response.headers.entries()),
+        generated.headers,
+    );
+});

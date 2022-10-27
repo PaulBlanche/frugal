@@ -68,3 +68,38 @@ Deno.test('postRedirectGet:postRedirectMiddleware: should generate and store in 
         ]);
     }
 });
+
+Deno.test('postRedirectGet:postRedirectMiddleware: return naked status', async () => {
+    const generated = {
+        status: http.Status.NotFound,
+        headers: {
+            'foo': 'bar',
+        },
+    };
+
+    const next = mock.spy(async () => new Response());
+
+    const response = await postRedirectMiddleware({
+        request: {
+            url: 'http://example.com',
+            method: 'POST',
+        },
+        route: {
+            generator: {
+                generate: mock.spy(async () => generated),
+            },
+        },
+    } as unknown as RouterContext, next);
+
+    mock.assertSpyCalls(next, 0);
+
+    asserts.assertEquals(await response.text(), '');
+    asserts.assertEquals(response.status, generated.status);
+    asserts.assertEquals(
+        response.statusText,
+        http.STATUS_TEXT[generated.status],
+    );
+    asserts.assertEquals(Array.from(response.headers.entries()), [
+        ...Object.entries(generated.headers),
+    ]);
+});

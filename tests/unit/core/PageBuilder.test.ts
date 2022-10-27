@@ -135,26 +135,34 @@ Deno.test('PageBuilder: build will throw on non matching path', async () => {
 });
 
 Deno.test('PageBuilder: buildAll orchestrate the generation of StaticPage', async () => {
-    const pathList = [{ id: '1' }, { id: '3' }];
-    const data = {
-        [pathList[0].id]: { foo: 'bar' },
-        [pathList[1].id]: { foo: 'baz' },
-    };
-    const generated = {
-        [pathList[0].id]: {
+    const store: Record<string, any> = {
+        '1': {
+            path: { id: '1' },
+            data: { foo: 'bar' },
             pagePath: 'foo/1/index.html',
             content: 'page content bar',
         },
-        [pathList[1].id]: {
+        '2': {
+            path: { id: '2' },
+            data: { foo: 'bar' },
+            headers: [['baz', 'foobar']],
+            status: 300,
+            location: 'foo/',
+            pagePath: 'foo/2/index.html',
+        },
+        '3': {
+            path: { id: '3' },
+            data: { foo: 'baz' },
+            headers: [['quux', 'foobaz']],
             pagePath: 'foo/3/index.html',
-            content: 'page content bar',
+            content: 'page content baz',
         },
     };
 
     const page = fakeStaticPage<{ id: string }, { foo: string }>({
         pattern: 'foo/:id',
-        getPathList: () => pathList,
-        getStaticData: ({ path }) => ({ data: data[path.id] }),
+        getPathList: () => Object.values(store).map((entry) => entry.path),
+        getStaticData: ({ path }) => store[path.id],
     });
 
     const cache = fakeCache({
@@ -166,7 +174,7 @@ Deno.test('PageBuilder: buildAll orchestrate the generation of StaticPage', asyn
     const generator = fakePageGenerator<{ id: string }, { foo: string }>({
         mock: {
             generateContentFromData: (_0, { path }) => {
-                return Promise.resolve(generated[path.id].content);
+                return Promise.resolve(store[path.id].content);
             },
         },
     });
@@ -182,38 +190,59 @@ Deno.test('PageBuilder: buildAll orchestrate the generation of StaticPage', asyn
     assertSpyCalls(asSpy(page.getPathList), 1);
     assertSpyCallArgs(asSpy(page.getPathList), 0, [{ phase: 'build' }]);
 
-    assertSpyCalls(asSpy(page.getStaticData), 2);
+    assertSpyCalls(asSpy(page.getStaticData), 3);
     assertSpyCallArgs(asSpy(page.getStaticData), 0, [{
         phase: 'build',
-        path: pathList[0],
+        path: store['1'].path,
     }]);
     assertSpyCallArgs(asSpy(page.getStaticData), 1, [{
         phase: 'build',
-        path: pathList[1],
+        path: store['2'].path,
+    }]);
+    assertSpyCallArgs(asSpy(page.getStaticData), 2, [{
+        phase: 'build',
+        path: store['3'].path,
     }]);
 
     assertSpyCalls(asSpy(generator.generateContentFromData), 2);
     assertSpyCallArgs(asSpy(generator.generateContentFromData), 0, ['foo/1', {
-        data: data[pathList[0].id],
+        data: store['1'].data,
         method: 'GET',
-        path: pathList[0],
+        path: store['1'].path,
         phase: 'build',
     }]);
     assertSpyCallArgs(asSpy(generator.generateContentFromData), 1, ['foo/3', {
-        data: data[pathList[1].id],
+        data: store['3'].data,
         method: 'GET',
-        path: pathList[1],
+        path: store['3'].path,
         phase: 'build',
     }]);
 
-    assertSpyCalls(asSpy(persistance.set), 2);
+    // one call for page1 content
+    // one call for page2 metadata
+    // two call for page3 content and metadata
+    assertSpyCalls(asSpy(persistance.set), 4);
     assertSpyCallArgs(asSpy(persistance.set), 0, [
-        generated[pathList[0].id].pagePath,
-        generated[pathList[0].id].content,
+        `${store['2'].pagePath}.metadata`,
+        JSON.stringify({
+            headers: [...store['2'].headers, ['location', store['2'].location]],
+            status: store['2'].status,
+        }),
     ]);
     assertSpyCallArgs(asSpy(persistance.set), 1, [
-        generated[pathList[1].id].pagePath,
-        generated[pathList[1].id].content,
+        store['1'].pagePath,
+        store['1'].content,
+    ]);
+    assertSpyCallArgs(asSpy(persistance.set), 2, [
+        store['3'].pagePath,
+        store['3'].content,
+    ]);
+    assertSpyCallArgs(asSpy(persistance.set), 3, [
+        `${store['3'].pagePath}.metadata`,
+        JSON.stringify({
+            headers: store['3'].headers,
+            status: store['3'].status,
+        }),
     ]);
 });
 
