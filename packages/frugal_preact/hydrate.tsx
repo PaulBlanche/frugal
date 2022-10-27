@@ -142,7 +142,7 @@ function isCommentNode(node: Node): node is Comment {
  * DOM nodes, which can then be passed as the `parent` argument to Preact's `render()` method.
  */
 export function createRootFragment(
-    parent: Element & { __k?: any },
+    parent: Element & { __k?: unknown },
     replaceNode: Node | Node[],
 ) {
     replaceNode = ([] as Node[]).concat(replaceNode);
