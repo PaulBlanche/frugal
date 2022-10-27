@@ -57,8 +57,8 @@ Deno.test('cacheMiddleware: should serve index.html for dir url', async () => {
 
     const request = new Request('http://example.com/foo/bar');
     const pagePersistanceRead = mock.spy((path: string) => {
-        if (path.endsWith('.headers')) {
-            return JSON.stringify([['foo', 'bar']]);
+        if (path.endsWith('.metadata')) {
+            return JSON.stringify({ headers: [['foo', 'bar']] });
         }
         return 'content';
     });
@@ -78,10 +78,10 @@ Deno.test('cacheMiddleware: should serve index.html for dir url', async () => {
     mock.assertSpyCalls(next, 0);
     mock.assertSpyCalls(pagePersistanceRead, 2);
     mock.assertSpyCall(pagePersistanceRead, 0, {
-        args: ['/public/foo/bar/index.html'],
+        args: ['/public/foo/bar/index.html.metadata'],
     });
     mock.assertSpyCall(pagePersistanceRead, 1, {
-        args: ['/public/foo/bar/index.html.headers'],
+        args: ['/public/foo/bar/index.html'],
     });
     asserts.assertEquals(Array.from(response.headers.entries()), [
         ['content-type', 'text/html; charset=utf-8'],
@@ -96,8 +96,8 @@ Deno.test('cacheMiddleware: should serve file for file url', async () => {
 
     const request = new Request('http://example.com/foo/bar.html');
     const pagePersistanceRead = mock.spy((path: string) => {
-        if (path.endsWith('.headers')) {
-            return JSON.stringify([['foo', 'bar']]);
+        if (path.endsWith('.metadata')) {
+            return JSON.stringify({ headers: [['foo', 'bar']] });
         }
         return 'content';
     });
@@ -117,10 +117,10 @@ Deno.test('cacheMiddleware: should serve file for file url', async () => {
     mock.assertSpyCalls(next, 0);
     mock.assertSpyCalls(pagePersistanceRead, 2);
     mock.assertSpyCall(pagePersistanceRead, 0, {
-        args: ['/public/foo/bar.html'],
+        args: ['/public/foo/bar.html.metadata'],
     });
     mock.assertSpyCall(pagePersistanceRead, 1, {
-        args: ['/public/foo/bar.html.headers'],
+        args: ['/public/foo/bar.html'],
     });
     asserts.assertEquals(await response.text(), 'content');
     asserts.assertEquals(response.status, http.Status.OK);
@@ -137,11 +137,13 @@ Deno.test('cacheMiddleware: headers can be overwritten', async () => {
 
     const request = new Request('http://example.com/foo/bar.html');
     const pagePersistanceRead = mock.spy((path: string) => {
-        if (path.endsWith('.headers')) {
-            return JSON.stringify([
-                ['content-type', 'foo'],
-                ['etag', 'bar'],
-            ]);
+        if (path.endsWith('.metadata')) {
+            return JSON.stringify({
+                headers: [
+                    ['content-type', 'foo'],
+                    ['etag', 'bar'],
+                ],
+            });
         }
         return 'content';
     });

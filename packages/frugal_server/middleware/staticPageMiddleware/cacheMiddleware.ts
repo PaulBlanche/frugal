@@ -72,10 +72,7 @@ export async function sendFileFromCache(
 ) {
     const pagePath = path.join(context.frugal.config.publicDir, pathname);
 
-    const [headers, status] = await Promise.all([
-        getHeaders(context, pagePath),
-        getStatus(context, pagePath),
-    ]);
+    const { headers, status } = await getMetadata(context, pagePath);
 
     if (status !== undefined) {
         return new Response(null, {
@@ -104,36 +101,21 @@ export async function sendFileFromCache(
     });
 }
 
-async function getHeaders(
+async function getMetadata(
     context: RouterContext<frugal.StaticRoute>,
     pagePath: string,
 ) {
     try {
-        const headers = await context.frugal.config.pagePersistance.read(
-            frugal.headersPath(pagePath),
+        const metadataString = await context.frugal.config.pagePersistance.read(
+            frugal.metadataPath(pagePath),
         );
-        return new Headers(JSON.parse(headers));
+        const metadata: { headers: [string, string][]; status?: http.Status } =
+            JSON.parse(metadataString);
+        return {
+            status: metadata.status,
+            headers: new Headers(metadata.headers),
+        };
     } catch {
-        return new Headers();
-    }
-}
-
-async function getStatus(
-    context: RouterContext<frugal.StaticRoute>,
-    pagePath: string,
-): Promise<http.Status | undefined> {
-    try {
-        const stringStatus = await context.frugal.config.pagePersistance.read(
-            frugal.statusPath(pagePath),
-        );
-
-        const status = Number(stringStatus);
-        if (Number.isNaN(status)) {
-            return undefined;
-        }
-
-        return status;
-    } catch {
-        return undefined;
+        return { headers: new Headers() };
     }
 }

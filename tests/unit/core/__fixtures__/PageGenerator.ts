@@ -19,6 +19,7 @@ type FakePageGeneratorConfig<
             PATH,
             DATA
         >['generateContentFromData'];
+        getPagePath?: PageGenerator<PATH, DATA>['getPagePath'];
     };
 };
 
@@ -44,6 +45,11 @@ export function fakePageGenerator<
     generator.generateContentFromData = spy(
         mock.generateContentFromData ??
             originalGenerateContentFromData.bind(generator),
+    );
+
+    const originalGetPagePath = generator.getPagePath;
+    generator.getPagePath = spy(
+        mock.getPagePath ?? originalGetPagePath.bind(generator),
     );
 
     return generator;

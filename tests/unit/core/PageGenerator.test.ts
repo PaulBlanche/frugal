@@ -40,8 +40,7 @@ Deno.test('PageGenerator: generateContentFromData call page.getContent', async (
         },
     );
 
-    asserts.assertEquals(result.pagePath, 'public/dir/foo/654/index.html');
-    asserts.assertEquals(result.content, content);
+    asserts.assertEquals(result, content);
 
     assertSpyCalls(asSpy(page.getContent), 1);
     assertSpyCall(asSpy(page.getContent), 0, {
@@ -87,6 +86,7 @@ Deno.test('PageGenerator: generate orchestrate the generation of DynamicPage', a
 
     const result = await generator.generate(request, state);
 
+    asserts.assert(!('status' in result));
     asserts.assertEquals(result.pagePath, 'public/dir/foo/345/index.html');
     asserts.assertEquals(result.content, content);
 
@@ -197,6 +197,7 @@ Deno.test('PageGenerator: generate generates StaticPage in watch mode', async ()
 
     const result = await generator.generate(request, state);
 
+    asserts.assert(!('status' in result));
     asserts.assertEquals(result.pagePath, 'public/dir/foo/345/index.html');
     asserts.assertEquals(result.content, content);
 
@@ -260,6 +261,7 @@ Deno.test('PageGenerator: generate generates pages with POST request', async (t)
 
         const dynamicResult = await dynamicGenerator.generate(request, state);
 
+        asserts.assert(!('status' in dynamicResult));
         asserts.assertEquals(
             dynamicResult.pagePath,
             'public/dir/foo/345/index.html',
@@ -314,6 +316,7 @@ Deno.test('PageGenerator: generate generates pages with POST request', async (t)
 
         const staticResult = await staticGenerator.generate(request, state);
 
+        asserts.assert(!('status' in staticResult));
         asserts.assertEquals(
             staticResult.pagePath,
             'public/dir/foo/345/index.html',
@@ -378,5 +381,6 @@ Deno.test('PageGenerator: generate with a .html pattern', async () => {
 
     const result = await generator.generate(request, state);
 
+    asserts.assert(!('status' in result));
     asserts.assertEquals(result.pagePath, 'public/dir/foo/345.html');
 });

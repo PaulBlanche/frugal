@@ -1,5 +1,4 @@
 import * as path from '../../dep/std/path.ts';
-import * as http from '../../dep/std/http.ts';
 import { assert } from '../../dep/std/asserts.ts';
 
 import * as mumur from '../murmur/mod.ts';
@@ -133,16 +132,14 @@ export class PageBuilder<
                     }
 
                     const serializedHeaders = Array.from(headers.entries());
-                    const hasHeaders = serializedHeaders.length > 0;
 
                     await Promise.all([
                         this.#config.persistance.set(
-                            statusPath(pagePath),
-                            String(result.status),
-                        ),
-                        hasHeaders && this.#config.persistance.set(
-                            headersPath(pagePath),
-                            JSON.stringify(serializedHeaders),
+                            metadataPath(pagePath),
+                            JSON.stringify({
+                                headers: serializedHeaders,
+                                status: result.status,
+                            }),
                         ),
                     ]);
 
@@ -168,8 +165,8 @@ export class PageBuilder<
                         content,
                     ),
                     hasHeaders && this.#config.persistance.set(
-                        headersPath(pagePath),
-                        JSON.stringify(serializedHeaders),
+                        metadataPath(pagePath),
+                        JSON.stringify({ headers: serializedHeaders }),
                     ),
                 ]);
 
@@ -206,16 +203,9 @@ export class PageBuilder<
     }
 }
 
-export function headersPath(pagePath: string) {
+export function metadataPath(pagePath: string) {
     return path.join(
         path.dirname(pagePath),
-        path.basename(pagePath) + '.headers',
-    );
-}
-
-export function statusPath(pagePath: string) {
-    return path.join(
-        path.dirname(pagePath),
-        path.basename(pagePath) + '.status',
+        path.basename(pagePath) + '.metadata',
     );
 }

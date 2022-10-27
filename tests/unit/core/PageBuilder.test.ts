@@ -26,7 +26,8 @@ Deno.test('PageBuilder: build without cache hit query data, generate content and
     const generated = { pagePath: 'pagePath', content: 'content' };
     const generator = fakePageGenerator<{ id: string }, { foo: string }>({
         mock: {
-            generateContentFromData: () => Promise.resolve(generated),
+            generateContentFromData: () => Promise.resolve(generated.content),
+            getPagePath: () => generated.pagePath,
         },
     });
 
@@ -165,7 +166,7 @@ Deno.test('PageBuilder: buildAll orchestrate the generation of StaticPage', asyn
     const generator = fakePageGenerator<{ id: string }, { foo: string }>({
         mock: {
             generateContentFromData: (_0, { path }) => {
-                return Promise.resolve(generated[path.id]);
+                return Promise.resolve(generated[path.id].content);
             },
         },
     });

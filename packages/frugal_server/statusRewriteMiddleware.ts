@@ -11,6 +11,7 @@ function logger() {
 async function safeNext(context: FrugalContext, next: Next<FrugalContext>) {
     try {
         return await next(context);
+        // deno-lint-ignore no-explicit-any
     } catch (error: any) {
         logger().error({
             msg: `Error in some middleware transformed in a 500 status response`,
