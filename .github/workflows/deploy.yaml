@@ -37,4 +37,4 @@ jobs:
         run: deno install --allow-read --allow-write --allow-env --allow-net --allow-run --no-check -r -f https://deno.land/x/deploy/deployctl.ts
 
       - name: ghetto deploy
-        run: deployctl deploy --token=${{ secrets.DENO_DEPLOY_TOKEN }} --project=frugal --import-map=import_map.json --include=docs,dep,packages,import_map.json docs/cli.ts
+        run: deployctl deploy --token=${{ secrets.DENO_DEPLOY_TOKEN }} --project=frugal --import-map=import_map.json --include=docs,dep,packages,import_map.json docs/cli/serve.ts
