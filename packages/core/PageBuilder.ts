@@ -1,9 +1,11 @@
-import { Page, Phase, StaticPage } from './Page.ts';
+import * as path from '../../dep/std/path.ts';
+import { assert } from '../../dep/std/asserts.ts';
+
 import * as mumur from '../murmur/mod.ts';
 import * as log from '../log/mod.ts';
-import * as path from '../../dep/std/path.ts';
+
+import { Page, Phase, StaticPage } from './Page.ts';
 import { PageGenerator } from './PageGenerator.ts';
-import { assert } from '../../dep/std/asserts.ts';
 import { Cache } from './Cache.ts';
 import { Persistance } from './Persistance.ts';
 
@@ -92,44 +94,68 @@ export class PageBuilder<
             this.#page instanceof StaticPage,
             `Can't statically build DynamicPage ${this.#page.pattern}`,
         );
-        const url = this.#page.compile(buildPath);
+        const pathname = this.#page.compile(buildPath);
 
         logger().debug({
             op: 'start',
             pattern: this.#page.pattern,
-            url,
+            pathname,
             msg() {
                 return `${this.op} ${this.logger!.timerStart}`;
             },
             logger: {
-                timerStart: `build ${this.#page.pattern} as ${url}`,
+                timerStart: `build ${this.#page.pattern} as ${pathname}`,
             },
         });
 
-        const { data, headers } = await this.#page.getStaticData({
+        const result = await this.#page.getStaticData({
             phase,
             path: buildPath,
         });
 
         const pageInstanceHash = new mumur.Hash()
-            .update(JSON.stringify(data) ?? '')
-            .update(url)
+            .update(JSON.stringify(result) ?? '')
+            .update(pathname)
             .update(this.#hash)
             .digest();
 
         return await this.#config.cache.memoize({
             key: pageInstanceHash,
             producer: async () => {
-                const { pagePath, content } = await this.#generator
-                    .generateContentFromData(url, {
+                const pagePath = this.#generator.getPagePath(pathname);
+
+                if ('status' in result) {
+                    const headers = new Headers(result.headers);
+
+                    if ('location' in result) {
+                        headers.set('location', String(result.location));
+                    }
+
+                    const serializedHeaders = Array.from(headers.entries());
+
+                    await Promise.all([
+                        this.#config.persistance.set(
+                            metadataPath(pagePath),
+                            JSON.stringify({
+                                headers: serializedHeaders,
+                                status: result.status,
+                            }),
+                        ),
+                    ]);
+
+                    return pagePath;
+                }
+
+                const content = await this.#generator
+                    .generateContentFromData(pathname, {
                         method: 'GET',
-                        data: data ?? {} as DATA,
+                        data: result.data ?? {} as DATA,
                         path: buildPath,
                         phase,
                     });
 
                 const serializedHeaders = Array.from(
-                    new Headers(headers).entries(),
+                    new Headers(result.headers).entries(),
                 );
                 const hasHeaders = serializedHeaders.length > 0;
 
@@ -139,20 +165,20 @@ export class PageBuilder<
                         content,
                     ),
                     hasHeaders && this.#config.persistance.set(
-                        headersPath(pagePath),
-                        JSON.stringify(serializedHeaders),
+                        metadataPath(pagePath),
+                        JSON.stringify({ headers: serializedHeaders }),
                     ),
                 ]);
 
                 logger().debug({
                     op: 'done',
                     pattern: this.#page.pattern,
-                    url,
+                    pathname,
                     msg() {
                         return `${this.logger!.timerEnd} ${this.op}`;
                     },
                     logger: {
-                        timerEnd: `build ${this.#page.pattern} as ${url}`,
+                        timerEnd: `build ${this.#page.pattern} as ${pathname}`,
                     },
                 });
 
@@ -162,14 +188,14 @@ export class PageBuilder<
                 logger().debug({
                     op: 'done',
                     pattern: this.#page.pattern,
-                    url,
+                    pathname,
                     msg() {
                         return `${
                             this.logger!.timerEnd
                         } ${this.op} (from cache)`;
                     },
                     logger: {
-                        timerEnd: `build ${this.#page.pattern} as ${url}`,
+                        timerEnd: `build ${this.#page.pattern} as ${pathname}`,
                     },
                 });
             },
@@ -177,9 +203,9 @@ export class PageBuilder<
     }
 }
 
-export function headersPath(pagePath: string) {
+export function metadataPath(pagePath: string) {
     return path.join(
         path.dirname(pagePath),
-        path.basename(pagePath) + '.headers',
+        path.basename(pagePath) + '.metadata',
     );
 }

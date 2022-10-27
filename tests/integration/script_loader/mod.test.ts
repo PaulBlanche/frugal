@@ -94,47 +94,43 @@ Deno.test('script_loader: script execution and order', async (t) => {
 
     await frugal.build();
 
-    await t.step('page foo script execution and order', async () => {
-        const pageFoo1 = await Deno.readTextFile(
-            publicFileUrl(frugal, 'foo/1.html'),
-        );
+    const pageFoo1 = await Deno.readTextFile(
+        publicFileUrl(frugal, 'foo/1.html'),
+    );
 
-        const [_, scriptSrc] = pageFoo1.match(
-            /<script type="module" src="(.*)"><\/script>/,
-        )!;
+    const [_foo, scriptSrcFoo] = pageFoo1.match(
+        /<script type="module" src="(.*)"><\/script>/,
+    )!;
 
-        window.document = new DOMParser().parseFromString(
-            pageFoo1,
-            'text/html',
-        ) as any;
+    window.document = new DOMParser().parseFromString(
+        pageFoo1,
+        'text/html',
+    ) as any;
 
-        await import(path.join(frugal.config.publicDir, scriptSrc));
+    await import(path.join(frugal.config.publicDir, scriptSrcFoo));
 
-        const logText = document.getElementById('log')!.textContent;
+    const logTextFoo = document.getElementById('log')!.textContent;
 
-        asserts.assertEquals(logText, 'foocomponentshared');
-    });
+    asserts.assertEquals(logTextFoo, 'foocomponentshared');
 
-    await t.step('page bar script execution and order', async () => {
-        const pageBar1 = await Deno.readTextFile(
-            publicFileUrl(frugal, 'bar/1.html'),
-        );
+    const pageBar1 = await Deno.readTextFile(
+        publicFileUrl(frugal, 'bar/1.html'),
+    );
 
-        const [_, scriptSrc] = pageBar1.match(
-            /<script type="module" src="(.*)"><\/script>/,
-        )!;
+    const [_bar, scriptSrcBar] = pageBar1.match(
+        /<script type="module" src="(.*)"><\/script>/,
+    )!;
 
-        window.document = new DOMParser().parseFromString(
-            pageBar1,
-            'text/html',
-        ) as any;
+    window.document = new DOMParser().parseFromString(
+        pageBar1,
+        'text/html',
+    ) as any;
 
-        await import(path.join(frugal.config.publicDir, scriptSrc));
+    await import(path.join(frugal.config.publicDir, scriptSrcBar));
 
-        const logText = document.getElementById('log')!.textContent;
+    const logTextBar = document.getElementById('log')!.textContent;
 
-        asserts.assertEquals(logText, 'sharedbarcomponent');
-    });
+    asserts.assertEquals(logTextBar, 'sharedbarcomponent');
 
     await frugal.clean();
 });

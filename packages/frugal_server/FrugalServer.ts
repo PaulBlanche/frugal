@@ -10,6 +10,7 @@ import { CleanConfig } from './Config.ts';
 import { filesystemMiddleware } from './middleware/filesystemMiddleware.ts';
 import { Middleware } from './types.ts';
 import { FrugalContext } from './middleware/types.ts';
+import { statusRewriteMiddleware } from './middleware/statusRewriteMiddleware.ts';
 
 function logger() {
     return log.getLogger(`frugal_server:FrugalServer`);
@@ -56,9 +57,14 @@ export class FrugalServer {
         );
 
         const composedMiddleware = composeMiddleware(
+            ...this.#middlewares,
             pageRouterMiddleware,
             filesystemMiddleware,
-            ...this.#middlewares,
+        );
+
+        const middleware = composeMiddleware(
+            statusRewriteMiddleware(composedMiddleware),
+            composedMiddleware,
         );
 
         const next = () =>
@@ -79,7 +85,7 @@ export class FrugalServer {
                     frugal: this.#frugal,
                     state: {},
                 };
-                return await composedMiddleware(context, next);
+                return await middleware(context, next);
             } catch (error) {
                 logger().error({
                     msg() {

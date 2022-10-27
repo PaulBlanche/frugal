@@ -97,13 +97,13 @@ Deno.test('page: static page without getPathList', async (t) => {
         publicFileUrl(instance, 'static-page-without-getpathlist/index.html'),
     );
     asserts.assertEquals(pageContent, content);
-    const emptyPageHeaders = await Deno.readTextFile(
+    const pageMetadata = await Deno.readTextFile(
         publicFileUrl(
             instance,
-            'static-page-without-getpathlist/index.html.headers',
+            'static-page-without-getpathlist/index.html.metadata',
         ),
     );
-    asserts.assertEquals(JSON.parse(emptyPageHeaders), headers);
+    asserts.assertEquals(JSON.parse(pageMetadata), { headers });
 
     await instance.clean();
 });
@@ -294,19 +294,23 @@ Deno.test('page: complete static page', async (t) => {
         publicFileUrl(instance, 'complete-static-page/1/index.html'),
     );
     asserts.assertEquals(page1Content, store['1'].content);
-    const page1Headers = await Deno.readTextFile(
-        publicFileUrl(instance, 'complete-static-page/1/index.html.headers'),
+    const page1Metadata = await Deno.readTextFile(
+        publicFileUrl(instance, 'complete-static-page/1/index.html.metadata'),
     );
-    asserts.assertEquals(JSON.parse(page1Headers), store['1'].headers);
+    asserts.assertEquals(JSON.parse(page1Metadata), {
+        headers: store['1'].headers,
+    });
 
     const page2Content = await Deno.readTextFile(
         publicFileUrl(instance, 'complete-static-page/2/index.html'),
     );
     asserts.assertEquals(page2Content, store['2'].content);
-    const page2Headers = await Deno.readTextFile(
-        publicFileUrl(instance, 'complete-static-page/2/index.html.headers'),
+    const page2Metadata = await Deno.readTextFile(
+        publicFileUrl(instance, 'complete-static-page/2/index.html.metadata'),
     );
-    asserts.assertEquals(JSON.parse(page2Headers), store['2'].headers);
+    asserts.assertEquals(JSON.parse(page2Metadata), {
+        headers: store['2'].headers,
+    });
 
     await instance.clean();
 });

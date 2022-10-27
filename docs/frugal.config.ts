@@ -56,11 +56,6 @@ export const config: Config = {
         page(example),
     ],
 
-    sessionPersistance: new UpstashPersistance(
-        Deno.env.get('UPSTASH_URL') ?? '',
-        Deno.env.get('UPSTASH_TOKEN') ?? '',
-    ),
-
     logging: {
         type: 'human',
         loggers: {
@@ -80,17 +75,29 @@ export const config: Config = {
             'frugal:loader:script': 'DEBUG',
             'frugal:loader:style': 'DEBUG',
 
+            'frugal_server:generateMiddleware': 'DEBUG',
+            'frugal_server:dynamicPageMiddleware': 'DEBUG',
+            'frugal_server:postRedirectGet:getMiddleware': 'DEBUG',
+            'frugal_server:postRedirectGet:postRedirectMiddleware': 'DEBUG',
+            'frugal_server:cacheMiddleware': 'DEBUG',
+            'frugal_server:forceRefreshMiddleware': 'DEBUG',
+            'frugal_server:refreshJitMiddleware': 'DEBUG',
+            'frugal_server:etagMiddleware': 'DEBUG',
+            'frugal_server:filesystemMiddleware': 'DEBUG',
+            'frugal_server:pageRouterMiddleware': 'DEBUG',
+            'frugal_server:statusRewriteMiddleware': 'DEBUG',
             'frugal_server:FrugalServer': 'DEBUG',
-            'frugal_server:RouterHandler': 'DEBUG',
-            'frugal_server:DynamicHandler': 'DEBUG',
-            'frugal_server:DynamicHandler:generateMiddleware': 'DEBUG',
-            'frugal_server:PostRedirectGetHandler:postRedirectMiddleware':
-                'DEBUG',
-            'frugal_server:PostRedirectGetHandler:getMiddleware': 'DEBUG',
         },
     },
 
-    listen: { port: 8000 },
+    server: {
+        sessionPersistance: new UpstashPersistance(
+            Deno.env.get('UPSTASH_URL') ?? '',
+            Deno.env.get('UPSTASH_TOKEN') ?? '',
+        ),
+
+        listen: { port: 8000 },
+    },
 };
 
 function IS_STYLE_FILE(url: URL | string) {

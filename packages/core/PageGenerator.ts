@@ -1,7 +1,8 @@
 import { assert } from '../../dep/std/asserts.ts';
 import * as pathUtils from '../../dep/std/path.ts';
-import { Generated } from '../loader_script/ScriptLoader.ts';
+import * as http from '../../dep/std/http.ts';
 
+import { Generated } from '../loader_script/ScriptLoader.ts';
 import * as log from '../log/mod.ts';
 
 import { LoaderContext } from './LoaderContext.ts';
@@ -50,7 +51,12 @@ export class PageGenerator<
     async generate(
         request: Request,
         state: Record<string, unknown>,
-    ): Promise<{ pagePath: string; content: string; headers: Headers }> {
+    ): Promise<
+        { pagePath: string; content: string; headers: Headers } | {
+            status: http.Status;
+            headers: Headers;
+        }
+    > {
         const pathname = new URL(request.url).pathname;
         const match = this.#page.match(pathname);
         assert(match !== false);
@@ -64,23 +70,37 @@ export class PageGenerator<
             },
         });
 
-        const { data, headers } = await this.#getData(request, {
+        const result = await this.#getData(request, {
             phase: 'generate',
             path,
             state,
         });
 
-        const { pagePath, content } = await this.generateContentFromData(
+        if ('status' in result) {
+            const headers = new Headers(result.headers);
+
+            if ('location' in result) {
+                headers.set('location', String(result.location));
+            }
+
+            return {
+                status: result.status,
+                headers,
+            };
+        }
+
+        const pagePath = this.getPagePath(pathname);
+        const content = await this.generateContentFromData(
             pathname,
             {
-                data: data ?? {} as DATA,
+                data: result.data ?? {} as DATA,
                 path,
                 phase: 'generate',
                 method: request.method,
             },
         );
 
-        return { pagePath, content, headers: new Headers(headers) };
+        return { pagePath, content, headers: new Headers(result.headers) };
     }
 
     /**
@@ -92,7 +112,7 @@ export class PageGenerator<
             DATA,
             PATH
         >,
-    ): Promise<{ pagePath: string; content: string }> {
+    ): Promise<string> {
         logger().debug({
             op: 'start',
             pattern: this.#page.pattern,
@@ -115,10 +135,6 @@ export class PageGenerator<
             loaderContext: this.#config.loaderContext,
         });
 
-        const pagePath = pathname.endsWith('.html')
-            ? pathUtils.join(this.#config.publicDir, pathname)
-            : pathUtils.join(this.#config.publicDir, pathname, 'index.html');
-
         logger().debug({
             op: 'done',
             pattern: this.#page.pattern,
@@ -133,27 +149,29 @@ export class PageGenerator<
         });
 
         if (!this.#config.watch) {
-            return { pagePath, content };
+            return content;
         } else {
             const injectWatchScript = this.#config.loaderContext.get<Generated>(
                 'inject-watch-script',
             );
             if (injectWatchScript) {
-                return {
-                    pagePath,
-                    // browsers are very forgiving, we can simply add the watch
-                    // script after the whole document
-                    content:
-                        `${content}<script>var script = document.createElement('script'); script.type="module"; script.src="${
-                            injectWatchScript[String(this.#page.self)][
-                                'inject-watch-script'
-                            ]
-                        }"; document.head.appendChild(script);</script>`,
-                };
+                // browsers are very forgiving, we can simply add the watch
+                // script after the whole document
+                return `${content}<script>var script = document.createElement('script'); script.type="module"; script.src="${
+                    injectWatchScript[String(this.#page.self)][
+                        'inject-watch-script'
+                    ]
+                }"; document.head.appendChild(script);</script>`;
             } else {
-                return { pagePath, content };
+                return content;
             }
         }
+    }
+
+    getPagePath(pathname: string) {
+        return pathname.endsWith('.html')
+            ? pathUtils.join(this.#config.publicDir, pathname)
+            : pathUtils.join(this.#config.publicDir, pathname, 'index.html');
     }
 
     #getData(

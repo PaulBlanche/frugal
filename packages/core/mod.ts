@@ -2,7 +2,7 @@ export type { Asset, GenerateParams, Loader } from './loader.ts';
 export { LoaderContext } from './LoaderContext.ts';
 export type { Config } from './Config.ts';
 export type { PageRefresher } from './PageRefresher.ts';
-export { headersPath, type PageBuilder } from './PageBuilder.ts';
+export { metadataPath, type PageBuilder } from './PageBuilder.ts';
 export type { PageGenerator } from './PageGenerator.ts';
 export { DEFAULT_LOGGER_CONFIG, OFF_LOGGER_CONFIG } from './Config.ts';
 export type {
@@ -16,6 +16,7 @@ export type {
     GetPathListParams,
     GetStaticData,
     GetStaticDataContext,
+    Page,
     Phase,
     StaticPageDescriptor,
 } from './Page.ts';

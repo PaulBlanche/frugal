@@ -214,7 +214,7 @@ class HumanHandler extends FrugalHandler {
  */
 type FrugalLogEntry = {
     msg?: string | (() => string);
-    $$stack?: string[];
+    $$error?: Error;
     logger?: {
         timerStart?: string;
         timerEnd?: string;
@@ -238,8 +238,8 @@ export class FrugalLogger {
         entry: T,
     ): Omit<T, 'msg'> & { msg?: string } {
         let msg = typeof entry.msg === 'function' ? entry.msg() : entry.msg;
-        if (entry.$$stack) {
-            msg += `\n${entry.$$stack.slice(1).join('\n')}`;
+        if (entry.$$error) {
+            msg += `\n${entry.$$error.stack}`;
         }
         if (this.logger.level === 0) {
             return { ...entry, msg };
@@ -273,7 +273,7 @@ export class FrugalLogger {
     ): Omit<T, 'msg'> & { msg?: string } {
         return this.#log('error', {
             ...entry,
-            '$$stack': error?.stack?.split('\n'),
+            '$$error': error,
         });
     }
 
@@ -283,7 +283,7 @@ export class FrugalLogger {
     ): Omit<T, 'msg'> & { msg?: string } {
         return this.#log('critical', {
             ...entry,
-            '$$stack': error?.stack?.split('\n'),
+            '$$error': error,
         });
     }
 }

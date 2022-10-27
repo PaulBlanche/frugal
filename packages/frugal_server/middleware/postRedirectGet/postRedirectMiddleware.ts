@@ -50,6 +50,22 @@ export async function postRedirectMiddleware<ROUTE extends frugal.Route>(
         context.state,
     );
 
+    if ('status' in result) {
+        logger().debug({
+            method: context.request.method,
+            pathname: url.pathname,
+            msg() {
+                return `abort PRG for ${this.method} ${this.pathname} because page returned status code ${result.status}`;
+            },
+        });
+
+        return new Response(null, {
+            status: result.status,
+            statusText: http.STATUS_TEXT[result.status],
+            headers: result.headers,
+        });
+    }
+
     const sessionId = await context.sessionManager.set(JSON.stringify({
         content: result.content,
         headers: Array.from(result.headers.entries()),

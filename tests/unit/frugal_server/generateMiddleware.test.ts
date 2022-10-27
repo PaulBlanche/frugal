@@ -57,3 +57,31 @@ Deno.test('generateMiddleware: headers can be overwritten', async () => {
         ...Object.entries(generated.headers),
     ]);
 });
+
+Deno.test('generateMiddleware: return naked status', async () => {
+    const generated = {
+        status: http.Status.NotFound,
+        headers: {
+            'foo': 'bar',
+        },
+    };
+
+    const response = await generateMiddleware({
+        request: new Request('http://foo.bar'),
+        route: {
+            generator: {
+                generate: mock.spy(async () => generated),
+            },
+        },
+    } as unknown as RouterContext);
+
+    asserts.assertEquals(await response.text(), '');
+    asserts.assertEquals(response.status, generated.status);
+    asserts.assertEquals(
+        response.statusText,
+        http.STATUS_TEXT[generated.status],
+    );
+    asserts.assertEquals(Array.from(response.headers.entries()), [
+        ...Object.entries(generated.headers),
+    ]);
+});

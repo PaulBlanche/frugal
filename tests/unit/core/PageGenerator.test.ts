@@ -40,8 +40,7 @@ Deno.test('PageGenerator: generateContentFromData call page.getContent', async (
         },
     );
 
-    asserts.assertEquals(result.pagePath, 'public/dir/foo/654/index.html');
-    asserts.assertEquals(result.content, content);
+    asserts.assertEquals(result, content);
 
     assertSpyCalls(asSpy(page.getContent), 1);
     assertSpyCall(asSpy(page.getContent), 0, {
@@ -57,15 +56,28 @@ Deno.test('PageGenerator: generateContentFromData call page.getContent', async (
     });
 });
 
-Deno.test('PageGenerator: generate orchestrate the generation of DynamicPage', async () => {
-    const content = 'page content';
-    const data = { foo: 'bar' };
+Deno.test('PageGenerator: generate orchestrate the generation of DynamicPage', async (t) => {
+    const store: Record<string, any> = {
+        '325': {
+            status: 300,
+            headers: [['baz', 'foobar']],
+        },
+        '345': {
+            data: { foo: 'bar' },
+            headers: [['baz', 'foobar']],
+            content: 'page content',
+        },
+        '867': {
+            status: 502,
+            location: 'foo/',
+            headers: [['baz', 'foobar']],
+        },
+    };
+
     const page = fakeDynamicPage({
         pattern: '/foo/:id',
-        getDynamicData: () => ({
-            data,
-        }),
-        getContent: () => content,
+        getDynamicData: (_request, { path: { id } }) => (store[id]),
+        getContent: ({ path: { id } }) => store[id].content,
     });
 
     const loaderContext = fakeLoaderContext();
@@ -79,42 +91,116 @@ Deno.test('PageGenerator: generate orchestrate the generation of DynamicPage', a
         },
     );
 
-    const request = new Request(new URL('http://0.0.0.0/foo/345'), {
-        method: 'GET',
+    await t.step('standard page', async () => {
+        const request = new Request(new URL('http://0.0.0.0/foo/345'), {
+            method: 'GET',
+        });
+
+        const state = {};
+
+        const result = await generator.generate(request, state);
+
+        asserts.assert(!('status' in result));
+        asserts.assertEquals(result.pagePath, 'public/dir/foo/345/index.html');
+        asserts.assertEquals(result.content, store['345'].content);
+        asserts.assertEquals(
+            Array.from(result.headers.entries()),
+            store['345'].headers,
+        );
+
+        assertSpyCalls(asSpy(page.getDynamicData), 1);
+        assertSpyCall(asSpy(page.getDynamicData), 0, {
+            args: [request, {
+                phase: 'generate',
+                path: {
+                    id: '345',
+                },
+                state,
+            }],
+        });
+
+        assertSpyCalls(asSpy(page.getContent), 1);
+        assertSpyCall(asSpy(page.getContent), 0, {
+            args: [{
+                method: request.method,
+                phase: 'generate',
+                data: store['345'].data,
+                loaderContext,
+                pathname: new URL(request.url).pathname,
+                path: {
+                    id: '345',
+                },
+            }],
+        });
+
+        asSpy(page.getDynamicData).calls.length = 0;
+        asSpy(page.getContent).calls.length = 0;
     });
 
-    const state = {};
+    await t.step('status page', async () => {
+        const request = new Request(new URL('http://0.0.0.0/foo/325'), {
+            method: 'GET',
+        });
 
-    const result = await generator.generate(request, state);
+        const state = {};
 
-    asserts.assertEquals(result.pagePath, 'public/dir/foo/345/index.html');
-    asserts.assertEquals(result.content, content);
+        const result = await generator.generate(request, state);
 
-    assertSpyCalls(asSpy(page.getDynamicData), 1);
-    assertSpyCall(asSpy(page.getDynamicData), 0, {
-        args: [request, {
-            phase: 'generate',
-            path: {
-                id: '345',
-            },
-            state,
-        }],
-        returned: { data },
+        asserts.assert('status' in result);
+        asserts.assertEquals(result.status, store['325'].status);
+        asserts.assertEquals(
+            Array.from(result.headers.entries()),
+            store['325'].headers,
+        );
+
+        assertSpyCalls(asSpy(page.getDynamicData), 1);
+        assertSpyCall(asSpy(page.getDynamicData), 0, {
+            args: [request, {
+                phase: 'generate',
+                path: {
+                    id: '325',
+                },
+                state,
+            }],
+        });
+
+        assertSpyCalls(asSpy(page.getContent), 0);
+
+        asSpy(page.getDynamicData).calls.length = 0;
+        asSpy(page.getContent).calls.length = 0;
     });
 
-    assertSpyCalls(asSpy(page.getContent), 1);
-    assertSpyCall(asSpy(page.getContent), 0, {
-        args: [{
-            method: request.method,
-            phase: 'generate',
-            data: data,
-            loaderContext,
-            pathname: new URL(request.url).pathname,
-            path: {
-                id: '345',
-            },
-        }],
-        returned: content,
+    await t.step('status page with location', async () => {
+        const request = new Request(new URL('http://0.0.0.0/foo/867'), {
+            method: 'GET',
+        });
+
+        const state = {};
+
+        const result = await generator.generate(request, state);
+
+        asserts.assert('status' in result);
+        asserts.assertEquals(result.status, store['867'].status);
+        asserts.assertEquals(
+            Array.from(result.headers.entries()),
+            [...store['867'].headers, ['location', store['867'].location]],
+        );
+
+        assertSpyCalls(asSpy(page.getDynamicData), 1);
+        assertSpyCall(asSpy(page.getDynamicData), 0, {
+            args: [request, {
+                phase: 'generate',
+                path: {
+                    id: '867',
+                },
+                state,
+            }],
+        });
+
+        assertSpyCalls(asSpy(page.getContent), 0);
+
+        asSpy(page.getDynamicData).calls.length = 0;
+        asSpy(page.getContent).calls.length = 0;
     });
 });
 
@@ -197,6 +283,7 @@ Deno.test('PageGenerator: generate generates StaticPage in watch mode', async ()
 
     const result = await generator.generate(request, state);
 
+    asserts.assert(!('status' in result));
     asserts.assertEquals(result.pagePath, 'public/dir/foo/345/index.html');
     asserts.assertEquals(result.content, content);
 
@@ -260,6 +347,7 @@ Deno.test('PageGenerator: generate generates pages with POST request', async (t)
 
         const dynamicResult = await dynamicGenerator.generate(request, state);
 
+        asserts.assert(!('status' in dynamicResult));
         asserts.assertEquals(
             dynamicResult.pagePath,
             'public/dir/foo/345/index.html',
@@ -314,6 +402,7 @@ Deno.test('PageGenerator: generate generates pages with POST request', async (t)
 
         const staticResult = await staticGenerator.generate(request, state);
 
+        asserts.assert(!('status' in staticResult));
         asserts.assertEquals(
             staticResult.pagePath,
             'public/dir/foo/345/index.html',
@@ -378,5 +467,6 @@ Deno.test('PageGenerator: generate with a .html pattern', async () => {
 
     const result = await generator.generate(request, state);
 
+    asserts.assert(!('status' in result));
     asserts.assertEquals(result.pagePath, 'public/dir/foo/345.html');
 });
