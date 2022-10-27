@@ -6,5 +6,5 @@ import { NAME } from './Form.script.ts';
 import { Form as FormBase } from './Form.tsx';
 
 export function Form() {
-    return <Island props={{}} Component={FormBase} name={NAME} />;
+    return <Island Component={FormBase} name={NAME} />;
 }

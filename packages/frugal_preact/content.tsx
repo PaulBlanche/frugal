@@ -91,7 +91,7 @@ export function getContentFrom<PATH extends Record<string, string>, DATA>(
                     head={head}
                     dangerouslySetInnerHTML={{ __html: html }}
                 />,
-            )
+            ).replace(/<\/!--end-furgal-island-->/, '')
         }`;
     };
 }

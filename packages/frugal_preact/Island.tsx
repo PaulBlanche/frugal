@@ -1,46 +1,61 @@
 /* @jsxRuntime automatic */
 /* @jsxImportSource preact */
-
-import { cx } from '../loader_style/styled.ts';
-
+import * as hooks from 'preact/hooks';
+import * as preact from 'preact';
 import type { HydrationStrategy } from './types.ts';
 
-export type IslandProps<PROPS> = {
-    className?: string;
-    strategy?: HydrationStrategy;
-    clientOnly?: boolean;
-    query?: string;
-    name: string;
-    Component: preact.ComponentType<PROPS>;
-    props: preact.RenderableProps<PROPS>;
-};
+export type IslandProps<PROPS> =
+    & {
+        strategy?: HydrationStrategy;
+        clientOnly?: boolean;
+        query?: string;
+        name: string;
+    }
+    & ({
+        Component: preact.ComponentType<PROPS>;
+        props: preact.RenderableProps<PROPS>;
+    } | {
+        Component: preact.ComponentType;
+    });
+
+const islandContext = preact.createContext(false);
 
 export function Island<PROPS>(
     {
-        className,
         name,
         clientOnly = false,
-        Component,
-        props,
+        strategy,
+        query,
         ...rest
     }: IslandProps<PROPS>,
 ) {
-    if (typeof document === 'undefined') {
+    const isInIsland = hooks.useContext(islandContext);
+
+    const Component = 'props' in rest
+        ? <rest.Component {...rest.props} />
+        : <rest.Component />;
+
+    if (typeof document === 'undefined' && !isInIsland) {
         return (
-            <div
-                className={cx(`host-${name}`, className)}
-                data-hydratable={name}
-                data-hydration-strategy={rest.strategy ?? 'load'}
-                data-hydration-query={rest.query}
-            >
+            <islandContext.Provider value={true}>
                 <script
+                    data-hydratable={name}
+                    data-hydration-strategy={strategy ?? 'load'}
+                    data-hydration-query={query}
                     type='application/json'
-                    dangerouslySetInnerHTML={{ __html: JSON.stringify(props) }}
+                    dangerouslySetInnerHTML={'props' in rest
+                        ? { __html: JSON.stringify(rest.props) }
+                        : undefined}
                 />
-                {!clientOnly && <Component {...props} />}
-            </div>
+                {!clientOnly && Component}
+                {clientOnly && <div /> /* empty node for hydration */}
+                {preact.h(
+                    `!--end-furgal-island--`,
+                    null,
+                )}
+            </islandContext.Provider>
         );
     }
 
-    return <Component {...props} />;
+    return Component;
 }
