@@ -1,7 +1,4 @@
 import * as dotenv from './dep/std/dotenv.ts';
-import { build } from './dep/frugal/core.ts';
-import { serve, watch } from './dep/frugal/frugal_server.ts';
-import * as path from './dep/std/path.ts';
 
 if (Deno.env.get('CI') === undefined) {
     await dotenv.config({
@@ -11,23 +8,20 @@ if (Deno.env.get('CI') === undefined) {
     });
 }
 
-const config = (await import('./frugal.config.ts')).config;
-
 if (import.meta.main) {
     const command = Deno.args[0];
 
     switch (command) {
         case 'build': {
-            await build(config);
+            await import('./cli/build.ts');
             break;
         }
         case 'dev': {
-            await watch(config, [path.resolve(Deno.cwd(), 'docs/data')]);
+            await import('./cli/watch.ts');
             break;
         }
-        default:
         case 'serve': {
-            await serve(config);
+            await import('./cli/serve.ts');
             break;
         }
     }
