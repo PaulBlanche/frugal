@@ -1,8 +1,8 @@
-import * as http from '../../dep/std/http.ts';
-import * as log from '../log/mod.ts';
+import * as http from '../../../dep/std/http.ts';
+import * as log from '../../log/mod.ts';
 
-import { Middleware, Next } from './types.ts';
-import { FrugalContext } from './middleware/types.ts';
+import { Middleware, Next } from '../types.ts';
+import { FrugalContext } from '../middleware/types.ts';
 
 function logger() {
     return log.getLogger(`frugal_server:statusRewriteMiddleware`);
