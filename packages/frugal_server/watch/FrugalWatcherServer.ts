@@ -60,15 +60,21 @@ const { FrugalServerBuilder } = await import('file://${
 
 const service = new WatchService()
 
-const builder = new FrugalServerBuilder({...config, listen: {
-    ...config.listen,
-    onListen: (params) => {
-        if(config.listen.onListen) {
-            config.listen.onListen(params)
+const builder = new FrugalServerBuilder({
+    ...config, 
+    server: {
+        ...config.server,
+        listen: {
+            ...config.listen,
+            onListen: (params) => {
+                if(config.server.listen.onListen) {
+                    config.server.listen.onListen(params)
+                }
+                service.sendMessage({ type: 'restart' })
+            }
         }
-        service.sendMessage({ type: 'restart' })
     }
-}})
+})
 builder._watch = true;
 const server = await builder.create();
 
