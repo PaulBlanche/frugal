@@ -10,7 +10,7 @@ import { CleanConfig } from './Config.ts';
 import { filesystemMiddleware } from './middleware/filesystemMiddleware.ts';
 import { Middleware } from './types.ts';
 import { FrugalContext } from './middleware/types.ts';
-import { statusRewriteMiddleware } from './statusRewriteMiddleware.ts';
+import { statusRewriteMiddleware } from './middleware/statusRewriteMiddleware.ts';
 
 function logger() {
     return log.getLogger(`frugal_server:FrugalServer`);
