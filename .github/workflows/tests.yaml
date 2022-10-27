@@ -25,7 +25,7 @@ jobs:
 
     steps:
     - name: checkout project
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
 
     - name: install deno ${{ matrix.deno-version }}
       uses: denoland/setup-deno@v1
