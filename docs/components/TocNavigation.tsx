@@ -59,7 +59,6 @@ function TocNavigationLink({ type, node }: TocNavigationLinkProps) {
             )}
             href={nodeHref(node)}
         >
-            <span tabIndex={0}>test</span>
             {type === 'previous' && <Carret class={cx(s.carret)} />}
             {nodeFullLabel(node)}
             {type === 'next' && <Carret class={cx(s.carret)} />}

@@ -23,7 +23,6 @@ export class Navigator {
 
     saveScroll() {
         this.scroll = { x: scrollX, y: scrollY };
-        console.log('save', this.#url, this.scroll);
     }
 
     shouldRestoreScroll() {
@@ -40,11 +39,11 @@ export class Navigator {
             : directive === 'true';
     }
 
-    async navigate(init?: RequestInit): Promise<void> {
+    async navigate(): Promise<void> {
         try {
             this.#setReadyState('loading');
 
-            const html = await this.#fetch(init);
+            const html = await this.#fetch();
             const nextDocument = new DOMParser().parseFromString(
                 html,
                 'text/html',
@@ -54,14 +53,12 @@ export class Navigator {
                 this._realNavigate();
                 return;
             }
-
             new Renderer(nextDocument).render();
 
             this.#setReadyState('interactive');
 
             if (!this.#tryToScrollToHash()) {
                 if (this.#shouldRestoreScroll && this.#config.restoreScroll) {
-                    console.log('restore', this.#url, this.scroll);
                     scroll(this.scroll?.x ?? 0, this.scroll?.y ?? 0);
                 } else if (this.#config.resetScroll) {
                     window.scroll(0, 0);

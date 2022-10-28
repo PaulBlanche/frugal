@@ -47,7 +47,7 @@ function TocNode({ node }: TocNodeProps) {
                     <title>{nodeFullLabel(node)}</title>
                 </Head>
             )}
-            {node.slug
+            {node.slug && !isActive()
                 ? (
                     <a
                         class={cx(s.tocLink, isActive() && s.tocLinkActive)}
@@ -56,7 +56,11 @@ function TocNode({ node }: TocNodeProps) {
                         {node.name}
                     </a>
                 )
-                : <span>{node.name}</span>}
+                : (
+                    <span class={cx(s.tocLink, isActive() && s.tocLinkActive)}>
+                        {node.name}
+                    </span>
+                )}
 
             {node.children && (
                 <ol class={cx(s.tocList)}>

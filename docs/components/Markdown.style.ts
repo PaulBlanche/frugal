@@ -14,7 +14,13 @@ export const markdown = className('markdown')
             ${link.css} 
         }
 
-        h1, h2 {
+        && h1, && h2 {
             border: none;
+            display: flex;
+
+            a.anchor {
+                order: 1;
+                margin-left: 10px;
+            }
         }
     `;

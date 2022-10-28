@@ -7,8 +7,8 @@ export class Renderer {
         this.nextDocument = document;
     }
 
-    render() {
-        this.renderHead();
+    render(fullRefresh?: boolean) {
+        this.renderHead(fullRefresh);
         this.renderBody();
     }
 

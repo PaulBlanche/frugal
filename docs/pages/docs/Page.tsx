@@ -19,7 +19,7 @@ export function Page(props: PageProps) {
 
     return (
         <App {...props}>
-            <Layout>
+            <Layout toc={toc}>
                 <div class={cx(s.wrapper)}>
                     <div class={cx(s.navigation)}>
                         {/*<HeroHeader compact children={'Docs'} />*/}

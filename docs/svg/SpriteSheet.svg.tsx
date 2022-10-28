@@ -16,7 +16,19 @@ const SpinnerSprite = spritesheet.sprite(
     'circle',
 );
 
+const TocSprite = spritesheet.sprite(
+    <path
+        strokeLinecap='round'
+        strokeLinejoin='round'
+        strokeWidth='2'
+        d='M4 6h16M4 12h16M4 18h7'
+    >
+    </path>,
+    'toc',
+);
+
 spritesheet.collect();
 
 export const carretUrl = CarretSprite.url();
 export const spinnerUrl = SpinnerSprite.url();
+export const tocUrl = TocSprite.url();

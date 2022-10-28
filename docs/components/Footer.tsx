@@ -11,12 +11,12 @@ export function Footer() {
         <footer class={cx(s.footer)}>
             <div class={cx(s.footerContainer)}>
                 <p>
-                    Powered by{' '}
+                    Source code at{' '}
                     <a
                         class={cx(link)}
                         href='https://github.com/PaulBlanche/frugal'
                     >
-                        frugal
+                        Github
                     </a>
                 </p>
             </div>
