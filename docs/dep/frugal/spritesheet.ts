@@ -1,1 +1,1 @@
-export * from '../../../packages/loader_jsx_svg/spritesheet.ts';
+export * from '../../../spritesheet.ts';

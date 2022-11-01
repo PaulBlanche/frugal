@@ -1,7 +1,7 @@
 /* @jsxRuntime automatic */
 /* @jsxImportSource preact */
 import * as preact from 'preact';
-import { onReadyStateChange } from '../frugal_session/mod.ts';
+import { onReadyStateChange } from '../client_session/mod.ts';
 
 import { DataProvider } from './dataContext.tsx';
 import type { HydrationStrategy } from './types.ts';
