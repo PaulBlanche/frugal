@@ -1,6 +1,6 @@
 # Using preact
 
-Frugal comes with optionnal integration with [Preact](https://preactjs.com/). You can use it on the server or at build time (as a template engine) or on the client through [island of interactivity](https://jasonformat.com/islands-architecture/)
+Frugal comes with optional integration with [Preact](https://preactjs.com/). You can use it on the server or at build time (as a template engine) or on the client through [island of interactivity](https://jasonformat.com/islands-architecture/)
 
 Preact integration rely on you providing the preact version you want via an [import map](https://deno.land/manual/linking_to_external_code/import_maps) :
 
