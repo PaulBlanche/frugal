@@ -2,7 +2,7 @@ import * as murmur from '../murmur/mod.ts';
 
 const SCOPED_CLASSNAMES = new Set<string>();
 const RULES: Rules[] = [];
-const GLOBAL_STYLES: string[] = [];
+const GLOBAL_STYLES: Promise<string>[] = [];
 const KEYFRAME_NAMES = new Set<string>();
 const KEYFRAMES: KeyFrames[] = [];
 
@@ -94,6 +94,7 @@ export class KeyFrames {
 }
 
 type Interpolable = string | number | Rules | KeyFrames;
+type AsyncInterpolable = Promise<Interpolable> | Interpolable;
 
 /**
  * Rules and KeyFrames aware tagged template :
@@ -118,6 +119,15 @@ export function css(
     });
 
     return propertyList.join('');
+}
+
+export async function asyncCss(
+    template: TemplateStringsArray,
+    ...interpolations: AsyncInterpolable[]
+): Promise<string> {
+    const syncInterpolations = await Promise.all(interpolations);
+
+    return css(template, ...syncInterpolations);
 }
 
 /**
@@ -203,10 +213,16 @@ export function globalClassName(name: string) {
  */
 export function createGlobalStyle(
     template: TemplateStringsArray,
-    ...interpolations: Interpolable[]
+    ...interpolations: AsyncInterpolable[]
 ) {
-    const properties = css(template, ...interpolations);
+    const properties = asyncCss(template, ...interpolations);
     GLOBAL_STYLES.push(properties);
+}
+
+export function atImport(url: string) {
+    const cssPromise = fetch(url).then((response) => response.text());
+
+    createGlobalStyle`${cssPromise}`;
 }
 
 /**
@@ -289,11 +305,11 @@ export function clean() {
  * output the full stylesheet from all the rules (scoped or not), global rules
  * and keyframes that where registered so far
  */
-export function output(): string {
+export async function output(): Promise<string> {
     const keyframes = KEYFRAMES.map((keyframes) => keyframes.toCss()).join(
         '\n',
     );
-    const globalStyles = GLOBAL_STYLES.join('\n');
+    const globalStyles = (await Promise.all(GLOBAL_STYLES)).join('\n');
     const rules = RULES.map((rule) => rule.toCss()).join('\n');
     return `${keyframes}\n${globalStyles}\n${rules}`;
 }
