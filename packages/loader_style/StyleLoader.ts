@@ -93,7 +93,7 @@ export class StyleLoader implements frugal.Loader<string> {
         const styleGeneratorScript = `
 import * as style from "${styleModule}";
 ${assets.map(({ module }) => `await import("${module}");`).join('\n')}
-export const output = style.output()`;
+export const output = await style.output()`;
         const { output } = await importDynamicModule(styleGeneratorScript);
 
         const bundle = this.#config.transform

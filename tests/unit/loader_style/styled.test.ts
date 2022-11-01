@@ -146,7 +146,7 @@ Deno.test('styled: cx', () => {
     );
 });
 
-Deno.test('styled: output', () => {
+Deno.test('styled: output', async () => {
     clean();
     globalClassName('rule1').styled`rule1`;
     className('scopedRule1').styled`scopedRule1`;
@@ -166,7 +166,7 @@ Deno.test('styled: output', () => {
     createGlobalStyle`globalStyle3`;
 
     asserts.assertEquals(
-        output(),
+        await output(),
         `@keyframes a-13x8mt9 {keyframe1}
 @keyframes a-5tj3rm {keyframe2}
 @keyframes a-1yoy2yb {keyframe3}
