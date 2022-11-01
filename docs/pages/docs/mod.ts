@@ -31,7 +31,12 @@ async function getMarkup(slug: string) {
     try {
         return await readMarkup(`${slug}.md`);
     } catch {
-        return await readMarkup(`${slug}/index.md`);
+        try {
+            return await readMarkup(`${slug}/index.md`);
+        } catch (e) {
+            console.log(slug);
+            throw e;
+        }
     }
 }
 
@@ -39,6 +44,7 @@ export async function getStaticData(
     { path }: frugal.GetStaticDataContext<Path>,
 ): Promise<frugal.DataResult<Data>> {
     const markup = await getMarkup(path.slug);
+
     return {
         data: {
             toc: TOC,

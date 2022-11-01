@@ -31,17 +31,29 @@ export const tocItem = className('toc-item')
         position: relative;
 
         &::before {
-            counter-increment: section;
-            content: counters(section,".") " ";
             font-weight: bold;
         }
     `;
 
 export const tocList = className('toc-list')
     .styled`
-        counter-reset: section;
-        list-style: none;
         padding-left: 1rem;
     `;
 
-export const toc = className('toc').styled``;
+export const toc = className('toc')
+    .styled`
+        & > ${tocList} {
+            font-weight: bold;
+
+            & > ${tocItem} {
+                list-style: none;
+                margin-bottom: 1rem;
+            }
+
+
+            ${tocList} {
+                font-weight: normal;
+                font-size: 0.9rem;
+            }
+        }
+    `;

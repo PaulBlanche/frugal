@@ -6,6 +6,10 @@ With modern web developpment tools, we tend to put things in our JS bundle : sta
 
 The philosophy of frugal is to keep most of the DX offered by modern web developpment tools, strip the JS from what should not be executed as JS, and rely on native browser mechanisms. [Learn more about it](#)
 
+[warn]> coucou ça va ?
+
+> moi ça va bien
+
 ## Static pages
 
 By default, frugal produces static web page. You provide the data fetching logic, you describe the page with your UI framework of choice that can output static html and frugal outputs a folder ready to be served by a web server like NGINX.

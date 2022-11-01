@@ -1,16 +1,13 @@
-import { className, createGlobalStyle } from '../dep/frugal/styled.ts';
+import { atImport, className } from '../dep/frugal/styled.ts';
 import { link } from '../styles/link.style.ts';
-import * as gmf from '../dep/gmf.ts';
 
-createGlobalStyle`
-    ${gmf.CSS}
-`;
+atImport('https://esm.sh/prismjs@1.29.0/themes/prism-tomorrow.css');
 
 export const markdown = className('markdown')
     .styled`
         padding: 2rem 0;
 
-        a:not(.anchor) { 
+        /*a:not(.anchor) { 
             ${link.css} 
         }
 
@@ -22,5 +19,5 @@ export const markdown = className('markdown')
                 order: 1;
                 margin-left: 10px;
             }
-        }
+        }*/
     `;

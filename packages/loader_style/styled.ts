@@ -1,3 +1,4 @@
+import { type JSX } from 'preact';
 import * as murmur from '../murmur/mod.ts';
 
 const SCOPED_CLASSNAMES = new Set<string>();
@@ -247,6 +248,7 @@ type CXPrimitives =
     | boolean
     | undefined
     | null
+    | JSX.SignalLike<string | undefined>
     | Record<string, unknown>
     | Rules;
 type CX = CXPrimitives | CX[];
@@ -269,6 +271,9 @@ export function cx(
                 typeof name === 'object' && name !== null &&
                 !(name instanceof Rules)
             ) {
+                if ('peek' in name && typeof name.peek === 'function') {
+                    return name.peek();
+                }
                 return Object.entries(name).reduce<string[]>(
                     (classNames, [name, value]) => {
                         if (value) {

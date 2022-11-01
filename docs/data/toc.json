@@ -6,7 +6,32 @@
         },
         {
             "slug": "/getting-started",
-            "name": "getting started"
+            "name": "getting started",
+            "children": [{
+                "slug": "/getting-started/01-create-static-pages",
+                "name": "Create static pages"
+            }, {
+                "slug": "/getting-started/02-add-some-styles",
+                "name": "Add some styles"
+            }, {
+                "slug": "/getting-started/03-add-some-scripts",
+                "name": "Add some scripts"
+            }, {
+                "slug": "/getting-started/04-create-dynamic-pages",
+                "name": "Create dynamic pages"
+            }, {
+                "slug": "/getting-started/05-upgrade-static-pages",
+                "name": "Upgrade static pages"
+            }, {
+                "slug": "/getting-started/06-form-submission",
+                "name": "Form submission"
+            }, {
+                "slug": "/getting-started/07-using-preact",
+                "name": "Using preact"
+            }, {
+                "slug": "/getting-started/08-client-session",
+                "name": "Client session"
+            }]
         },
         {
             "slug": "/concepts",
