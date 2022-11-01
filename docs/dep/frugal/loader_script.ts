@@ -1,1 +1,1 @@
-export * from '../../../loader_script.ts';
+export * from '../../../packages/loader_script/mod.ts';

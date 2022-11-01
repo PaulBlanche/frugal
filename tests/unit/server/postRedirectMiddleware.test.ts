@@ -2,9 +2,9 @@ import * as http from '../../../dep/std/http.ts';
 import * as mock from '../../../dep/std/mock.ts';
 import * as asserts from '../../../dep/std/asserts.ts';
 
-import { postRedirectMiddleware } from '../../../packages/frugal_server/middleware/postRedirectGet/postRedirectMiddleware.ts';
-import { RouterContext } from '../../../packages/frugal_server/middleware/types.ts';
-import { SESSION_COOKIE_NAME } from '../../../packages/frugal_server/middleware/postRedirectGet/const.ts';
+import { postRedirectMiddleware } from '../../../packages/server/middleware/postRedirectGet/postRedirectMiddleware.ts';
+import { RouterContext } from '../../../packages/server/middleware/types.ts';
+import { SESSION_COOKIE_NAME } from '../../../packages/server/middleware/postRedirectGet/const.ts';
 
 Deno.test('postRedirectGet:postRedirectMiddleware: should bail out on invalid methods', async () => {
     for (const method of ['HEAD', 'OPTIONS', 'GET']) {

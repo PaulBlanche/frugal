@@ -1,1 +1,1 @@
-export * from '../../../loader_jsx_svg.ts';
+export * from '../../../packages/loader_jsx_svg/mod.ts';

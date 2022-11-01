@@ -1,1 +1,1 @@
-export * from '../../../preact.server.ts';
+export * from '../../../packages/preact/mod.server.ts';

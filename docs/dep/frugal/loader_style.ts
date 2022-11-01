@@ -1,1 +1,1 @@
-export * from '../../../loader_style.ts';
+export * from '../../../packages/loader_style/mod.ts';

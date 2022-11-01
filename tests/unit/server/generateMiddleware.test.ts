@@ -2,9 +2,9 @@ import * as http from '../../../dep/std/http.ts';
 import * as mock from '../../../dep/std/mock.ts';
 import * as asserts from '../../../dep/std/asserts.ts';
 
-import { generateMiddleware } from '../../../packages/frugal_server/middleware/dynamicPageMiddleware/generateMiddleware.ts';
-import { RouterContext } from '../../../packages/frugal_server/middleware/types.ts';
-import { compute } from '../../../packages/frugal_server/etag.ts';
+import { generateMiddleware } from '../../../packages/server/middleware/dynamicPageMiddleware/generateMiddleware.ts';
+import { RouterContext } from '../../../packages/server/middleware/types.ts';
+import { compute } from '../../../packages/server/etag.ts';
 
 Deno.test('generateMiddleware: generate return the expected response', async () => {
     const generated = {

@@ -4,9 +4,9 @@ import * as mock from '../../../dep/std/mock.ts';
 import * as asserts from '../../../dep/std/asserts.ts';
 
 import * as frugal from '../../../packages/core/mod.ts';
-import { getMiddleware } from '../../../packages/frugal_server/middleware/postRedirectGet/getMiddleware.ts';
-import { RouterContext } from '../../../packages/frugal_server/middleware/types.ts';
-import { SESSION_COOKIE_NAME } from '../../../packages/frugal_server/middleware/postRedirectGet/const.ts';
+import { getMiddleware } from '../../../packages/server/middleware/postRedirectGet/getMiddleware.ts';
+import { RouterContext } from '../../../packages/server/middleware/types.ts';
+import { SESSION_COOKIE_NAME } from '../../../packages/server/middleware/postRedirectGet/const.ts';
 
 Deno.test('postRedirectGet:getMiddleware: should bail out on non GET request', async () => {
     const next = mock.spy(async () => new Response());

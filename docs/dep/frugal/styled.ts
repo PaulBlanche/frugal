@@ -1,1 +1,1 @@
-export * from '../../../styled.ts';
+export * from '../../../packages/loader_style/styled.ts';

@@ -3,9 +3,9 @@ import * as mock from '../../../dep/std/mock.ts';
 import * as asserts from '../../../dep/std/asserts.ts';
 
 import * as frugal from '../../../packages/core/mod.ts';
-import { cacheMiddleware } from '../../../packages/frugal_server/middleware/staticPageMiddleware/cacheMiddleware.ts';
-import { RouterContext } from '../../../packages/frugal_server/middleware/types.ts';
-import { compute } from '../../../packages/frugal_server/etag.ts';
+import { cacheMiddleware } from '../../../packages/server/middleware/staticPageMiddleware/cacheMiddleware.ts';
+import { RouterContext } from '../../../packages/server/middleware/types.ts';
+import { compute } from '../../../packages/server/etag.ts';
 
 Deno.test('cacheMiddleware: should bail out if persistance throw NotFound', async () => {
     const next = mock.spy(async () => new Response());

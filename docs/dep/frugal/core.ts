@@ -1,1 +1,1 @@
-export * from '../../../core.ts';
+export * from '../../../packages/core/mod.ts';

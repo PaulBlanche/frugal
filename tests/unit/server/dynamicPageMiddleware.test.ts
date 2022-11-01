@@ -1,7 +1,7 @@
 import * as mock from '../../../dep/std/mock.ts';
 
-import { _dynamicPageMiddlewareMaker } from '../../../packages/frugal_server/middleware/dynamicPageMiddleware/mod.ts';
-import { RouterContext } from '../../../packages/frugal_server/middleware/types.ts';
+import { _dynamicPageMiddlewareMaker } from '../../../packages/server/middleware/dynamicPageMiddleware/mod.ts';
+import { RouterContext } from '../../../packages/server/middleware/types.ts';
 
 Deno.test('dynamicPageMiddleware: rejects static routes in non watch', async () => {
     const next = mock.spy(async () => new Response());

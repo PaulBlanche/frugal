@@ -1,1 +1,1 @@
-export * from '../../../client_session.ts';
+export * from '../../../packages/client_session/mod.ts';
