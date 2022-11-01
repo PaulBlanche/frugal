@@ -2,7 +2,7 @@
 /* @jsxImportSource preact */
 
 import { cx } from '../dep/frugal/styled.ts';
-import { Head, PageProps } from '../dep/frugal/frugal_preact.server.ts';
+import { Head, PageProps } from '../dep/frugal/preact.server.ts';
 import type { Generated } from '../dep/frugal/loader_script.ts';
 
 import { Spinner } from '../svg/Spinner.tsx';

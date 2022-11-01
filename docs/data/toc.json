@@ -6,61 +6,55 @@
         },
         {
             "slug": "/getting-started",
-            "name": "getting started"
+            "name": "getting started",
+            "children": [{
+                "slug": "/getting-started/01-create-static-pages",
+                "name": "Create static pages"
+            }, {
+                "slug": "/getting-started/02-add-some-styles",
+                "name": "Add some styles"
+            }, {
+                "slug": "/getting-started/03-add-some-scripts",
+                "name": "Add some scripts"
+            }, {
+                "slug": "/getting-started/04-create-dynamic-pages",
+                "name": "Create dynamic pages"
+            }, {
+                "slug": "/getting-started/05-upgrade-static-pages",
+                "name": "Upgrade static pages"
+            }, {
+                "slug": "/getting-started/06-form-submission",
+                "name": "Form submission"
+            }, {
+                "slug": "/getting-started/07-using-preact",
+                "name": "Using preact"
+            }, {
+                "slug": "/getting-started/08-client-session",
+                "name": "Client session"
+            }]
         },
         {
-            "slug": "/concepts",
-            "name": "concepts",
-            "children": [
-                {
-                    "slug": "/concepts/page-descriptor",
-                    "name": "page descriptor",
-                    "children": [
-                        {
-                            "slug": "/concepts/page-descriptor/static-page",
-                            "name": "static page"
-                        },
-                        {
-                            "slug": "/concepts/page-descriptor/dynamic-page",
-                            "name": "dynamic page"
-                        },
-                        {
-                            "slug": "/concepts/page-descriptor/handlers",
-                            "name": "handlers"
-                        }
-                    ]
-                },
-                {
-                    "slug": "/concepts/loaders",
-                    "name": "loaders",
-                    "children": [
-                        {
-                            "slug": "/concepts/loaders/style-loader",
-                            "name": "style loader"
-                        },
-                        {
-                            "slug": "/concepts/loaders/script-loader",
-                            "name": "script loader"
-                        }
-                    ]
-                },
-                {
-                    "slug": "/concepts/persistance",
-                    "name": "persistance"
-                }
-            ]
-        },
-        {
-            "slug": "/server",
-            "name": "server"
-        },
-        {
-            "slug": "/using-preact",
-            "name": "using preact"
-        },
-        {
-            "slug": "/client-session",
-            "name": "client session"
+            "slug": "/api",
+            "name": "API",
+            "children": [{
+                "slug": "/api/01-page-descriptor",
+                "name": "Page descriptor"
+            }, {
+                "slug": "/api/02-script-loader",
+                "name": "Script loader"
+            }, {
+                "slug": "/api/03-style-loader",
+                "name": "Style loader"
+            }, {
+                "slug": "/api/04-persistance",
+                "name": "Persistance"
+            }, {
+                "slug": "/api/05-preact",
+                "name": "Preact"
+            }, {
+                "slug": "/api/06-client-session",
+                "name": "Client session"
+            }]
         }
     ]
 }

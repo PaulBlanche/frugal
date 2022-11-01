@@ -10,11 +10,19 @@ export const wrapper = className('wrapper')
 
 export const navigation = className('navigation')
     .styled`
-        flex: 0 0 300px;
+        flex: 0 0 256px;
         margin-top: 1rem;
+        display: none;
+    
+        @media (min-width: 900px) {
+            display: block;
+            margin-right: 1rem
+        }
     `;
 
 export const main = className('main')
     .styled`
         flex: 1;
+        margin: 0 1rem;
+        width: 0;
     `;

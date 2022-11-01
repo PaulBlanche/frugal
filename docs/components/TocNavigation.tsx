@@ -10,7 +10,7 @@ import {
     nodeMatchHref,
     Toc,
 } from '../toc.ts';
-import { usePathname } from '../dep/frugal/frugal_preact.server.ts';
+import { usePathname } from '../dep/frugal/preact.client.ts';
 import { Carret } from '../svg/Carret.tsx';
 
 import * as s from './TocNavigation.style.ts';
@@ -59,7 +59,6 @@ function TocNavigationLink({ type, node }: TocNavigationLinkProps) {
             )}
             href={nodeHref(node)}
         >
-            <span tabIndex={0}>test</span>
             {type === 'previous' && <Carret class={cx(s.carret)} />}
             {nodeFullLabel(node)}
             {type === 'next' && <Carret class={cx(s.carret)} />}

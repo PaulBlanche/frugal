@@ -1,5 +1,5 @@
 import { page } from '../../packages/core/mod.ts';
-import { Config } from '../../packages/frugal_server/mod.ts';
+import { Config } from '../../packages/server/mod.ts';
 
 import * as pageISR from './page-isr.ts';
 import * as pageSSR from './page-ssr.ts';

@@ -3,15 +3,17 @@
 
 import { Navigation } from './Navigation.tsx';
 import { Footer } from './Footer.tsx';
+import { Toc } from '../toc.ts';
 
 type LayoutProps = {
+    toc?: Toc;
     children: preact.ComponentChildren;
 };
 
-export function Layout({ children }: LayoutProps) {
+export function Layout({ children, toc }: LayoutProps) {
     return (
         <>
-            <Navigation />
+            <Navigation toc={toc} />
             {children}
             <Footer />
         </>

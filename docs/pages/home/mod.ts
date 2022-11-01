@@ -1,4 +1,4 @@
-import { getContentFrom } from '../../dep/frugal/frugal_preact.server.ts';
+import { getContentFrom } from '../../dep/frugal/preact.server.ts';
 
 import { Page } from './Page.tsx';
 

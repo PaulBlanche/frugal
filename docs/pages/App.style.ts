@@ -12,6 +12,10 @@ createGlobalStyle`
     body {
         font: 16px/1.5 sans; 
         margin: 0;
+
+        &.no-scroll {
+            overflow: hidden;
+        }
     }
 
     html {
@@ -23,5 +27,9 @@ createGlobalStyle`
 
     body:not(.frugal-prefetch-loading) ${loadingSpinner} {
         display: none;
+    }
+
+    a:focus, button:focus, input:focus {
+        outline: none;
     }
 `;
