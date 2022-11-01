@@ -84,7 +84,7 @@ The style loader has no notion of css syntax, it simply aggregates what is give
 
 ```ts
 import * as frugal from 'https://deno.land/x/frugal/core.ts';
-import { StyleLoader } from 'https://deno.land/x/loader_style.ts';
+import { StyleLoader } from 'https://deno.land/x/frugal/loader_style.ts';
 import * as stylis from 'https://esm.sh/stylis@4.0.13';
 
 import * as myPage from './pages/myPage.ts';

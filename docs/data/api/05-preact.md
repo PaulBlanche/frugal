@@ -18,7 +18,7 @@ Preact integration rely on you providing the preact version you want via an [imp
 To use preact at build time or on the server, you only need to use the `getContentFrom` function in your page descriptor :
 
 ```tsx
-import { getContentFrom } from 'https://deno.land/x/preact.server.ts';
+import { getContentFrom } from 'https://deno.land/x/frugal/preact.server.ts';
 
 import { Page } from './Page.tsx';
 

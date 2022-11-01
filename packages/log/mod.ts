@@ -14,10 +14,10 @@ type FrugalLogRecord = {
         /** the scope of the logger that produced the current record */
         scope: string;
         datetime: Date;
-        /** an optionnal property marking the start of a time interval
+        /** an optional property marking the start of a time interval
          * measurment */
         timerStart?: string;
-        /** an optionnal property marking the end of a time interval measurment
+        /** an optional property marking the end of a time interval measurment
          * (relative to a log record with a matching `startTime`) */
         timerEnd?: string;
         /** a property automatically filled with the result of a time interval
