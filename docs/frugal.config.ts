@@ -61,6 +61,8 @@ export const config: Config = {
         page(example),
     ],
 
+    pagePersistance: SESSION_PERSISTANCE,
+
     logging: {
         type: 'human',
         loggers: {

@@ -37,7 +37,7 @@ export function Form() {
                     );
                 }}
             >
-                Refresh Page
+                Force Refresh Page
             </button>
 
             {state.submitCount !== 0 && (

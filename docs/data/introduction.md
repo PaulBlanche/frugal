@@ -10,7 +10,7 @@ The philosophy of frugal is to keep most of the DX offered by modern web develop
 
 By default, frugal produces static web page. You provide the data fetching logic, you describe the page with your UI framework of choice that can output static html and frugal outputs a folder ready to be served by a web server like NGINX.
 
-Frugal also comes with an optionnal server able to serve this content if needed (for plateforms like [Deno Deploy](https://deno.com/deploy)).
+Frugal also comes with an optional server able to serve this content if needed (for platforms like [Deno Deploy](https://deno.com/deploy)).
 
 If you use frugal server, you can trigger static page refresh via webhook. If the underlying data for a page changes, you can ask the server to rebuild only this page. The new page will be added to the static cache, and served like any other static page.
 
