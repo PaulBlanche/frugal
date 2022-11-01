@@ -30,16 +30,6 @@ export function Form() {
                 {now.toLocaleTimeString('end')}.
             </p>
 
-            <button
-                onClick={() => {
-                    Session.getInstance().navigate(
-                        new URL('?force_refresh=refresh_key', location.href),
-                    );
-                }}
-            >
-                Force Refresh Page
-            </button>
-
             {state.submitCount !== 0 && (
                 <>
                     <p>

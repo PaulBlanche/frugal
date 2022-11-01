@@ -61,8 +61,6 @@ export const config: Config = {
         page(example),
     ],
 
-    pagePersistance: SESSION_PERSISTANCE,
-
     logging: {
         type: 'human',
         loggers: {
@@ -98,8 +96,6 @@ export const config: Config = {
     },
 
     server: {
-        refreshKey: 'refresh_key',
-
         sessionPersistance: SESSION_PERSISTANCE,
 
         listen: { port: 8000 },
