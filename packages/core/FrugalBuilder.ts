@@ -215,7 +215,7 @@ export class FrugalBuilder {
                 injectedScriptPath,
                 `import { LiveReloadClient } from "${
                     new URL(
-                        '../frugal_server/watch/LiveReloadClient.ts',
+                        '../server/watch/LiveReloadClient.ts',
                         import.meta.url,
                     ).pathname
                 }";

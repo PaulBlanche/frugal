@@ -19,7 +19,7 @@ export const activeLink = className('active-link')
 export const link = className('link')
     .extends(baseLink)
     .styled`
-        background: left 0.8rem no-repeat linear-gradient(0deg, #FFF 0.2rem, #FFE300 0.2rem, #FFE300 1rem, #FFF 1rem);
+        background: left 0.8rem no-repeat linear-gradient(0deg, transparent 0.2rem, #FFE300 0.2rem, #FFE300 1rem, transparent 1rem);
         text-decoration-style: dotted;
         text-decoration-color: #888;
         transition: background-position 0.1s;

@@ -103,15 +103,6 @@ server.listen();`;
             cwd: path.dirname(config.self.pathname),
         });
 
-        console.log([
-            'run',
-            '--unstable',
-            paths.length === 0 ? '--watch' : `--watch=${paths.join(',')}`,
-            '--no-check',
-            '--allow-all',
-            filePath,
-        ]);
-
         child.addEventListener('log', (event) => {
             console.log(...event.data);
         });

@@ -1,5 +1,3 @@
-import { Navigator } from '../../frugal_session/Navigator.ts';
-
 enum LiveReloadStatus {
     CONNECTED,
     PRISTINE,
@@ -44,12 +42,7 @@ export class LiveReloadClient {
             const message = JSON.parse(event.data);
             if (message.type === 'reload') {
                 setTimeout(() => {
-                    new Navigator(new URL(location.href), {
-                        defaultNavigate: true,
-                        timeout: 0,
-                        resetScroll: false,
-                        restoreScroll: false,
-                    }).navigate({ cache: 'no-store' });
+                    location.reload();
                 }, 10);
             }
             if (message.type === 'suspend') {

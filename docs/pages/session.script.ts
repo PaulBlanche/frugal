@@ -1,4 +1,4 @@
-import { Session } from '../dep/frugal/frugal_session.ts';
+import { Session } from '../dep/frugal/client_session.ts';
 
 export function main() {
     Session.getInstance().start();

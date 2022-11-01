@@ -117,8 +117,6 @@ export function hydrateElement<PROPS>(
         node = node.nextSibling;
     }
 
-    console.log(children);
-
     preact.render(
         <DataProvider>
             <App {...props} />

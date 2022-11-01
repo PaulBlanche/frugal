@@ -5,7 +5,11 @@ export const heroHeader = className('hero-header')
         display: flex;
         flex-direction: column;
         text-align: center;
-        padding: 5rem;
+        padding: 5rem 1rem;
+
+        @media (min-width: 660px) {
+            padding: 5rem;
+        }
     `;
 
 export const title = className('title')

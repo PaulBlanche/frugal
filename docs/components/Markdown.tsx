@@ -1,5 +1,5 @@
 import * as preact from 'preact';
-import * as gmf from '../dep/gmf.ts';
+import { parse } from '../markdown/mod.ts';
 import { cx } from '../dep/frugal/styled.ts';
 
 import * as s from './Markdown.style.ts';
@@ -16,7 +16,7 @@ export function Markdown(
     return (
         preact.createElement(as, {
             class: cx(s.markdown, className, 'markdown-body'),
-            dangerouslySetInnerHTML: { __html: gmf.render(markup) },
+            dangerouslySetInnerHTML: { __html: parse(markup) },
         })
     );
 }

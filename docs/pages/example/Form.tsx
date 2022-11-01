@@ -2,7 +2,8 @@
 /* @jsxImportSource preact */
 import * as hooks from 'preact/hooks';
 import { cx } from '../../dep/frugal/styled.ts';
-import { useData } from '../../dep/frugal/frugal_preact.client.ts';
+import { useData } from '../../dep/frugal/preact.client.ts';
+import { Session } from '../../dep/frugal/client_session.ts';
 
 import { Form, submitForm, validateForm } from './Form.ts';
 import { Data } from './type.ts';
@@ -28,6 +29,16 @@ export function Form() {
                 {now.toLocaleDateString('en')} at{' '}
                 {now.toLocaleTimeString('end')}.
             </p>
+
+            <button
+                onClick={() => {
+                    Session.getInstance().navigate(
+                        new URL('?force_refresh=refresh_key', location.href),
+                    );
+                }}
+            >
+                Refresh Page
+            </button>
 
             {state.submitCount !== 0 && (
                 <>

@@ -51,7 +51,6 @@ export class NavigationObserver {
 
     async restore(event: CustomEvent<{ navigator: Navigator }>) {
         const navigator = event.detail.navigator;
-        console.log('restore', navigator);
         await navigator.navigate();
     }
 

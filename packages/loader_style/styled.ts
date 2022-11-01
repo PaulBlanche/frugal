@@ -241,12 +241,19 @@ export function keyframes(
     return keyframes;
 }
 
+type SignalLike<T> = {
+    value: T;
+    peek(): T;
+    subscribe(fn: (value: T) => void): () => void;
+};
+
 type CXPrimitives =
     | string
     | number
     | boolean
     | undefined
     | null
+    | SignalLike<string | undefined>
     | Record<string, unknown>
     | Rules;
 type CX = CXPrimitives | CX[];
@@ -269,6 +276,9 @@ export function cx(
                 typeof name === 'object' && name !== null &&
                 !(name instanceof Rules)
             ) {
+                if ('peek' in name && typeof name.peek === 'function') {
+                    return name.peek();
+                }
                 return Object.entries(name).reduce<string[]>(
                     (classNames, [name, value]) => {
                         if (value) {

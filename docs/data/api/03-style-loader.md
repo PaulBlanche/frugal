@@ -1,9 +1,9 @@
 # Style loader
 
-The style loader works with the `styled` utility (inspired from the api of `styled-component`). Every module targeted by this loader should export classnames generated with the `styled` utility :
+The style loader works with the `styled` utility (inspired from the api of `styled-component`). Every module targeted by this loader should export classnames generated with the `className` utility :
 
 ```tsx
-import { className } from 'https://deno.land/x/frugal/packages/loader_style/styled.ts';
+import { className } from 'https://deno.land/x/frugal/styled.ts';
 import * as colors from './colors';
 import * as grid from './grid';
 
@@ -39,7 +39,7 @@ If this module is caught by the `style` loader (meaning its name matches the loa
 You can then import your style module and use it in your markup (using the `cx` utility, to generate a string from a smorgasbord of classnames) :
 
 ```ts
-import { cx } from 'https://deno.land/x/frugal/packages/loader_style/styled.ts';
+import { cx } from 'https://deno.land/x/frugal/styled.ts';
 import { item, list, selected } from './MyComponent.style.ts';
 
 export function MyComponent(items: any[]) {
@@ -50,11 +50,6 @@ export function MyComponent(items: any[]) {
     </ul>`;
 }
 ```
-
-the `className` utility will generate unique classnames. You can control the prefix of the classname, for easier debugging. Those class will be ordered by declaration order :
-
-- within the same module, classnames declared first are outputed first
-- amongst modules, classnames from modules imported first are outputed first.
 
 The style loader will provide to the `loaderContext` a string containing the url of the generated css file. You can therefore get the url of the css file in the `getContent` function of your [page descriptor](/docs/concepts/page-descriptor) :
 
@@ -68,13 +63,28 @@ export function getContent(
 }
 ```
 
+## Usage
+
+The `className` utility will generate unique classnames. You can control the prefix of the classname, for easier debugging. Those class will be ordered by declaration order :
+
+- within the same module, classnames declared first are outputed first
+- amongst modules, classnames from modules imported first are outputed first.
+
+The `createGlobalStyle` utility will generate global style, without scoping.
+
+The `atImport` utility allows you to include an external stylesheet by url.
+
+The `keyframes` utility allows you to declare `@keyframes` rules for animations.
+
+Both global styles and imported stylesheet will be outpued first. Then all keyframes and finally scoped classnames.
+
 ## Transformer
 
 The style loader has no notion of css syntax, it simply aggregates what is given to him. This means that you can "customize" the flavor of css you want, via the `transform` function. Here for example, we use the `stylis` preprocessor :
 
 ```ts
-import * as frugal from 'https://deno.land/x/frugal/packages/core/mod.ts';
-import { StyleLoader } from 'https://deno.land/x/frugal/packages/loader_style/mod.ts';
+import * as frugal from 'https://deno.land/x/frugal/core.ts';
+import { StyleLoader } from 'https://deno.land/x/loader_style.ts';
 import * as stylis from 'https://esm.sh/stylis@4.0.13';
 
 import * as myPage from './pages/myPage.ts';
@@ -104,7 +114,7 @@ export const config: frugal.Config = {
 With this setup, the following module, using non-standard syntax (nested selectors) :
 
 ```tsx
-import { className } from 'https://deno.land/x/frugal/packages/loader_style/styled.ts';
+import { className } from 'https://deno.land/x/frugal/styled.ts';
 
 export const item = className('item').styled`
     color: red;
@@ -142,7 +152,7 @@ If you import a style module in a script (if you have to toggle a classname gene
 When bundling a style module, we only want to bundle the generated classnames, not what was used to generate them. For this style module :
 
 ```tsx
-import { className } from 'https://deno.land/x/frugal/packages/loader_style/styled.ts';
+import { className } from 'https://deno.land/x/frugal/styled.ts';
 
 export const item = className('item').styled`
     color: red;
@@ -173,8 +183,8 @@ export const list = 'list-vngyoe base-ucdg1u';
 In order to do so, the script loader accepts some `transformers`. Each transformer will run on modules matching a `test` function, and transform the code of the module before bundling. You can use the `styleTransfromer` exposed by the style loader module to transform any style modules :
 
 ```ts
-import { ScriptLoader } from 'https://deno.land/x/frugal/packages/loader_script/mod.ts';
-import { StyleLoader, styleTransformer } from 'https://deno.land/x/frugal/packages/loader_style/mod.ts';
+import { ScriptLoader } from 'https://deno.land/x/frugal/loader_script.ts';
+import { StyleLoader, styleTransformer } from 'https://deno.land/x/frugal/loader_style.ts';
 
 function isStyleModule(url: string|URL) {
     return /\.style\.ts$/.test(url.toString())

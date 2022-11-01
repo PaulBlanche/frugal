@@ -2,25 +2,30 @@
 /* @jsxImportSource preact */
 
 import { cx } from '../../dep/frugal/styled.ts';
-import { Layout } from '../../components/Layout.tsx';
+import { PageProps } from '../../dep/frugal/preact.server.ts';
+import { useData } from '../../dep/frugal/preact.client.ts';
 
+import { Layout } from '../../components/Layout.tsx';
 import * as s from './Page.style.ts';
 import { Form } from './Form.island.tsx';
 import { App } from '../App.tsx';
-import { PageProps } from '../../dep/frugal/frugal_preact.server.ts';
+import { Data } from './type.ts';
 
 export function Page(props: PageProps) {
-    const now = new Date();
+    const data = useData<Data>();
+
     return (
         <App {...props}>
             <Layout>
                 <main class={cx(s.mainContainer)}>
                     <p>This page is an example of a static page.</p>
+
                     <p>
                         The whole page was generated at build time the{' '}
-                        {now.toLocaleDateString('en')} at{' '}
-                        {now.toLocaleTimeString('end')}.
+                        {data.serverNow.toLocaleDateString('en')} at{' '}
+                        {data.serverNow.toLocaleTimeString('end')}.
                     </p>
+
                     <p>
                         This is a form working both server-side and client-side.
                         Try to fill it and submit with javascript activated and

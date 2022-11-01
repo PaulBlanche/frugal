@@ -1,11 +1,17 @@
 /* @jsxRuntime automatic */
 /* @jsxImportSource preact */
-
 import { cx } from '../dep/frugal/styled.ts';
-import { usePathname } from '../dep/frugal/frugal_preact.client.ts';
+import { usePathname } from '../dep/frugal/preact.client.ts';
+
+import { Toc } from '../toc.ts';
+import { MobileToc } from './MobileToc.tsx';
 import * as s from './Navigation.style.ts';
 
-export function Navigation() {
+type NavigationProps = {
+    toc?: Toc;
+};
+
+export function Navigation({ toc }: NavigationProps) {
     const pathname = usePathname();
 
     const isHome = pathname === '/';
@@ -14,6 +20,7 @@ export function Navigation() {
 
     return (
         <div class={cx(s.wrapper)}>
+            {toc && <MobileToc class={cx(s.mobileToc)} toc={toc} />}
             <nav class={cx(s.navigation)}>
                 <NavigationEntry active={isHome} href='/'>
                     Home
@@ -23,12 +30,6 @@ export function Navigation() {
                 </NavigationEntry>
                 <NavigationEntry active={isExample} href='/example'>
                     Example
-                </NavigationEntry>
-                <NavigationEntry
-                    active={false}
-                    href='https://github.com/PaulBlanche/frugal'
-                >
-                    Github ⧉
                 </NavigationEntry>
             </nav>
         </div>

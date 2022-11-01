@@ -67,7 +67,7 @@ export class Session {
         this.#prefetchObserver.observe();
     }
 
-    async navigate(url: URL | string): Promise<void> {
+    async navigate(url: URL | string, init?: RequestInit): Promise<void> {
         const navigator = new Navigator(
             new URL(url, location.href),
             this.#config.navigate,
@@ -75,7 +75,7 @@ export class Session {
 
         this.#history.saveScroll();
 
-        await navigator.navigate();
+        await navigator.navigate(init);
 
         this.#history.push(navigator);
     }

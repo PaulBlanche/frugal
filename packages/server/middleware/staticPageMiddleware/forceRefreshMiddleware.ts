@@ -32,7 +32,8 @@ export async function forceRefreshMiddleware(
         },
     });
 
-    if (!url.searchParams.has('force_refresh')) {
+    const key = url.searchParams.get('force_refresh');
+    if (!key) {
         logger().debug({
             method: context.request.method,
             pathname: url.pathname,
@@ -44,16 +45,11 @@ export async function forceRefreshMiddleware(
         return next(context);
     }
 
-    const authorization = context.request.headers.get('Authorization');
-    const match = authorization?.match(/Bearer (.*)/);
-    if (
-        match === null || match === undefined ||
-        match[1] !== context.config.refreshKey
-    ) {
+    if (key !== context.config.refreshKey) {
         logger().debug({
             method: context.request.method,
             pathname: url.pathname,
-            requestKey: match?.[1],
+            requestKey: key,
             configKey: context.config.refreshKey,
             msg() {
                 return `refresh key in request ${this.requestKey} not matching refresh key in config ${this.configKey}. Yield to next middleware`;

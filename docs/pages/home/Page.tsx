@@ -7,7 +7,7 @@ import { Layout } from '../../components/Layout.tsx';
 import * as s from './Page.style.ts';
 import { link } from '../../styles/link.style.ts';
 import { App } from '../App.tsx';
-import { PageProps } from '../../dep/frugal/frugal_preact.server.ts';
+import { PageProps } from '../../dep/frugal/preact.server.ts';
 
 export function Page(props: PageProps) {
     return (
