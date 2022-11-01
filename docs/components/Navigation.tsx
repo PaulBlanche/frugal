@@ -2,7 +2,7 @@
 /* @jsxImportSource preact */
 
 import { cx } from '../dep/frugal/styled.ts';
-import { usePathname } from '../dep/frugal/frugal_preact.server.ts';
+import { usePathname } from '../dep/frugal/frugal_preact.client.ts';
 import * as s from './Navigation.style.ts';
 
 export function Navigation() {

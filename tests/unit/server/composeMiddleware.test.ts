@@ -3,8 +3,8 @@ import * as asserts from '../../../dep/std/asserts.ts';
 
 import {
     composeMiddleware,
-} from '../../../packages/frugal_server/composeMiddleware.ts';
-import { Middleware } from '../../../packages/frugal_server/types.ts';
+} from '../../../packages/server/composeMiddleware.ts';
+import { Middleware } from '../../../packages/server/types.ts';
 
 type TestContext = { middleware1?: boolean; middleware2?: boolean };
 

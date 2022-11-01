@@ -1,1 +1,1 @@
-export * from '../../../packages/frugal_session/mod.ts';
+export * from '../../../packages/client_session/mod.ts';

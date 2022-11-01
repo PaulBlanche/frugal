@@ -1,1 +1,1 @@
-export * from '../../../packages/frugal_preact/mod.client.ts';
+export * from '../../../packages/preact/mod.client.ts';
