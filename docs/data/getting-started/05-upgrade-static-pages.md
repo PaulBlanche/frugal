@@ -35,4 +35,4 @@ export const config: frugal.Config = {
 };
 ```
 
-Now you cant send a `GET` request on the path of a static page you wish to refresh with the query parameter `?force_refresh`. Add an `Authorization` with the key you defined in the config, and frugal will generate the page and replace it in cache (using page persistance layer). Every subsequent request will get the new version from the cache.
+Now you cant send a `GET` request on the path of a static page you wish to refresh with the query parameter `?force_refresh=my-secret-key`. Frugal will generate the page and replace it in cache (using page persistance layer). Every subsequent request will get the new version from the cache.
