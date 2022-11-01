@@ -5,10 +5,6 @@ import { Page } from './Page.tsx';
 import { Data } from './type.ts';
 import { fromFormData, initialForm, submitForm, validateForm } from './Form.ts';
 
-export function getPathList() {
-    return [];
-}
-
 export function getStaticData(): frugal.DataResult<Data> {
     return {
         data: {
