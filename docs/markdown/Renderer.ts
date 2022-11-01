@@ -1,6 +1,7 @@
 import * as preact from 'preact';
 import { render } from 'preact-render-to-string';
 import { marked } from '../dep/marked.ts';
+
 import { Heading } from './Heading.tsx';
 import { Code } from './Code.tsx';
 import { Link } from './Link.tsx';
@@ -14,7 +15,13 @@ export class Renderer extends marked.Renderer {
     ) {
         const id = slugger.slug(raw);
 
-        return render(preact.h(Heading, { level, id }, text));
+        return render(
+            preact.h(Heading, {
+                level,
+                id,
+                text,
+            }),
+        );
     }
 
     code(code: string, language?: string) {

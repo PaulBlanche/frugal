@@ -39,11 +39,11 @@ export class Navigator {
             : directive === 'true';
     }
 
-    async navigate(): Promise<void> {
+    async navigate(init?: RequestInit): Promise<void> {
         try {
             this.#setReadyState('loading');
 
-            const html = await this.#fetch();
+            const html = await this.#fetch(init);
             const nextDocument = new DOMParser().parseFromString(
                 html,
                 'text/html',

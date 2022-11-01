@@ -12,7 +12,7 @@ export function Link(
             {...props}
             rel={props.href === undefined || !hasProtocol(props.href)
                 ? props.rel
-                : `${props.rel} noopener noreferrer`}
+                : `${props.rel ?? ''} noopener noreferrer`.trim()}
         />
     );
 }

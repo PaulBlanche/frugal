@@ -10,11 +10,11 @@ In order to leverage incremental generation for styles, you have to use a loader
 
 ## Style loader
 
-In `frugal.config.ts`, add the [style loader](/docs/concepts/style-loader) :
+In `frugal.config.ts`, add the [style loader](/docs/api/03-style-loader) :
 
 ```ts
 //...
-import { StyleLoader } from 'https://deno.land/x/frugal/packages/loader_style/mod.ts';
+import { StyleLoader } from 'https://deno.land/x/frugal/loader_style.ts';
 
 export const config: frugal.Config = {
     //...
@@ -33,7 +33,7 @@ The style loader taks a `test` function that will be used to detect style module
 Then, we can write a style module (in `/pages/post/post.style.ts` for exemple) :
 
 ```ts
-import { className } from 'https://deno.land/x/frugal/packages/loader_style/styled.ts';
+import { className } from 'https://deno.land/x/frugal/styled.ts';
 
 const titleMargin = 10;
 
@@ -48,7 +48,7 @@ You can now use the style module in your modules (in `/pages/post/post.ts` for e
 
 ```ts
 import * as s from './post.style.ts';
-import { cx } from 'https://deno.land/x/frugal/packages/loader_style/styled.ts';
+import { cx } from 'https://deno.land/x/frugal/styled.ts';
 
 export function post(post: Post) {
     return `<div>

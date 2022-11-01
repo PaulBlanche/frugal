@@ -42,12 +42,6 @@ export class LiveReloadClient {
             const message = JSON.parse(event.data);
             if (message.type === 'reload') {
                 setTimeout(() => {
-                    /*new Navigator(new URL(location.href), {
-                        defaultNavigate: true,
-                        timeout: 0,
-                        resetScroll: false,
-                        restoreScroll: false,
-                    }).navigate({ fullRefresh: true });*/
                     location.reload();
                 }, 10);
             }

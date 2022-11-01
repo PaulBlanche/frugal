@@ -8,9 +8,9 @@ But some environment don't have acess to a file system (like Deno Deploy). For t
 
 Frugal needs to persist pages and cache information.
 
-Pages are straightforward, it is the generated html markup for each page. Frugal will need to write pages during build time, and if you use `frugal_server`, frugal will also need to read and write pages during runtime (for static page refresh).
+Pages are straightforward, it is the generated html markup for each page. Frugal will need to write pages during build time, and if you use the server, frugal will also need to read and write pages during runtime (for static page refresh).
 
-Cache is a bit more complex, but essentially, this is information on the build process of each static assets (assets created from loader, or html pages). This information is leveraged by frugal to decide whether we need to actually rebuild a page when a build is scheduled. Frugal will need to read and write cache information during build time and if you use `frugal_server`, frugal will also need to read and write pages during runtime (for static page refresh).
+Cache is a bit more complex, but essentially, this is information on the build process of each static assets (assets created from loader, or html pages). This information is leveraged by frugal to decide whether we need to actually rebuild a page when a build is scheduled. Frugal will need to read and write cache information during build time and if you use the server, frugal will also need to read and write pages during runtime (for static page refresh).
 
 ## Kinds of persistance
 

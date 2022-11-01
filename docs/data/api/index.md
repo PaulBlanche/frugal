@@ -1,4 +1,4 @@
-# Concepts
+# API
 
 Frugal is built to be composable, opposite to a monolith like Next.js.
 

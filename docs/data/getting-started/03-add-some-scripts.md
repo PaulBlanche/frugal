@@ -4,11 +4,11 @@ Our page is only missing javascript in The Holy Trinity of Web Development (CSS,
 
 ## Script loader
 
-In `frugal.config.ts`, add the [script loader](/docs/concepts/script-loader) :
+In `frugal.config.ts`, add the [script loader](/docs/api/02-script-loader) :
 
 ```ts
 //...
-import { ScriptLoader } from 'https://deno.land/x/frugal/packages/loader_script/mod.ts';
+import { ScriptLoader } from 'https://deno.land/x/frugal/loader_script.ts';
 
 export const config: frugal.Config = {
     //...
@@ -32,7 +32,7 @@ Again, the loader takes a test function to detect module to include in its bundl
 
 ## Script module
 
-We can no write a script module (`/pages/post/detail.script.ts` for exemple) :
+We can now write a script module (`/pages/post/detail.script.ts` for exemple) :
 
 ```ts
 const ID = 'my-id';
@@ -60,9 +60,9 @@ function getContent() {
 
 Since now your script module is imported, frugal can see any modification done to the script and do incremental generation correctly. If you change something in a sc ript module, frugal will rebuild any page that uses it.
 
-> ⚠️ Since your script module is imported in your page descriptor, keep in mind that everything you do on top level of your script module will be executed when you rune frugal (at build time or runtime if you use frugal server). This is usefull to share constants (like the `ID` constant) with the generated markup, but try not to execute anything. For static website, this will just make the build longer, but for frugal server it will delay server startup, which is especially bad in serverless context.
->
-> Rule of thumb : only execute anything in the `main` function, and only declare things (constants, functions) on top level.
+[warn]> Since your script module is imported in your page descriptor, keep in mind that everything you do on top level of your script module will be executed when you rune frugal (at build time or runtime if you use frugal server). This is usefull to share constants (like the `ID` constant) with the generated markup, but try not to execute anything. For static website, this will just make the build longer, but for frugal server it will delay server startup, which is especially bad in serverless context.
+[warn]>
+[warn]> **Rule of thumb** : only execute anything in the `main` function, and only declare things (constants, functions) on top level.
 
 ## Include the generated stylesheet
 

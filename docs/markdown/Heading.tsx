@@ -9,13 +9,14 @@ import * as s from './Heading.style.ts';
 
 type HeadingProps = {
     level: 1 | 2 | 3 | 4 | 5 | 6;
+    text: string;
 } & preact.JSX.IntrinsicElements['h1'];
 
-export function Heading({ level, children, ...props }: HeadingProps) {
+export function Heading({ level, text, ...props }: HeadingProps) {
     const Heading: 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6' = `h${level}`;
     return (
         <Heading {...props} class={cx(props.class, s.heading)}>
-            {children}
+            <span dangerouslySetInnerHTML={{ __html: text }} />
             {props.id && (
                 <a
                     href={`#${props.id}`}

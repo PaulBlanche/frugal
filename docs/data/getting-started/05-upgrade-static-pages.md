@@ -10,7 +10,7 @@ If the server recieve a request matching the `pattern` of a static page that wa
 
 ## Page persistance
 
-On a standard server, the cache is simply the filesytem (each page generated at runtime are stored in the same place as the page generated at build time). On serverless context, there is not runtime filesystem to write pages in. To fix that, frugal abstract read and write with a [persistance layer](/docs/concepts/persistance-layer). By default frugal uses a filesystem persistance layer, but you can configure frugal to use a different one :
+On a standard server, the cache is simply the filesytem (each page generated at runtime are stored in the same place as the page generated at build time). On serverless context, there is not runtime filesystem to write pages in. To fix that, frugal abstract read and write with a [persistance layer](/docs/api/04-persistance). By default frugal uses a filesystem persistance layer, but you can configure frugal to use a different one :
 
 ```ts
 export const config: frugal.Config = {

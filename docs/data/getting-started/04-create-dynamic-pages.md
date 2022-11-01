@@ -5,7 +5,7 @@
 If we want to add a dynamic page, we need to configure frugal to use the server :
 
 ```ts
-import type * as frugal from 'https://deno.land/x/frugal/packages/core/mod.ts';
+import type * as frugal from 'https://deno.land/x/frugal/core.ts';
 
 const self = new URL(import.meta.url);
 
@@ -23,22 +23,21 @@ With this configuration you will get a server on port `8000` that will be able t
 
 ## Dynamic page descritpor
 
-In a module (`/pages/posts/list.ts` for example), create a [dynamic page descriptor](/docs/concepts/page-descriptor) :
+In a module (`/pages/posts/list.ts` for example), create a [dynamic page descriptor](/docs/api/01-page-descriptor) :
 
 ```tsx
-import type * as frugal from 'https://deno.land/x/frugal/packages/core/mod.ts';
+import type * as frugal from 'https://deno.land/x/frugal/core.ts';
 import { queryPostList } from './api.ts';
 import { postCard } from './component/postCard.ts';
 
-export const pattern = '/post/:id';
-
-type Path = { id: string };
+export const pattern = '/posts';
 
 export async function getDynamicData(
     request: Request,
-    context: GetStaticDataContext<Path>,
+    context: GetStaticDataContext,
 ): Promise<DataResult<Post[]>> {
-    const postList = await queryPostList(context.path.id);
+    const searchParams = new URL(request.url).searchParams;
+    const postList = await queryPostList(searchParams.get('page'));
     return { data: postList };
 }
 
@@ -83,7 +82,7 @@ With dynamic pages, frugal will function as a web server. You will still need a 
 
 ```ts
 import { config } from './frugal.config.ts';
-import { serve } from 'https://deno.land/x/frugal/packages/frugal_server/serve.ts';
+import { serve } from 'https://deno.land/x/frugal/server.ts';
 
 await serve(config);
 ```
@@ -98,7 +97,7 @@ In a module `/watch.ts` add the following code :
 
 ```ts
 import { config } from './frugal.config.ts';
-import { serve } from 'https://deno.land/x/frugal/packages/frugal_server/watch.ts';
+import { serve } from 'https://deno.land/x/frugal/server.ts';
 
 await watch(config, [/* extra path to watch*/]);
 ```

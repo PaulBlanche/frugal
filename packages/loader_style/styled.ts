@@ -1,4 +1,3 @@
-import { type JSX } from 'preact';
 import * as murmur from '../murmur/mod.ts';
 
 const SCOPED_CLASSNAMES = new Set<string>();
@@ -242,13 +241,19 @@ export function keyframes(
     return keyframes;
 }
 
+type SignalLike<T> = {
+    value: T;
+    peek(): T;
+    subscribe(fn: (value: T) => void): () => void;
+};
+
 type CXPrimitives =
     | string
     | number
     | boolean
     | undefined
     | null
-    | JSX.SignalLike<string | undefined>
+    | SignalLike<string | undefined>
     | Record<string, unknown>
     | Rules;
 type CX = CXPrimitives | CX[];

@@ -34,58 +34,27 @@
             }]
         },
         {
-            "slug": "/concepts",
-            "name": "concepts",
-            "children": [
-                {
-                    "slug": "/concepts/page-descriptor",
-                    "name": "page descriptor",
-                    "children": [
-                        {
-                            "slug": "/concepts/page-descriptor/static-page",
-                            "name": "static page"
-                        },
-                        {
-                            "slug": "/concepts/page-descriptor/dynamic-page",
-                            "name": "dynamic page"
-                        },
-                        {
-                            "slug": "/concepts/page-descriptor/handlers",
-                            "name": "handlers"
-                        }
-                    ]
-                },
-                {
-                    "slug": "/concepts/loaders",
-                    "name": "loaders",
-                    "children": [
-                        {
-                            "slug": "/concepts/loaders/style-loader",
-                            "name": "style loader"
-                        },
-                        {
-                            "slug": "/concepts/loaders/script-loader",
-                            "name": "script loader"
-                        }
-                    ]
-                },
-                {
-                    "slug": "/concepts/persistance",
-                    "name": "persistance"
-                }
-            ]
-        },
-        {
-            "slug": "/server",
-            "name": "server"
-        },
-        {
-            "slug": "/using-preact",
-            "name": "using preact"
-        },
-        {
-            "slug": "/client-session",
-            "name": "client session"
+            "slug": "/api",
+            "name": "API",
+            "children": [{
+                "slug": "/api/01-page-descriptor",
+                "name": "Page descriptor"
+            }, {
+                "slug": "/api/02-script-loader",
+                "name": "Script loader"
+            }, {
+                "slug": "/api/03-style-loader",
+                "name": "Style loader"
+            }, {
+                "slug": "/api/04-persistance",
+                "name": "Persistance"
+            }, {
+                "slug": "/api/05-preact",
+                "name": "Preact"
+            }, {
+                "slug": "/api/06-client-session",
+                "name": "Client session"
+            }]
         }
     ]
 }

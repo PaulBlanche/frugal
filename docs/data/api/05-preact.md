@@ -18,7 +18,7 @@ Preact integration rely on you providing the preact version you want via an [imp
 To use preact at build time or on the server, you only need to use the `getContentFrom` function in your page descriptor :
 
 ```tsx
-import { getContentFrom } from 'https://deno.land/x/frugal/packages/frugal_preact/mod.server.ts';
+import { getContentFrom } from 'https://deno.land/x/preact.server.ts';
 
 import { Page } from './Page.tsx';
 
@@ -27,18 +27,21 @@ export const getContent = getContentFrom(Page);
 
 The `getContentFrom` will return a `getContent` function of a [page descriptor](/docs/concepts/page-descriptor) from a Preact component (here the `Page` component).
 
-With this, your are set to write any JSX you want in the `Page` component. It will be rendered to html in the `getContentFrom`. The renderer does not handle `<Suspense>`.
+By default `getContentFrom` will embed the data object as a JSON object in the markup for island hydration. Therefore data object must be serializable.
+You can lift this contraint if you don't have any island in your page (or don't use `useData` in any island) :
 
-## Preact client-side
+```ts
+export const getContent = getContentFrom(Page, { embedData: false });
+```
 
-First, since we want to bundle script, you need to setup the [script loader](/docs/concepts/loaders/script-loader).
+## `<Island>` component
 
-Then, you need to create a _Island_ version of the component you want to execute client-side :
+The `<Island>` component wraps your component to make it hydratable
 
 ```tsx
 /* @jsxRuntime automatic */
 /* @jsxImportSource preact */
-import { Island } from 'https://deno.land/x/frugal/packages/frugal_preact/mod.client.ts';
+import { Island } from 'https://deno.land/x/frugal/preact.client.ts';
 
 import { MyComponent, MyComponentProps } from './MyComponent.tsx';
 import { NAME } from './MyComponent.script.ts';
@@ -48,45 +51,16 @@ export function MyComponentIsland(props: MyComponentProps) {
 }
 ```
 
-When the `<Island>` component is rendered in the server or during the build, the `props` object is serialized and embeded in the generated html markup, to be picked up when the javascript client-side kicks in. This means the `props` object needs to be a JSON object.
+[warn]> Avoid importing `preact.server.ts` in your island, since this module contains server only code (using Deno api).
 
-You need to create a script module (the `./myComponent.script.ts` module in the previous code block, a module matching the [`script` loader](/docs/concepts/loaders/script-loader) pattern) that `hydrate` your module :
-
-```ts
-import { MyComponent } from './MyComponent.tsx';
-import { hydrate } from 'https://deno.land/x/frugal/packages/frugal_preact/mod.client.ts';
-
-export const NAME = 'MyComponentIsland';
-
-export function main() {
-    hydrate(NAME, () => MyComponent);
-}
-```
-
-The `NAME` export is the unique identifier for your component. It will be used by the `<Island>` component to uniquely identify the generated DOM node as "hydratable with the component MyComponent". The `hydrate` function will use the name to query all DOM nodes that need to be hydrated with `MyComponent`.
-
-The `hydrate` function takes as parameter a function returning the component `() => MyComponent`, and not directly the component. This function can be async, leaving you the ability to dynamically import your component :
-
-```ts
-import { hydrate } from 'https://deno.land/x/frugal/packages/frugal_preact/mod.client.ts';
-
-export const NAME = 'MyComponentIsland';
-
-export function main() {
-    hydrate(NAME, async () => (await import('./MyComponent.tsx')).MyComponent);
-}
-```
-
-## Hydration strategy
-
-By default an `Island` is hydrated on load. But you can instruct frugal to use another startegy.
+By default an `<Island>` is hydrated on load. But you can instruct frugal to use another startegy.
 
 ### `idle` hydration strategy
 
 The hydratation of the `idle` islands is defered with a `setTimeout` to be rendered as soon as the main thread is `idle` :
 
 ```tsx
-import { Island } from 'https://deno.land/x/frugal/packages/frugal_preact/mod.client.ts';
+import { Island } from 'https://deno.land/x/frugal/peact.client.ts';
 import { MyComponent, MyComponentProps } from './MyComponent.tsx';
 import { NAME } from './MyComponent.script.ts';
 
@@ -104,18 +78,19 @@ export function MyComponentIsland(props: MyComponentProps) {
 
 ### `visible` hydration strategy
 
-The hydration of the `visible` islands is defered with an `IntersectionObserver`. The hydration will kick in as soon as the component becomes visible. This can be coupled with a dynamic import of the component during hydration, to delay loading the bundle of the component.
+The hydration of the `visible` islands is defered with an `IntersectionObserver`. The hydration will kick in as soon as the component becomes visible. This can be coupled with a dynamic import of the component during hydration, to delay loading the bundle of the component if you use code splitting.
 
 ```tsx
-import { Island } from 'https://deno.land/x/frugal/packages/frugal_preact/mod.client.ts';
-import { MyComponent, MyComponentProps } from './MyComponent.tsx';
+import { Island } from 'https://deno.land/x/frugal/preact.client.ts';
+import { type MyComponentProps } from './MyComponent.tsx';
 import { NAME } from './MyComponent.script.ts';
 
 export function MyComponentIsland(props: MyComponentProps) {
     return (
         <Island
             props={props}
-            Component={MyComponent}
+            Component={async () =>
+                (await import('./MyComponent.tsx')).MyComponent}
             name={NAME}
             strategy='visible'
         />
@@ -128,7 +103,7 @@ export function MyComponentIsland(props: MyComponentProps) {
 The hydration of the `media-query` islands kicks in if the client matches a given media-query on load. This strategy does not listen to `resize` events. This can be coupled with a dynamic import of the component during hydration, to avoid loading bundle that will not be hydrated on the client.
 
 ```tsx
-import { Island } from 'https://deno.land/x/frugal/packages/frugal_preact/mod.client.ts';
+import { Island } from 'https://deno.land/x/frugal/preact.client.ts';
 import { MyComponent, MyComponentProps } from './MyComponent.tsx';
 import { NAME } from './MyComponent.script.ts';
 
@@ -150,7 +125,7 @@ export function MyComponentIsland(props: MyComponentProps) {
 By defautl, the component in the island is rendered server side to populate the html page. If you want your island to be rendered only client-side, you can disable rendering server side with the props `clientOnly` :
 
 ```tsx
-import { Island } from 'https://deno.land/x/frugal/packages/frugal_preact/mod.client.ts';
+import { Island } from 'https://deno.land/x/frugal/preact.client.ts';
 import { MyComponent, MyComponentProps } from './MyComponent.tsx';
 import { NAME } from './MyComponent.script.ts';
 
@@ -179,25 +154,16 @@ For a page with the pattern `/:foo/:bar` that was rendered with the _path object
 
 ### `useData`
 
-This hook will return the _data object_ used to generate the current page. To be passed to the _islands_, the _data object_ is serialized and embeded in the html as JSON. If you want to use `useData`, your _data object_ muste be serializable.
+This hook will return the _data object_ used to generate the current page.
 
-If you don't need access to the `data` in any of your _islands_ and don't want the extra weight of a serialized JSON in your html pages, you can disabled _data object_ embeding in the `getContentFrom` function :
-
-```ts
-export const getContent = getContentFrom(Page, {
-    App,
-    embedData: false,
-});
-```
-
-You should use this hooks instead of relying on island props. Since the page _data object_ is embeded once for the whole page, it is better to use it instead of having bits derivred from this object embeded near each islands, leading to data duplication and heavier markup.
+You should use this hooks instead of relying on island props. Since the page _data object_ is embeded once for the whole page, it is better to use it instead of having multiple derived values from this object embeded near each islands, leading to data duplication and heavier markup.
 
 ## Head component
 
 Preact comes with a `<Head>` component that allows you to add tags to the `<head>` of the document in any components :
 
 ```tsx
-import { Head } from 'https://deno.land/x/frugal/packages/frugal_preact/mod.client.ts';
+import { Head } from 'https://deno.land/x/frugal/preact.client.ts';
 
 export function MyComponent() {
     return (

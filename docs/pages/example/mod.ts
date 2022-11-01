@@ -1,4 +1,4 @@
-import { getContentFrom } from '../../dep/frugal/frugal_preact.server.ts';
+import { getContentFrom } from '../../dep/frugal/preact.server.ts';
 import * as frugal from '../../dep/frugal/core.ts';
 
 import { Page } from './Page.tsx';
@@ -9,6 +9,7 @@ export function getStaticData(): frugal.DataResult<Data> {
     return {
         data: {
             form: initialForm(),
+            serverNow: new Date(),
         },
     };
 }
@@ -21,11 +22,11 @@ export const handlers = {
         if (validatedForm.isValid) {
             const submittedForm = await submitForm(form);
             return {
-                data: { form: submittedForm },
+                data: { form: submittedForm, serverNow: new Date() },
             };
         }
         return {
-            data: { form: validatedForm },
+            data: { form: validatedForm, serverNow: new Date() },
         };
     },
 };

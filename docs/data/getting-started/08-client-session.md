@@ -4,14 +4,14 @@ For now we only have a Multi Page Application (MPA). Each time we navigate betwe
 
 This can be problematic if some client-side js relies on a state. If the client navigates away and back, the state is lost and re-initialised.
 
-[Client session](/docs/concepts/client-session) fixes that, by making a MPA work like a Single Page Application (SPA).
+[Client session](/docs/api/06-client-session) fixes that, by making a MPA work like a Single Page Application (SPA).
 
 ## Using a session
 
 in a script module (`session.script.ts` for exemple) add the following code :
 
 ```ts
-import { Session } from 'https://deno.land/x/frugal/packages/frugal_session/mod.ts';
+import { Session } from 'https://deno.land/x/frugal/client_session.ts';
 
 export function main() {
     const session = new Session();
@@ -19,7 +19,7 @@ export function main() {
 }
 ```
 
-and import this module in your page descritptor.
+and import this module in your page descritptor (with the [script loader](/docs/api/02-script-loader) configured).
 
 Once the `start` method is called, the session will hijack every navigation on the page (link click, popstate) and prevent the default behaviour of the browser.
 
