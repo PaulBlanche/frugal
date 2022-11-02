@@ -148,6 +148,7 @@ export class FrugalBuilder {
                 },
             );
             const loaderContext = await LoaderContext.load(
+                config,
                 path.resolve(
                     config.cacheDir,
                     FILENAMES.LOADER_CONTEXT_FILENAME,
