@@ -1,7 +1,7 @@
 import * as log from '../log/mod.ts';
 import { Asset } from './loader.ts';
 import { CleanConfig } from './Config.ts';
-import { PersistantCache } from './Cache.ts';
+import { PersistentCache } from './Cache.ts';
 import * as fs from '../../dep/std/fs.ts';
 
 function logger() {
@@ -19,7 +19,7 @@ export class LoaderContext {
     static async build(
         config: CleanConfig,
         assets: Asset[],
-        getLoaderCache: (name: string) => Promise<PersistantCache>,
+        getLoaderCache: (name: string) => Promise<PersistentCache>,
     ) {
         logger().info({
             op: 'start',
@@ -78,7 +78,7 @@ export class LoaderContext {
 async function buildContext(
     config: CleanConfig,
     assets: Asset[],
-    getLoaderCache: (name: string) => Promise<PersistantCache>,
+    getLoaderCache: (name: string) => Promise<PersistentCache>,
 ) {
     const context: Context = {};
 

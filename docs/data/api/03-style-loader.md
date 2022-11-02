@@ -129,7 +129,7 @@ export const list = className('list').styled`
 `;
 ```
 
-should output the following style
+Should output the following style
 
 ```css
 .item-l6cy2y {
@@ -173,7 +173,7 @@ export const list = className('list').extends(base).styled`
 `;
 ```
 
-we want to bundle only this :
+We want to bundle only this :
 
 ```tsx
 export const item = 'item-l6cy2y';

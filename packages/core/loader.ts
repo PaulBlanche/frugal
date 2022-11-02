@@ -1,4 +1,4 @@
-import { PersistantCache } from './Cache.ts';
+import { PersistentCache } from './Cache.ts';
 import { CleanConfig } from './Config.ts';
 
 export type Asset = {
@@ -9,7 +9,7 @@ export type Asset = {
 };
 
 export type GenerateParams<CACHED = unknown> = {
-    getCache: () => Promise<PersistantCache<CACHED>>;
+    getCache: () => Promise<PersistentCache<CACHED>>;
     assets: Asset[];
     config: CleanConfig;
 };

@@ -1,5 +1,5 @@
 import * as log from '../log/mod.ts';
-import { Persistance } from './Persistance.ts';
+import { Persistence } from './Persistence.ts';
 
 export type SerializedCache = {
     hash: string;
@@ -136,25 +136,25 @@ export class Cache<VALUE = unknown> {
     }
 }
 
-export type PersistantCacheConfig = CacheConfig & {
-    persistance: Persistance;
+export type PersistentCacheConfig = CacheConfig & {
+    persistence: Persistence;
 };
 
 /**
- * A Cache that can be persisted using a `Persistance` layer (filesystem, Redis,
+ * A Cache that can be persisted using a `Persistence` layer (filesystem, Redis,
  * etc...)
  */
-export class PersistantCache<VALUE = unknown> extends Cache<VALUE> {
+export class PersistentCache<VALUE = unknown> extends Cache<VALUE> {
     #cachePath: string;
-    #persistance: Persistance;
+    #persistence: Persistence;
 
     /**
-     * Load the cache from persistance. All persisted data is cold data, and
+     * Load the cache from persistence. All persisted data is cold data, and
      * hot data is empty at first.
      */
     static async load(
         cachePath: string,
-        config: PersistantCacheConfig,
+        config: PersistentCacheConfig,
     ) {
         logger().info({
             cachePath,
@@ -163,9 +163,9 @@ export class PersistantCache<VALUE = unknown> extends Cache<VALUE> {
             },
         });
         try {
-            const data = await config.persistance.read(cachePath);
+            const data = await config.persistence.read(cachePath);
             const serializedCache: SerializedCache = JSON.parse(data);
-            return new PersistantCache(
+            return new PersistentCache(
                 cachePath,
                 serializedCache,
                 config,
@@ -178,7 +178,7 @@ export class PersistantCache<VALUE = unknown> extends Cache<VALUE> {
                 },
             });
 
-            return new PersistantCache(cachePath, {
+            return new PersistentCache(cachePath, {
                 hash: config.hash ?? '',
                 data: {},
             }, config);
@@ -188,15 +188,15 @@ export class PersistantCache<VALUE = unknown> extends Cache<VALUE> {
     constructor(
         cachePath: string,
         serializedCache: SerializedCache,
-        config: PersistantCacheConfig,
+        config: PersistentCacheConfig,
     ) {
         super(serializedCache, config);
         this.#cachePath = cachePath;
-        this.#persistance = config.persistance;
+        this.#persistence = config.persistence;
     }
 
     /**
-     * Save the hot data to the persistance layer
+     * Save the hot data to the persistence layer
      */
     async save(): Promise<void> {
         logger().info({
@@ -206,7 +206,7 @@ export class PersistantCache<VALUE = unknown> extends Cache<VALUE> {
             },
         });
 
-        await this.#persistance.set(
+        await this.#persistence.set(
             this.#cachePath,
             JSON.stringify(this.serialize()),
         );

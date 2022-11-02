@@ -1,10 +1,10 @@
 import {
     NotFound,
-    Persistance,
-} from '../../../../packages/core/Persistance.ts';
+    Persistence,
+} from '../../../../packages/core/Persistence.ts';
 import { spy } from '../../../../dep/std/mock.ts';
 
-class MemoryPersistance implements Persistance {
+class MemoryPersistence implements Persistence {
     memory: Map<string, string>;
 
     constructor() {
@@ -42,29 +42,29 @@ class MemoryPersistance implements Persistance {
     }
 }
 
-type FakePersistanceConfig = {
+type FakePersistenceConfig = {
     mock?: {
-        set?: Persistance['set'];
-        read?: Persistance['read'];
-        open?: Persistance['open'];
-        delete?: Persistance['delete'];
+        set?: Persistence['set'];
+        read?: Persistence['read'];
+        open?: Persistence['open'];
+        delete?: Persistence['delete'];
     };
 };
 
-export function fakePersistance({ mock = {} }: FakePersistanceConfig = {}) {
-    const persistance = new MemoryPersistance();
+export function fakePersistence({ mock = {} }: FakePersistenceConfig = {}) {
+    const persistence = new MemoryPersistence();
 
-    const _set = persistance.set;
-    persistance.set = spy(mock.set ?? _set.bind(persistance));
+    const _set = persistence.set;
+    persistence.set = spy(mock.set ?? _set.bind(persistence));
 
-    const _read = persistance.read;
-    persistance.read = spy(mock.read ?? _read.bind(persistance));
+    const _read = persistence.read;
+    persistence.read = spy(mock.read ?? _read.bind(persistence));
 
-    const _open = persistance.open;
-    persistance.open = spy(mock.open ?? _open.bind(persistance));
+    const _open = persistence.open;
+    persistence.open = spy(mock.open ?? _open.bind(persistence));
 
-    const _delete = persistance.delete;
-    persistance.delete = spy(mock.delete ?? _delete.bind(persistance));
+    const _delete = persistence.delete;
+    persistence.delete = spy(mock.delete ?? _delete.bind(persistence));
 
-    return persistance;
+    return persistence;
 }

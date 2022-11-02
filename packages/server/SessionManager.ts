@@ -1,29 +1,29 @@
-import { Persistance } from '../core/mod.ts';
+import { Persistence } from '../core/mod.ts';
 import { Frugal } from '../core/mod.ts';
 
 import * as murmur from '../murmur/mod.ts';
 import * as path from '../../dep/std/path.ts';
 
 export class SessionManager {
-    #persistance: Persistance;
+    #persistence: Persistence;
     #frugal: Frugal;
 
-    constructor(persistance: Persistance, frugal: Frugal) {
-        this.#persistance = persistance;
+    constructor(persistence: Persistence, frugal: Frugal) {
+        this.#persistence = persistence;
         this.#frugal = frugal;
     }
 
     /**
      * Create a new session object with the given content.
      *
-     * The session uses a persistance layer, and returns the id of the created
+     * The session uses a persistence layer, and returns the id of the created
      * session
      */
     async set(content: string): Promise<string> {
         const sessionId = this.#getSessionId(content);
         const sessionPath = this.#sessionPath(sessionId);
 
-        await this.#persistance.set(sessionPath, content);
+        await this.#persistence.set(sessionPath, content);
 
         return sessionId;
     }
@@ -34,7 +34,7 @@ export class SessionManager {
     async get(sessionId: string): Promise<string> {
         const sessionPath = this.#sessionPath(sessionId);
 
-        return await this.#persistance.read(sessionPath);
+        return await this.#persistence.read(sessionPath);
     }
 
     /**
@@ -43,7 +43,7 @@ export class SessionManager {
     async delete(sessionId: string): Promise<void> {
         const sessionPath = this.#sessionPath(sessionId);
 
-        return await this.#persistance.delete(sessionPath);
+        return await this.#persistence.delete(sessionPath);
     }
 
     #getSessionId(content: string): string {

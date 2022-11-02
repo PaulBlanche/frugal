@@ -4,9 +4,9 @@ import { FrugalError } from './FrugalError.ts';
 export class NotFound extends FrugalError {}
 
 /**
- * A persistance layer
+ * A persistence layer
  */
-export interface Persistance {
+export interface Persistence {
     /**
      * Set the given content at the given path
      */
@@ -26,9 +26,9 @@ export interface Persistance {
 }
 
 /**
- * A persistance layer using the filesystem
+ * A persistence layer using the filesystem
  */
-export class FilesystemPersistance implements Persistance {
+export class FilesystemPersistence implements Persistence {
     constructor() {}
 
     async set(path: string, content: string) {
@@ -64,9 +64,9 @@ export class FilesystemPersistance implements Persistance {
 }
 
 /**
- * A persistance layer using Upstash
+ * A persistence layer using Upstash
  */
-export class UpstashPersistance implements Persistance {
+export class UpstashPersistence implements Persistence {
     #url: string;
     #token: string;
 

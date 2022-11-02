@@ -8,7 +8,7 @@ This can be problematic if some client-side js relies on a state. If the client 
 
 ## Using a session
 
-in a script module (`session.script.ts` for example) add the following code :
+In a script module (`session.script.ts` for example) add the following code :
 
 ```ts
 import { Session } from 'https://deno.land/x/frugal/client_session.ts';
@@ -19,7 +19,7 @@ export function main() {
 }
 ```
 
-and import this module in your page descriptor (with the [script loader](/docs/api/02-script-loader) configured).
+And import this module in your page descriptor (with the [script loader](/docs/api/02-script-loader) configured).
 
 Once the `start` method is called, the session will hijack every navigation on the page (link click, popstate) and prevent the default behavior of the browser.
 

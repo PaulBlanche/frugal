@@ -7,7 +7,7 @@ import { PageGenerator } from '../../../../packages/core/PageGenerator.ts';
 import { fakePageGenerator } from './PageGenerator.ts';
 import { fakeStaticPage } from './Page.ts';
 import { fakeCache } from './Cache.ts';
-import { fakePersistance } from './Persistance.ts';
+import { fakePersistence } from './Persistence.ts';
 import { spy } from '../../../../dep/std/mock.ts';
 
 type FakePageBuilderConfig<
@@ -35,7 +35,7 @@ export function fakePageBuilder<
         generator = fakePageGenerator(),
         config = {
             cache: fakeCache(),
-            persistance: fakePersistance(),
+            persistence: fakePersistence(),
         },
         mock = {},
     }: FakePageBuilderConfig<PATH, DATA> = {},

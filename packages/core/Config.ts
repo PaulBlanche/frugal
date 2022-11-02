@@ -6,7 +6,7 @@ import { ScriptLoader } from '../loader_script/ScriptLoader.ts';
 import * as log from '../log/mod.ts';
 import { Loader } from './loader.ts';
 import { Page } from './Page.ts';
-import { FilesystemPersistance, Persistance } from './Persistance.ts';
+import { FilesystemPersistence, Persistence } from './Persistence.ts';
 
 // TODO(PaulBlanche): add config validator
 
@@ -27,12 +27,12 @@ export type Config = {
     outputDir: string;
     /** The list of registered pages */
     pages: Page[];
-    /** An optional persistance layer for page cache, if you run frugal in a
+    /** An optional persistence layer for page cache, if you run frugal in a
      * distributed environment. Default on Filesystem */
-    pagePersistance?: Persistance;
-    /** An optional persistance layer for frugal cache, if you build/load frugal
+    pagePersistence?: Persistence;
+    /** An optional persistence layer for frugal cache, if you build/load frugal
      * in a distributed environment. Default on Filesystem */
-    cachePersistance?: Persistance;
+    cachePersistence?: Persistence;
     /** the loggers config */
     logging?: log.Config;
 };
@@ -74,7 +74,7 @@ export const DEFAULT_LOGGER_CONFIG: log.Config = {
 
 await log.setup(DEFAULT_LOGGER_CONFIG);
 
-const FS_PERSISTANCE = new FilesystemPersistance();
+const FS_PERSISTENCE = new FilesystemPersistence();
 
 /**
  * A config object, wrapping the actual config with convinence methods.
@@ -155,17 +155,17 @@ export class CleanConfig {
     }
 
     /**
-     * Get the page persistance layer (with automatic fallbakc on Filesystem)
+     * Get the page persistence layer (with automatic fallbakc on Filesystem)
      */
-    get pagePersistance() {
-        return this.#config.pagePersistance ?? FS_PERSISTANCE;
+    get pagePersistence() {
+        return this.#config.pagePersistence ?? FS_PERSISTENCE;
     }
 
     /**
-     * Get the cache persistance layer (with automatic fallbakc on Filesystem)
+     * Get the cache persistence layer (with automatic fallbakc on Filesystem)
      */
-    get cachePersistance() {
-        return this.#config.cachePersistance ?? FS_PERSISTANCE;
+    get cachePersistence() {
+        return this.#config.cachePersistence ?? FS_PERSISTENCE;
     }
 
     /**

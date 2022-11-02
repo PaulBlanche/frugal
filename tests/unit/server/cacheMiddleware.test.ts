@@ -7,19 +7,19 @@ import { cacheMiddleware } from '../../../packages/server/middleware/staticPageM
 import { RouterContext } from '../../../packages/server/middleware/types.ts';
 import { compute } from '../../../packages/server/etag.ts';
 
-Deno.test('cacheMiddleware: should bail out if persistance throw NotFound', async () => {
+Deno.test('cacheMiddleware: should bail out if persistence throw NotFound', async () => {
     const next = mock.spy(async () => new Response());
 
     const request = new Request('http://example.com/foo/bar');
-    const pagePersistanceRead = mock.spy(() => {
+    const pagePersistenceRead = mock.spy(() => {
         throw new frugal.NotFound('');
     });
     await cacheMiddleware({
         frugal: {
             config: {
                 publicDir: '/public',
-                pagePersistance: {
-                    read: pagePersistanceRead,
+                pagePersistence: {
+                    read: pagePersistenceRead,
                 },
             },
         },
@@ -33,7 +33,7 @@ Deno.test('cacheMiddleware: should throw on non NotFound error', async () => {
     const next = mock.spy(async () => new Response());
 
     const request = new Request('http://example.com/foo/bar');
-    const pagePersistanceRead = mock.spy(() => {
+    const pagePersistenceRead = mock.spy(() => {
         throw Error();
     });
 
@@ -42,8 +42,8 @@ Deno.test('cacheMiddleware: should throw on non NotFound error', async () => {
             frugal: {
                 config: {
                     publicDir: '/public',
-                    pagePersistance: {
-                        read: pagePersistanceRead,
+                    pagePersistence: {
+                        read: pagePersistenceRead,
                     },
                 },
             },
@@ -56,7 +56,7 @@ Deno.test('cacheMiddleware: should serve index.html for dir url', async () => {
     const next = mock.spy(async () => new Response());
 
     const request = new Request('http://example.com/foo/bar');
-    const pagePersistanceRead = mock.spy((path: string) => {
+    const pagePersistenceRead = mock.spy((path: string) => {
         if (path.endsWith('.metadata')) {
             return JSON.stringify({ headers: [['foo', 'bar']] });
         }
@@ -67,8 +67,8 @@ Deno.test('cacheMiddleware: should serve index.html for dir url', async () => {
         frugal: {
             config: {
                 publicDir: '/public',
-                pagePersistance: {
-                    read: pagePersistanceRead,
+                pagePersistence: {
+                    read: pagePersistenceRead,
                 },
             },
         },
@@ -76,11 +76,11 @@ Deno.test('cacheMiddleware: should serve index.html for dir url', async () => {
     } as unknown as RouterContext<frugal.StaticRoute>, next);
 
     mock.assertSpyCalls(next, 0);
-    mock.assertSpyCalls(pagePersistanceRead, 2);
-    mock.assertSpyCall(pagePersistanceRead, 0, {
+    mock.assertSpyCalls(pagePersistenceRead, 2);
+    mock.assertSpyCall(pagePersistenceRead, 0, {
         args: ['/public/foo/bar/index.html.metadata'],
     });
-    mock.assertSpyCall(pagePersistanceRead, 1, {
+    mock.assertSpyCall(pagePersistenceRead, 1, {
         args: ['/public/foo/bar/index.html'],
     });
     asserts.assertEquals(Array.from(response.headers.entries()), [
@@ -95,7 +95,7 @@ Deno.test('cacheMiddleware: should serve file for file url', async () => {
     const next = mock.spy(async () => new Response());
 
     const request = new Request('http://example.com/foo/bar.html');
-    const pagePersistanceRead = mock.spy((path: string) => {
+    const pagePersistenceRead = mock.spy((path: string) => {
         if (path.endsWith('.metadata')) {
             return JSON.stringify({ headers: [['foo', 'bar']] });
         }
@@ -106,8 +106,8 @@ Deno.test('cacheMiddleware: should serve file for file url', async () => {
         frugal: {
             config: {
                 publicDir: '/public',
-                pagePersistance: {
-                    read: pagePersistanceRead,
+                pagePersistence: {
+                    read: pagePersistenceRead,
                 },
             },
         },
@@ -115,11 +115,11 @@ Deno.test('cacheMiddleware: should serve file for file url', async () => {
     } as unknown as RouterContext<frugal.StaticRoute>, next);
 
     mock.assertSpyCalls(next, 0);
-    mock.assertSpyCalls(pagePersistanceRead, 2);
-    mock.assertSpyCall(pagePersistanceRead, 0, {
+    mock.assertSpyCalls(pagePersistenceRead, 2);
+    mock.assertSpyCall(pagePersistenceRead, 0, {
         args: ['/public/foo/bar.html.metadata'],
     });
-    mock.assertSpyCall(pagePersistanceRead, 1, {
+    mock.assertSpyCall(pagePersistenceRead, 1, {
         args: ['/public/foo/bar.html'],
     });
     asserts.assertEquals(await response.text(), 'content');
@@ -136,7 +136,7 @@ Deno.test('cacheMiddleware: headers can be overwritten', async () => {
     const next = mock.spy(async () => new Response());
 
     const request = new Request('http://example.com/foo/bar.html');
-    const pagePersistanceRead = mock.spy((path: string) => {
+    const pagePersistenceRead = mock.spy((path: string) => {
         if (path.endsWith('.metadata')) {
             return JSON.stringify({
                 headers: [
@@ -152,8 +152,8 @@ Deno.test('cacheMiddleware: headers can be overwritten', async () => {
         frugal: {
             config: {
                 publicDir: '/public',
-                pagePersistance: {
-                    read: pagePersistanceRead,
+                pagePersistence: {
+                    read: pagePersistenceRead,
                 },
             },
         },
@@ -178,7 +178,7 @@ Deno.test('cacheMiddleware: return naked status', async () => {
     };
 
     const request = new Request('http://example.com/foo/bar.html');
-    const pagePersistanceRead = mock.spy((path: string) => {
+    const pagePersistenceRead = mock.spy((path: string) => {
         if (path.endsWith('.metadata')) {
             return JSON.stringify(generated);
         }
@@ -188,8 +188,8 @@ Deno.test('cacheMiddleware: return naked status', async () => {
         frugal: {
             config: {
                 publicDir: '/public',
-                pagePersistance: {
-                    read: pagePersistanceRead,
+                pagePersistence: {
+                    read: pagePersistenceRead,
                 },
             },
         },

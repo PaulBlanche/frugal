@@ -6,7 +6,7 @@ The session will hijack every navigation (link click, focused link + Enter, back
 
 The session will also prefetch target pages when you hover a link (or on touchstart on mobile). Each time you hover a link, it will insert a `<link rel="prefetch">` in the head of the document.
 
-> [warn] When you do `new Session()` this creates a singleton. Any call after that will return the singleton. This means that you only have the opportunity to set configuration options on the first `new Session()`. Rather than `new Session()` you can use `Session.getInstance()` to get the instance you configured earlier.
+[warn]> When you do `new Session()` this creates a singleton. Any call after that will return the singleton. This means that you only have the opportunity to set configuration options on the first `new Session()`. Rather than `new Session()` you can use `Session.getInstance()` to get the instance you configured earlier.
 
 ## Excluding some link
 
@@ -30,7 +30,7 @@ const session = new Session({
 ```
 
 In this situation, if you want to include a link in the session, simply add the attribute
-`data-frugal-navigate="true"`. Any other value than `"true"` will keep the link excluded from the session. If you want to activate preloading of oa link, simply add the attribute `data-frugal-preload="true"`. Again, any other value than `"true"` will not keep preloading disabled.
+`data-frugal-navigate="true"`. Any other value than `"true"` will keep the link excluded from the session. If you want to activate preloading of a link, simply add the attribute `data-frugal-preload="true"`. Again, any other value than `"true"` will not keep preloading disabled.
 
 ## Loading state
 

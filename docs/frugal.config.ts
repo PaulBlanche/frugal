@@ -1,6 +1,6 @@
 import * as preact from 'preact';
 
-import { page, UpstashPersistance } from './dep/frugal/core.ts';
+import { page, UpstashPersistence } from './dep/frugal/core.ts';
 import { Config } from './dep/frugal/server.ts';
 import { ScriptLoader } from './dep/frugal/loader_script.ts';
 import { StyleLoader, styleTransformer } from './dep/frugal/loader_style.ts';
@@ -13,7 +13,7 @@ import * as example from './pages/example/mod.ts';
 
 const self = new URL(import.meta.url);
 
-const UPSTASH_PERSISTANCE = new UpstashPersistance(
+const UPSTASH_PERSISTENCE = new UpstashPersistence(
     Deno.env.get('UPSTASH_URL') ?? '',
     Deno.env.get('UPSTASH_TOKEN') ?? '',
 );
@@ -61,8 +61,8 @@ export const config: Config = {
         page(example),
     ],
 
-    pagePersistance: UPSTASH_PERSISTANCE,
-    cachePersistance: UPSTASH_PERSISTANCE,
+    pagePersistence: UPSTASH_PERSISTENCE,
+    cachePersistence: UPSTASH_PERSISTENCE,
 
     logging: {
         type: 'human',
@@ -101,7 +101,7 @@ export const config: Config = {
     server: {
         refreshKey: 'refresh_key',
 
-        sessionPersistance: UPSTASH_PERSISTANCE,
+        sessionPersistence: UPSTASH_PERSISTENCE,
 
         listen: { port: 8000 },
     },
