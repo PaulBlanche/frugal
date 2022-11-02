@@ -26,6 +26,9 @@ jobs:
 
       - name: run build
         run: deno task doc:build
+        env:
+          UPSTASH_URL: {{ secrets.UPSTASH_URL}}
+          UPSTASH_TOKEN: {{ secrets.UPSTASH_TOKEN}}
 
       # can't use deno deploy action, because i need exclude/include (https://github.com/denoland/deployctl/issues/100)
       #- name: Upload to Deno Deploy
