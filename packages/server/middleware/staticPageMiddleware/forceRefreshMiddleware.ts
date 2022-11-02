@@ -72,14 +72,4 @@ export async function forceRefreshMiddleware(
             Location: redirectionUrl.href,
         },
     });
-
-    logger().debug({
-        method: context.request.method,
-        pathname: url.pathname,
-        msg() {
-            return `refresh for ${this.method} ${this.pathname} done. Yield to next middleware`;
-        },
-    });
-
-    return await next(context);
 }
