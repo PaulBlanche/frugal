@@ -52,7 +52,7 @@ export class LoaderContext {
         config: CleanConfig,
         filePath: string,
     ) {
-        const serializedData = await Deno.readTextFile(filePath);
+        const serializedData = await config.cachePersistence.read(filePath);
         const context = JSON.parse(serializedData);
 
         return new LoaderContext(context, config.cachePersistence);
