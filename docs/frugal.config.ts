@@ -62,6 +62,7 @@ export const config: Config = {
     ],
 
     pagePersistance: UPSTASH_PERSISTANCE,
+    cachePersistance: UPSTASH_PERSISTANCE,
 
     logging: {
         type: 'human',
