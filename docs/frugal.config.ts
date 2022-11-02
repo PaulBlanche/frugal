@@ -98,6 +98,8 @@ export const config: Config = {
     },
 
     server: {
+        refreshKey: 'refresh_key',
+
         sessionPersistance: UPSTASH_PERSISTANCE,
 
         listen: { port: 8000 },
