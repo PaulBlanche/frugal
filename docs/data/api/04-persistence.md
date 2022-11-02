@@ -2,7 +2,7 @@
 
 By default, data that frugal generates is written on the filesystem. For a static site generator, this is the best option.
 
-But some environment don't have aces to a file system (like Deno Deploy). For those environment, frugal accept some configuration telling it how to persist different types of data.
+But some environment don't have access to a file system (like Deno Deploy). For those environments, frugal accepts some configuration telling it how to persist different types of data.
 
 ## Data frugal needs to persist
 

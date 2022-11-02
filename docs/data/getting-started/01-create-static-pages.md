@@ -59,7 +59,7 @@ export const self = new URL(import.meta.url);
 
 The `pattern` value defines the route of your page. You can use url parameters with `path-to-regexp` syntax.
 
-The `getPathList` method should return a list of parameter object that will be used to generate a list of path with `pattern`. If you use a headless CMS for exemple, this is typically where you'll fetch the list of entities you want to generate pages for. This function can be async.
+The `getPathList` method should return a list of parameter object that will be used to generate a list of path with `pattern`. If you use a headless CMS for example, this is typically where you'll fetch the list of entities you want to generate pages for. This function can be async.
 
 The `getStaticData` method will be called for each path returned by the `getPathList` and should return a data object that will be consumed to produce the view. Everything you need from a distant source (database, file, api) to generate your page, you should fetch here. This function can be async
 

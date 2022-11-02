@@ -18,7 +18,7 @@ Preact integration rely on you providing the preact version you want via an [imp
 To use preact at build time or on the server, you only need to use the `getContentFrom` function in your page descriptor :
 
 ```tsx
-import { getContentFrom } from 'https://deno.land/x/preact.server.ts';
+import { getContentFrom } from 'https://deno.land/x/frugal/preact.server.ts';
 
 import { Page } from './Page.tsx';
 
@@ -28,7 +28,7 @@ export const getContent = getContentFrom(Page);
 The `getContentFrom` will return a `getContent` function of a [page descriptor](/docs/concepts/page-descriptor) from a Preact component (here the `Page` component).
 
 By default `getContentFrom` will embed the data object as a JSON object in the markup for island hydration. Therefore data object must be serializable.
-You can lift this contraint if you don't have any island in your page (or don't use `useData` in any island) :
+You can lift this constraint if you don't have any island in your page (or don't use `useData` in any island) :
 
 ```ts
 export const getContent = getContentFrom(Page, { embedData: false });
@@ -53,11 +53,11 @@ export function MyComponentIsland(props: MyComponentProps) {
 
 [warn]> Avoid importing `preact.server.ts` in your island, since this module contains server only code (using Deno api).
 
-By default an `<Island>` is hydrated on load. But you can instruct frugal to use another startegy.
+By default an `<Island>` is hydrated on load. But you can instruct frugal to use another strategy.
 
 ### `idle` hydration strategy
 
-The hydratation of the `idle` islands is deferred with a `setTimeout` to be rendered as soon as the main thread is `idle` :
+The hydration of the `idle` islands is deferred with a `setTimeout` to be rendered as soon as the main thread is `idle` :
 
 ```tsx
 import { Island } from 'https://deno.land/x/frugal/preact.client.ts';
@@ -156,7 +156,7 @@ For a page with the pattern `/:foo/:bar` that was rendered with the _path object
 
 This hook will return the _data object_ used to generate the current page.
 
-You should use this hooks instead of relying on island props. Since the page _data object_ is embeded once for the whole page, it is better to use it instead of having multiple derived values from this object embedded near each islands, leading to data duplication and heavier markup.
+You should use this hooks instead of relying on island props. Since the page _data object_ is embedded once for the whole page, it is better to use it instead of having multiple derived values from this object embedded near each islands, leading to data duplication and heavier markup.
 
 ## Head component
 

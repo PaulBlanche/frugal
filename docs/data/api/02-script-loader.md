@@ -32,7 +32,7 @@ export function MyComponent() {
 ```
 
 That way you can couple scripts and html easily without having to keep ids
-synchronised through the codebase.
+synchronized through the codebase.
 
 ## Bundling
 

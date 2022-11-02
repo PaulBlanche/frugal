@@ -1,3 +1,5 @@
+import * as http from '../../../../dep/std/http.ts';
+
 import * as log from '../../../log/mod.ts';
 import * as frugal from '../../../core/mod.ts';
 
@@ -61,13 +63,13 @@ export async function forceRefreshMiddleware(
 
     await context.route.refresher.refresh(url.pathname);
 
-    logger().debug({
-        method: context.request.method,
-        pathname: url.pathname,
-        msg() {
-            return `refresh for ${this.method} ${this.pathname} done. Yield to next middleware`;
+    const redirectionUrl = new URL(url);
+    redirectionUrl.searchParams.delete('force_refresh');
+
+    return new Response(null, {
+        status: http.Status.SeeOther,
+        headers: {
+            Location: redirectionUrl.href,
         },
     });
-
-    return await next(context);
 }

@@ -4,7 +4,7 @@ For now, frugal produces only plain html. If we want to add some styles, there i
 
 We can just copy some `.css` file in the `/public` directory and add a `<link>` to it in the `<head>` of our pages. This would work, but you lose some advantages of frugal.
 
-Remember that frugal uses incremental generation ? Frugal does this by watching the dependencies of your pages (modules imported by your page). If you simply `<link>` some external `.css` file, frugal will not watch them, because they are not dependencies. This means that if you change something in your `.css` file, furgal will not see the change, and the next build will do nothing.
+Remember that frugal uses incremental generation ? Frugal does this by watching the dependencies of your pages (modules imported by your page). If you simply `<link>` some external `.css` file, frugal will not watch them, because they are not dependencies. This means that if you change something in your `.css` file, frugal will not see the change, and the next build will do nothing.
 
 In order to leverage incremental generation for styles, you have to use a loader.
 

@@ -37,7 +37,7 @@ A page descriptor can define multiple methods that do data fetching
 If you export a function `getStaticData`, frugal will generate the page :
 
 - at build time for each path generated with `getPathList`
-- at runtime on [static page refresh](??)
+- at runtime on static page refresh
 - at runtime for each path that was not generated during the build
 
 The method is where you define all the data fetching logic. You might query a database, call an api or read a file for example.
@@ -107,7 +107,7 @@ export const self = new URL(import.meta.url);
 
 This value is needed because frugal works on the dependency graph of your project. To avoid doing analysis on parts of the graph that are not relevant, frugal only does it on your page descriptor. To do so, frugal needs to have the url of the module to parse it.
 
-The `self` value contains the absolute url of the page descriptor, that frugal can parse to analyse its dependency graph.
+The `self` value contains the absolute url of the page descriptor, that frugal can parse to analyze its dependency graph.
 
 ## Headers and status control
 

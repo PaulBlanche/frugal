@@ -13,7 +13,7 @@ import * as example from './pages/example/mod.ts';
 
 const self = new URL(import.meta.url);
 
-const SESSION_PERSISTENCE = new UpstashPersistence(
+const UPSTASH_PERSISTENCE = new UpstashPersistence(
     Deno.env.get('UPSTASH_URL') ?? '',
     Deno.env.get('UPSTASH_TOKEN') ?? '',
 );
@@ -61,7 +61,8 @@ export const config: Config = {
         page(example),
     ],
 
-    pagePersistence: SESSION_PERSISTENCE,
+    pagePersistence: UPSTASH_PERSISTENCE,
+    cachePersistence: UPSTASH_PERSISTENCE,
 
     logging: {
         type: 'human',
@@ -100,7 +101,7 @@ export const config: Config = {
     server: {
         refreshKey: 'refresh_key',
 
-        sessionPersistence: SESSION_PERSISTENCE,
+        sessionPersistence: UPSTASH_PERSISTENCE,
 
         listen: { port: 8000 },
     },

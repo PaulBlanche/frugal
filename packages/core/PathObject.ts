@@ -41,13 +41,13 @@ type ConsumeNamedParameter<
     >
 > extends {
     name: infer NAME;
-    optionnal?: infer OPTIONNAL;
+    optional?: infer OPTIONAL;
     rest: infer REST;
     index: infer INDEX;
 } ? NAME extends string | number ? {
             object:
                 & CONTEXT['object']
-                & (OPTIONNAL extends true ? { [key in NAME]?: string }
+                & (OPTIONAL extends true ? { [key in NAME]?: string }
                     : { [key in NAME]: string });
             rest: REST;
             index: INDEX;
@@ -59,13 +59,13 @@ type ConsumeUnnamedParameter<
     CONTEXT extends ContextBase,
 > = ConsumeModifier<ConsumePattern<CONTEXT>> extends {
     name: infer NAME;
-    optionnal?: infer OPTIONNAL;
+    optional?: infer OPTIONAL;
     rest: infer REST;
     index: infer INDEX;
 } ? NAME extends string | number ? {
             object:
                 & CONTEXT['object']
-                & (OPTIONNAL extends true ? { [key in NAME]?: string }
+                & (OPTIONAL extends true ? { [key in NAME]?: string }
                     : { [key in NAME]: string });
             rest: REST;
             index: INDEX;
@@ -78,7 +78,7 @@ type ConsumeUnnamedParameter<
 type ParameterContextBase = {
     rest: string;
     name?: string | number;
-    optionnal?: true;
+    optional?: true;
     index: unknown[];
 };
 
@@ -86,13 +86,13 @@ type ConsumeModifier<INPUT extends ParameterContextBase> = INPUT['rest'] extends
     `?${infer REST}` ? {
         name: INPUT['name'];
         index: INPUT['index'];
-        optionnal: true;
+        optional: true;
         rest: REST;
     }
     : INPUT['rest'] extends `*${infer REST}` ? {
             name: INPUT['name'];
             index: INPUT['index'];
-            optionnal: true;
+            optional: true;
             rest: REST;
         }
     : INPUT;

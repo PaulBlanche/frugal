@@ -159,7 +159,7 @@ export const item = className('item').styled`
     padding: 10em;
     width: 100px
     height: 30px;
-    position: abosolute;
+    position: absolute;
 `;
 
 const base = className('base').styled`
@@ -180,7 +180,7 @@ export const item = 'item-l6cy2y';
 export const list = 'list-vngyoe base-ucdg1u';
 ```
 
-In order to do so, the script loader accepts some `transformers`. Each transformer will run on modules matching a `test` function, and transform the code of the module before bundling. You can use the `styleTransfromer` exposed by the style loader module to transform any style modules :
+In order to do so, the script loader accepts some `transformers`. Each transformer will run on modules matching a `test` function, and transform the code of the module before bundling. You can use the `styleTransformer` exposed by the style loader module to transform any style modules :
 
 ```ts
 import { ScriptLoader } from 'https://deno.land/x/frugal/loader_script.ts';
