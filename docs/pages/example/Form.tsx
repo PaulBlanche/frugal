@@ -3,7 +3,6 @@
 import * as hooks from 'preact/hooks';
 import { cx } from '../../dep/frugal/styled.ts';
 import { useData } from '../../dep/frugal/preact.client.ts';
-import { Session } from '../../dep/frugal/client_session.ts';
 
 import { Form, submitForm, validateForm } from './Form.ts';
 import { Data } from './type.ts';

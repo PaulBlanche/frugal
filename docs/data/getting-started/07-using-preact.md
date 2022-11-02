@@ -32,9 +32,9 @@ export const getContent = getContentFrom(Page);
 
 The `getContentFrom` will return a `getContent` function of a [page descriptor](/docs/api/01-page-descriptor) from a Preact component (here the `Page` component).
 
-[warn]> The data object returned by your data fecthing methods (`getStaticData`, `getDynamicData` and `handlers`) will be embedded as JSON in the generated markup for islands. This means that the data object needs to be serializable.
+[warn]> The data object returned by your data fetching methods (`getStaticData`, `getDynamicData` and `handlers`) will be embedded as JSON in the generated markup for islands. This means that the data object needs to be serializable.
 
-The `Page` component will recive in its props the `loaderContext` for you to inject any style or script loaded by frugal :
+The `Page` component will receive in its props the `loaderContext` for you to inject any style or script loaded by frugal :
 
 ```tsx
 import { Head, PageProps } from 'https://deno.land/x/frugal/preact.server.ts';
@@ -57,7 +57,7 @@ The `<Head>` component allows you to set what's in the `<head>` of your page f
 
 ## `useData` and `usePathname` hooks
 
-Integration with preact commes with two hooks `useData` and `usePathname` that will return the current data object and the current pathname :
+Integration with preact comes with two hooks `useData` and `usePathname` that will return the current data object and the current pathname :
 
 ```tsx
 import {
@@ -76,7 +76,7 @@ Those hooks work both server side (inside standard components) and client-side (
 
 ## Preact client side with islands
 
-First, you need to creat an _island_ version of your component (by convention, use the `.island.tsx` suffix) :
+First, you need to create an _island_ version of your component (by convention, use the `.island.tsx` suffix) :
 
 ```tsx
 /* @jsxRuntime automatic */

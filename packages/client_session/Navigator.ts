@@ -112,6 +112,10 @@ export class Navigator {
 
         const response = await fetch(this.#url.href, init);
 
+        if (response.redirected) {
+            this.#url = new URL(response.url);
+        }
+
         const html = await response.text();
 
         clearTimeout(handle);

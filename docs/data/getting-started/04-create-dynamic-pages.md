@@ -21,7 +21,7 @@ export const config: frugal.Config = {
 
 With this configuration you will get a server on port `8000` that will be able to serve generated static pages (with some extra capabilities we will see later) and dynamic pages.
 
-## Dynamic page descritpor
+## Dynamic page descriptor
 
 In a module (`/pages/posts/list.ts` for example), create a [dynamic page descriptor](/docs/api/01-page-descriptor) :
 
@@ -59,7 +59,7 @@ export const self = new URL(import.meta.url);
 What changes compared to a static page :
 
 - no `getPathList` function
-- the `getStaticData` function is replaced with a `getDynamicData` function. Its role is the same as the `getStaticData` function, returning a data object for the view givent the incoming request. Everything you need from a distant source (database, file, api) to generate your page, you should fetch here. This function can be async
+- the `getStaticData` function is replaced with a `getDynamicData` function. Its role is the same as the `getStaticData` function, returning a data object for the view given the incoming request. Everything you need from a distant source (database, file, api) to generate your page, you should fetch here. This function can be async
 
 Again, like for static pages we have to register it in `/frugal.config.ts` :
 
@@ -105,4 +105,4 @@ await watch(config, [/* extra path to watch*/]);
 Running the `watch.ts` module will do multiple things :
 
 - All pages will be run as dynamic pages. Each request will trigger a full generation of the page.
-- Each time a file imported in some of your page change, frugal will rebuild all assets (styles and scripts) and reload the page on the client. If you want to watch extra paht, you can pass them to the `watch` function.
+- Each time a file imported in some of your page change, frugal will rebuild all assets (styles and scripts) and reload the page on the client. If you want to watch extra path, you can pass them to the `watch` function.
