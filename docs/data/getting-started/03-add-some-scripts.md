@@ -32,7 +32,7 @@ Again, the loader takes a test function to detect module to include in its bundl
 
 ## Script module
 
-We can now write a script module (`/pages/post/detail.script.ts` for exemple) :
+We can now write a script module (`/pages/post/detail.script.ts` for example) :
 
 ```ts
 const ID = 'my-id';
@@ -58,15 +58,15 @@ function getContent() {
 }
 ```
 
-Since now your script module is imported, frugal can see any modification done to the script and do incremental generation correctly. If you change something in a sc ript module, frugal will rebuild any page that uses it.
+Since now your script module is imported, frugal can see any modification done to the script and do incremental generation correctly. If you change something in a script module, frugal will rebuild any page that uses it.
 
-[warn]> Since your script module is imported in your page descriptor, keep in mind that everything you do on top level of your script module will be executed when you rune frugal (at build time or runtime if you use frugal server). This is usefull to share constants (like the `ID` constant) with the generated markup, but try not to execute anything. For static website, this will just make the build longer, but for frugal server it will delay server startup, which is especially bad in serverless context.
+[warn]> Since your script module is imported in your page descriptor, keep in mind that everything you do on top level of your script module will be executed when you rune frugal (at build time or runtime if you use frugal server). This is useful to share constants (like the `ID` constant) with the generated markup, but try not to execute anything. For static website, this will just make the build longer, but for frugal server it will delay server startup, which is especially bad in serverless context.
 [warn]>
 [warn]> **Rule of thumb** : only execute anything in the `main` function, and only declare things (constants, functions) on top level.
 
 ## Include the generated stylesheet
 
-The `getContent` function will recive a `loaderContext` object that contains data that the loaders have generated. For the script loader, there will be one version of the bundle for each page :
+The `getContent` function will receive a `loaderContext` object that contains data that the loaders have generated. For the script loader, there will be one version of the bundle for each page :
 
 ```ts
 async function getContent(params: frugal.GetContentParams<Path, Post>) {

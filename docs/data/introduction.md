@@ -2,9 +2,9 @@
 
 Frugal is born from the frustration of trying to load some modern website on a bad data connection. On a slow connection you have to wait for a 1Mo JS bundle to be able to interact with the page. For older devices it's double jeopardy, because once the bundle is downloaded you now have to wait for the js to be parsed and executed.
 
-With modern web developpment tools, we tend to put things in our JS bundle : static markup, CSS-in-JS, SVG. The _everything-in-JS_ paradigm comes with great DX, but without care we offload in js work that should be done natively by the browser (html parsing, styles, caching, ...) or the server (navigation, static markup generation, ...).
+With modern web development tools, we tend to put things in our JS bundle : static markup, CSS-in-JS, SVG. The _everything-in-JS_ paradigm comes with great DX, but without care we offload in js work that should be done natively by the browser (html parsing, styles, caching, ...) or the server (navigation, static markup generation, ...).
 
-The philosophy of frugal is to keep most of the DX offered by modern web developpment tools, strip the JS from what should not be executed as JS, and rely on native browser mechanisms.
+The philosophy of frugal is to keep most of the DX offered by modern web development tools, strip the JS from what should not be executed as JS, and rely on native browser mechanisms.
 
 ## Static pages
 
@@ -29,10 +29,10 @@ By default, even with [Preact](https://preactjs.com/) integration, pages generat
 ## Form submission
 
 For static or dynamic page, frugal server is able to handle native form submission via POST, PUT, PATCH or DELETE request. Frugal will use POST-redirect-GET pattern to serve the dynamically generated result of a form submission (this means that the user hitting back after a form submission will not trigger a resubmit).
-This feature in combination with Partial hydration allow you to do _isomorphic form submision_ :
+This feature in combination with Partial hydration allow you to do _isomorphic form submission_ :
 
 - You write the code doing form validation and submission once. You use it both in an _island_ (client side), and in response to a `POST` (server side)
-- Recent browser recieve the _islands_ bundle and are able to execute it, so you can do client-side form validation and submission.
+- Recent browser receive the _islands_ bundle and are able to execute it, so you can do client-side form validation and submission.
 - Older browser unable to execute the bundle fallback on native form submission. Frugal executes server-side the form validation and submission.
 
 ## Incremental build
