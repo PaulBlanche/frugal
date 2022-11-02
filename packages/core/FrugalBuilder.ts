@@ -7,8 +7,8 @@ import * as log from '../log/mod.ts';
 import { CleanConfig, Config } from './Config.ts';
 import { LoaderContext } from './LoaderContext.ts';
 import { DependencyGraph, ModuleList } from './DependencyGraph.ts';
-import { FilesystemPersistance } from './Persistance.ts';
-import { PersistantCache } from './Cache.ts';
+import { FilesystemPersistence } from './Persistence.ts';
+import { PersistentCache } from './Cache.ts';
 import { FrugalError } from './FrugalError.ts';
 import { Frugal } from './Frugal.ts';
 import * as FILENAMES from './filenames.ts';
@@ -69,11 +69,11 @@ export class FrugalBuilder {
 
         const { assets, moduleList, configModule } = await this.#analyse();
 
-        const cache = await PersistantCache.load(
+        const cache = await PersistentCache.load(
             path.resolve(config.cacheDir, FILENAMES.PAGE_CACHE_FILENAME),
             {
                 hash: configModule?.moduleHash,
-                persistance: config.cachePersistance,
+                persistence: config.cachePersistence,
             },
         );
 
@@ -81,7 +81,7 @@ export class FrugalBuilder {
             config,
             assets,
             (name) => {
-                return PersistantCache.load(
+                return PersistentCache.load(
                     path.resolve(
                         config.cacheDir,
                         'loader',
@@ -89,7 +89,7 @@ export class FrugalBuilder {
                     ),
                     {
                         hash: configModule?.moduleHash,
-                        persistance: new FilesystemPersistance(),
+                        persistence: new FilesystemPersistence(),
                     },
                 );
             },
@@ -141,10 +141,10 @@ export class FrugalBuilder {
             const moduleList = await ModuleList.load(
                 path.resolve(config.cacheDir, FILENAMES.MODULES_FILENAME),
             );
-            const cache = await PersistantCache.load(
+            const cache = await PersistentCache.load(
                 path.resolve(config.cacheDir, FILENAMES.PAGE_CACHE_FILENAME),
                 {
-                    persistance: config.cachePersistance,
+                    persistence: config.cachePersistence,
                 },
             );
             const loaderContext = await LoaderContext.load(

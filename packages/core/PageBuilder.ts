@@ -7,10 +7,10 @@ import * as log from '../log/mod.ts';
 import { Page, Phase, StaticPage } from './Page.ts';
 import { PageGenerator } from './PageGenerator.ts';
 import { Cache } from './Cache.ts';
-import { Persistance } from './Persistance.ts';
+import { Persistence } from './Persistence.ts';
 
 export type PageBuilderConfig = {
-    persistance: Persistance;
+    persistence: Persistence;
     cache: Cache;
 };
 
@@ -134,7 +134,7 @@ export class PageBuilder<
                     const serializedHeaders = Array.from(headers.entries());
 
                     await Promise.all([
-                        this.#config.persistance.set(
+                        this.#config.persistence.set(
                             metadataPath(pagePath),
                             JSON.stringify({
                                 headers: serializedHeaders,
@@ -160,11 +160,11 @@ export class PageBuilder<
                 const hasHeaders = serializedHeaders.length > 0;
 
                 await Promise.all([
-                    this.#config.persistance.set(
+                    this.#config.persistence.set(
                         pagePath,
                         content,
                     ),
-                    hasHeaders && this.#config.persistance.set(
+                    hasHeaders && this.#config.persistence.set(
                         metadataPath(pagePath),
                         JSON.stringify({ headers: serializedHeaders }),
                     ),

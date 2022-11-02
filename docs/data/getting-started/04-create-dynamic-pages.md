@@ -21,7 +21,7 @@ export const config: frugal.Config = {
 
 With this configuration you will get a server on port `8000` that will be able to serve generated static pages (with some extra capabilities we will see later) and dynamic pages.
 
-## Dynamic page descritpor
+## Dynamic page descriptor
 
 In a module (`/pages/posts/list.ts` for example), create a [dynamic page descriptor](/docs/api/01-page-descriptor) :
 

@@ -52,7 +52,7 @@ export class FrugalServer {
 
     #handler() {
         const sessionManager = new SessionManager(
-            this.#config.sessionPersistance,
+            this.#config.sessionPersistence,
             this.#frugal,
         );
 

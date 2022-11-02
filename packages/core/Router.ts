@@ -6,7 +6,7 @@ import { LoaderContext } from './LoaderContext.ts';
 import { CleanConfig } from './Config.ts';
 import { assert } from '../../dep/std/asserts.ts';
 import { ModuleList } from './DependencyGraph.ts';
-import { PersistantCache } from './Cache.ts';
+import { PersistentCache } from './Cache.ts';
 
 type BaseRoute = {
     generator: PageGenerator;
@@ -41,7 +41,7 @@ export class Router {
     constructor(
         config: CleanConfig,
         moduleList: ModuleList,
-        cache: PersistantCache,
+        cache: PersistentCache,
         loaderContext: LoaderContext,
     ) {
         this.#routes = [];
@@ -59,7 +59,7 @@ export class Router {
 
                 const builder = new PageBuilder(page, pageHash, generator, {
                     cache,
-                    persistance: config.pagePersistance,
+                    persistence: config.pagePersistence,
                 });
 
                 const refresher = new PageRefresher(

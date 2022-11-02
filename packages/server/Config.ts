@@ -6,14 +6,14 @@ export type Config = frugal.Config & { server: ServerConfig };
 
 export type ServerConfig = {
     refreshKey?: string;
-    sessionPersistance?: frugal.Persistance;
+    sessionPersistence?: frugal.Persistence;
     listen: http.ServeInit;
     statusRewrite?: Partial<
         Record<http.Status, (url: URL) => string>
     >;
 };
 
-const FS_PERSISTANCE = new frugal.FilesystemPersistance();
+const FS_PERSISTANCE = new frugal.FilesystemPersistence();
 
 export class CleanConfig {
     #config: ServerConfig;
@@ -26,8 +26,8 @@ export class CleanConfig {
         return this.#config.refreshKey;
     }
 
-    get sessionPersistance() {
-        return this.#config.sessionPersistance ?? FS_PERSISTANCE;
+    get sessionPersistence() {
+        return this.#config.sessionPersistence ?? FS_PERSISTANCE;
     }
 
     get listen() {

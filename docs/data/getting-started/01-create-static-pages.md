@@ -15,7 +15,7 @@ export const config: frugal.Config = {
 };
 ```
 
-The `self` value will be used to define the `root` of your project. Since it is conventionnal to have the configuration at the root of the project, `self` should be the absolute url of the module. Every relative path in the config will be resolved relatively to the root of your project.
+The `self` value will be used to define the `root` of your project. Since it is conventional to have the configuration at the root of the project, `self` should be the absolute url of the module. Every relative path in the config will be resolved relatively to the root of your project.
 
 The `outputDir` value is the path where frugal will generate your site. Inside this directory frugal will create a `public` directory that can be served by a server like `nginx` or `Apache HTTP Server`.
 

@@ -1,6 +1,6 @@
 import { LoaderContext } from '../../../packages/core/LoaderContext.ts';
 import { Asset } from '../../../packages/core/loader.ts';
-import { fakePersistantCache } from './__fixtures__/Cache.ts';
+import { fakePersistentCache } from './__fixtures__/Cache.ts';
 import { fakeAsset, fakeLoader } from './__fixtures__/Loader.ts';
 import { fakeConfig } from './__fixtures__/Config.ts';
 import { asSpy } from '../../test_util/mod.ts';
@@ -29,7 +29,7 @@ Deno.test('LoaderContext: build call all loader with correct assets', async () =
     ];
 
     await LoaderContext.build(config, assets, (_name) => {
-        return Promise.resolve(fakePersistantCache());
+        return Promise.resolve(fakePersistentCache());
     });
 
     assertSpyCalls(asSpy(fooLoader.generate), 1);
