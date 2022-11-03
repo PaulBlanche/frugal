@@ -2,9 +2,9 @@ name: test
 
 on: 
   push:
-    branches: [dev, main]
+    branches: dev
   pull_request:
-    branches: [dev, main]
+    branches: dev
     types: [opened, synchronize, reopened]
 
 jobs:
@@ -13,7 +13,7 @@ jobs:
 
     strategy:
       matrix:
-        deno-version: [1.x, canary]
+        deno-version: ["1.27", 1.x, canary]
         include:
           - deno-version: canary
             coverage: true

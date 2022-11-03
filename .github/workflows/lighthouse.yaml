@@ -1,11 +1,6 @@
 name: lighthouse
 
-on: 
-  workflow_run: 
-    workflows: 
-      - deploy
-    types:
-      - completed
+on: [deployment_status]
 
 jobs:
   lighthouse:
@@ -13,11 +8,10 @@ jobs:
 
     runs-on: ubuntu-latest
 
-    #if: github.event.deployment_status.state == 'success'
-    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    if: github.event.deployment_status.state == 'success' && github.event.deployment_status.creator.login == 'deno-deploy[bot]'
 
     env:
-      BASE_URL: ${{ github.event.deployment_status.environment_url }}
+      DEPLOYMENT_URL: ${{ github.event.deployment_status.environment_url }}
 
     steps:
       - name: Clone repository
@@ -32,6 +26,6 @@ jobs:
         run: npm install -g @lhci/cli@0.9.x
 
       - name: run Lighthouse CLI
-        run: lhci autorun --collect.url="$BASE_URL" --collect.url="$BASE_URL/docs" --collect.url="$BASE_URL/example" --upload.target="temporary-public-storage"
+        run: lhci autorun --collect.url="$DEPLOYMENT_URL" --collect.url="$DEPLOYMENT_URL/docs" --collect.url="$DEPLOYMENT_URL/example" --upload.target="temporary-public-storage"
         env:
           LHCI_GITHUB_APP_TOKEN: ${{ secrets.LHCI_GITHUB_APP_TOKEN }}
