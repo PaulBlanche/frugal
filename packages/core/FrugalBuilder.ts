@@ -148,6 +148,7 @@ export class FrugalBuilder {
                 },
             );
             const loaderContext = await LoaderContext.load(
+                config,
                 path.resolve(
                     config.cacheDir,
                     FILENAMES.LOADER_CONTEXT_FILENAME,
@@ -172,9 +173,10 @@ export class FrugalBuilder {
             });
 
             return frugal;
-        } catch {
+        } catch (error: unknown) {
             throw new FrugalError(
                 'Could not load the frugal context, some files are missing. You might need to build the frugal context first',
+                { cause: error },
             );
         }
     }
