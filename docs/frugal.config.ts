@@ -17,6 +17,7 @@ const UPSTASH_PERSISTENCE = new UpstashPersistence(
     Deno.env.get('UPSTASH_URL') ?? '',
     Deno.env.get('UPSTASH_TOKEN') ?? '',
     Deno.env.get('UPSTASH_NAMESPACE') ?? '',
+    self.pathname,
 );
 
 export const config: Config = {

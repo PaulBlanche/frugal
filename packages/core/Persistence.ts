@@ -71,11 +71,13 @@ export class UpstashPersistence implements Persistence {
     #url: string;
     #token: string;
     #namespace: string;
+    #root: string;
 
-    constructor(url: string, token: string, namespace: string) {
+    constructor(url: string, token: string, namespace: string, root: string) {
         this.#url = url;
         this.#token = token;
         this.#namespace = namespace;
+        this.#root = root;
     }
 
     async #sendCommand(command: unknown) {
@@ -93,9 +95,7 @@ export class UpstashPersistence implements Persistence {
     }
 
     #key(path: string) {
-        return `${this.#namespace}:${
-            pathUtils.relative(import.meta.url, path)
-        }`;
+        return `${this.#namespace}:${pathUtils.relative(this.#root, path)}`;
     }
 
     async set(path: string, content: string) {
