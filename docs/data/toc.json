@@ -46,8 +46,8 @@
                 "slug": "/api/03-style-loader",
                 "name": "Style loader"
             }, {
-                "slug": "/api/04-persistance",
-                "name": "Persistance"
+                "slug": "/api/04-persistence",
+                "name": "Persistence"
             }, {
                 "slug": "/api/05-preact",
                 "name": "Preact"

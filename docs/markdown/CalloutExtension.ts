@@ -24,7 +24,6 @@ export class CalloutExtension
                 /\[(?:warn|info)\]/gm,
                 '',
             ).replace(/^ *>[ \t]?/gm, '');
-            console.log(src, match);
             const token = {
                 type: 'callout',
                 raw: match[0],

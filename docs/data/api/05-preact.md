@@ -60,7 +60,7 @@ By default an `<Island>` is hydrated on load. But you can instruct frugal to use
 The hydration of the `idle` islands is deferred with a `setTimeout` to be rendered as soon as the main thread is `idle` :
 
 ```tsx
-import { Island } from 'https://deno.land/x/frugal/peact.client.ts';
+import { Island } from 'https://deno.land/x/frugal/preact.client.ts';
 import { MyComponent, MyComponentProps } from './MyComponent.tsx';
 import { NAME } from './MyComponent.script.ts';
 

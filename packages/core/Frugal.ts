@@ -5,7 +5,7 @@ import * as log from '../log/mod.ts';
 import { CleanConfig } from './Config.ts';
 import { LoaderContext } from './LoaderContext.ts';
 import { ModuleList } from './DependencyGraph.ts';
-import { PersistantCache } from './Cache.ts';
+import { PersistentCache } from './Cache.ts';
 import { Router } from './Router.ts';
 import * as FILENAMES from './filenames.ts';
 import { PageDescriptorError } from './Page.ts';
@@ -23,7 +23,7 @@ export class Frugal {
     /** the list of all modules in the dependency graph */
     #moduleList: ModuleList;
     /** the instance cache */
-    #cache: PersistantCache;
+    #cache: PersistentCache;
     /** the context containing the result of all loaders */
     #loaderContext: LoaderContext;
     /** a router, used to match a pathname to the Generator, the Builder or the
@@ -33,7 +33,7 @@ export class Frugal {
     constructor(
         config: CleanConfig,
         moduleList: ModuleList,
-        cache: PersistantCache,
+        cache: PersistentCache,
         loaderContext: LoaderContext,
     ) {
         this.#router = new Router(config, moduleList, cache, loaderContext);

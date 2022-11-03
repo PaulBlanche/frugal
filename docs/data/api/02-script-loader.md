@@ -21,7 +21,7 @@ export function main() {
 }
 ```
 
-that exposes an `ID` that can be used in the generated markup :
+That exposes an `ID` that can be used in the generated markup :
 
 ```ts
 import { ID } from './hello-world.script.ts';
@@ -73,7 +73,7 @@ new ScriptLoader({
 });
 ```
 
-In the `getContent` method of your page descriptor, you can then get the `url` of the genrated bundles in `loaderContext` :
+In the `getContent` method of your page descriptor, you can then get the `url` of the generated bundles in `loaderContext` :
 
 ```ts
 export function getContent(

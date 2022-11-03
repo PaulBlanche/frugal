@@ -1,8 +1,9 @@
 import * as log from '../log/mod.ts';
 import { Asset } from './loader.ts';
 import { CleanConfig } from './Config.ts';
-import { PersistantCache } from './Cache.ts';
+import { PersistentCache } from './Cache.ts';
 import * as fs from '../../dep/std/fs.ts';
+import { Persistence } from './Persistence.ts';
 
 function logger() {
     return log.getLogger('frugal:LoaderContext');
@@ -15,11 +16,12 @@ type Context = { [s: string]: unknown };
  */
 export class LoaderContext {
     #context: Context;
+    #persistence: Persistence;
 
     static async build(
         config: CleanConfig,
         assets: Asset[],
-        getLoaderCache: (name: string) => Promise<PersistantCache>,
+        getLoaderCache: (name: string) => Promise<PersistentCache>,
     ) {
         logger().info({
             op: 'start',
@@ -43,24 +45,28 @@ export class LoaderContext {
             },
         });
 
-        return new LoaderContext(context);
+        return new LoaderContext(context, config.cachePersistence);
     }
 
     static async load(
+        config: CleanConfig,
         filePath: string,
     ) {
-        const serializedData = await Deno.readTextFile(filePath);
+        const serializedData = await config.cachePersistence.read(filePath);
         const context = JSON.parse(serializedData);
 
-        return new LoaderContext(context);
+        return new LoaderContext(context, config.cachePersistence);
     }
 
-    constructor(context: Context) {
+    constructor(context: Context, persistence: Persistence) {
         this.#context = context;
+        this.#persistence = persistence;
     }
 
     async save(filePath: string) {
         const serializedData = JSON.stringify(this.#context);
+
+        await this.#persistence.set(filePath, serializedData);
 
         await fs.ensureFile(filePath);
         await Deno.writeTextFile(filePath, serializedData);
@@ -78,7 +84,7 @@ export class LoaderContext {
 async function buildContext(
     config: CleanConfig,
     assets: Asset[],
-    getLoaderCache: (name: string) => Promise<PersistantCache>,
+    getLoaderCache: (name: string) => Promise<PersistentCache>,
 ) {
     const context: Context = {};
 

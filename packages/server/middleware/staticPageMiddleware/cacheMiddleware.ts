@@ -82,7 +82,7 @@ export async function sendFileFromCache(
         });
     }
 
-    const content = await context.frugal.config.pagePersistance.read(pagePath);
+    const content = await context.frugal.config.pagePersistence.read(pagePath);
 
     const Etag = headers.get('etag');
     if (Etag === null) {
@@ -106,7 +106,7 @@ async function getMetadata(
     pagePath: string,
 ) {
     try {
-        const metadataString = await context.frugal.config.pagePersistance.read(
+        const metadataString = await context.frugal.config.pagePersistence.read(
             frugal.metadataPath(pagePath),
         );
         const metadata: { headers: [string, string][]; status?: http.Status } =

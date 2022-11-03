@@ -1,12 +1,13 @@
 import * as fs from '../../dep/std/fs.ts';
+import * as pathUtils from '../../dep/std/path.ts';
 import { FrugalError } from './FrugalError.ts';
 
 export class NotFound extends FrugalError {}
 
 /**
- * A persistance layer
+ * A persistence layer
  */
-export interface Persistance {
+export interface Persistence {
     /**
      * Set the given content at the given path
      */
@@ -26,9 +27,9 @@ export interface Persistance {
 }
 
 /**
- * A persistance layer using the filesystem
+ * A persistence layer using the filesystem
  */
-export class FilesystemPersistance implements Persistance {
+export class FilesystemPersistence implements Persistence {
     constructor() {}
 
     async set(path: string, content: string) {
@@ -64,15 +65,19 @@ export class FilesystemPersistance implements Persistance {
 }
 
 /**
- * A persistance layer using Upstash
+ * A persistence layer using Upstash
  */
-export class UpstashPersistance implements Persistance {
+export class UpstashPersistence implements Persistence {
     #url: string;
     #token: string;
+    #namespace: string;
+    #root: string;
 
-    constructor(url: string, token: string) {
+    constructor(url: string, token: string, namespace: string, root: string) {
         this.#url = url;
         this.#token = token;
+        this.#namespace = namespace;
+        this.#root = root;
     }
 
     async #sendCommand(command: unknown) {
@@ -89,8 +94,16 @@ export class UpstashPersistance implements Persistance {
         );
     }
 
+    #key(path: string) {
+        return `${this.#namespace}:${pathUtils.relative(this.#root, path)}`;
+    }
+
     async set(path: string, content: string) {
-        const response = await this.#sendCommand(['set', path, content]);
+        const response = await this.#sendCommand([
+            'set',
+            this.#key(path),
+            content,
+        ]);
         if (response.status !== 200) {
             const body = await response.json();
             throw new Error(body.error);
@@ -98,7 +111,7 @@ export class UpstashPersistance implements Persistance {
     }
 
     async open(path: string) {
-        const response = await this.#sendCommand(['get', path]);
+        const response = await this.#sendCommand(['get', this.#key(path)]);
         const body = await response.json();
         if (response.status !== 200) {
             throw new Error(body.error);
@@ -115,7 +128,7 @@ export class UpstashPersistance implements Persistance {
     }
 
     async read(path: string) {
-        const response = await this.#sendCommand(['get', path]);
+        const response = await this.#sendCommand(['get', this.#key(path)]);
         const body = await response.json();
         if (response.status !== 200) {
             throw new Error(body.error);
@@ -127,7 +140,7 @@ export class UpstashPersistance implements Persistance {
     }
 
     async delete(path: string) {
-        const response = await this.#sendCommand(['del', path]);
+        const response = await this.#sendCommand(['del', this.#key(path)]);
         if (response.status !== 200) {
             const body = await response.json();
             throw new Error(body.error);

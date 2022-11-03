@@ -1,8 +1,8 @@
 import * as asserts from '../../../dep/std/asserts.ts';
 import { assertSpyCall, assertSpyCalls, spy } from '../../../dep/std/mock.ts';
-import { fakePersistance } from './__fixtures__/Persistance.ts';
+import { fakePersistence } from './__fixtures__/Persistence.ts';
 
-import { Cache, PersistantCache } from '../../../packages/core/Cache.ts';
+import { Cache, PersistentCache } from '../../../packages/core/Cache.ts';
 
 Deno.test('Cache: Cached value is preserved in memory', async () => {
     const cache = await Cache.unserialize();
@@ -148,9 +148,9 @@ Deno.test('Cache: memoize keeps call results after serialization', async () => {
 });
 
 Deno.test('Cache: memoize keeps call results after save/load', async () => {
-    const persistance = fakePersistance();
+    const persistence = fakePersistence();
 
-    const cache = await PersistantCache.load('path', { persistance });
+    const cache = await PersistentCache.load('path', { persistence });
 
     const value = {};
 
@@ -165,7 +165,7 @@ Deno.test('Cache: memoize keeps call results after save/load', async () => {
 
     await cache.save();
 
-    const newCache = await PersistantCache.load('path', { persistance });
+    const newCache = await PersistentCache.load('path', { persistence });
 
     assertSpyCall(producer, 0, { args: [], returned: value });
     assertSpyCalls(producer, 1);
