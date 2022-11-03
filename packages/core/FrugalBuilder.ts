@@ -173,7 +173,8 @@ export class FrugalBuilder {
             });
 
             return frugal;
-        } catch {
+        } catch (e) {
+            console.log(e);
             throw new FrugalError(
                 'Could not load the frugal context, some files are missing. You might need to build the frugal context first',
             );
