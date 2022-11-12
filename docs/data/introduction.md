@@ -33,7 +33,7 @@ In combination with partial hydration, this feature allows you to do _isomorphic
 
 - You write the code doing form validation and submission once. You use it both in an _island_ (client-side), and in response to a `POST` (server-side).
 - Recent browser receive the _islands_ bundle and are able to execute it, so you can do client-side form validation and submission.
-- Older browser unable to execute the bundle fallback on native form submission. Frugal executes server-side the form validation and submission.
+- Older browser unable to execute the bundle fallback on native form submission. On the server side, Frugal executes the form validation and submission.
 
 ## Incremental build
 

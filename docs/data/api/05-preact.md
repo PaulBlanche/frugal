@@ -13,7 +13,7 @@ Preact integration rely on you providing the Preact version you want via an [imp
 }
 ```
 
-## Preact server-side
+## Server-side Preact
 
 To use Preact at build time or on the server, you only need to use the `getContentFrom` function in your page descriptor:
 
@@ -122,7 +122,7 @@ export function MyComponentIsland(props: MyComponentProps) {
 
 ## Client-side only islands
 
-By default, the component in the island is rendered server side to populate the html page. If you want your island to be rendered only client-side, you can disable rendering server side with the props `clientOnly`:
+By default, the component in the island is rendered server side to populate the html page. If you want your island to be rendered only on the client side, you can disable rendering server side with the props `clientOnly`:
 
 ```tsx
 import { Island } from 'https://deno.land/x/frugal/preact.client.ts';

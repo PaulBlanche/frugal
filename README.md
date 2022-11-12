@@ -10,7 +10,7 @@ Frugal is a hybrid, dynamic and static site generator that aims to minimize the 
 - _Server side pages_ render at request time
 - _Bring your own framework_: Frugal works with any UI framework able to compile to html
 - _Manual partial hydration_ for interactive island in pages if you use Preact
-- _Form submission client-side or server-side_ for both static and dynamic pages
+- _Client-side and server-side form submission_ for both static and dynamic pages
 - _Incremental build_: if both data and code did not change, the page is not rebuilt
 
 ## Getting Started
@@ -23,7 +23,7 @@ The docs are live at https://frugal.deno.dev/docs.
 
 ## Why?
 
-Modern web development is geared toward delivering more JavaScript. JSX and client side navigation enabling larger codebase and optimized with code splitting. Each new optimization is not used to make web faster, but rather to send more.
+Modern web development is geared toward delivering more JavaScript. JSX and client-side navigation enabling larger codebase and optimized with code splitting. Each new optimization is not used to make web faster, but rather to send more.
 
 Don't get me wrong, those tools and optimizations are fantastic (and Frugal relies on them). But somewhere along the way, we kinda lost ourselves.
 
@@ -31,7 +31,7 @@ The idea is to keep most of the developer experience of those tools (JSX, CSS in
 
 That's the difference between Frugal and Next.js for example. Next.js will bundle the whole JSX (even the static parts), and ship it alongside a static rendering in html. So everything static is send twice (one time in the html, and then in uncompressed form in the JS bundle), and the browser has to do rendering twice (one time with the html, and then by parsing and executing a JS bundle that mutate the DOM).
 
-With Frugal, we lose the ability to do client side navigation, because the JS does not have all the information to render the pages we navigate to (since only the dynamic parts are in the JS), but we make it up by having small cacheable pages (so roundtrip to the server a quick and infrequent).
+With Frugal, we lose the ability to do client-side navigation, because the JS does not have all the information to render the pages we navigate to (since only the dynamic parts are in the JS), but we make it up by having small cacheable pages (so roundtrip to the server a quick and infrequent).
 
 Compared to Next.js, Frugal is less opinionated:
 

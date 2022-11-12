@@ -17,7 +17,7 @@ Preact integration rely on you providing the Preact version you want via an [imp
 
 This means you provide the version of Preact that suits you, and Frugal will use it.
 
-## Preact server side or at build time
+## Server-side Preact or at build time
 
 To use Preact at build time or on the server, you only need to use the `getContentFrom` function in your page descriptor:
 
@@ -72,9 +72,9 @@ export function MyComponent() {
 }
 ```
 
-Those hooks work both server side (inside standard components) and client-side (inside islands).
+Those hooks work both on the server side (inside standard components) and on the client side (inside islands).
 
-## Preact client side with islands
+## Client-side Preact with islands
 
 First, you need to create an _island_ version of your component (by convention, use the `.island.tsx` suffix):
 
@@ -95,7 +95,7 @@ export function MyComponentIsland(props: MyComponentProps) {
 
 [info]> Since the data object for the page is also serialized and injected in the html markup avoid passing a `props` object to the island if you could use `useData` instead. This will keep the html markup of the page light.
 
-Defining the island is not enough, we need to hydrate it client-side. Since it is a client-side action, we need to use a script module:
+Defining the island is not enough, we need to hydrate it client side. Since it is a client-side action, we need to use a script module:
 
 You need to create a script module (the `./MyComponent.script.ts` module in the previous code block, a module matching the [`script` loader](/docs/api/02-script-loader) pattern) that `hydrate` your component:
 
