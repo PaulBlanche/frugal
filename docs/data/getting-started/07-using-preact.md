@@ -2,7 +2,7 @@
 
 Frugal comes with optional integration with [Preact](https://preactjs.com/). You can use it on the server or at build time (as a template engine) or on the client through [island of interactivity](https://jasonformat.com/islands-architecture/)
 
-Preact integration rely on you providing the preact version you want via an [import map](https://deno.land/manual/linking_to_external_code/import_maps) :
+Preact integration rely on you providing the Preact version you want via an [import map](https://deno.land/manual/linking_to_external_code/import_maps) :
 
 ```json
 {
@@ -15,11 +15,11 @@ Preact integration rely on you providing the preact version you want via an [imp
 }
 ```
 
-This means you provide the version of preact that suits you, and frugal will use it.
+This means you provide the version of Preact that suits you, and Frugal will use it.
 
 ## Preact server side or at build time
 
-To use preact at build time or on the server, you only need to use the `getContentFrom` function in your page descriptor :
+To use Preact at build time or on the server, you only need to use the `getContentFrom` function in your page descriptor:
 
 ```tsx
 import { getContentFrom } from 'https://deno.land/x/frugal/preact.server.ts';
@@ -34,7 +34,7 @@ The `getContentFrom` will return a `getContent` function of a [page descriptor]
 
 [warn]> The data object returned by your data fetching methods (`getStaticData`, `getDynamicData` and `handlers`) will be embedded as JSON in the generated markup for islands. This means that the data object needs to be serializable.
 
-The `Page` component will receive in its props the `loaderContext` for you to inject any style or script loaded by frugal :
+The `Page` component will receive in its props the `loaderContext` for you to inject any style or script loaded by Frugal:
 
 ```tsx
 import { Head, PageProps } from 'https://deno.land/x/frugal/preact.server.ts';
@@ -57,7 +57,7 @@ The `<Head>` component allows you to set what's in the `<head>` of your page f
 
 ## `useData` and `usePathname` hooks
 
-Integration with preact comes with two hooks `useData` and `usePathname` that will return the current data object and the current pathname :
+Integration with Preact comes with two hooks `useData` and `usePathname` that will return the current data object and the current pathname:
 
 ```tsx
 import {

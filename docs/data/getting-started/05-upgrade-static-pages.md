@@ -6,11 +6,11 @@ Now that we have a server, we can unlock some capabilities of static pages.
 
 In the `getPathList` you are not required to return the exact full list of every path of your page. You might return a subset of the most visited one, or even return nothing and not define the function altogether.
 
-If the server receive a request matching the `pattern` of a static page that was not generated, frugal will generate the page and store it in cache. Every subsequent request will be served from the cache.
+If the server receive a request matching the `pattern` of a static page that was not generated, Frugal will generate the page and store it in cache. Every subsequent request will be served from the cache.
 
 ## Page persistence
 
-On a standard server, the cache is simply the filesystem (each page generated at runtime are stored in the same place as the page generated at build time). On serverless context, there is not runtime filesystem to write pages in. To fix that, frugal abstract read and write with a [persistence layer](/docs/api/04-persistence). By default frugal uses a filesystem persistence layer, but you can configure frugal to use a different one :
+On a standard server, the cache is simply the filesystem (each page generated at runtime are stored in the same place as the page generated at build time). On serverless context, there is not runtime filesystem to write pages in. To fix that, Frugal abstract read and write with a [persistence layer](/docs/api/04-persistence). By default Frugal uses a filesystem persistence layer, but you can configure Frugal to use a different one:
 
 ```ts
 export const config: frugal.Config = {

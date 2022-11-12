@@ -1,6 +1,6 @@
 # Using Preact
 
-Preact integration rely on you providing the preact version you want via an [import map](https://deno.land/manual/linking_to_external_code/import_maps) :
+Preact integration rely on you providing the Preact version you want via an [import map](https://deno.land/manual/linking_to_external_code/import_maps) :
 
 ```json
 {
@@ -15,7 +15,7 @@ Preact integration rely on you providing the preact version you want via an [imp
 
 ## Preact server-side
 
-To use preact at build time or on the server, you only need to use the `getContentFrom` function in your page descriptor :
+To use Preact at build time or on the server, you only need to use the `getContentFrom` function in your page descriptor :
 
 ```tsx
 import { getContentFrom } from 'https://deno.land/x/frugal/preact.server.ts';
@@ -53,7 +53,7 @@ export function MyComponentIsland(props: MyComponentProps) {
 
 [warn]> Avoid importing `preact.server.ts` in your island, since this module contains server only code (using Deno api).
 
-By default an `<Island>` is hydrated on load. But you can instruct frugal to use another strategy.
+By default an `<Island>` is hydrated on load. But you can instruct Frugal to use another strategy.
 
 ### `idle` hydration strategy
 

@@ -1,6 +1,6 @@
 # Script loader
 
-The script loader is used to generate bundle of javascript code executed on the browser. Every module targeted by this loader should export a `main()` function :
+The script loader is used to generate bundle of JavaScript code executed on the browser. Every module targeted by this loader should export a `main()` function :
 
 ```ts
 export function main() {

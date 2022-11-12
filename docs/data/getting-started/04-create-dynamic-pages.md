@@ -2,7 +2,7 @@
 
 ## Frugal configuration
 
-If we want to add a dynamic page, we need to configure frugal to use the server :
+If we want to add a dynamic page, we need to configure Frugal to use the server:
 
 ```ts
 import type * as frugal from 'https://deno.land/x/frugal/core.ts';
@@ -78,7 +78,7 @@ export const config: frugal.Config = {
 
 ## Serve the website
 
-With dynamic pages, frugal will function as a web server. You will still need a build step so keep the `/build.ts` module. In a module `/serve.ts` add the following code :
+With dynamic pages, Frugal will function as a web server. You will still need a build step so keep the `/build.ts` module. In a module `/serve.ts` add the following code:
 
 ```ts
 import { config } from './frugal.config.ts';
@@ -89,7 +89,7 @@ await serve(config);
 
 Running the `build.ts` module will generate all static pages and assets (scripts and styles generated from the loaders). Then running the `serve.ts` module will start the server on the port you configured.
 
-For dynamic pages, frugal will do no incremental generation. Any time the page is requested, frugal will generate it event if the underlying data or code did not change.
+For dynamic pages, Frugal will do no incremental generation. Any time the page is requested, Frugal will generate it event if the underlying data or code did not change.
 
 ## Watch mode
 
@@ -105,4 +105,4 @@ await watch(config, [/* extra path to watch*/]);
 Running the `watch.ts` module will do multiple things :
 
 - All pages will be run as dynamic pages. Each request will trigger a full generation of the page.
-- Each time a file imported in some of your page change, frugal will rebuild all assets (styles and scripts) and reload the page on the client. If you want to watch extra path, you can pass them to the `watch` function.
+- Each time a file imported in some of your page change, Frugal will rebuild all assets (styles and scripts) and reload the page on the client. If you want to watch extra path, you can pass them to the `watch` function.

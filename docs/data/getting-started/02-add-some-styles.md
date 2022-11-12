@@ -1,10 +1,10 @@
 # Add some styles
 
-For now, frugal produces only plain html. If we want to add some styles, there is two options.
+For now, Frugal produces only plain html. If we want to add some styles, there is two options.
 
-We can just copy some `.css` file in the `/public` directory and add a `<link>` to it in the `<head>` of our pages. This would work, but you lose some advantages of frugal.
+We can just copy some `.css` file in the `/public` directory and add a `<link>` to it in the `<head>` of our pages. This would work, but you lose some advantages of Frugal.
 
-Remember that frugal uses incremental generation ? Frugal does this by watching the dependencies of your pages (modules imported by your page). If you simply `<link>` some external `.css` file, frugal will not watch them, because they are not dependencies. This means that if you change something in your `.css` file, frugal will not see the change, and the next build will do nothing.
+Remember that Frugal uses incremental generation ? Frugal does this by watching the dependencies of your pages (modules imported by your page). If you simply `<link>` some external `.css` file, Frugal will not watch them, because they are not dependencies. This means that if you change something in your `.css` file, Frugal will not see the change, and the next build will do nothing.
 
 In order to leverage incremental generation for styles, you have to use a loader.
 
@@ -58,9 +58,9 @@ export function post(post: Post) {
 }
 ```
 
-Since now our style module is imported, frugal can see any modification done to the styles and do incremental generation correctly. If you change something in a style module, frugal will rebuild any page that uses it.
+Since now our style module is imported, Frugal can see any modification done to the styles and do incremental generation correctly. If you change something in a style module, Frugal will rebuild any page that uses it.
 
-At build time, frugal will collect every style module and put every style in one stylesheet for the whole website.
+At build time, Frugal will collect every style module and put every style in one stylesheet for the whole website.
 
 ## Include the generated stylesheet
 

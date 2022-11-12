@@ -2,7 +2,7 @@
 
 ## Session features
 
-The session will hijack every navigation (link click, focused link + Enter, back button). Each time you navigate, the session will prevent the default browser action (fetching and displaying the new page) and simulate it in the same javascript context. The session will fetch the target page, replace the current DOM with the DOM of the target page and update the history. You get the new page, same as with a natural navigation, but you also get to keep the javascript context, because we never really left the page.
+The session will hijack every navigation (link click, focused link + Enter, back button). Each time you navigate, the session will prevent the default browser action (fetching and displaying the new page) and simulate it in the same JavaScript context. The session will fetch the target page, replace the current DOM with the DOM of the target page and update the history. You get the new page, same as with a natural navigation, but you also get to keep the JavaScript context, because we never really left the page.
 
 The session will also prefetch target pages when you hover a link (or on touchstart on mobile). Each time you hover a link, it will insert a `<link rel="prefetch">` in the head of the document.
 
@@ -72,7 +72,7 @@ const session = new Session({
 
 ## Programmatic navigation
 
-If you want to trigger a navigation in js without losing the session, instead of doing `location.pathname = "/my/new/path"`, you can use the `navigate` function exposed on the `Session` object :
+If you want to trigger a navigation in JS without losing the session, instead of doing `location.pathname = "/my/new/path"`, you can use the `navigate` function exposed on the `Session` object :
 
 ```ts
 import { Session } from 'https://deno.land/x/frugal/client_session.ts';

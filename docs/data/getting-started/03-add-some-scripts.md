@@ -1,6 +1,6 @@
 # Add some scripts
 
-Our page is only missing javascript in The Holy Trinity of Web Development (CSS, HTML and javascript). Here again, we could insert some `<script>` tags pointing to an external `.js` script, but again doing so we lose some of the power of incremental generation. Each change to the external `.js` script will not be seen by frugal, and the page using it will not be rebuilt. Plus we might want to do some transpilation, minification and bundling.
+Our page is only missing JavaScript in The Holy Trinity of Web Development (CSS, HTML and JavaScript). Here again, we could insert some `<script>` tags pointing to an external `.js` script, but again doing so we lose some of the power of incremental generation. Each change to the external `.js` script will not be seen by Frugal, and the page using it will not be rebuilt. Plus we might want to do some transpilation, minification and bundling.
 
 ## Script loader
 
@@ -58,9 +58,9 @@ function getContent() {
 }
 ```
 
-Since now your script module is imported, frugal can see any modification done to the script and do incremental generation correctly. If you change something in a script module, frugal will rebuild any page that uses it.
+Since now your script module is imported, Frugal can see any modification done to the script and do incremental generation correctly. If you change something in a script module, Frugal will rebuild any page that uses it.
 
-[warn]> Since your script module is imported in your page descriptor, keep in mind that everything you do on top level of your script module will be executed when you rune frugal (at build time or runtime if you use frugal server). This is useful to share constants (like the `ID` constant) with the generated markup, but try not to execute anything. For static website, this will just make the build longer, but for frugal server it will delay server startup, which is especially bad in serverless context.
+[warn]> Since your script module is imported in your page descriptor, keep in mind that everything you do on top level of your script module will be executed when you rune Frugal (at build time or runtime if you use Frugal server). This is useful to share constants (like the `ID` constant) with the generated markup, but try not to execute anything. For static website, this will just make the build longer, but for Frugal server it will delay server startup, which is especially bad in serverless context.
 [warn]>
 [warn]> **Rule of thumb** : only execute anything in the `main` function, and only declare things (constants, functions) on top level.
 
