@@ -23,7 +23,7 @@ With this configuration you will get a server on port `8000` that will be able t
 
 ## Dynamic page descriptor
 
-In a module (`/pages/posts/list.ts` for example), create a [dynamic page descriptor](/docs/api/01-page-descriptor) :
+In a module (`/pages/posts/list.ts` for example), create a [dynamic page descriptor](/docs/api/01-page-descriptor):
 
 ```tsx
 import type * as frugal from 'https://deno.land/x/frugal/core.ts';
@@ -56,12 +56,12 @@ export function getContent(params: frugal.GetContentParams<Path, Post>) {
 export const self = new URL(import.meta.url);
 ```
 
-What changes compared to a static page :
+What changes compared to a static page:
 
 - no `getPathList` function
 - the `getStaticData` function is replaced with a `getDynamicData` function. Its role is the same as the `getStaticData` function, returning a data object for the view given the incoming request. Everything you need from a distant source (database, file, api) to generate your page, you should fetch here. This function can be async
 
-Again, like for static pages we have to register it in `/frugal.config.ts` :
+Again, like for static pages we have to register it in `/frugal.config.ts`:
 
 ```ts
 //...
@@ -93,7 +93,7 @@ For dynamic pages, Frugal will do no incremental generation. Any time the page i
 
 ## Watch mode
 
-In a module `/watch.ts` add the following code :
+In a module `/watch.ts` add the following code:
 
 ```ts
 import { config } from './frugal.config.ts';
@@ -102,7 +102,7 @@ import { serve } from 'https://deno.land/x/frugal/server.ts';
 await watch(config, [/* extra path to watch*/]);
 ```
 
-Running the `watch.ts` module will do multiple things :
+Running the `watch.ts` module will do multiple things:
 
 - All pages will be run as dynamic pages. Each request will trigger a full generation of the page.
 - Each time a file imported in some of your page change, Frugal will rebuild all assets (styles and scripts) and reload the page on the client. If you want to watch extra path, you can pass them to the `watch` function.

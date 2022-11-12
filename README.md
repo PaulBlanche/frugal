@@ -33,7 +33,7 @@ That's the difference between Frugal and Next.js for example. Next.js will bundl
 
 With Frugal, we lose the ability to do client side navigation, because the JS does not have all the information to render the pages we navigate to (since only the dynamic parts are in the JS), but we make it up by having small cacheable pages (so roundtrip to the server a quick and infrequent).
 
-Compared to Next.js, Frugal is less opinionated :
+Compared to Next.js, Frugal is less opinionated:
 
 - No filesystem-based router, you are free to organize your codebase your way.
 - Static page refresh is done on demand via webhook, rather than on each visit.

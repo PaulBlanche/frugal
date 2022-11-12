@@ -16,7 +16,7 @@ If you want to exclude a page from the session (without having to exclude each l
 
 ## Excluding all links except some
 
-You can globally disable prefetching and session for all links by configuring the `Session` instance :
+You can globally disable prefetching and session for all links by configuring the `Session` instance:
 
 ```ts
 const session = new Session({
@@ -34,7 +34,7 @@ In this situation, if you want to include a link in the session, simply add the 
 
 ## Loading state
 
-By default, if simulating the navigation to a link takes longer than 150ms, the class `frugal-navigate-loading` will be applied to the `<body>` of the document. This timeout is configurable :
+By default, if simulating the navigation to a link takes longer than 150ms, the class `frugal-navigate-loading` will be applied to the `<body>` of the document. This timeout is configurable:
 
 ```ts
 const session = new Session({
@@ -46,7 +46,7 @@ const session = new Session({
 
 ## Prefetch delays
 
-By default, `frugal_session` will prefetch a link 80ms after the start of the hover. After prefetching, `frugal_session` will not prefetch the same link for 1000ms. Those timeouts are configurable :
+By default, `frugal_session` will prefetch a link 80ms after the start of the hover. After prefetching, `frugal_session` will not prefetch the same link for 1000ms. Those timeouts are configurable:
 
 ```ts
 const session = new Session({
@@ -59,7 +59,7 @@ const session = new Session({
 
 ## Scroll reset and restoration
 
-By default, `frugal_session` reset scroll on each navigation (when you navigate to a new page, you get to the top of the page), and restore scroll on each history navigation (when you hit the back or forward button, you get to the part of the page you where when you left). This behavior is configurable :
+By default, `frugal_session` reset scroll on each navigation (when you navigate to a new page, you get to the top of the page), and restore scroll on each history navigation (when you hit the back or forward button, you get to the part of the page you where when you left). This behavior is configurable:
 
 ```ts
 const session = new Session({
@@ -72,7 +72,7 @@ const session = new Session({
 
 ## Programmatic navigation
 
-If you want to trigger a navigation in JS without losing the session, instead of doing `location.pathname = "/my/new/path"`, you can use the `navigate` function exposed on the `Session` object :
+If you want to trigger a navigation in JS without losing the session, instead of doing `location.pathname = "/my/new/path"`, you can use the `navigate` function exposed on the `Session` object:
 
 ```ts
 import { Session } from 'https://deno.land/x/frugal/client_session.ts';

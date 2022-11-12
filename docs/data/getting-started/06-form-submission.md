@@ -4,7 +4,7 @@ Now that we have a server, we can handle form submission with `handlers`
 
 ## Handlers
 
-You can export in a [page descriptor](/docs/api/01-page-descriptor) (both dynamic and static) an extra object `handlers` :
+You can export in a [page descriptor](/docs/api/01-page-descriptor) (both dynamic and static) an extra object `handlers`:
 
 ```ts
 import type * as frugal from 'https://deno.land/x/frugal/core.ts';
@@ -27,7 +27,7 @@ When a client submit a form (via `POST`, `PATCH`, `PUT` or `DELETE`), we want t
 
 The user get the result of the `POST`/`PATCH`/`PUT`/`DELETE` request on a `GET` request. Refreshing the page will not resubmit the form.
 
-For this pattern to work, Frugal needs to persist some data between two requests. On a standard server this can be done using filesystem but in serverless context there is not runtime filesystem to write pages in. To fix that, Frugal abstract read and write with a [persistence layer](/docs/api/04-persistence). By default Frugal uses a filesystem persistence layer, but you can configure Frugal to use a different one :
+For this pattern to work, Frugal needs to persist some data between two requests. On a standard server this can be done using filesystem but in serverless context there is not runtime filesystem to write pages in. To fix that, Frugal abstract read and write with a [persistence layer](/docs/api/04-persistence). By default Frugal uses a filesystem persistence layer, but you can configure Frugal to use a different one:
 
 ```ts
 export const config: frugal.Config = {
@@ -40,7 +40,7 @@ export const config: frugal.Config = {
 
 ## Example
 
-With handlers you can do form validation and submission server side :
+With handlers you can do form validation and submission server side:
 
 ```ts
 import type * as frugal from 'https://deno.land/x/frugal/core.ts';
@@ -83,7 +83,7 @@ export function getContent({ data }: frugal.GetContentParams<Path, Data>) {
 }
 ```
 
-When a user visit the static page, he receive a page that was rendered with `getStaticData`. The form is in its initial state. The user fill the form and submits it. This send a `POST` request with a form-data body, that is handled by the `POST` handler. The handler get back the form from the body of the request and validates it :
+When a user visit the static page, he receive a page that was rendered with `getStaticData`. The form is in its initial state. The user fill the form and submits it. This send a `POST` request with a form-data body, that is handled by the `POST` handler. The handler get back the form from the body of the request and validates it:
 
 - If the form is invalid, the handler sends back the validated form with maybe some error state. `getContent` generates a page with a form containing errors. The user gets back a page with the form validated.
 - If the form is valid, the handler submit the form (database persistence ? Sent to an api ?). A page is generated from the submittedForm with maybe some success message. The user gets back a page with a success message.

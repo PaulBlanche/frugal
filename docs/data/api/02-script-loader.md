@@ -1,6 +1,6 @@
 # Script loader
 
-The script loader is used to generate bundle of JavaScript code executed on the browser. Every module targeted by this loader should export a `main()` function :
+The script loader is used to generate bundle of JavaScript code executed on the browser. Every module targeted by this loader should export a `main()` function:
 
 ```ts
 export function main() {
@@ -21,7 +21,7 @@ export function main() {
 }
 ```
 
-That exposes an `ID` that can be used in the generated markup :
+That exposes an `ID` that can be used in the generated markup:
 
 ```ts
 import { ID } from './hello-world.script.ts';
@@ -42,12 +42,12 @@ Under the hood, the script loader uses [`esbuild`](https://esbuild.github.io). T
 [warn]>
 [warn]> If you want to support older browser without polyfills, you can leverage form submission and `handlers` to have server-side functionality for older browsers.
 
-The script loader will generate a bundle for each page descriptor. If a page descriptor `a` imports some scripts `foo.script.ts` and `bar.script.ts` and a page descriptor `b` only import `foo.script.ts`, and those scripts matches the bundle `'body'`, you should get two output bundles :
+The script loader will generate a bundle for each page descriptor. If a page descriptor `a` imports some scripts `foo.script.ts` and `bar.script.ts` and a page descriptor `b` only import `foo.script.ts`, and those scripts matches the bundle `'body'`, you should get two output bundles:
 
 - a bundle `'body'` for the page descriptor `a` containing `foo.script.ts` and `bar.script.ts`
 - a bundle `'body'` for the page descriptor `b` containing `foo.script.ts`.
 
-The script loader will provide to the `loaderContext` an object with this shape : `{ [descriptor]: { [bundle]: src } }`. You can therefore get the url of a bundle in the `getContent` function of your [page descriptor](/docs/concepts/page-descriptor) :
+The script loader will provide to the `loaderContext` an object with this shape: `{ [descriptor]: { [bundle]: src } }`. You can therefore get the url of a bundle in the `getContent` function of your [page descriptor](/docs/concepts/page-descriptor):
 
 ```ts
 export function getContent(
@@ -59,7 +59,7 @@ export function getContent(
 }
 ```
 
-You can define multiple bundles. For example if you want to have a bundle `'body'` for scripts that goes in the body, and a bundle `'head'` for scripts that goes in the head, you can define two bundles :
+You can define multiple bundles. For example if you want to have a bundle `'body'` for scripts that goes in the body, and a bundle `'head'` for scripts that goes in the head, you can define two bundles:
 
 ```ts
 new ScriptLoader({
@@ -73,7 +73,7 @@ new ScriptLoader({
 });
 ```
 
-In the `getContent` method of your page descriptor, you can then get the `url` of the generated bundles in `loaderContext` :
+In the `getContent` method of your page descriptor, you can then get the `url` of the generated bundles in `loaderContext`:
 
 ```ts
 export function getContent(

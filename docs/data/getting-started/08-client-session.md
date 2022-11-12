@@ -8,7 +8,7 @@ This can be problematic if some client-side JS relies on a state. If the client 
 
 ## Using a session
 
-In a script module (`session.script.ts` for example) add the following code :
+In a script module (`session.script.ts` for example) add the following code:
 
 ```ts
 import { Session } from 'https://deno.land/x/frugal/client_session.ts';

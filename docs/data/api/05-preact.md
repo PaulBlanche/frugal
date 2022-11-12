@@ -1,6 +1,6 @@
 # Using Preact
 
-Preact integration rely on you providing the Preact version you want via an [import map](https://deno.land/manual/linking_to_external_code/import_maps) :
+Preact integration rely on you providing the Preact version you want via an [import map](https://deno.land/manual/linking_to_external_code/import_maps):
 
 ```json
 {
@@ -15,7 +15,7 @@ Preact integration rely on you providing the Preact version you want via an [imp
 
 ## Preact server-side
 
-To use Preact at build time or on the server, you only need to use the `getContentFrom` function in your page descriptor :
+To use Preact at build time or on the server, you only need to use the `getContentFrom` function in your page descriptor:
 
 ```tsx
 import { getContentFrom } from 'https://deno.land/x/frugal/preact.server.ts';
@@ -28,7 +28,7 @@ export const getContent = getContentFrom(Page);
 The `getContentFrom` will return a `getContent` function of a [page descriptor](/docs/concepts/page-descriptor) from a Preact component (here the `Page` component).
 
 By default `getContentFrom` will embed the data object as a JSON object in the markup for island hydration. Therefore data object must be serializable.
-You can lift this constraint if you don't have any island in your page (or don't use `useData` in any island) :
+You can lift this constraint if you don't have any island in your page (or don't use `useData` in any island):
 
 ```ts
 export const getContent = getContentFrom(Page, { embedData: false });
@@ -57,7 +57,7 @@ By default an `<Island>` is hydrated on load. But you can instruct Frugal to use
 
 ### `idle` hydration strategy
 
-The hydration of the `idle` islands is deferred with a `setTimeout` to be rendered as soon as the main thread is `idle` :
+The hydration of the `idle` islands is deferred with a `setTimeout` to be rendered as soon as the main thread is `idle`:
 
 ```tsx
 import { Island } from 'https://deno.land/x/frugal/preact.client.ts';
@@ -122,7 +122,7 @@ export function MyComponentIsland(props: MyComponentProps) {
 
 ## Client-side only islands
 
-By default, the component in the island is rendered server side to populate the html page. If you want your island to be rendered only client-side, you can disable rendering server side with the props `clientOnly` :
+By default, the component in the island is rendered server side to populate the html page. If you want your island to be rendered only client-side, you can disable rendering server side with the props `clientOnly`:
 
 ```tsx
 import { Island } from 'https://deno.land/x/frugal/preact.client.ts';
@@ -144,7 +144,7 @@ export function MyComponentIsland(props: MyComponentProps) {
 
 ## Hooks
 
-Preact integration comes with two hooks : `usePathname` and `useData`.
+Preact integration comes with two hooks: `usePathname` and `useData`.
 
 ### `usePathname`
 
@@ -160,7 +160,7 @@ You should use this hooks instead of relying on island props. Since the page _da
 
 ## Head component
 
-Preact comes with a `<Head>` component that allows you to add tags to the `<head>` of the document in any components :
+Preact comes with a `<Head>` component that allows you to add tags to the `<head>` of the document in any components:
 
 ```tsx
 import { Head } from 'https://deno.land/x/frugal/preact.client.ts';

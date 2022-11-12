@@ -10,7 +10,7 @@ In order to leverage incremental generation for styles, you have to use a loader
 
 ## Style loader
 
-In `frugal.config.ts`, add the [style loader](/docs/api/03-style-loader) :
+In `frugal.config.ts`, add the [style loader](/docs/api/03-style-loader):
 
 ```ts
 //...
@@ -30,7 +30,7 @@ The style loader takes a `test` function that will be used to detect style modul
 
 ## Style module
 
-Then, we can write a style module (in `/pages/post/post.style.ts` for example) :
+Then, we can write a style module (in `/pages/post/post.style.ts` for example):
 
 ```ts
 import { className } from 'https://deno.land/x/frugal/styled.ts';
@@ -44,7 +44,7 @@ export const title = className('title').styled`
 
 The `className` function generates a unique classname. The parameter passed to the `className` function will be used as a prefix to help debug styles.
 
-You can now use the style module in your modules (in `/pages/post/post.ts` for example) :
+You can now use the style module in your modules (in `/pages/post/post.ts` for example):
 
 ```ts
 import * as s from './post.style.ts';
@@ -64,7 +64,7 @@ At build time, Frugal will collect every style module and put every style in one
 
 ## Include the generated stylesheet
 
-The `getContent` function will receive a `loaderContext` object that contains data that the loaders have generated. For the style loader you can use it like this :
+The `getContent` function will receive a `loaderContext` object that contains data that the loaders have generated. For the style loader you can use it like this:
 
 ```ts
 async function getContent(params: frugal.GetContentParams<Path, Post>) {

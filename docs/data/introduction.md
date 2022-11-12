@@ -29,7 +29,7 @@ By default, even with [Preact](https://preactjs.com/) integration, pages generat
 ## Form submission
 
 For static or dynamic page, Frugal's HTTP server is able to handle native form submission via POST, PUT, PATCH or DELETE request. Frugal uses POST-redirect-GET pattern to serve the dynamically generated result of a form submission (this means that the user hitting back after a form submission will not trigger a resubmit).
-In combination with partial hydration, this feature allows you to do _isomorphic form submission_ :
+In combination with partial hydration, this feature allows you to do _isomorphic form submission_:
 
 - You write the code doing form validation and submission once. You use it both in an _island_ (client-side), and in response to a `POST` (server-side).
 - Recent browser receive the _islands_ bundle and are able to execute it, so you can do client-side form validation and submission.

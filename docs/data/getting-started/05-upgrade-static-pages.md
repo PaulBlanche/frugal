@@ -23,7 +23,7 @@ For now, in addition to the filesystem persistence, there is only an [Upstash](h
 
 ## On-demand static page refresh
 
-If you know the data for some static pages has changed and you want the static pages to update without having to build and deploy your website, you can use on-demand static page refresh. To activate it, you need to add some configuration :
+If you know the data for some static pages has changed and you want the static pages to update without having to build and deploy your website, you can use on-demand static page refresh. To activate it, you need to add some configuration:
 
 ```ts
 export const config: frugal.Config = {

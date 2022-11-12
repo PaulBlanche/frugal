@@ -20,13 +20,13 @@ You can return a `string` or a `Promise<string>` from the method, but it is not 
 
 ## Page url
 
-A page descriptor must export a `pattern` value that will be used to generates the actual path for the page. This `pattern` uses `path-to-regexp` syntax :
+A page descriptor must export a `pattern` value that will be used to generates the actual path for the page. This `pattern` uses `path-to-regexp` syntax:
 
 ```ts
 export const pattern = '/post/:id';
 ```
 
-This `pattern` defines the shape of the path object : each property in the path will match with a parameter in the `pattern`.
+This `pattern` defines the shape of the path object: each property in the path will match with a parameter in the `pattern`.
 
 ## Data fetching
 
@@ -42,7 +42,7 @@ If you export a function `getStaticData`, Frugal will generate the page:
 
 The method is where you define all the data fetching logic. You might query a database, call an api or read a file for example.
 
-The method will be called with a path object (generated from the `pattern` value) :
+The method will be called with a path object (generated from the `pattern` value):
 
 ```ts
 export const pattern = '/post/:id';
@@ -63,7 +63,7 @@ If you export a function `getDynamicData`, Frugal will generate the page at runt
 
 As with `getStaticData`, the method is where you define all the data fetching logic. You might query a database, call an api or read a file for example. Keep in mind that this method will be called on each request, so keep it fast.
 
-The method will be called with the request and a path object (generated from the `pattern` value) :
+The method will be called with the request and a path object (generated from the `pattern` value):
 
 ```ts
 export const pattern = '/posts';
@@ -99,7 +99,7 @@ If the method is not exported, Frugal will not generate anything at build time (
 
 ### `self` value
 
-Unless you know what you are doing, this value should always be :
+Unless you know what you are doing, this value should always be:
 
 ```ts
 export const self = new URL(import.meta.url);
@@ -121,7 +121,7 @@ In addition to the `data` or `status` property, you can add a `headers` propert
 
 ## Handlers
 
-For a dynamic or static pages the `getStaticData`/`getDynamicData` method describes how the page should react to a `GET` request. The `handlers` object describes how the page should react to a `POST`, `PUT`, `PATCH` or `DELETE` request :
+For a dynamic or static pages the `getStaticData`/`getDynamicData` method describes how the page should react to a `GET` request. The `handlers` object describes how the page should react to a `POST`, `PUT`, `PATCH` or `DELETE` request:
 
 ```ts
 import type * as frugal from 'https://deno.land/x/frugal/core.ts';

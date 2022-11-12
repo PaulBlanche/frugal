@@ -14,7 +14,7 @@ Cache is a bit more complex, but essentially, this is information on the build p
 
 ## Kinds of persistence
 
-For now, there is only two kind of persistence :
+For now, there is only two kind of persistence:
 
 - File system persistence (plain write to the file system).
 - [Upstash](https://upstash.com/) persistence.

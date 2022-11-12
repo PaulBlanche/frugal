@@ -2,7 +2,7 @@
 
 ## Frugal configuration
 
-First you need to write some configuration module for frugal. In a module (the convention is `/frugal.config.ts`, but you can use any other path) export a simple config object :
+First you need to write some configuration module for frugal. In a module (the convention is `/frugal.config.ts`, but you can use any other path) export a simple config object:
 
 ```ts
 import type * as frugal from 'https://deno.land/x/frugal/core.ts';
@@ -21,7 +21,7 @@ The `outputDir` value is the path where Frugal will generate your site. Inside t
 
 ## Static page descriptor
 
-In a module (`/pages/posts/detail.ts` for example), create a [static page descriptor](/docs/api/01-page-descriptor) :
+In a module (`/pages/posts/detail.ts` for example), create a [static page descriptor](/docs/api/01-page-descriptor):
 
 ```tsx
 import type * as frugal from 'https://deno.land/x/frugal/core.ts';
@@ -67,7 +67,7 @@ The `getContent` method will be called with each data object returned by `getSta
 
 The `self` constant should be the absolute url of the module. Unless you really know what you are doing, it should always be `new URL(import.meta.url)`.
 
-After creating the page descriptor, we need to register it in `/frugal.config.ts` :
+After creating the page descriptor, we need to register it in `/frugal.config.ts`:
 
 ```ts
 //...
