@@ -42,7 +42,7 @@ export const title = className('title').styled`
 `;
 ```
 
-The `className` function generates a unique classname. The parameter passed to the `className` function will be used as a prefix to help debug styles.
+The `className` function generates a unique class name. The parameter passed to the `className` function will be used as a prefix to help debug styles.
 
 You can now use the style module in your modules (in `/pages/post/post.ts` for example):
 
