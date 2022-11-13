@@ -6,6 +6,7 @@ import { FrugalContext, RouterContext } from './types.ts';
 import { dynamicPageMiddleware } from './dynamicPageMiddleware/mod.ts';
 import { staticPageMiddleware } from './staticPageMiddleware/mod.ts';
 import { etagMiddleware } from './etagMiddleware.ts';
+import { csrfMiddleware } from './csrfMiddleware/mod.ts';
 
 function logger() {
     return log.getLogger(`frugal_server:pageRouterMiddleware`);
@@ -52,6 +53,7 @@ export function pageRouterMiddleware(
 }
 
 const composedMiddleware = composeMiddleware<RouterContext>(
+    csrfMiddleware,
     etagMiddleware,
     dynamicPageMiddleware,
     staticPageMiddleware,

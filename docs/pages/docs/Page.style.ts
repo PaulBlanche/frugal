@@ -1,28 +1,35 @@
 import { className } from '../../dep/frugal/styled.ts';
-import { container } from '../../styles/container.style.ts';
+import { link } from '../../styles/link.style.ts';
+import { highlight } from './Markdown/Code.style.ts';
+import { anchor } from './Markdown/Heading.style.ts';
+import { callout } from './Markdown/Callout.style.ts';
 
-export const wrapper = className('wrapper')
-    .extends(container)
+export const markdown = className('markdown')
     .styled`
-        display: flex;
-        flex-direction: row;
-    `;
+        padding: 2rem 0;
 
-export const navigation = className('navigation')
-    .styled`
-        flex: 0 0 256px;
-        margin-top: 1rem;
-        display: none;
-    
-        @media (min-width: 900px) {
-            display: block;
-            margin-right: 1rem
+        *:not(${highlight}) code {
+            background: rgba(0, 0, 0, 0.1);
+            padding: 0.2rem 0.5rem;
+            border-radius: 6px;
+            font-size: 85%;
         }
-    `;
 
-export const main = className('main')
-    .styled`
-        flex: 1;
-        margin: 0 1rem;
-        width: 0;
+        a:not(${anchor}) { 
+            ${link.css} 
+        }
+
+        p, ${callout}, blockquote, ul, ol {
+            margin-top: 16px;
+            margin-bottom: 16px;
+        }
+
+        h1, h2, h3, h4, h5, h6 {
+            margin-top: 2em;
+            margin-bottom: 1em;
+        }
+
+        ul {
+            padding-left: 2em;
+        }
     `;

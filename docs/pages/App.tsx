@@ -1,13 +1,10 @@
 /* @jsxRuntime automatic */
 /* @jsxImportSource preact */
 
-import { cx } from '../dep/frugal/styled.ts';
 import { Head, PageProps } from '../dep/frugal/preact.server.ts';
 import type { Generated } from '../dep/frugal/loader_script.ts';
 
-import { Spinner } from '../svg/Spinner.tsx';
-
-import { loadingSpinner } from './App.style.ts';
+import './App.style.ts';
 import './session.script.ts';
 
 type AppProps = PageProps & {
@@ -44,7 +41,6 @@ export function App({ descriptor, loaderContext, children }: AppProps) {
                 )}
             </Head>
             {children}
-            <Spinner class={cx(loadingSpinner)} />
         </>
     );
 }

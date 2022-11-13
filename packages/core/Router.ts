@@ -79,6 +79,7 @@ export class Router {
                 const generator = new PageGenerator(page, {
                     loaderContext,
                     publicDir: config.publicDir,
+                    watch: config.watch,
                 });
 
                 assert(!(page.pattern in this.#routes));

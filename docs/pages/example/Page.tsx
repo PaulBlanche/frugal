@@ -5,36 +5,40 @@ import { cx } from '../../dep/frugal/styled.ts';
 import { PageProps } from '../../dep/frugal/preact.server.ts';
 import { useData } from '../../dep/frugal/preact.client.ts';
 
-import { Layout } from '../../components/Layout.tsx';
+import { BaseLayout } from '../../layout/BaseLayout/mod.tsx';
+import { Callout } from './Callout.tsx';
 import * as s from './Page.style.ts';
-import { Form } from './Form.island.tsx';
+import { ExampleForm } from './ExampleForm.island.tsx';
 import { RefreshButton } from './RefreshButton.island.tsx';
 import { App } from '../App.tsx';
 import { Data } from './type.ts';
 
 export function Page(props: PageProps) {
-    const data = useData<Data>();
+    const { submitted, serverNow } = useData<Data>();
 
     return (
         <App {...props}>
-            <Layout>
+            <BaseLayout>
                 <main class={cx(s.mainContainer)}>
+                    <h2>Static refreshable page</h2>
+
                     <p>This page is an example of a static page.</p>
 
                     <p>
                         The whole page was generated at build time the{' '}
-                        {data.serverNow.toLocaleDateString('en')} at{' '}
-                        {data.serverNow.toLocaleTimeString('end')}.
+                        {serverNow.toLocaleDateString('en')} at{' '}
+                        {serverNow.toLocaleTimeString('en')} .
                     </p>
 
                     <p>
                         The page can be refreshed by click this button :{' '}
-                        <RefreshButton />
+                        <RefreshButton />. The server will refresh the page (and
+                        the build time generation date will change)
                     </p>
 
+                    <h2>Form example</h2>
+
                     <p>
-                        The server will refresh the page (and the build time
-                        generation date will change)
                     </p>
 
                     <p>
@@ -42,9 +46,27 @@ export function Page(props: PageProps) {
                         Try to fill it and submit with JavaScript activated and
                         deactivated.
                     </p>
-                    <Form />
+
+                    <ExampleForm />
+
+                    {submitted && (
+                        <>
+                            <p>
+                                You last submitted the form with the following
+                                values:
+                            </p>
+                            <ul>
+                                <li>Age: {submitted.age}</li>
+                                <li>
+                                    Username: {submitted.username}
+                                </li>
+                            </ul>
+                        </>
+                    )}
                 </main>
-            </Layout>
+
+                {submitted && <Callout>Form submitted successfully</Callout>}
+            </BaseLayout>
         </App>
     );
 }

@@ -1,4 +1,4 @@
-import { Renderer } from './Renderer.ts';
+import { render } from './render/mod.ts';
 
 export const LOADING_CLASSNAME = 'frugal-navigate-loading';
 
@@ -53,7 +53,8 @@ export class Navigator {
                 this._realNavigate();
                 return;
             }
-            new Renderer(nextDocument).render();
+
+            render(nextDocument);
 
             this.#setReadyState('interactive');
 
@@ -113,7 +114,9 @@ export class Navigator {
         const response = await fetch(this.#url.href, init);
 
         if (response.redirected) {
+            const hash = this.#url.hash;
             this.#url = new URL(response.url);
+            this.#url.hash = hash;
         }
 
         const html = await response.text();
