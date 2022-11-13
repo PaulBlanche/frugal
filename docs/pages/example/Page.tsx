@@ -39,7 +39,7 @@ export function Page(props: PageProps) {
 
                     <p>
                         This is a form working both server-side and client-side.
-                        Try to fill it and submit with javascript activated and
+                        Try to fill it and submit with JavaScript activated and
                         deactivated.
                     </p>
                     <Form />
