@@ -2,7 +2,7 @@ import { getContentFrom } from '../../dep/frugal/preact.server.ts';
 import * as frugal from '../../dep/frugal/core.ts';
 
 import { Page } from './Page.tsx';
-import { Data, Path } from './type.ts';
+import { Data } from './type.ts';
 import { fromFormData, initial } from './Form.ts';
 
 export function getStaticData(): frugal.DataResult<Data> {

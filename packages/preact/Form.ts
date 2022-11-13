@@ -69,7 +69,8 @@ export function defaultValidationStrategy<VALUE extends FormValue>(
     }
 }
 
-export class Form<VALUE extends FormValue> {
+// deno-lint-ignore no-explicit-any
+export class Form<VALUE extends FormValue = any> {
     #state: FormState<VALUE>;
     #config: FormConfig<VALUE>;
     #listeners: Listener[];
@@ -230,9 +231,9 @@ export class Form<VALUE extends FormValue> {
 
 class Field<VALUE extends FieldValue> {
     #state: FieldState<VALUE>;
-    #form?: Form<any>;
+    #form?: Form;
 
-    constructor(state: FieldState<VALUE>, form?: Form<any>) {
+    constructor(state: FieldState<VALUE>, form?: Form) {
         this.#state = state;
         this.#form = form;
     }
@@ -273,6 +274,7 @@ class Field<VALUE extends FieldValue> {
     }
 }
 
+// deno-lint-ignore no-explicit-any
 function entries<VALUE extends Record<string, any>>(
     value: VALUE,
 ): [keyof VALUE, VALUE[keyof VALUE]][] {
