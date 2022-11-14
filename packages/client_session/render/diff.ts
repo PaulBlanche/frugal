@@ -142,15 +142,17 @@ function computeAttributePatch(
 ): AttributePatch[] {
     const patches: AttributePatch[] = [];
 
-    const removes = new Set<string>();
+    const removes = new Map<string, string | boolean>();
     const sets = new Map<string, string | boolean>();
 
-    for (const [name] of getAttributes(actual)) {
-        removes.add(name);
+    for (const [name, value] of getAttributes(actual)) {
+        if (value !== false) {
+            removes.set(name, value);
+        }
     }
 
     for (const [name, value] of getAttributes(target)) {
-        const actualAttributeValue = actual.getAttribute(name);
+        const actualAttributeValue = removes.get(name);
         if (actualAttributeValue === null) {
             // attribute only exists in target, set it
             sets.set(name, value);
@@ -167,7 +169,7 @@ function computeAttributePatch(
         }
     }
 
-    for (const name of removes) {
+    for (const [name] of removes) {
         patches.push({ type: PatchType.REMOVE_ATTRIBUTE, name });
     }
 
