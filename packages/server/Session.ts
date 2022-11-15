@@ -155,9 +155,9 @@ export class Session {
 
     async #token(): Promise<string> {
         return await djwt.create({ alg: 'HS512' }, {
-            iat: djwt.getNumericDate(0), // now
-            exp: djwt.getNumericDate(60 * 60), // now + 1 hour
+            iat: djwt.getNumericDate(0), // now (default value, keep the one in payload)
             ...this.#payload,
+            exp: djwt.getNumericDate(60 * 60), // now + 1 hour (override the one in payload to refresh the token)
         }, this.#key);
     }
 
@@ -173,10 +173,13 @@ export class Session {
     }
 }
 
-const KEY_FORMAT = 'jwk';
-const KEY_ALGORITHM: HmacKeyGenParams = { name: 'HMAC', hash: 'SHA-512' };
-const KEY_EXTRACTABLE = true;
-const KEY_USAGE: KeyUsage[] = ['sign', 'verify'];
+export const KEY_FORMAT = 'jwk';
+export const KEY_ALGORITHM: HmacKeyGenParams = {
+    name: 'HMAC',
+    hash: 'SHA-512',
+};
+export const KEY_EXTRACTABLE = true;
+export const KEY_USAGE: KeyUsage[] = ['sign', 'verify'];
 
 export async function importKey(key: string): Promise<CryptoKey> {
     const importkey = JSON.parse(atob(key));

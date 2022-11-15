@@ -32,7 +32,7 @@
             "exclude": [
                 "examples",
                 "docs/dist",
-                "tests",
+                "tests/",
                 ".vscode",
                 ".deno_dir"
             ]
@@ -47,6 +47,7 @@
         "test:snapshot": "deno task test:unit:snapshot && deno task test:integration:snapshot",
         "test": "deno task test:unit && deno task test:integration",
         "check": "deno check packages/core/mod.ts packages/server/mod.ts packages/preact/mod.client.ts packages/preact/mod.server.ts packages/loader_jsx_svg/mod.ts packages/loader_jsx_svg/spritesheet.ts packages/loader_script/mod.ts packages/loader_style/mod.ts packages/loader_style/styled.ts docs/cli.ts",
+        "cache": "deno run --reload --lock=deno.lock --lock-write --allow-all _cache.ts",
         "coverage": "DENO_FUTURE_CHECK=1 deno coverage tests/cov_profile/unit --lcov --include=packages --output=tests/cov_profile/unit/cov_profile.lcov && DENO_FUTURE_CHECK=1 deno coverage tests/cov_profile/integration --lcov --include=packages --output=tests/cov_profile/integration/cov_profile.lcov",
         "doc:dev": "DENO_FUTURE_CHECK=1 deno run --unstable --no-check --allow-all docs/cli/mod.ts dev",
         "doc:build": "DENO_FUTURE_CHECK=0 deno run --unstable --no-check --allow-all docs/cli/mod.ts build",

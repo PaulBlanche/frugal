@@ -1,6 +1,6 @@
 import * as http from '../../../dep/std/http.ts';
-import * as mock from '../../../dep/std/mock.ts';
-import * as asserts from '../../../dep/std/asserts.ts';
+import * as mock from '../../../dep/std/testing/mock.ts';
+import * as asserts from '../../../dep/std/testing/asserts.ts';
 
 import { postRedirectMiddleware } from '../../../packages/server/middleware/postRedirectGet/postRedirectMiddleware.ts';
 import { RouterContext } from '../../../packages/server/middleware/types.ts';

@@ -1,7 +1,7 @@
 import * as frugal from '../../../../packages/core/mod.ts';
 import * as path from '../../../../dep/std/path.ts';
-import * as asserts from '../../../../dep/std/asserts.ts';
-import * as mock from '../../../../dep/std/mock.ts';
+import * as asserts from '../../../../dep/std/testing/asserts.ts';
+import * as mock from '../../../../dep/std/testing/mock.ts';
 
 import { Hash } from '../../../../packages/murmur/mod.ts';
 import { page1 } from './page1.ts';

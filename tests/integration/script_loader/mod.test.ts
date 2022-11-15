@@ -6,11 +6,11 @@ import {
     page,
 } from '../../../packages/core/mod.ts';
 import * as path from '../../../dep/std/path.ts';
-import * as asserts from '../../../dep/std/asserts.ts';
+import * as asserts from '../../../dep/std/testing/asserts.ts';
 import { Hash } from '../../../packages/murmur/mod.ts';
 import { ScriptLoader } from '../../../packages/loader_script/mod.ts';
 import { DOMParser } from '../../../dep/dom.ts';
-import { assertSnapshot } from '../../../dep/std/snapshot.ts';
+import { assertSnapshot } from '../../../dep/std/testing/snapshot.ts';
 
 import * as pageFoo from './page-foo.ts';
 import * as pageBar from './page-bar.ts';

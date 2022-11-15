@@ -2,8 +2,11 @@ import { PageGenerator } from '../../../packages/core/PageGenerator.ts';
 import { fakeDynamicPage, fakeStaticPage } from './__fixtures__/Page.ts';
 import { fakeLoaderContext } from './__fixtures__/LoaderContext.ts';
 import { asSpy } from '../../test_util/mod.ts';
-import * as asserts from '../../../dep/std/asserts.ts';
-import { assertSpyCall, assertSpyCalls } from '../../../dep/std/mock.ts';
+import * as asserts from '../../../dep/std/testing/asserts.ts';
+import {
+    assertSpyCall,
+    assertSpyCalls,
+} from '../../../dep/std/testing/mock.ts';
 import { assert } from 'https://deno.land/std@0.159.0/_util/assert.ts';
 
 Deno.test('PageGenerator: generateContentFromData call page.getContent', async () => {
@@ -57,6 +60,7 @@ Deno.test('PageGenerator: generateContentFromData call page.getContent', async (
 });
 
 Deno.test('PageGenerator: generate orchestrate the generation of DynamicPage', async (t) => {
+    // deno-lint-ignore no-explicit-any
     const store: Record<string, any> = {
         '325': {
             status: 300,
@@ -295,6 +299,7 @@ Deno.test('PageGenerator: generate generates StaticPage in watch mode', async ()
                 id: '345',
             },
             state,
+            // deno-lint-ignore no-explicit-any
         } as any],
         returned: { data },
     });

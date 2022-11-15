@@ -1,7 +1,7 @@
 import * as http from '../../../dep/std/http.ts';
 import * as datetime from '../../../dep/std/datetime.ts';
-import * as mock from '../../../dep/std/mock.ts';
-import * as asserts from '../../../dep/std/asserts.ts';
+import * as mock from '../../../dep/std/testing/mock.ts';
+import * as asserts from '../../../dep/std/testing/asserts.ts';
 
 import * as frugal from '../../../packages/core/mod.ts';
 import { getMiddleware } from '../../../packages/server/middleware/postRedirectGet/getMiddleware.ts';

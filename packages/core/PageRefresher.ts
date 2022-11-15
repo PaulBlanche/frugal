@@ -1,5 +1,5 @@
 import * as log from '../log/mod.ts';
-import { assert } from '../../dep/std/asserts.ts';
+import { assert } from '../../dep/std/testing/asserts.ts';
 import { PageBuilder } from './PageBuilder.ts';
 import { Page } from './Page.ts';
 

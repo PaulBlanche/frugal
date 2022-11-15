@@ -1,4 +1,8 @@
-import { assertSpyCall, assertSpyCalls, Spy } from '../../dep/std/mock.ts';
+import {
+    assertSpyCall,
+    assertSpyCalls,
+    Spy,
+} from '../../dep/std/testing/mock.ts';
 
 export function asSpy<
     SELF = any,

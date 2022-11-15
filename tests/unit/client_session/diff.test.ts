@@ -1,6 +1,6 @@
 import { diff } from '../../../packages/client_session/render/diff.ts';
 import { DOMParser } from '../../../dep/dom.ts';
-import * as asserts from '../../../dep/std/asserts.ts';
+import * as asserts from '../../../dep/std/testing/asserts.ts';
 import { PatchType } from '../../../packages/client_session/render/types.ts';
 
 const parser = new DOMParser();

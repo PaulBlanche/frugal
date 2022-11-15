@@ -1,8 +1,11 @@
 import { fakePageBuilder } from './__fixtures__/PageBuilder.ts';
 import { fakeStaticPage } from './__fixtures__/Page.ts';
 import { asSpy } from '../../test_util/mod.ts';
-import * as asserts from '../../../dep/std/asserts.ts';
-import { assertSpyCallArgs, assertSpyCalls } from '../../../dep/std/mock.ts';
+import * as asserts from '../../../dep/std/testing/asserts.ts';
+import {
+    assertSpyCallArgs,
+    assertSpyCalls,
+} from '../../../dep/std/testing/mock.ts';
 
 import { PageRefresher } from '../../../packages/core/PageRefresher.ts';
 

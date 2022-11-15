@@ -4,7 +4,7 @@ import { PageRefresher } from './PageRefresher.ts';
 import { PageGenerator } from './PageGenerator.ts';
 import { LoaderContext } from './LoaderContext.ts';
 import { CleanConfig } from './Config.ts';
-import { assert } from '../../dep/std/asserts.ts';
+import { assert } from '../../dep/std/testing/asserts.ts';
 import { ModuleList } from './DependencyGraph.ts';
 import { PersistentCache } from './Cache.ts';
 

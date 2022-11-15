@@ -8,7 +8,7 @@ import {
 import * as path from '../../../dep/std/path.ts';
 import { Hash } from '../../../packages/murmur/mod.ts';
 import { StyleLoader } from '../../../packages/loader_style/mod.ts';
-import { assertSnapshot } from '../../../dep/std/snapshot.ts';
+import { assertSnapshot } from '../../../dep/std/testing/snapshot.ts';
 
 import * as myPage from './page.ts';
 

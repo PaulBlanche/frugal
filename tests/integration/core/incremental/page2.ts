@@ -1,4 +1,4 @@
-import * as mock from '../../../../dep/std/mock.ts';
+import * as mock from '../../../../dep/std/testing/mock.ts';
 
 import * as frugal from '../../../../packages/core/mod.ts';
 

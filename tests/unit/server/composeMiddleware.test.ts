@@ -1,5 +1,5 @@
-import * as mock from '../../../dep/std/mock.ts';
-import * as asserts from '../../../dep/std/asserts.ts';
+import * as mock from '../../../dep/std/testing/mock.ts';
+import * as asserts from '../../../dep/std/testing/asserts.ts';
 
 import {
     composeMiddleware,
