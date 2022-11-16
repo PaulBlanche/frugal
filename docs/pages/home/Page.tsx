@@ -1,9 +1,9 @@
 /* @jsxRuntime automatic */
 /* @jsxImportSource preact */
 import { cx } from '../../dep/frugal/styled.ts';
-import { HeroHeader } from '../../components/HeroHeader.tsx';
-import { Layout } from '../../components/Layout.tsx';
+import { BaseLayout } from '../../layout/BaseLayout/mod.tsx';
 
+import { HeroHeader } from './HeroHeader.tsx';
 import * as s from './Page.style.ts';
 import { link } from '../../styles/link.style.ts';
 import { App } from '../App.tsx';
@@ -12,7 +12,7 @@ import { PageProps } from '../../dep/frugal/preact.server.ts';
 export function Page(props: PageProps) {
     return (
         <App {...props}>
-            <Layout>
+            <BaseLayout>
                 <HeroHeader />
                 <main class={cx(s.mainContainer)}>
                     <p>
@@ -22,39 +22,44 @@ export function Page(props: PageProps) {
                     </p>
                     <ul>
                         <li>
-                            <em class={cx(s.emphasis)}>
+                            <strong>
                                 Static pages rendered at build time
-                            </em>: by default frugal produces static html.
+                            </strong>: by default frugal produces static html.
                         </li>
                         <li>
-                            <em class={cx(s.emphasis)}>
+                            <strong>
                                 Server side pages render
-                            </em>{' '}
+                            </strong>{' '}
                             at request time
                         </li>
                         <li>
-                            <em class={cx(s.emphasis)}>
+                            <strong>
                                 Bring your own framework
-                            </em>: frugal works with any UI framework able to
-                            compile to html
+                            </strong>: frugal works with any UI framework able
+                            to compile to html
                         </li>
                         <li>
-                            <em class={cx(s.emphasis)}>
+                            <strong>
                                 Manual partial hydration
-                            </em>{' '}
+                            </strong>{' '}
                             for interactive island in pages of you use{' '}
-                            <a class={cx(link)} href='#'>Preact</a>
+                            <a class={cx(link)} href='https://preactjs.com/'>
+                                Preact
+                            </a>
                         </li>
                         <li>
-                            <em class={cx(s.emphasis)}>
+                            <strong>
                                 Form submission client-side or server-side
-                            </em>{' '}
+                            </strong>{' '}
                             for both static and dynamic pages
                         </li>
                         <li>
-                            <em class={cx(s.emphasis)}>Incremental build</em>:
-                            if both data and code did not change, the page is
-                            not rebuilt
+                            <strong>Incremental build</strong>: if both data and
+                            code did not change, the page is not rebuilt
+                        </li>
+                        <li>
+                            <strong>Client session</strong>: get an SPA user
+                            experience with a MPA codebase
                         </li>
                     </ul>
                     <p>
@@ -67,7 +72,7 @@ export function Page(props: PageProps) {
                         </a>
                     </p>
                 </main>
-            </Layout>
+            </BaseLayout>
         </App>
     );
 }

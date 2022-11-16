@@ -1,4 +1,4 @@
-import * as mock from '../../../dep/std/mock.ts';
+import * as mock from '../../../dep/std/testing/mock.ts';
 
 import { _dynamicPageMiddlewareMaker } from '../../../packages/server/middleware/dynamicPageMiddleware/mod.ts';
 import { RouterContext } from '../../../packages/server/middleware/types.ts';

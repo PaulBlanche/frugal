@@ -3,12 +3,12 @@ import * as frugal from '../../dep/frugal/core.ts';
 
 import { Page } from './Page.tsx';
 import { Data } from './type.ts';
-import { fromFormData, initialForm, submitForm, validateForm } from './Form.ts';
+import { fromFormData, initial } from './Form.ts';
 
 export function getStaticData(): frugal.DataResult<Data> {
     return {
         data: {
-            form: initialForm(),
+            form: initial().state,
             serverNow: new Date(),
         },
     };
@@ -16,17 +16,15 @@ export function getStaticData(): frugal.DataResult<Data> {
 
 export const handlers = {
     POST: async (request: Request): Promise<frugal.DataResult<Data>> => {
-        const formData = await request.formData();
-        const form = fromFormData(formData);
-        const validatedForm = await validateForm(form);
-        if (validatedForm.isValid) {
-            const submittedForm = await submitForm(form);
-            return {
-                data: { form: submittedForm, serverNow: new Date() },
-            };
-        }
+        const form = fromFormData(await request.formData());
+        const submitted = await form.handle();
+
         return {
-            data: { form: validatedForm, serverNow: new Date() },
+            data: {
+                form: form.state,
+                submitted,
+                serverNow: new Date(),
+            },
         };
     },
 };

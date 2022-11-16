@@ -1,4 +1,4 @@
-import { assert } from '../../dep/std/asserts.ts';
+import { assert } from '../../dep/std/testing/asserts.ts';
 import * as pathUtils from '../../dep/std/path.ts';
 import * as http from '../../dep/std/http.ts';
 

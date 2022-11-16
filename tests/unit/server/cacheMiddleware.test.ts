@@ -1,6 +1,6 @@
 import * as http from '../../../dep/std/http.ts';
-import * as mock from '../../../dep/std/mock.ts';
-import * as asserts from '../../../dep/std/asserts.ts';
+import * as mock from '../../../dep/std/testing/mock.ts';
+import * as asserts from '../../../dep/std/testing/asserts.ts';
 
 import * as frugal from '../../../packages/core/mod.ts';
 import { cacheMiddleware } from '../../../packages/server/middleware/staticPageMiddleware/cacheMiddleware.ts';
@@ -8,7 +8,7 @@ import { RouterContext } from '../../../packages/server/middleware/types.ts';
 import { compute } from '../../../packages/server/etag.ts';
 
 Deno.test('cacheMiddleware: should bail out if persistence throw NotFound', async () => {
-    const next = mock.spy(async () => new Response());
+    const next = mock.spy(() => Promise.resolve(new Response()));
 
     const request = new Request('http://example.com/foo/bar');
     const pagePersistenceRead = mock.spy(() => {
@@ -29,8 +29,8 @@ Deno.test('cacheMiddleware: should bail out if persistence throw NotFound', asyn
     mock.assertSpyCalls(next, 1);
 });
 
-Deno.test('cacheMiddleware: should throw on non NotFound error', async () => {
-    const next = mock.spy(async () => new Response());
+Deno.test('cacheMiddleware: should throw on non NotFound error', () => {
+    const next = mock.spy(() => Promise.resolve(new Response()));
 
     const request = new Request('http://example.com/foo/bar');
     const pagePersistenceRead = mock.spy(() => {
@@ -53,7 +53,7 @@ Deno.test('cacheMiddleware: should throw on non NotFound error', async () => {
 });
 
 Deno.test('cacheMiddleware: should serve index.html for dir url', async () => {
-    const next = mock.spy(async () => new Response());
+    const next = mock.spy(() => Promise.resolve(new Response()));
 
     const request = new Request('http://example.com/foo/bar');
     const pagePersistenceRead = mock.spy((path: string) => {
@@ -92,7 +92,7 @@ Deno.test('cacheMiddleware: should serve index.html for dir url', async () => {
 });
 
 Deno.test('cacheMiddleware: should serve file for file url', async () => {
-    const next = mock.spy(async () => new Response());
+    const next = mock.spy(() => Promise.resolve(new Response()));
 
     const request = new Request('http://example.com/foo/bar.html');
     const pagePersistenceRead = mock.spy((path: string) => {
@@ -133,7 +133,7 @@ Deno.test('cacheMiddleware: should serve file for file url', async () => {
 });
 
 Deno.test('cacheMiddleware: headers can be overwritten', async () => {
-    const next = mock.spy(async () => new Response());
+    const next = mock.spy(() => Promise.resolve(new Response()));
 
     const request = new Request('http://example.com/foo/bar.html');
     const pagePersistenceRead = mock.spy((path: string) => {
@@ -168,7 +168,7 @@ Deno.test('cacheMiddleware: headers can be overwritten', async () => {
 });
 
 Deno.test('cacheMiddleware: return naked status', async () => {
-    const next = mock.spy(async () => new Response());
+    const next = mock.spy(() => Promise.resolve(new Response()));
 
     const generated = {
         status: http.Status.NotFound,

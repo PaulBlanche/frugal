@@ -1,5 +1,9 @@
-import * as asserts from '../../../dep/std/asserts.ts';
-import { assertSpyCall, assertSpyCalls, spy } from '../../../dep/std/mock.ts';
+import * as asserts from '../../../dep/std/testing/asserts.ts';
+import {
+    assertSpyCall,
+    assertSpyCalls,
+    spy,
+} from '../../../dep/std/testing/mock.ts';
 import {
     className,
     clean,

@@ -1,7 +1,7 @@
-import * as asserts from '../../../dep/std/asserts.ts';
+import * as asserts from '../../../dep/std/testing/asserts.ts';
 import * as murmur from '../../../packages/murmur/mod.ts';
 import { asSpy, decycle } from '../../test_util/mod.ts';
-import { spy } from '../../../dep/std/mock.ts';
+import { spy } from '../../../dep/std/testing/mock.ts';
 
 import * as dependency from '../../../packages/dependency_graph/mod.ts';
 import * as graph from '../../../packages/dependency_graph/graph.ts';

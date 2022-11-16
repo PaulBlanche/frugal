@@ -7,7 +7,7 @@ import {
     Handlers,
     StaticPage,
 } from '../../../../packages/core/Page.ts';
-import { spy } from '../../../../dep/std/mock.ts';
+import { spy } from '../../../../dep/std/testing/mock.ts';
 
 type FakeDynamicPageConfig<
     PATH extends Record<string, string> = Record<string, string>,

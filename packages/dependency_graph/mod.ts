@@ -1,6 +1,6 @@
 import * as swc from '../../packages/swc-wasm/mod.ts';
 import * as murmur from '../murmur/mod.ts';
-import { assert } from '../../dep/std/asserts.ts';
+import { assert } from '../../dep/std/testing/asserts.ts';
 
 import * as visitor from './visitor.ts';
 import * as log from '../log/mod.ts';

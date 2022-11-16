@@ -5,7 +5,7 @@ import {
 import { Page } from '../../../../packages/core/Page.ts';
 import { fakeDynamicPage } from './Page.ts';
 import { fakeLoaderContext } from './LoaderContext.ts';
-import { spy } from '../../../../dep/std/mock.ts';
+import { spy } from '../../../../dep/std/testing/mock.ts';
 
 type FakePageGeneratorConfig<
     PATH extends Record<string, string> = Record<string, string>,

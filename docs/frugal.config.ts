@@ -1,7 +1,7 @@
 import * as preact from 'preact';
 
 import { page, UpstashPersistence } from './dep/frugal/core.ts';
-import { Config } from './dep/frugal/server.ts';
+import { Config, importKey } from './dep/frugal/server.ts';
 import { ScriptLoader } from './dep/frugal/loader_script.ts';
 import { StyleLoader, styleTransformer } from './dep/frugal/loader_style.ts';
 import * as stylis from './dep/stylis.ts';
@@ -106,6 +106,14 @@ export const config: Config = {
         sessionPersistence: UPSTASH_PERSISTENCE,
 
         listen: { port: 8000 },
+
+        session: {
+            key: await importKey(Deno.env.get('CRYPTO_KEY')!),
+        },
+
+        statusMapping: {
+            403: () => ({ url: '/', type: 'redirect', status: 302 }),
+        },
     },
 };
 

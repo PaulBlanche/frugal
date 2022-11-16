@@ -12,6 +12,7 @@ Frugal is a hybrid, dynamic and static site generator that aims to minimize the 
 - _Manual partial hydration_ for interactive island in pages if you use Preact
 - _Client-side and server-side form submission_ for both static and dynamic pages
 - _Incremental build_: if both data and code did not change, the page is not rebuilt
+- _Client session_: transform your MPA into a SPA at little cost
 
 ## Getting Started
 

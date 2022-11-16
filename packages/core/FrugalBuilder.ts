@@ -1,6 +1,6 @@
 import * as path from '../../dep/std/path.ts';
 import * as fs from '../../dep/std/fs.ts';
-import { assert } from '../../dep/std/asserts.ts';
+import { assert } from '../../dep/std/testing/asserts.ts';
 
 import * as log from '../log/mod.ts';
 

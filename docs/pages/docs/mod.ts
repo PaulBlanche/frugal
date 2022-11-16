@@ -7,7 +7,7 @@ import { Page } from './Page.tsx';
 
 const TOC: Toc = JSON.parse(
     await Deno.readTextFile(
-        new URL('../../data/toc.json', import.meta.url).pathname,
+        new URL('./data/toc.json', import.meta.url).pathname,
     ),
 );
 
@@ -20,7 +20,7 @@ export function getPathList(): Path[] {
 
 async function readMarkup(name: string) {
     return await Deno.readTextFile(
-        new URL(`../../data${name}`, import.meta.url),
+        new URL(`./data${name}`, import.meta.url),
     );
 }
 
@@ -34,7 +34,7 @@ async function getMarkup(slug: string) {
         try {
             return await readMarkup(`${slug}/index.md`);
         } catch (e) {
-            console.log(slug);
+            console.log({ slug });
             throw e;
         }
     }
@@ -51,7 +51,7 @@ export async function getStaticData(
             markup,
         },
         headers: {
-            'Cache-Control': 'public, max-age=3600, must-revalidate', // cached for the hour
+            'Cache-Control': 'public, max-age=300, must-revalidate', // cached for 5min
         },
     };
 }
@@ -60,6 +60,4 @@ export const pattern = PATTERN;
 
 export const self = new URL(import.meta.url);
 
-export const getContent = getContentFrom<Path, Data>(Page, {
-    embedData: false,
-});
+export const getContent = getContentFrom<Path, Data>(Page);

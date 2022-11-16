@@ -7,7 +7,7 @@ import {
     SerializedCache,
 } from '../../../../packages/core/Cache.ts';
 import { Persistence } from '../../../../packages/core/Persistence.ts';
-import { spy } from '../../../../dep/std/mock.ts';
+import { spy } from '../../../../dep/std/testing/mock.ts';
 import { fakePersistence } from './Persistence.ts';
 
 type FakeCacheConfig = {

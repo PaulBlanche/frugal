@@ -2,7 +2,7 @@ import * as http from '../../../dep/std/http.ts';
 import * as log from '../../log/mod.ts';
 
 import { Middleware, Next } from '../types.ts';
-import { FrugalContext } from '../middleware/types.ts';
+import { FrugalContext } from './types.ts';
 
 function logger() {
     return log.getLogger(`frugal_server:statusRewriteMiddleware`);
@@ -31,24 +31,51 @@ export function statusRewriteMiddleware(middleware: Middleware<FrugalContext>) {
     ) => {
         const response = await safeNext(context, next);
 
-        const pathname = context.config.statusRewrite[response.status];
-        if (pathname !== undefined) {
+        const mapping =
+            context.config.statusMapping[response.status as http.Status];
+        if (mapping !== undefined) {
             const url = new URL(context.request.url);
-            const path = pathname(new URL(url));
+            const mapped = mapping(new URL(url));
+            const dest = new URL(mapped.url, url);
+
+            if (mapped.type === 'redirect') {
+                logger().debug({
+                    status: response.status,
+                    src: url.href,
+                    dest: dest.href,
+                    msg() {
+                        return `Response to ${this.src} with status ${this.status}, redirected to ${this.dest}`;
+                    },
+                });
+
+                const headers = new Headers(response.headers);
+                headers.set('Location', dest.href);
+
+                return new Response(null, {
+                    status: mapped.status,
+                    statusText: http.STATUS_TEXT[mapped.status],
+                    headers,
+                });
+            }
 
             logger().debug({
                 status: response.status,
-                pathname: url.pathname,
-                path,
+                src: url.href,
+                dest: dest.href,
                 msg() {
-                    return `Response to ${this.pathname} with status ${this.status}, try a rewrite to ${this.path}`;
+                    return `Response to ${this.src} with status ${this.status}, try a rewrite to ${this.dest}`;
                 },
             });
 
-            const request = new Request(
-                new URL(path, url),
-                context.request,
-            );
+            // simulate request to rewritten path
+            const request = new Request(dest, context.request);
+            // is response had any set cookie, set them as cookie on the
+            // simulated request as if the browser made the request after a
+            // redirection
+            const cookies = response.headers.get('Set-Cookie');
+            if (cookies) {
+                request.headers.set('Cookie', cookies);
+            }
 
             const rewriteResponse = await middleware(
                 { ...context, request },
@@ -57,14 +84,18 @@ export function statusRewriteMiddleware(middleware: Middleware<FrugalContext>) {
 
             logger().info({
                 status: response.status,
-                pathname: url.pathname,
-                path,
+                src: url.href,
+                dest: dest.href,
                 msg() {
-                    return `Response to ${this.pathname} with status ${this.status} successfully rewritten to ${this.path}`;
+                    return `Response to ${this.src} with status ${this.status} successfully rewritten to ${this.dest}`;
                 },
             });
 
-            return rewriteResponse;
+            return new Response(rewriteResponse.body, {
+                status: response.status,
+                statusText: response.statusText,
+                headers: rewriteResponse.headers,
+            });
         }
 
         logger().debug({

@@ -1,12 +1,12 @@
 import * as frugal from '../../../packages/core/mod.ts';
 import * as path from '../../../dep/std/path.ts';
-import * as asserts from '../../../dep/std/asserts.ts';
-import * as mock from '../../../dep/std/mock.ts';
+import * as asserts from '../../../dep/std/testing/asserts.ts';
+import * as mock from '../../../dep/std/testing/mock.ts';
 
 import { Hash } from '../../../packages/murmur/mod.ts';
 import { PageDescriptorError } from '../../../packages/core/Page.ts';
 
-Deno.test('page: bare static page', async (t) => {
+Deno.test('page: bare static page', async () => {
     const content = `${Math.random()}`;
 
     const page = {
@@ -46,7 +46,7 @@ Deno.test('page: bare static page', async (t) => {
     await instance.clean();
 });
 
-Deno.test('page: static page without getPathList', async (t) => {
+Deno.test('page: static page without getPathList', async () => {
     const content = `${Math.random()}`;
     const data = Math.random();
     const headers: [string, string][] = [[
@@ -108,7 +108,7 @@ Deno.test('page: static page without getPathList', async (t) => {
     await instance.clean();
 });
 
-Deno.test('page: static page without getPathList with url parameter', async (t) => {
+Deno.test('page: static page without getPathList with url parameter', async () => {
     const content = `${Math.random()}`;
 
     const page = {
@@ -137,7 +137,7 @@ Deno.test('page: static page without getPathList with url parameter', async (t) 
     await instance.clean();
 });
 
-Deno.test('page: static page without getStaticData', async (t) => {
+Deno.test('page: static page without getStaticData', async () => {
     const content: Record<string, string> = {
         '1': `${Math.random()}`,
         '2': `${Math.random()}`,
@@ -208,7 +208,8 @@ Deno.test('page: static page without getStaticData', async (t) => {
     await instance.clean();
 });
 
-Deno.test('page: complete static page', async (t) => {
+Deno.test('page: complete static page', async () => {
+    // deno-lint-ignore no-explicit-any
     const store: Record<string, any> = {
         '1': {
             data: Math.random(),
@@ -315,7 +316,7 @@ Deno.test('page: complete static page', async (t) => {
     await instance.clean();
 });
 
-Deno.test('page: dynamic page is not generated', async (t) => {
+Deno.test('page: dynamic page is not generated', async () => {
     const content = `${Math.random()}`;
     const data = Math.random();
     const headers: [string, string][] = [[

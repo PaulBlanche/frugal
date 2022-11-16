@@ -1,12 +1,12 @@
 import * as http from '../../../dep/std/http.ts';
 import * as datetime from '../../../dep/std/datetime.ts';
-import * as mock from '../../../dep/std/mock.ts';
-import * as asserts from '../../../dep/std/asserts.ts';
+import * as mock from '../../../dep/std/testing/mock.ts';
+import * as asserts from '../../../dep/std/testing/asserts.ts';
 
 import * as frugal from '../../../packages/core/mod.ts';
 import { getMiddleware } from '../../../packages/server/middleware/postRedirectGet/getMiddleware.ts';
 import { RouterContext } from '../../../packages/server/middleware/types.ts';
-import { SESSION_COOKIE_NAME } from '../../../packages/server/middleware/postRedirectGet/const.ts';
+import { SESSION_KEY } from '../../../packages/server/middleware/postRedirectGet/const.ts';
 
 Deno.test('postRedirectGet:getMiddleware: should bail out on non GET request', async () => {
     const next = mock.spy(async () => new Response());
@@ -20,88 +20,76 @@ Deno.test('postRedirectGet:getMiddleware: should bail out on non GET request', a
     mock.assertSpyCalls(next, 1);
 });
 
-Deno.test('postRedirectGet:getMiddleware: should bail out on GET request without expected cookie', async () => {
+Deno.test('postRedirectGet:getMiddleware: should bail out on GET request without expected value in session', async () => {
     const next = mock.spy(async () => new Response());
+    const sessionHas = mock.spy(() => false);
     await getMiddleware({
         request: {
             url: 'http://example.com',
             method: 'GET',
-            headers: new Headers({
-                'Cookie': 'foo=bar',
-            }),
         },
-    } as RouterContext, next);
+        session: {
+            has: sessionHas,
+        },
+    } as unknown as RouterContext, next);
 
     mock.assertSpyCalls(next, 1);
+    mock.assertSpyCalls(sessionHas, 1);
+    mock.assertSpyCall(sessionHas, 0, {
+        args: [SESSION_KEY],
+    });
 });
 
-Deno.test('postRedirectGet:getMiddleware: should bail out on GET request with expected cookie, but without data', async () => {
+Deno.test('postRedirectGet:getMiddleware: should bail out and remove session value on GET request with expected value in session, but without data', async () => {
     const next = mock.spy(async () => new Response());
-    const sessionManagerGet = mock.spy(() => {
+    const sessionHas = mock.spy(() => true);
+    const sessionUnset = mock.spy();
+    const sessionRead = mock.spy(() => {
         throw new frugal.NotFound('');
     });
     await getMiddleware({
         request: {
             url: 'http://example.com',
             method: 'GET',
-            headers: new Headers({
-                'Cookie': `${SESSION_COOKIE_NAME}=sessionId`,
-            }),
         },
-        sessionManager: {
-            get: sessionManagerGet,
+        session: {
+            has: sessionHas,
+            read: sessionRead,
+            unset: sessionUnset,
         },
     } as unknown as RouterContext, next);
 
     mock.assertSpyCalls(next, 1);
-    mock.assertSpyCalls(sessionManagerGet, 1);
-});
-
-Deno.test('postRedirectGet:getMiddleware: should bail out on GET request with expected cookie but without data and remove cookie', async () => {
-    const next = mock.spy(async () => new Response());
-    const sessionManagerGet = mock.spy(() => {
-        throw new frugal.NotFound('');
+    mock.assertSpyCalls(sessionHas, 1);
+    mock.assertSpyCall(sessionHas, 0, {
+        args: [SESSION_KEY],
     });
-    const sessionId = 'sessionId';
-    const response = await getMiddleware({
-        request: {
-            url: 'http://example.com',
-            method: 'GET',
-            headers: new Headers({
-                'Cookie': `${SESSION_COOKIE_NAME}=${sessionId}`,
-            }),
-        },
-        sessionManager: {
-            get: sessionManagerGet,
-        },
-    } as unknown as RouterContext, next);
-
-    mock.assertSpyCalls(next, 1);
-    mock.assertSpyCalls(sessionManagerGet, 1);
-    mock.assertSpyCall(sessionManagerGet, 0, { args: [sessionId] });
-    asserts.assertEquals(
-        response.headers.get('Set-Cookie'),
-        `${SESSION_COOKIE_NAME}=; Expires=${datetime.toIMF(new Date(0))}`,
-    );
+    mock.assertSpyCalls(sessionRead, 1);
+    mock.assertSpyCall(sessionRead, 0, {
+        args: [SESSION_KEY],
+    });
+    mock.assertSpyCalls(sessionUnset, 1);
+    mock.assertSpyCall(sessionUnset, 0, {
+        args: [SESSION_KEY],
+    });
 });
 
-Deno.test('postRedirectGet:getMiddleware: should throw on non NotFound error in sessionManager', async () => {
+Deno.test('postRedirectGet:getMiddleware: should throw on non NotFound error in session read', async () => {
     const next = mock.spy(async () => new Response());
-    const sessionManagerGet = mock.spy(() => {
+    const sessionHas = mock.spy(() => true);
+    const sessionRead = mock.spy(() => {
         throw new Error();
     });
-    const sessionId = 'sessionId';
+
     await asserts.assertRejects(async () => {
         await getMiddleware({
             request: {
                 url: 'http://example.com',
                 method: 'GET',
-                headers: new Headers({
-                    'Cookie': `${SESSION_COOKIE_NAME}=${sessionId}`,
-                }),
             },
-            sessionManager: {
-                get: sessionManagerGet,
+            session: {
+                has: sessionHas,
+                read: sessionRead,
             },
         } as unknown as RouterContext, next);
     });
@@ -113,45 +101,45 @@ Deno.test('postRedirectGet:getMiddleware: should answer with data in session', a
         'foo': 'bar',
     };
     const responseContent = 'content';
-    const sessionManagerGet = mock.spy(() => {
+
+    const sessionHas = mock.spy(() => true);
+    const sessionUnset = mock.spy();
+    const sessionRead = mock.spy(() => {
         return JSON.stringify({
             headers: responseHeaders,
             content: responseContent,
         });
     });
-    const sessionManagerDelete = mock.spy();
-    const sessionId = 'sessionId';
+    const sessionDelete = mock.spy();
+
     const response = await getMiddleware({
         request: {
             url: 'http://example.com',
             method: 'GET',
-            headers: new Headers({
-                'Cookie': `${SESSION_COOKIE_NAME}=${sessionId}`,
-            }),
         },
-        sessionManager: {
-            get: sessionManagerGet,
-            delete: sessionManagerDelete,
+        session: {
+            has: sessionHas,
+            read: sessionRead,
+            unset: sessionUnset,
+            delete: sessionDelete,
         },
     } as unknown as RouterContext, next);
 
     mock.assertSpyCalls(next, 0);
-    mock.assertSpyCalls(sessionManagerGet, 1);
-    mock.assertSpyCall(sessionManagerGet, 0, { args: [sessionId] });
-    mock.assertSpyCalls(sessionManagerDelete, 1);
-    mock.assertSpyCall(sessionManagerDelete, 0, { args: [sessionId] });
+    mock.assertSpyCalls(sessionHas, 1);
+    mock.assertSpyCall(sessionHas, 0, { args: [SESSION_KEY] });
+    mock.assertSpyCalls(sessionRead, 1);
+    mock.assertSpyCall(sessionRead, 0, { args: [SESSION_KEY] });
+    mock.assertSpyCalls(sessionUnset, 1);
+    mock.assertSpyCall(sessionUnset, 0, { args: [SESSION_KEY] });
+    mock.assertSpyCalls(sessionDelete, 1);
+    mock.assertSpyCall(sessionDelete, 0, { args: [SESSION_KEY] });
     asserts.assertEquals(
         Array.from(response.headers.entries()),
         [
             ['cache-control', 'no-store'],
             ['content-type', 'text/html; charset=utf-8'],
             ['foo', 'bar'],
-            [
-                'set-cookie',
-                `${SESSION_COOKIE_NAME}=; Expires=${
-                    datetime.toIMF(new Date(0))
-                }`,
-            ],
         ],
     );
     asserts.assertEquals(await response.text(), responseContent);
@@ -164,25 +152,27 @@ Deno.test('postRedirectGet:getMiddleware: default headers can be overriden', asy
         'content-type': 'bar',
     };
     const responseContent = 'content';
-    const sessionManagerGet = mock.spy(() => {
+
+    const sessionHas = mock.spy(() => true);
+    const sessionUnset = mock.spy();
+    const sessionRead = mock.spy(() => {
         return JSON.stringify({
             headers: responseHeaders,
             content: responseContent,
         });
     });
-    const sessionManagerDelete = mock.spy();
-    const sessionId = 'sessionId';
+    const sessionDelete = mock.spy();
+
     const response = await getMiddleware({
         request: {
             url: 'http://example.com',
             method: 'GET',
-            headers: new Headers({
-                'Cookie': `${SESSION_COOKIE_NAME}=${sessionId}`,
-            }),
         },
-        sessionManager: {
-            get: sessionManagerGet,
-            delete: sessionManagerDelete,
+        session: {
+            has: sessionHas,
+            read: sessionRead,
+            unset: sessionUnset,
+            delete: sessionDelete,
         },
     } as unknown as RouterContext, next);
 
@@ -191,12 +181,6 @@ Deno.test('postRedirectGet:getMiddleware: default headers can be overriden', asy
         [
             ['cache-control', 'foo'],
             ['content-type', 'bar'],
-            [
-                'set-cookie',
-                `${SESSION_COOKIE_NAME}=; Expires=${
-                    datetime.toIMF(new Date(0))
-                }`,
-            ],
         ],
     );
 });

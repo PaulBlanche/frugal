@@ -4,13 +4,13 @@ import * as frugal from '../core/mod.ts';
 import * as log from '../log/mod.ts';
 
 import { composeMiddleware } from './composeMiddleware.ts';
-import { SessionManager } from './SessionManager.ts';
 import { pageRouterMiddleware } from './middleware/pageRouterMiddleware.ts';
 import { CleanConfig } from './Config.ts';
 import { filesystemMiddleware } from './middleware/filesystemMiddleware.ts';
 import { Middleware } from './types.ts';
 import { FrugalContext } from './middleware/types.ts';
 import { statusRewriteMiddleware } from './middleware/statusRewriteMiddleware.ts';
+import { Session } from './Session.ts';
 
 function logger() {
     return log.getLogger(`frugal_server:FrugalServer`);
@@ -51,11 +51,6 @@ export class FrugalServer {
     }
 
     #handler() {
-        const sessionManager = new SessionManager(
-            this.#config.sessionPersistence,
-            this.#frugal,
-        );
-
         const composedMiddleware = composeMiddleware(
             ...this.#middlewares,
             pageRouterMiddleware,
@@ -77,21 +72,30 @@ export class FrugalServer {
 
         return async (request: Request, connInfo: http.ConnInfo) => {
             try {
-                const context = {
+                const session = await Session.restore(request, {
+                    config: this.#config,
+                    frugal: this.#frugal,
+                });
+
+                const response = await middleware({
                     request,
                     connInfo,
                     config: this.#config,
-                    sessionManager,
                     frugal: this.#frugal,
                     state: {},
-                };
-                return await middleware(context, next);
+                    session,
+                }, next);
+
+                await session.attach(response);
+
+                return response;
             } catch (error) {
                 logger().error({
                     msg() {
                         return `${error}`;
                     },
                 }, error);
+
                 return new Response(null, {
                     status: http.Status.InternalServerError,
                     statusText:

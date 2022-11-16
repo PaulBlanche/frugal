@@ -4,6 +4,7 @@ import * as preact from 'preact';
 import { onReadyStateChange } from '../client_session/mod.ts';
 
 import { DataProvider } from './dataContext.tsx';
+import { HeadProvider } from './Head.tsx';
 import type { HydrationStrategy } from './types.ts';
 
 export type App<PROPS> = (props: PROPS) => preact.VNode;
@@ -117,9 +118,20 @@ export function hydrateElement<PROPS>(
         node = node.nextSibling;
     }
 
+    let head;
     preact.render(
         <DataProvider>
-            <App {...props} />
+            <HeadProvider
+                onHeadUpdate={(nextHead) => {
+                    console.log(nextHead);
+                    preact.render(
+                        nextHead,
+                        document.head,
+                    );
+                }}
+            >
+                <App {...props} />
+            </HeadProvider>
         </DataProvider>,
         createRootFragment(
             start.parentNode! as HTMLElement,
