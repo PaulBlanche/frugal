@@ -27,7 +27,7 @@ Deno.test('diff: document with attributes changes', () => {
         '<html same="same" different="different" removed="removed" inert disabled><head></head><body></body></html>',
     );
     const target = document(
-        '<html same="same" different="changed" readonly disabled><head></head><body></body></html>',
+        '<html same="same" different="changed" added="added" readonly disabled><head></head><body></body></html>',
     );
 
     const { patch } = diff(current, target);
@@ -48,10 +48,42 @@ Deno.test('diff: document with attributes changes', () => {
             },
             {
                 type: PatchType.SET_ATTRIBUTE,
+                name: 'added',
+                value: 'added',
+            },
+            {
+                type: PatchType.SET_ATTRIBUTE,
                 name: 'readonly',
                 value: true,
             },
         ],
+    });
+});
+
+Deno.test('diff: document with node type changes', () => {
+    const current = document(
+        '<html><head></head><body>foo</body></html>',
+    );
+    const target = document(
+        '<html><head></head><body><div></div></body></html>',
+    );
+
+    const { patch } = diff(current, target);
+
+    asserts.assertEquals(patch, {
+        type: PatchType.UPDATE_ELEMENT,
+        children: [
+            { type: PatchType.UPDATE_ELEMENT, children: [], attributes: [] },
+            {
+                type: PatchType.UPDATE_ELEMENT,
+                children: [{
+                    type: PatchType.REPLACE_NODE,
+                    node: target.querySelector('div')?.cloneNode(true) as Node,
+                }],
+                attributes: [],
+            },
+        ],
+        attributes: [],
     });
 });
 
@@ -74,6 +106,59 @@ Deno.test('diff: document with text changes', () => {
                 children: [{
                     type: PatchType.UPDATE_TEXT,
                     text: 'bar',
+                }],
+                attributes: [],
+            },
+        ],
+        attributes: [],
+    });
+});
+
+Deno.test('diff: document with text changes only in start/end withespaces', () => {
+    const current = document(
+        '<html><head></head><body>foo</body></html>',
+    );
+    const target = document(
+        '<html><head></head><body>  foo  </body></html>',
+    );
+
+    const { patch } = diff(current, target);
+
+    asserts.assertEquals(patch, {
+        type: PatchType.UPDATE_ELEMENT,
+        children: [
+            { type: PatchType.UPDATE_ELEMENT, children: [], attributes: [] },
+            {
+                type: PatchType.UPDATE_ELEMENT,
+                children: [{
+                    type: PatchType.PRESERVE_NODE,
+                }],
+                attributes: [],
+            },
+        ],
+        attributes: [],
+    });
+});
+
+Deno.test('diff: document with comment changes', () => {
+    const current = document(
+        '<html><head></head><body><!--foo--></body></html>',
+    );
+    const target = document(
+        '<html><head></head><body><!--bar--></body></html>',
+    );
+
+    const { patch } = diff(current, target);
+
+    asserts.assertEquals(patch, {
+        type: PatchType.UPDATE_ELEMENT,
+        children: [
+            { type: PatchType.UPDATE_ELEMENT, children: [], attributes: [] },
+            {
+                type: PatchType.UPDATE_ELEMENT,
+                children: [{
+                    type: PatchType.REPLACE_NODE,
+                    node: target.body.firstChild?.cloneNode(true) as Node,
                 }],
                 attributes: [],
             },
@@ -166,10 +251,10 @@ Deno.test('diff: document with node insertion', () => {
 
 Deno.test('diff: head handling', () => {
     const current = document(
-        '<html><head><title>title</title><meta name="same" content="same" /><meta name="different" content="different" /><meta name="removed" content="removed" /></head></html>',
+        '<html><head><base href="foo" /><!--foo--><title>title</title></head></html>',
     );
     const target = document(
-        '<html><head><meta name="same" content="same" /><meta name="different" content="updated" /><title>updated</title></head></html>',
+        '<html><head><title>updated</title><base href="bar" /></head></html>',
     );
 
     const { patch } = diff(current, target);
@@ -180,8 +265,137 @@ Deno.test('diff: head handling', () => {
             {
                 type: PatchType.UPDATE_ELEMENT,
                 children: [
-                    { type: PatchType.REMOVE_NODE },
+                    {
+                        type: PatchType.UPDATE_ELEMENT,
+                        children: [],
+                        attributes: [{
+                            type: PatchType.SET_ATTRIBUTE,
+                            name: 'href',
+                            value: 'bar',
+                        }],
+                    },
                     { type: PatchType.PRESERVE_NODE },
+                    {
+                        type: PatchType.UPDATE_ELEMENT,
+                        children: [{
+                            type: PatchType.UPDATE_TEXT,
+                            text: 'updated',
+                        }],
+                        attributes: [],
+                    },
+                ],
+                attributes: [],
+            },
+            { type: PatchType.UPDATE_ELEMENT, children: [], attributes: [] },
+        ],
+        attributes: [],
+    });
+});
+
+Deno.test('diff: head link', () => {
+    const current = document(
+        `<html><head>
+            <link rel="same" href="same" as="same"/>
+            <link rel="different" href="different" as="different">
+            <link rel="removed" href="removed">
+        </head></html>`,
+    );
+    const target = document(
+        `<html><head>
+            <link rel="added" href="added">
+            <link rel="different" href="different" as="updated">
+            <link rel="same" href="same" as="same"/>
+        </head></html>`,
+    );
+
+    const { patch } = diff(current, target);
+
+    asserts.assertEquals(patch, {
+        type: PatchType.UPDATE_ELEMENT,
+        children: [
+            {
+                type: PatchType.UPDATE_ELEMENT,
+                children: [
+                    // whitespace
+                    { type: PatchType.PRESERVE_NODE },
+                    // <link rel="same" href="same" as="same"/>
+                    { type: PatchType.PRESERVE_NODE },
+                    // whitespace
+                    { type: PatchType.PRESERVE_NODE },
+                    // <link rel="different" href="different" as="different">
+                    {
+                        type: PatchType.UPDATE_ELEMENT,
+                        attributes: [{
+                            type: PatchType.SET_ATTRIBUTE,
+                            name: 'as',
+                            value: 'updated',
+                        }],
+                        children: [],
+                    },
+                    // whitespace
+                    { type: PatchType.PRESERVE_NODE },
+                    // <link rel="removed" href="removed">
+                    { type: PatchType.REMOVE_NODE },
+                    // whitespace
+                    { type: PatchType.PRESERVE_NODE },
+                    {
+                        type: PatchType.APPEND_NODE,
+                        node: target.querySelector('link[rel="added"]')
+                            ?.cloneNode(true) as Node,
+                    },
+                ],
+                attributes: [],
+            },
+            { type: PatchType.UPDATE_ELEMENT, children: [], attributes: [] },
+        ],
+        attributes: [],
+    });
+});
+
+Deno.test('diff: head meta', () => {
+    const current = document(
+        `<html><head>
+            <meta http-equiv="same" content="same" />
+            <meta http-equiv="different" content="different" />
+            <meta property="different" content="different" />
+            <meta name="removed" content="removed" />
+            <meta property="same" content="same" />
+            <meta property="removed" content="removed" />
+            <meta name="different" content="different" />
+            <meta name="same" content="same" />
+            <meta http-equiv="removed" content="removed" />
+        </head></html>`,
+    );
+
+    const target = document(
+        `<html><head>
+            <meta name="same" content="same" />
+            <meta http-equiv="same" content="same" />
+            <meta name="different" content="updated" />
+            <meta name="added" content="added" />
+            <meta property="different" content="updated" />
+            <meta http-equiv="added" content="added" />
+            <meta http-equiv="different" content="updated" />
+            <meta property="same" content="same" />
+            <meta property="added" content="added" />
+        </head></html>`,
+    );
+
+    const { patch } = diff(current, target);
+
+    asserts.assertEquals(patch, {
+        type: PatchType.UPDATE_ELEMENT,
+        children: [
+            {
+                type: PatchType.UPDATE_ELEMENT,
+                children: [
+                    // whitespace
+                    { type: PatchType.PRESERVE_NODE },
+                    // <meta http-equiv="same" content="same" />
+                    { type: PatchType.PRESERVE_NODE },
+                    // whitespace
+                    { type: PatchType.PRESERVE_NODE },
+                    // <meta http-equiv="different" content="different/updated" />
                     {
                         type: PatchType.UPDATE_ELEMENT,
                         children: [],
@@ -191,12 +405,69 @@ Deno.test('diff: head handling', () => {
                             value: 'updated',
                         }],
                     },
+                    // whitespace
+                    { type: PatchType.PRESERVE_NODE },
+                    // <meta property="different" content="different" />
+                    {
+                        type: PatchType.UPDATE_ELEMENT,
+                        children: [],
+                        attributes: [{
+                            type: PatchType.SET_ATTRIBUTE,
+                            name: 'content',
+                            value: 'updated',
+                        }],
+                    },
+                    // whitespace
+                    { type: PatchType.PRESERVE_NODE },
+                    // <meta name="removed" content="removed" />
                     { type: PatchType.REMOVE_NODE },
+                    // whitespace
+                    { type: PatchType.PRESERVE_NODE },
+                    // <meta property="same" content="same" />
+                    { type: PatchType.PRESERVE_NODE },
+                    // whitespace
+                    { type: PatchType.PRESERVE_NODE },
+                    // <meta property="removed" content="removed" />
+                    { type: PatchType.REMOVE_NODE },
+                    // whitespace
+                    { type: PatchType.PRESERVE_NODE },
+                    // <meta name="different" content="different" />
+                    {
+                        type: PatchType.UPDATE_ELEMENT,
+                        children: [],
+                        attributes: [{
+                            type: PatchType.SET_ATTRIBUTE,
+                            name: 'content',
+                            value: 'updated',
+                        }],
+                    },
+                    // whitespace
+                    { type: PatchType.PRESERVE_NODE },
+                    // <meta name="same" content="same" />
+                    { type: PatchType.PRESERVE_NODE },
+                    // whitespace
+                    { type: PatchType.PRESERVE_NODE },
+                    // <meta http-equiv="removed" content="removed" />
+                    { type: PatchType.REMOVE_NODE },
+                    // whitespace
+                    { type: PatchType.PRESERVE_NODE },
+                    // <meta name="added" content="added" />
                     {
                         type: PatchType.APPEND_NODE,
-                        node: target.querySelector('title')?.cloneNode(
-                            true,
-                        ) as Node,
+                        node: target.querySelector('meta[name="added"]')
+                            ?.cloneNode(true) as Node,
+                    },
+                    // <meta http-equiv="added" content="added" />
+                    {
+                        type: PatchType.APPEND_NODE,
+                        node: target.querySelector('meta[http-equiv="added"]')
+                            ?.cloneNode(true) as Node,
+                    },
+                    // <meta property="added" content="added" />
+                    {
+                        type: PatchType.APPEND_NODE,
+                        node: target.querySelector('meta[property="added"]')
+                            ?.cloneNode(true) as Node,
                     },
                 ],
                 attributes: [],

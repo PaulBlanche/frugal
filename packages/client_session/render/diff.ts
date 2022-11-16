@@ -271,7 +271,7 @@ function headChildHash(element: Element) {
     switch (element.tagName) {
         case 'BASE':
         case 'TITLE':
-            return hash(element, []);
+            return element.tagName;
         case 'META': {
             if (element.hasAttribute('name')) {
                 return hash(element, ['name']);
