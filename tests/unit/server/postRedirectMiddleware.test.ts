@@ -40,6 +40,12 @@ Deno.test('postRedirectGet:postRedirectMiddleware: should generate and store in 
             session: {
                 set: sessionSet,
                 write: sessionWrite,
+                attach: (headers: Headers) => {
+                    http.setCookie(headers, {
+                        name: 'sessionCookie',
+                        value: 'sessionToken',
+                    });
+                },
             },
             route: {
                 generator: {

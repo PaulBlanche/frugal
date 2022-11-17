@@ -1,5 +1,5 @@
 import * as frugal from '../../dep/frugal/core.ts';
-import { Toc } from '../../toc.ts';
+import { Toc } from './toc.ts';
 
 export const PATTERN = `/docs:slug(.*)`;
 

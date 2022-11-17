@@ -16,8 +16,18 @@ export function getClosestParentNavigableAnchor(
     }
 }
 
-export function getAnchorUrl(anchor: HTMLAnchorElement) {
-    return new URL(anchor.href, document.baseURI);
+export function getFormUrl(
+    form: HTMLFormElement,
+    submitter?: HTMLElement | null,
+) {
+    return getUrl(
+        submitter?.getAttribute('formaction') ??
+            form.getAttribute('action') ?? form.action ?? '',
+    );
+}
+
+export function getUrl(path: string) {
+    return new URL(path, document.baseURI);
 }
 
 const readyStateOrder: Record<DocumentReadyState, number> = {

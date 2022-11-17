@@ -9,16 +9,13 @@ export type Context = {
     request: Request;
     connInfo: http.ConnInfo;
     state: Record<string, unknown>;
-};
-
-export type FrugalContext = Context & {
     config: CleanConfig;
     frugal: frugal.Frugal;
     session: Session;
 };
 
 export type RouterContext<ROUTE extends frugal.Route = frugal.Route> =
-    & FrugalContext
+    & Context
     & {
         route: ROUTE;
     };

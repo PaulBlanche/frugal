@@ -19,23 +19,33 @@ export class SessionHistory {
     #observing: boolean;
     #config: NavigatorConfig;
 
-    static getInstance(config: NavigatorConfig) {
-        return new SessionHistory(config);
+    static create(config: NavigatorConfig) {
+        if (window[HISTORY_INSTANCE] !== undefined) {
+            throw Error(
+                'A SessionHistory instance was already created',
+            );
+        }
+
+        window[HISTORY_INSTANCE] = new SessionHistory(config);
+
+        return window[HISTORY_INSTANCE];
     }
 
-    constructor(config: NavigatorConfig) {
+    static getInstance() {
+        if (window[HISTORY_INSTANCE] === undefined) {
+            throw Error(
+                'You need to create a SessionHistory first',
+            );
+        }
+
+        return window[HISTORY_INSTANCE];
+    }
+
+    private constructor(config: NavigatorConfig) {
         this.#config = config;
         this.#stack = [new Navigator(new URL(location.href), this.#config)];
         this.#index = 0;
         this.#observing = false;
-
-        history.scrollRestoration = 'manual';
-
-        if (window[HISTORY_INSTANCE] !== undefined) {
-            return window[HISTORY_INSTANCE];
-        }
-
-        window[HISTORY_INSTANCE] = this;
     }
 
     observe() {

@@ -1,13 +1,13 @@
 import * as http from '../../../../dep/std/http.ts';
 
 import { Next } from '../../types.ts';
-import { RouterContext } from '../types.ts';
+import { Context } from '../types.ts';
 import { CsrfToken } from './CsrfToken.ts';
 import { CsrfValidator } from './CsrfValidator.ts';
 
-export async function csrfMiddleware(
-    context: RouterContext,
-    next: Next<RouterContext>,
+export async function csrfMiddleware<CONTEXT extends Context>(
+    context: CONTEXT,
+    next: Next<CONTEXT>,
 ): Promise<Response> {
     if (context.config.csrf === undefined) {
         return next(context);

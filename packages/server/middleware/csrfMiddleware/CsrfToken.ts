@@ -1,15 +1,15 @@
 import * as http from '../../../../dep/std/http.ts';
 
-import { FrugalContext } from '../types.ts';
+import { Context } from '../types.ts';
 import { xor } from './xor.ts';
 
 const CSRF_TOKEN_COOKIE_NAME = 'csrftoken';
 
 export class CsrfToken {
-    #context: FrugalContext;
+    #context: Context;
     #token: string;
 
-    constructor(context: FrugalContext) {
+    constructor(context: Context) {
         this.#context = context;
         this.#token = this.#generateToken();
     }
@@ -19,7 +19,7 @@ export class CsrfToken {
             name: this.#context.config.csrf?.csrfTokenCookieName ??
                 CSRF_TOKEN_COOKIE_NAME,
             value: this.#token,
-            secure: true,
+            httpOnly: true,
             sameSite: 'Lax',
             path: '/',
         });

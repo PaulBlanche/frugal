@@ -92,7 +92,7 @@ function validate(value: Value): ValidationResult<Value> {
 
 async function handleSubmit(
     _value: Value,
-    form: Form<Value>,
+    _form: Form<Value>,
 ): Promise<ValidationResult<Value>> {
     await new Promise((res) => setTimeout(res, 50 + 100 * Math.random()));
     return { success: true };

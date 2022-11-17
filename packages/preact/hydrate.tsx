@@ -123,7 +123,6 @@ export function hydrateElement<PROPS>(
         <DataProvider>
             <HeadProvider
                 onHeadUpdate={(nextHead) => {
-                    console.log(nextHead);
                     preact.render(
                         nextHead,
                         document.head,

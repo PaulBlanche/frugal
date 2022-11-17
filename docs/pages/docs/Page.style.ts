@@ -25,8 +25,10 @@ export const markdown = className('markdown')
         }
 
         h1, h2, h3, h4, h5, h6 {
-            margin-top: 2em;
             margin-bottom: 1em;
+            &:not(:first-child) {
+                margin-top: 2em;
+            }
         }
 
         ul {

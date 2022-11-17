@@ -478,6 +478,38 @@ Deno.test('diff: head meta', () => {
     });
 });
 
+Deno.test('diff: empty node to node with text', () => {
+    const current = document(
+        '<html><head></head><body><div></div></body></html>',
+    );
+    const target = document(
+        '<html><head></head><body><div>content</div></body></html>',
+    );
+
+    const { patch, node } = diff(current, target);
+
+    asserts.assertStrictEquals(current, node);
+    asserts.assertEquals(patch, {
+        type: PatchType.UPDATE_ELEMENT,
+        children: [
+            { type: PatchType.UPDATE_ELEMENT, children: [], attributes: [] },
+            {
+                type: PatchType.UPDATE_ELEMENT,
+                children: [{
+                    type: PatchType.UPDATE_ELEMENT,
+                    children: [{
+                        type: PatchType.APPEND_NODE,
+                        node: current.createTextNode('content'),
+                    }],
+                    attributes: [],
+                }],
+                attributes: [],
+            },
+        ],
+        attributes: [],
+    });
+});
+
 function document(markup: string) {
     return parser.parseFromString(markup, 'text/html') as unknown as Document;
 }

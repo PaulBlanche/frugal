@@ -1,4 +1,4 @@
-import { FrugalContext } from '../types.ts';
+import { Context } from '../types.ts';
 import { xor } from './xor.ts';
 
 const CSRF_HEADER_NAME = 'X-CSRFToken';
@@ -7,10 +7,10 @@ const CSRF_FIELD_NAME = 'csrftoken';
 const SAFE_METHODS = ['GET', 'HEAD', 'OPTIONS', 'TRACE'];
 
 export class CsrfValidator {
-    #context: FrugalContext;
+    #context: Context;
     #mask?: string;
 
-    constructor(context: FrugalContext) {
+    constructor(context: Context) {
         this.#context = context;
         const mask = this.#context.session.get('csrfMask');
         this.#mask = typeof mask === 'string' ? mask : undefined;
