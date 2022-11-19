@@ -37,6 +37,7 @@ type Facade = {
 };
 
 type Config = {
+    rootDir: string;
     cacheDir: string;
     publicDir: string;
     facades: Facade[];
@@ -50,6 +51,7 @@ export async function bundle(
     {
         cacheDir,
         publicDir,
+        rootDir,
         facades,
         transformers,
         importMapURL,
@@ -59,6 +61,7 @@ export async function bundle(
     const config = {
         cacheDir,
         publicDir,
+        rootDir,
         facades,
         transformers,
         importMapURL,
@@ -158,15 +161,19 @@ async function write(
             // entrypoint (no dynamic import)
             if (facades !== undefined) {
                 for (const { entrypoint, bundle } of facades) {
-                    url[entrypoint] = url[entrypoint] ?? {};
-                    url[entrypoint][bundle] = `/${
+                    const entrypointKey = path.relative(
+                        config.rootDir,
+                        new URL(entrypoint).pathname,
+                    );
+                    url[entrypointKey] = url[entrypoint] ?? {};
+                    url[entrypointKey][bundle] = `/${
                         path.relative(config.publicDir, outputFile.path)
                     }`;
 
                     logger().debug({
-                        url: url[entrypoint][bundle],
+                        url: url[entrypointKey][bundle],
                         bundle,
-                        page: entrypoint,
+                        page: entrypointKey,
                         msg() {
                             return `add ${this.url} for ${this.page} to bundle ${this.bundle}`;
                         },

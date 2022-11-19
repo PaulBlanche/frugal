@@ -147,7 +147,6 @@ export class ModuleList {
      * Query the module info based on its URL
      */
     get(url: URL): Module | undefined {
-        console.log('get', path.relative(this.#root, url.pathname));
         return this.#modules[path.relative(this.#root, url.pathname)];
     }
 

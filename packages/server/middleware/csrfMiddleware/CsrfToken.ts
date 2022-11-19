@@ -32,6 +32,7 @@ export class CsrfToken {
     #generateToken(): string {
         const mask = crypto.randomUUID();
         this.#context.session.set('csrfMask', mask);
-        return btoa(xor(this.#context.session.secret, mask));
+        const token = btoa(xor(this.#context.session.secret, mask));
+        return token;
     }
 }

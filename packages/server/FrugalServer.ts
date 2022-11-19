@@ -54,12 +54,12 @@ export class FrugalServer {
         const composedMiddleware = composeMiddleware(
             ...this.#middlewares,
             pageRouterMiddleware,
-            filesystemMiddleware,
         );
 
         const middleware = composeMiddleware(
             statusRewriteMiddleware(composedMiddleware),
             composedMiddleware,
+            filesystemMiddleware,
         );
 
         const next = () =>

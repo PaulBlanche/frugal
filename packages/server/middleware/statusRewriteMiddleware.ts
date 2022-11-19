@@ -2,13 +2,13 @@ import * as http from '../../../dep/std/http.ts';
 import * as log from '../../log/mod.ts';
 
 import { Middleware, Next } from '../types.ts';
-import { FrugalContext } from './types.ts';
+import { Context } from './types.ts';
 
 function logger() {
     return log.getLogger(`frugal_server:statusRewriteMiddleware`);
 }
 
-async function safeNext(context: FrugalContext, next: Next<FrugalContext>) {
+async function safeNext(context: Context, next: Next<Context>) {
     try {
         return await next(context);
         // deno-lint-ignore no-explicit-any
@@ -24,17 +24,19 @@ async function safeNext(context: FrugalContext, next: Next<FrugalContext>) {
     }
 }
 
-export function statusRewriteMiddleware(middleware: Middleware<FrugalContext>) {
+export function statusRewriteMiddleware(middleware: Middleware<Context>) {
     return async (
-        context: FrugalContext,
-        next: Next<FrugalContext>,
+        context: Context,
+        next: Next<Context>,
     ) => {
         const response = await safeNext(context, next);
 
+        const url = new URL(context.request.url);
+        const route = context.frugal.getMatchingRoute(url.pathname);
+
         const mapping =
             context.config.statusMapping[response.status as http.Status];
-        if (mapping !== undefined) {
-            const url = new URL(context.request.url);
+        if (mapping !== undefined && route !== undefined) {
             const mapped = mapping(new URL(url));
             const dest = new URL(mapped.url, url);
 
