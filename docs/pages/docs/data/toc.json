@@ -68,10 +68,6 @@
                 "slug": "/examples/static-refresh",
                 "name": "Static refreshable page",
                 "external": true
-            }, {
-                "slug": "/examples/form-submission",
-                "name": "Form submission",
-                "external": true
             }]
         }
     ]

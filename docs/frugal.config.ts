@@ -14,7 +14,6 @@ import { svg, svgTransformer } from './dep/frugal/loader_jsx_svg.ts';
 import * as home from './pages/home/mod.ts';
 import * as docs from './pages/docs/mod.ts';
 import * as exampleStaticRefresh from './pages/docs/examples/static-refresh/mod.ts';
-import * as exampleFormSubmission from './pages/docs/examples/form-submission/mod.ts';
 import * as page403 from './pages/403/mod.ts';
 import * as page404 from './pages/404/mod.ts';
 
@@ -69,7 +68,6 @@ export const config: Config = {
     pages: [
         page(home),
         page(exampleStaticRefresh),
-        page(exampleFormSubmission),
         page(docs),
         page(page404),
         page(page403),
