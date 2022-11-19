@@ -1,6 +1,7 @@
 import * as utils from './utils.ts';
 import { Navigator, NavigatorConfig } from './Navigator.ts';
 import { Submitter } from './Submitter.ts';
+import { Form, Method } from './Form.ts';
 
 export class SubmitObserver {
     #config: NavigatorConfig;
@@ -26,22 +27,21 @@ export class SubmitObserver {
     }
 
     async submit(event: SubmitEvent) {
-        console.log('submit', event);
-        const form = event.target;
         if (
             !event.cancelable || event.defaultPrevented ||
-            !(form instanceof HTMLFormElement)
+            !(event.target instanceof HTMLFormElement)
         ) {
             return;
         }
 
-        console.log('coucou');
+        const form = new Form(event.target, event.submitter);
 
-        const formSubmitter = event.submitter;
+        if (form.method === Method.DIALOG) {
+            return;
+        }
 
-        const url = utils.getFormUrl(form, formSubmitter);
-        const navigator = new Navigator(url, this.#config);
-        const submitter = new Submitter(form, event.submitter, navigator);
+        const navigator = new Navigator(form.url, this.#config);
+        const submitter = new Submitter(form, navigator);
 
         event.preventDefault();
         try {

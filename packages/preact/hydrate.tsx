@@ -1,6 +1,7 @@
 /* @jsxRuntime automatic */
 /* @jsxImportSource preact */
 import * as preact from 'preact';
+import * as signal from 'preact/signals';
 import { onReadyStateChange } from '../client_session/mod.ts';
 
 import { DataProvider } from './dataContext.tsx';
@@ -97,10 +98,16 @@ export function queryHydratables(
     );
 }
 
+const HYDRATED = new WeakSet();
+
 export function hydrateElement<PROPS>(
     start: HTMLScriptElement,
     App: App<PROPS>,
 ) {
+    if (HYDRATED.has(start)) {
+        return;
+    }
+
     const props: preact.RenderableProps<PROPS> = start.textContent
         ? JSON.parse(start.textContent ?? {})
         : {};
@@ -108,19 +115,25 @@ export function hydrateElement<PROPS>(
     let node: ChildNode | null = start.nextSibling;
     const children = [];
     while (node !== null) {
-        children.push(node);
         if (isCommentNode(node)) {
-            const match = node.data.match(/<!--end-furgal-island-->/);
+            const match = node.data.match(/end-no-diff/);
             if (match !== null) {
                 break;
             }
         }
+        children.push(node);
         node = node.nextSibling;
     }
 
+    const rerender = signal.signal(0);
+
+    onReadyStateChange('complete', () => {
+        rerender.value += 1;
+    });
+
     let head;
-    preact.render(
-        <DataProvider>
+    preact.hydrate(
+        <DataProvider count={rerender}>
             <HeadProvider
                 onHeadUpdate={(nextHead) => {
                     preact.render(
@@ -137,6 +150,8 @@ export function hydrateElement<PROPS>(
             children,
         ) as unknown as DocumentFragment,
     );
+
+    HYDRATED.add(start);
 }
 
 function isCommentNode(node: Node): node is Comment {

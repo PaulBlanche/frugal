@@ -47,7 +47,7 @@ export const config: Config = {
                 transform: svgTransformer,
             }],
             format: 'esm',
-            minify: true,
+            minify: false,
             splitting: true,
             sourcemap: true,
         }),

@@ -20,15 +20,31 @@ export function patch(diff: Diff) {
     });
 
     let current: PatchQueueItem | undefined;
+    let inhibitDiffing = false;
     while ((current = queue.shift()) !== undefined) {
-        const { items } = patchNode(
-            current.patch,
-            current.parent,
-            current.child,
-        );
+        if (
+            current.child instanceof Comment &&
+            current.child.data.match(/end-no-diff/)
+        ) {
+            inhibitDiffing = false;
+        }
 
-        if (items) {
-            queue.unshift(...items);
+        if (!inhibitDiffing) {
+            const { items } = patchNode(
+                current.patch,
+                current.parent,
+                current.child,
+            );
+
+            if (items) {
+                queue.unshift(...items);
+            }
+        }
+        if (
+            current.child instanceof Comment &&
+            current.child.data.match(/start-no-diff/)
+        ) {
+            inhibitDiffing = true;
         }
     }
 }

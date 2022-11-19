@@ -16,16 +16,6 @@ export function getClosestParentNavigableAnchor(
     }
 }
 
-export function getFormUrl(
-    form: HTMLFormElement,
-    submitter?: HTMLElement | null,
-) {
-    return getUrl(
-        submitter?.getAttribute('formaction') ??
-            form.getAttribute('action') ?? form.action ?? '',
-    );
-}
-
 export function getUrl(path: string) {
     return new URL(path, document.baseURI);
 }
@@ -37,10 +27,12 @@ const readyStateOrder: Record<DocumentReadyState, number> = {
 };
 
 declare global {
+    type FrugalReadyStateChangeEvent = CustomEvent<
+        { readystate: DocumentReadyState }
+    >;
+
     interface WindowEventMap {
-        'frugal:readystatechange': CustomEvent<
-            { readystate: DocumentReadyState }
-        >;
+        'frugal:readystatechange': FrugalReadyStateChangeEvent;
     }
 }
 

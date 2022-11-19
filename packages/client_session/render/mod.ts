@@ -11,4 +11,11 @@ export function render(nextDocument: Document) {
     ) {
         document.activeElement.blur();
     }
+
+    /*[...document.body.childNodes].forEach((node) =>
+        document.body.removeChild(node)
+    );
+    [...nextDocument.body.childNodes].forEach((node) =>
+        document.body.appendChild(node)
+    );*/
 }

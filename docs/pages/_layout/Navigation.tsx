@@ -14,8 +14,8 @@ export function Navigation() {
     const isDocs = pathname.startsWith('/docs');
 
     return (
-        <nav class={cx(s.navigation)}>
-            <div class={cx(s.navigationContainer, NAVIGATION_CLASS)}>
+        <nav class={cx(s.navigation, NAVIGATION_CLASS)}>
+            <div class={cx(s.navigationContainer)}>
                 <NavigationEntry active={isHome} href='/'>
                     Home
                 </NavigationEntry>{' '}
