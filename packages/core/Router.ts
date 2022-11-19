@@ -52,6 +52,7 @@ export class Router {
                     loaderContext,
                     publicDir: config.publicDir,
                     watch: config.watch,
+                    rootDir: config.root.pathname,
                 });
 
                 const module = moduleList.get(page.self);
@@ -80,6 +81,7 @@ export class Router {
                     loaderContext,
                     publicDir: config.publicDir,
                     watch: config.watch,
+                    rootDir: config.root.pathname,
                 });
 
                 assert(!(page.pattern in this.#routes));

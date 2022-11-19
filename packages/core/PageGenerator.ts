@@ -11,6 +11,7 @@ import { GetDynamicDataContext, Page, Phase, StaticPage } from './Page.ts';
 export type PageGeneratorConfig = {
     loaderContext: LoaderContext;
     publicDir: string;
+    rootDir: string;
     watch?: boolean;
 };
 
@@ -126,12 +127,18 @@ export class PageGenerator<
             },
         });
 
+        const descriptor = pathUtils.relative(
+            this.#config.rootDir,
+            this.#page.self.pathname,
+        );
+
         const content = await this.#page.getContent({
             method,
             phase,
             path,
             data,
             pathname,
+            descriptor,
             loaderContext: this.#config.loaderContext,
         });
 

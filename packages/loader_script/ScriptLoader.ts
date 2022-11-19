@@ -141,6 +141,7 @@ export class ScriptLoader implements frugal.Loader<Generated> {
             importMapURL: config.importMapURL,
             publicDir: config.publicDir,
             cacheDir: config.cacheDir,
+            rootDir: config.root.pathname,
             facades,
         });
     }
