@@ -29,7 +29,7 @@ Deno.test('page: bare static page', async () => {
     mock.assertSpyCall(page.getContent, 0, {
         args: [{
             data: {},
-            descriptor: new URL(import.meta.url),
+            descriptor: 'pages.test.ts',
             method: 'GET',
             path: {},
             pathname: 'bare-static-page',
@@ -84,7 +84,7 @@ Deno.test('page: static page without getPathList', async () => {
     mock.assertSpyCall(page.getContent, 0, {
         args: [{
             data,
-            descriptor: new URL(import.meta.url),
+            descriptor: 'pages.test.ts',
             method: 'GET',
             path: {},
             pathname: 'static-page-without-getpathlist',
@@ -170,7 +170,7 @@ Deno.test('page: static page without getStaticData', async () => {
     mock.assertSpyCall(page.getContent, 0, {
         args: [{
             data: {},
-            descriptor: new URL(import.meta.url),
+            descriptor: 'pages.test.ts',
             method: 'GET',
             path: { id: '1' },
             pathname: 'static-page-without-getstaticdata/1',
@@ -181,7 +181,7 @@ Deno.test('page: static page without getStaticData', async () => {
     mock.assertSpyCall(page.getContent, 1, {
         args: [{
             data: {},
-            descriptor: new URL(import.meta.url),
+            descriptor: 'pages.test.ts',
             method: 'GET',
             path: { id: '2' },
             pathname: 'static-page-without-getstaticdata/2',
@@ -271,7 +271,7 @@ Deno.test('page: complete static page', async () => {
     mock.assertSpyCall(page.getContent, 0, {
         args: [{
             data: store['1'].data,
-            descriptor: new URL(import.meta.url),
+            descriptor: 'pages.test.ts',
             method: 'GET',
             path: { id: '1' },
             pathname: 'complete-static-page/1',
@@ -282,7 +282,7 @@ Deno.test('page: complete static page', async () => {
     mock.assertSpyCall(page.getContent, 1, {
         args: [{
             data: store['2'].data,
-            descriptor: new URL(import.meta.url),
+            descriptor: 'pages.test.ts',
             method: 'GET',
             path: { id: '2' },
             pathname: 'complete-static-page/2',
@@ -348,194 +348,6 @@ Deno.test('page: dynamic page is not generated', async () => {
 
     await instance.clean();
 });
-
-/*
-
-*/
-
-/*
-Deno.test('Basic usage: file structure', async (t) => {
-    const config = {
-        outputDir: dist(),
-        pages: [
-            page(pageFoo),
-        ],
-    };
-
-    const frugal = await getFrugalInstance(config);
-
-    await frugal.build();
-
-    const pageFoo1 = await Deno.readTextFile(
-        publicFileUrl(frugal, 'foo/1.html'),
-    );
-    const pageFoo2 = await Deno.readTextFile(
-        publicFileUrl(frugal, 'foo/2.html'),
-    );
-
-    const pageBar1 = await Deno.readTextFile(
-        publicFileUrl(frugal, 'bar/1.html'),
-    );
-    const pageBar2 = await Deno.readTextFile(
-        publicFileUrl(frugal, 'bar/2.html'),
-    );
-
-    // assert file content
-    await assertSnapshot(t, pageFoo1);
-    await assertSnapshot(t, pageFoo2);
-    await assertSnapshot(t, pageBar1);
-    await assertSnapshot(t, pageBar2);
-
-    await frugal.clean();
-});
-
-Deno.test('Basic usage: files are not regenerated if nothing changes', async () => {
-    const config = {
-        outputDir: dist(),
-        pages: [
-            page(pageFoo),
-        ],
-    };
-    const frugal = await getFrugalInstance(config);
-
-    await frugal.build();
-
-    const stat1Foo1 = await Deno.stat(publicFileUrl(frugal, 'foo/1.html'));
-    const stat1Foo2 = await Deno.stat(publicFileUrl(frugal, 'foo/2.html'));
-    const stat1Bar1 = await Deno.stat(publicFileUrl(frugal, 'bar/1.html'));
-    const stat1Bar2 = await Deno.stat(publicFileUrl(frugal, 'bar/2.html'));
-
-    await (await getFrugalInstance(config)).build();
-
-    const stat2Foo1 = await Deno.stat(publicFileUrl(frugal, 'foo/1.html'));
-    const stat2Foo2 = await Deno.stat(publicFileUrl(frugal, 'foo/2.html'));
-    const stat2Bar1 = await Deno.stat(publicFileUrl(frugal, 'bar/1.html'));
-    const stat2Bar2 = await Deno.stat(publicFileUrl(frugal, 'bar/2.html'));
-
-    // assert filew where not rewritten on second run
-    asserts.assertEquals(stat1Foo1.mtime, stat2Foo1.mtime);
-    asserts.assertEquals(stat1Foo2.mtime, stat2Foo2.mtime);
-    asserts.assertEquals(stat1Bar1.mtime, stat2Bar1.mtime);
-    asserts.assertEquals(stat1Bar2.mtime, stat2Bar2.mtime);
-
-    await frugal.clean();
-});
-
-Deno.test('Basic usage: files are regenerated if page code change', async () => {
-    const config = {
-        outputDir: dist(),
-        pages: [
-            page(pageFoo),
-        ],
-    };
-    const frugal = await getFrugalInstance(config);
-
-    await frugal.build();
-
-    const stat1Foo1 = await Deno.stat(publicFileUrl(frugal, 'foo/1.html'));
-    const stat1Foo2 = await Deno.stat(publicFileUrl(frugal, 'foo/2.html'));
-    const stat1Bar1 = await Deno.stat(publicFileUrl(frugal, 'bar/1.html'));
-    const stat1Bar2 = await Deno.stat(publicFileUrl(frugal, 'bar/2.html'));
-
-    const originalData = await Deno.readTextFile(relativeUrl('./page-foo.ts'));
-    await Deno.writeTextFile(
-        relativeUrl('./page-foo.ts'),
-        `//comment\n${originalData}`,
-    );
-
-    await (await getFrugalInstance(config)).build();
-
-    const stat2Foo1 = await Deno.stat(publicFileUrl(frugal, 'foo/1.html'));
-    const stat2Foo2 = await Deno.stat(publicFileUrl(frugal, 'foo/2.html'));
-    const stat2Bar1 = await Deno.stat(publicFileUrl(frugal, 'bar/1.html'));
-    const stat2Bar2 = await Deno.stat(publicFileUrl(frugal, 'bar/2.html'));
-
-    // assert filew where overwritten on second run
-    asserts.assertNotEquals(stat1Foo1.mtime, stat2Foo1.mtime);
-    asserts.assertNotEquals(stat1Foo2.mtime, stat2Foo2.mtime);
-    asserts.assertEquals(stat1Bar1.mtime, stat2Bar1.mtime);
-    asserts.assertEquals(stat1Bar2.mtime, stat2Bar2.mtime);
-
-    await Deno.writeTextFile(relativeUrl('./page-foo.ts'), originalData);
-    await frugal.clean();
-});
-
-Deno.test('Basic usage: files are regenerated if code of dependency change', async () => {
-    const config = {
-        outputDir: dist(),
-        pages: [
-            page(pageFoo),
-        ],
-    };
-    const frugal = await getFrugalInstance(config);
-
-    await frugal.build();
-
-    const stat1Foo1 = await Deno.stat(publicFileUrl(frugal, 'foo/1.html'));
-    const stat1Foo2 = await Deno.stat(publicFileUrl(frugal, 'foo/2.html'));
-    const stat1Bar1 = await Deno.stat(publicFileUrl(frugal, 'bar/1.html'));
-    const stat1Bar2 = await Deno.stat(publicFileUrl(frugal, 'bar/2.html'));
-
-    const originalData = await Deno.readTextFile(relativeUrl('./article.ts'));
-    await Deno.writeTextFile(
-        relativeUrl('./article.ts'),
-        `//comment\n${originalData}`,
-    );
-
-    await (await getFrugalInstance(config)).build();
-
-    const stat2Foo1 = await Deno.stat(publicFileUrl(frugal, 'foo/1.html'));
-    const stat2Foo2 = await Deno.stat(publicFileUrl(frugal, 'foo/2.html'));
-    const stat2Bar1 = await Deno.stat(publicFileUrl(frugal, 'bar/1.html'));
-    const stat2Bar2 = await Deno.stat(publicFileUrl(frugal, 'bar/2.html'));
-
-    // assert filew where overwritten on second run
-    asserts.assertNotEquals(stat1Foo1.mtime, stat2Foo1.mtime);
-    asserts.assertNotEquals(stat1Foo2.mtime, stat2Foo2.mtime);
-    asserts.assertNotEquals(stat1Bar1.mtime, stat2Bar1.mtime);
-    asserts.assertNotEquals(stat1Bar2.mtime, stat2Bar2.mtime);
-
-    await Deno.writeTextFile(relativeUrl('./article.ts'), originalData);
-    await frugal.clean();
-});
-
-Deno.test('Basic usage: files are regenerated if data change', async () => {
-    const config = {
-        outputDir: dist(),
-        pages: [
-            page(pageFoo),
-        ],
-    };
-    const frugal = await getFrugalInstance(config);
-
-    await frugal.build();
-
-    const stat1Foo1 = await Deno.stat(publicFileUrl(frugal, 'foo/1.html'));
-    const stat1Foo2 = await Deno.stat(publicFileUrl(frugal, 'foo/2.html'));
-    const stat1Bar1 = await Deno.stat(publicFileUrl(frugal, 'bar/1.html'));
-    const stat1Bar2 = await Deno.stat(publicFileUrl(frugal, 'bar/2.html'));
-
-    const originalData = await Deno.readTextFile(relativeUrl('./data.json'));
-    const data = JSON.parse(originalData);
-    data['foo']['2']['title'] = `${data['foo']['2']['title']} (edited)`;
-    await Deno.writeTextFile(relativeUrl('./data.json'), JSON.stringify(data));
-
-    await (await getFrugalInstance(config)).build();
-
-    const stat2Foo1 = await Deno.stat(publicFileUrl(frugal, 'foo/1.html'));
-    const stat2Foo2 = await Deno.stat(publicFileUrl(frugal, 'foo/2.html'));
-    const stat2Bar1 = await Deno.stat(publicFileUrl(frugal, 'bar/1.html'));
-    const stat2Bar2 = await Deno.stat(publicFileUrl(frugal, 'bar/2.html'));
-
-    // assert files where overwritten on second run
-    asserts.assertEquals(stat1Foo1.mtime, stat2Foo1.mtime);
-    asserts.assertNotEquals(stat1Foo2.mtime, stat2Foo2.mtime);
-    asserts.assertEquals(stat1Bar1.mtime, stat2Bar1.mtime);
-    asserts.assertEquals(stat1Bar2.mtime, stat2Bar2.mtime);
-
-    await Deno.writeTextFile(relativeUrl('./data.json'), originalData);
-    await frugal.clean();
-});*/
 
 async function getFrugalInstance(
     config: Pick<frugal.Config, 'pages' | 'outputDir'>,

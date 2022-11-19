@@ -33,7 +33,6 @@ export class CsrfToken {
         const mask = crypto.randomUUID();
         this.#context.session.set('csrfMask', mask);
         const token = btoa(xor(this.#context.session.secret, mask));
-        console.log('generate csrf token', { mask, token });
         return token;
     }
 }

@@ -5,7 +5,6 @@ import { PrefetchObserver } from './PrefetchObserver.ts';
 import { SessionHistory } from './SessionHistory.ts';
 import { SubmitObserver } from './SubmitObserver.ts';
 import { Submitter } from './Submitter.ts';
-import * as utils from './utils.ts';
 import { Form, Method } from './Form.ts';
 
 type SessionConfig = {

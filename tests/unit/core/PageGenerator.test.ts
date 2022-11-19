@@ -12,6 +12,7 @@ import { assert } from 'https://deno.land/std@0.159.0/_util/assert.ts';
 Deno.test('PageGenerator: generateContentFromData call page.getContent', async () => {
     const content = 'page content';
     const page = fakeDynamicPage({
+        self: new URL('file:///foo/bar/page.ts'),
         pattern: 'foo/:id',
         getContent: () => content,
     });
@@ -24,6 +25,7 @@ Deno.test('PageGenerator: generateContentFromData call page.getContent', async (
         {
             loaderContext,
             publicDir,
+            rootDir: '/foo/',
         },
     );
 
@@ -54,6 +56,7 @@ Deno.test('PageGenerator: generateContentFromData call page.getContent', async (
             loaderContext,
             pathname: 'foo/654',
             path,
+            descriptor: 'bar/page.ts',
         }],
         returned: content,
     });
@@ -79,6 +82,7 @@ Deno.test('PageGenerator: generate orchestrate the generation of DynamicPage', a
     };
 
     const page = fakeDynamicPage({
+        self: new URL('file:///foo/bar/page.ts'),
         pattern: '/foo/:id',
         getDynamicData: (_request, { path: { id } }) => (store[id]),
         getContent: ({ path: { id } }) => store[id].content,
@@ -92,6 +96,7 @@ Deno.test('PageGenerator: generate orchestrate the generation of DynamicPage', a
         {
             loaderContext,
             publicDir,
+            rootDir: '/foo',
         },
     );
 
@@ -134,6 +139,7 @@ Deno.test('PageGenerator: generate orchestrate the generation of DynamicPage', a
                 path: {
                     id: '345',
                 },
+                descriptor: 'bar/page.ts',
             }],
         });
 
@@ -219,6 +225,7 @@ Deno.test('PageGenerator: generate throws if pathname does not match', async () 
         {
             loaderContext,
             publicDir,
+            rootDir: '/foo',
         },
     );
 
@@ -244,6 +251,7 @@ Deno.test('PageGenerator: generate throws for StaticPage', async () => {
         {
             loaderContext,
             publicDir,
+            rootDir: '/foo',
         },
     );
 
@@ -262,6 +270,7 @@ Deno.test('PageGenerator: generate generates StaticPage in watch mode', async ()
     const content = 'page content';
     const data = { foo: 'bar' };
     const page = fakeStaticPage({
+        self: new URL('file:///foo/bar/page.ts'),
         pattern: '/foo/:id',
         getStaticData: () => ({ data }),
         getContent: () => content,
@@ -276,6 +285,7 @@ Deno.test('PageGenerator: generate generates StaticPage in watch mode', async ()
             loaderContext,
             publicDir,
             watch: true,
+            rootDir: '/foo',
         },
     );
 
@@ -315,6 +325,7 @@ Deno.test('PageGenerator: generate generates StaticPage in watch mode', async ()
             path: {
                 id: '345',
             },
+            descriptor: 'bar/page.ts',
         }],
         returned: content,
     });
@@ -335,6 +346,7 @@ Deno.test('PageGenerator: generate generates pages with POST request', async (t)
 
     await t.step('DynamicPage', async () => {
         const dynamicPage = fakeDynamicPage({
+            self: new URL('file:///foo/bar/page.ts'),
             pattern: '/foo/:id',
             handlers: {
                 POST: () => ({ data }),
@@ -347,6 +359,7 @@ Deno.test('PageGenerator: generate generates pages with POST request', async (t)
             {
                 loaderContext,
                 publicDir,
+                rootDir: '/foo',
             },
         );
 
@@ -383,6 +396,7 @@ Deno.test('PageGenerator: generate generates pages with POST request', async (t)
                 path: {
                     id: '345',
                 },
+                descriptor: 'bar/page.ts',
             }],
             returned: content,
         });
@@ -390,6 +404,7 @@ Deno.test('PageGenerator: generate generates pages with POST request', async (t)
 
     await t.step('StaticPage', async () => {
         const staticPage = fakeStaticPage({
+            self: new URL('file:///foo/bar/page.ts'),
             pattern: '/foo/:id',
             handlers: {
                 POST: () => ({ data }),
@@ -402,6 +417,7 @@ Deno.test('PageGenerator: generate generates pages with POST request', async (t)
             {
                 loaderContext,
                 publicDir,
+                rootDir: '/foo',
             },
         );
 
@@ -438,6 +454,7 @@ Deno.test('PageGenerator: generate generates pages with POST request', async (t)
                 path: {
                     id: '345',
                 },
+                descriptor: 'bar/page.ts',
             }],
             returned: content,
         });
@@ -461,6 +478,7 @@ Deno.test('PageGenerator: generate with a .html pattern', async () => {
         {
             loaderContext,
             publicDir,
+            rootDir: '/foo',
         },
     );
 

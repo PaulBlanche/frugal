@@ -32,7 +32,6 @@ export class CsrfValidator {
             }
 
             const token = await this.#extract();
-            console.log('validate csrfToken', { token, mask: this.#mask });
             if (token && this.#mask) {
                 return this.#context.session.secret ===
                     xor(atob(token), this.#mask);
