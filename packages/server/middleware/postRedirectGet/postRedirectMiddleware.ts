@@ -66,6 +66,8 @@ export async function postRedirectMiddleware<ROUTE extends frugal.Route>(
         });
     }
 
+    await context.session.attach(result.headers);
+
     await context.session.write(
         SESSION_KEY,
         JSON.stringify({

@@ -3,6 +3,7 @@ import { inOrder } from '../dependency_graph/graph.ts';
 import { Asset, Loader } from './loader.ts';
 import * as log from '../log/mod.ts';
 import * as fs from '../../dep/std/fs.ts';
+import * as path from '../../dep/std/path.ts';
 
 function logger() {
     return log.getLogger('frugal:DependencyGraph');
@@ -93,17 +94,14 @@ export class DependencyGraph {
     /**
      * Build a unique module list from the dependency graph
      */
-    moduleList() {
-        return ModuleList.build(this.#graph);
+    moduleList(root: string) {
+        return ModuleList.build(this.#graph, root);
     }
 }
 
 type Module = {
     moduleHash: string;
     contentHash: string;
-    entrypoint: string;
-    url: string;
-    dependencies: string[];
 };
 
 /**
@@ -111,47 +109,46 @@ type Module = {
  */
 export class ModuleList {
     #modules: Record<string, Module>;
+    #root: string;
 
     /**
      * Build the module list from a dependency graph
      */
-    static build(dependencyGraph: graph.DependencyGraph) {
+    static build(dependencyGraph: graph.DependencyGraph, root: string) {
         const modules: Record<string, Module> = {};
 
         const seen = new Set<graph.Node>();
         inOrder(dependencyGraph, (node) => {
             if (node.type === 'module' && !seen.has(node)) {
-                modules[String(node.url)] = {
+                const key = path.relative(root, node.entrypoint.pathname);
+                modules[key] = {
                     moduleHash: node.moduleHash,
                     contentHash: node.contentHash,
-                    entrypoint: String(node.entrypoint),
-                    url: String(node.entrypoint),
-                    dependencies: node.dependencies.map((dependency) =>
-                        String(dependency.url)
-                    ),
                 };
             }
         });
 
-        return new ModuleList(modules);
+        return new ModuleList(modules, root);
     }
 
-    static async load(filePath: string) {
+    static async load(filePath: string, root: string) {
         const modules = JSON.parse(
             await Deno.readTextFile(filePath),
         );
-        return new ModuleList(modules);
+        return new ModuleList(modules, root);
     }
 
-    constructor(modules: Record<string, Module>) {
+    constructor(modules: Record<string, Module>, root: string) {
         this.#modules = modules;
+        this.#root = root;
     }
 
     /**
      * Query the module info based on its URL
      */
     get(url: URL): Module | undefined {
-        return this.#modules[String(url)];
+        console.log('get', path.relative(this.#root, url.pathname));
+        return this.#modules[path.relative(this.#root, url.pathname)];
     }
 
     async save(filePath: string) {

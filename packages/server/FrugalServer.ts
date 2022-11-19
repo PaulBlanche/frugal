@@ -8,7 +8,7 @@ import { pageRouterMiddleware } from './middleware/pageRouterMiddleware.ts';
 import { CleanConfig } from './Config.ts';
 import { filesystemMiddleware } from './middleware/filesystemMiddleware.ts';
 import { Middleware } from './types.ts';
-import { FrugalContext } from './middleware/types.ts';
+import { Context } from './middleware/types.ts';
 import { statusRewriteMiddleware } from './middleware/statusRewriteMiddleware.ts';
 import { Session } from './Session.ts';
 
@@ -19,7 +19,7 @@ function logger() {
 export class FrugalServer {
     #config: CleanConfig;
     #frugal: frugal.Frugal;
-    #middlewares: Middleware<FrugalContext>[];
+    #middlewares: Middleware<Context>[];
 
     constructor(config: CleanConfig, frugal: frugal.Frugal) {
         this.#config = config;
@@ -46,7 +46,7 @@ export class FrugalServer {
         });
     }
 
-    use(middleware: Middleware<FrugalContext>) {
+    use(middleware: Middleware<Context>) {
         this.#middlewares.push(middleware);
     }
 
@@ -86,7 +86,7 @@ export class FrugalServer {
                     session,
                 }, next);
 
-                await session.attach(response);
+                await session.attach(response.headers);
 
                 return response;
             } catch (error) {

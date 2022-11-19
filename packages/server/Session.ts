@@ -41,6 +41,7 @@ export class Session {
     #cookieName: string;
     #persistence: core.Persistence;
     #frugal: core.Frugal;
+    #attach: boolean;
 
     static async restore(
         request: Request,
@@ -106,6 +107,11 @@ export class Session {
         this.#cookieName = config.cookieName;
         this.#persistence = config.persistence;
         this.#frugal = config.frugal;
+        this.#attach = false;
+    }
+
+    send() {
+        this.#attach = true;
     }
 
     get secret() {
@@ -161,15 +167,22 @@ export class Session {
         }, this.#key);
     }
 
-    async attach(response: Response) {
-        http.setCookie(response.headers, {
-            name: this.#cookieName,
-            value: await this.#token(),
-            secure: true,
-            httpOnly: true,
-            sameSite: 'Lax',
-            path: '/',
-        });
+    async attach(headers: Headers) {
+        if (this.#attach) {
+            const cookies = http.getSetCookies(headers);
+            const hasSessionCookie = cookies.some((cookie) =>
+                cookie.name === this.#cookieName
+            );
+            if (!hasSessionCookie) {
+                http.setCookie(headers, {
+                    name: this.#cookieName,
+                    value: await this.#token(),
+                    httpOnly: true,
+                    sameSite: 'Lax',
+                    path: '/',
+                });
+            }
+        }
     }
 }
 

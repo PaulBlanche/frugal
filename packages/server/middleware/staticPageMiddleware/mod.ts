@@ -8,6 +8,7 @@ import { forceRefreshMiddleware } from './forceRefreshMiddleware.ts';
 import { cacheMiddleware } from './cacheMiddleware.ts';
 import { refreshJitMiddleware } from './refreshJitMiddleware.ts';
 import { RouterContext } from '../types.ts';
+import { generateMiddleware } from '../dynamicPageMiddleware/generateMiddleware.ts';
 
 function logger() {
     return log.getLogger(`frugal_server:staticPageMiddleware`);
@@ -34,7 +35,19 @@ const composedMiddleware = composeMiddleware<RouterContext<frugal.StaticRoute>>(
     forceRefreshMiddleware,
     postRedirectGet.getMiddleware,
     postRedirectGet.postRedirectMiddleware,
+    devModeMiddleware,
     cacheMiddleware,
     refreshJitMiddleware,
     cacheMiddleware,
 );
+
+function devModeMiddleware(
+    context: RouterContext<frugal.StaticRoute>,
+    next: Next<RouterContext<frugal.StaticRoute>>,
+) {
+    if (!context.frugal.config.watch) {
+        return next(context);
+    }
+
+    return generateMiddleware(context);
+}

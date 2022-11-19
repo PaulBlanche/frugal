@@ -186,7 +186,8 @@ async function generateToken(
 
 async function getToken(session: Session) {
     const response = new Response();
-    await session.attach(response);
+    session.send();
+    await session.attach(response.headers);
 
     const cookies = http.getSetCookies(response.headers);
     const sessionCookie = cookies.find((cookie) => cookie.name = 'cookieName');

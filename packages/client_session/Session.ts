@@ -1,8 +1,11 @@
-import { NavigationObserver } from './NavigationObserver.ts';
+import { VisitObserver } from './VisitObserver.ts';
 import { Navigator, NavigatorConfig } from './Navigator.ts';
 import { PrefetcherConfig } from './Prefetcher.ts';
 import { PrefetchObserver } from './PrefetchObserver.ts';
 import { SessionHistory } from './SessionHistory.ts';
+import { SubmitObserver } from './SubmitObserver.ts';
+import { Submitter } from './Submitter.ts';
+import * as utils from './utils.ts';
 
 type SessionConfig = {
     prefetch: PrefetcherConfig;
@@ -24,15 +27,31 @@ declare global {
 
 export class Session {
     #config: SessionConfig;
-    #history: SessionHistory;
-    #navigationObserver: NavigationObserver;
+    #visitObserver: VisitObserver;
+    #submitObserver: SubmitObserver;
     #prefetchObserver: PrefetchObserver;
 
-    static getInstance() {
-        return new Session();
+    static create(config?: PartialSessionConfig) {
+        if (window[SESSION_INSTANCE] !== undefined) {
+            throw Error(
+                'A Session instance was already created',
+            );
+        }
+
+        window[SESSION_INSTANCE] = new Session(config);
+
+        return window[SESSION_INSTANCE];
     }
 
-    constructor(config: PartialSessionConfig = {}) {
+    static getInstance() {
+        if (window[SESSION_INSTANCE] === undefined) {
+            return Session.create();
+        }
+
+        return window[SESSION_INSTANCE];
+    }
+
+    private constructor(config: PartialSessionConfig = {}) {
         this.#config = {
             prefetch: {
                 defaultPrefetch: config.prefetch?.defaultPrefetch ?? true,
@@ -46,37 +65,38 @@ export class Session {
                 restoreScroll: config.navigate?.restoreScroll ?? true,
             },
         };
-        this.#history = SessionHistory.getInstance(this.#config.navigate);
-        this.#navigationObserver = NavigationObserver.getInstance(
-            this.#config.navigate,
-        );
-        this.#prefetchObserver = PrefetchObserver.getInstance(
-            this.#config.prefetch,
-        );
+        this.#visitObserver = new VisitObserver(this.#config.navigate);
+        this.#submitObserver = new SubmitObserver(this.#config.navigate);
+        this.#prefetchObserver = new PrefetchObserver(this.#config.prefetch);
 
-        if (window[SESSION_INSTANCE] !== undefined) {
-            return window[SESSION_INSTANCE];
-        }
-
-        window[SESSION_INSTANCE] = this;
+        SessionHistory.create(this.#config.navigate);
     }
 
     start() {
-        this.#history.observe();
-        this.#navigationObserver.observe();
+        SessionHistory.getInstance().observe();
+        this.#visitObserver.observe();
+        this.#submitObserver.observe();
         this.#prefetchObserver.observe();
     }
 
-    async navigate(url: URL | string, init?: RequestInit): Promise<void> {
+    async navigate(url: URL | string): Promise<boolean> {
         const navigator = new Navigator(
             new URL(url, location.href),
             this.#config.navigate,
         );
 
-        this.#history.saveScroll();
+        return await navigator.visit();
+    }
 
-        await navigator.navigate(init);
+    async submit(form: HTMLFormElement): Promise<boolean> {
+        const url = utils.getFormUrl(form);
+        const navigator = new Navigator(
+            new URL(url, location.href),
+            this.#config.navigate,
+        );
 
-        this.#history.push(navigator);
+        const submiter = new Submitter(form, undefined, navigator);
+
+        return await submiter.submit();
     }
 }

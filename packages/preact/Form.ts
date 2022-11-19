@@ -138,10 +138,6 @@ export class Form<VALUE extends FormValue = any> {
         return result;
     }
 
-    reset() {
-        this.#state = formState(this.#config.initialValue);
-    }
-
     async submit(formElement: HTMLFormElement): Promise<void> {
         this.#state.submitCounter += 1;
         const validationResult = await this._validationStrategy('submit');
@@ -153,10 +149,7 @@ export class Form<VALUE extends FormValue = any> {
         this.#state.isSubmiting = true;
         this._dispatch();
 
-        await Session.getInstance().navigate(formElement.action, {
-            method: 'POST',
-            body: new FormData(formElement),
-        });
+        await Session.getInstance().submit(formElement);
     }
 
     async handle(): Promise<VALUE | undefined> {

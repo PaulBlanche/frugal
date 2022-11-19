@@ -121,7 +121,7 @@ function visitElement(actual: Element, target: Element): VisitResult {
         attributes: computeAttributePatch(actual, target),
     };
 
-    if (childNodes(actual).length === 0 && childNodes(target).length) {
+    if (childNodes(actual).length === 0 && childNodes(target).length === 0) {
         return [patch];
     }
 
