@@ -42,13 +42,25 @@ export function diff(actual: Document, target: Document): Diff {
 
     let current: DiffQueueItem | undefined;
 
+    let noDiff = false;
     while ((current = queue.shift()) !== undefined) {
-        const [patch, items] = visit(current[1], current[2]);
-        if (patch !== undefined) {
-            current[0].push(patch);
+        const [patch, items, inhibit] = visit(current[1], current[2]);
+        if (inhibit === true) {
+            noDiff = true;
         }
-        if (items !== undefined) {
-            queue.push(...items);
+
+        if (noDiff) {
+            current[0].push(preserveNode());
+        } else {
+            current[0].push(patch);
+
+            if (items !== undefined) {
+                queue.push(...items);
+            }
+        }
+
+        if (inhibit === false) {
+            noDiff = false;
         }
     }
 
@@ -61,6 +73,7 @@ export function diff(actual: Document, target: Document): Diff {
 type VisitResult = [patch: NodePatch] | [
     patch: NodePatch,
     items: DiffQueueItem[],
+    inhibit?: boolean,
 ];
 
 function visit(actual?: Node | null, target?: Node | null): VisitResult {
@@ -81,6 +94,9 @@ function visit(actual?: Node | null, target?: Node | null): VisitResult {
     }
 
     switch (actual.nodeType) {
+        case NodeType.COMMENT_NODE: {
+            return visitComment(actual as Comment, target as Comment);
+        }
         case NodeType.TEXT_NODE: {
             return visitText(actual as Text, target as Text);
         }
@@ -95,6 +111,18 @@ function visit(actual?: Node | null, target?: Node | null): VisitResult {
         }
     }
 
+    return [replaceNode(target)];
+}
+
+function visitComment(actual: Comment, target: Comment): VisitResult {
+    if (
+        actual.data.match(/start-no-diff/) && target.data.match(/start-no-diff/)
+    ) {
+        return [preserveNode(), [], true];
+    }
+    if (target.data.match(/end-no-diff/)) {
+        return [preserveNode(), [], false];
+    }
     return [replaceNode(target)];
 }
 

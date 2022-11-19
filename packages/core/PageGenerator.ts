@@ -165,7 +165,12 @@ export class PageGenerator<
                 // browsers are very forgiving, we can simply add the watch
                 // script after the whole document
                 return `${content}<script>var script = document.createElement('script'); script.type="module"; script.src="${
-                    injectWatchScript[String(this.#page.self)][
+                    injectWatchScript[
+                        pathUtils.relative(
+                            this.#config.rootDir,
+                            this.#page.self.pathname,
+                        )
+                    ][
                         'inject-watch-script'
                     ]
                 }"; document.head.appendChild(script);</script>`;

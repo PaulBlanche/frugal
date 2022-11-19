@@ -17,25 +17,30 @@ export class CsrfValidator {
     }
 
     async validate() {
-        // safe method don't need csrf
-        if (SAFE_METHODS.includes(this.#context.request.method)) {
-            return true;
-        }
+        try {
+            // safe method don't need csrf
+            if (SAFE_METHODS.includes(this.#context.request.method)) {
+                return true;
+            }
 
-        const isUrlProtected = this.#context.config.csrf?.isUrlProtected(
-            new URL(this.#context.request.url),
-        );
+            const isUrlProtected = this.#context.config.csrf?.isUrlProtected(
+                new URL(this.#context.request.url),
+            );
 
-        if (!isUrlProtected) {
-            return true;
-        }
+            if (!isUrlProtected) {
+                return true;
+            }
 
-        const token = await this.#extract();
-        if (token && this.#mask) {
-            return this.#context.session.secret ===
-                xor(atob(token), this.#mask);
+            const token = await this.#extract();
+            console.log('validate csrfToken', { token, mask: this.#mask });
+            if (token && this.#mask) {
+                return this.#context.session.secret ===
+                    xor(atob(token), this.#mask);
+            }
+            return false;
+        } catch {
+            return false;
         }
-        return false;
     }
 
     async #extract() {
