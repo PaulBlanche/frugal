@@ -1,7 +1,11 @@
 import * as preact from 'preact';
 
-import { page, UpstashPersistence } from './dep/frugal/core.ts';
-import { Config } from './dep/frugal/server.ts';
+import {
+    FilesystemPersistence,
+    page,
+    UpstashPersistence,
+} from './dep/frugal/core.ts';
+import { Config, importKey } from './dep/frugal/server.ts';
 import { ScriptLoader } from './dep/frugal/loader_script.ts';
 import { StyleLoader, styleTransformer } from './dep/frugal/loader_style.ts';
 import * as stylis from './dep/stylis.ts';
@@ -9,16 +13,20 @@ import { svg, svgTransformer } from './dep/frugal/loader_jsx_svg.ts';
 
 import * as home from './pages/home/mod.ts';
 import * as docs from './pages/docs/mod.ts';
-import * as example from './pages/example/mod.ts';
+import * as exampleStaticRefresh from './pages/docs/examples/static-refresh/mod.ts';
+import * as page403 from './pages/403/mod.ts';
+import * as page404 from './pages/404/mod.ts';
 
 const self = new URL(import.meta.url);
 
-const UPSTASH_PERSISTENCE = new UpstashPersistence(
-    Deno.env.get('UPSTASH_URL') ?? '',
-    Deno.env.get('UPSTASH_TOKEN') ?? '',
-    Deno.env.get('UPSTASH_NAMESPACE') ?? '',
-    self.pathname,
-);
+const UPSTASH_PERSISTENCE = Deno.env.get('PERSISTENCE') === 'filesystem'
+    ? new FilesystemPersistence()
+    : new UpstashPersistence(
+        Deno.env.get('UPSTASH_URL') ?? '',
+        Deno.env.get('UPSTASH_TOKEN') ?? '',
+        Deno.env.get('UPSTASH_NAMESPACE') ?? '',
+        self.pathname,
+    );
 
 export const config: Config = {
     self,
@@ -59,8 +67,10 @@ export const config: Config = {
 
     pages: [
         page(home),
+        page(exampleStaticRefresh),
         page(docs),
-        page(example),
+        page(page404),
+        page(page403),
     ],
 
     pagePersistence: UPSTASH_PERSISTENCE,
@@ -106,6 +116,20 @@ export const config: Config = {
         sessionPersistence: UPSTASH_PERSISTENCE,
 
         listen: { port: 8000 },
+
+        session: {
+            key: await importKey(Deno.env.get('CRYPTO_KEY')!),
+        },
+
+        csrf: {
+            isUrlProtected(url) {
+                return url.pathname === '/docs/examples/form-submission';
+            },
+        },
+        statusMapping: {
+            403: () => ({ url: '/403', type: 'rewrite' }),
+            404: () => ({ url: '/404', type: 'rewrite' }),
+        },
     },
 };
 

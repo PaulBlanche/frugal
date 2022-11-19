@@ -1,4 +1,4 @@
-import * as asserts from '../../../dep/std/asserts.ts';
+import * as asserts from '../../../dep/std/testing/asserts.ts';
 import { Loader } from '../../../packages/core/loader.ts';
 import { DependencyGraph } from '../../../packages/core/DependencyGraph.ts';
 import * as graph from '../../../packages/dependency_graph/mod.ts';

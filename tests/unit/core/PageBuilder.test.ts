@@ -3,9 +3,11 @@ import { fakeDynamicPage, fakeStaticPage } from './__fixtures__/Page.ts';
 import { fakeCache } from './__fixtures__/Cache.ts';
 import { fakePersistence } from './__fixtures__/Persistence.ts';
 import { asSpy } from '../../test_util/mod.ts';
-import * as asserts from '../../../dep/std/asserts.ts';
-import * as path from '../../../dep/std/path.ts';
-import { assertSpyCallArgs, assertSpyCalls } from '../../../dep/std/mock.ts';
+import * as asserts from '../../../dep/std/testing/asserts.ts';
+import {
+    assertSpyCallArgs,
+    assertSpyCalls,
+} from '../../../dep/std/testing/mock.ts';
 
 import { PageBuilder } from '../../../packages/core/PageBuilder.ts';
 
@@ -80,6 +82,7 @@ Deno.test('PageBuilder: build with cache hit query data and return path from cac
                 if (otherwise) {
                     otherwise();
                 }
+                // deno-lint-ignore no-explicit-any
                 return Promise.resolve(cached as any);
             },
         },
@@ -112,7 +115,8 @@ Deno.test('PageBuilder: build will throw on non matching path', async () => {
     const data = { foo: 'bar' };
     const content = 'page content';
 
-    const page = fakeStaticPage<{}, { foo: string }>({
+    // deno-lint-ignore no-explicit-any
+    const page = fakeStaticPage<any, { foo: string }>({
         pattern: 'foo/:id',
         getStaticData: () => ({ data }),
         getContent: () => content,
@@ -120,7 +124,8 @@ Deno.test('PageBuilder: build will throw on non matching path', async () => {
 
     const cache = fakeCache();
 
-    const generator = fakePageGenerator<{}, { foo: string }>();
+    // deno-lint-ignore no-explicit-any
+    const generator = fakePageGenerator<any, { foo: string }>();
 
     const builder = new PageBuilder(page, '', generator, {
         persistence: fakePersistence(),
@@ -135,6 +140,7 @@ Deno.test('PageBuilder: build will throw on non matching path', async () => {
 });
 
 Deno.test('PageBuilder: buildAll orchestrate the generation of StaticPage', async () => {
+    // deno-lint-ignore no-explicit-any
     const store: Record<string, any> = {
         '1': {
             path: { id: '1' },
@@ -272,6 +278,7 @@ Deno.test('PageBuilder: build memoize key depends on page hash', async () => {
 
     const cache = fakeCache({
         mock: {
+            // deno-lint-ignore no-explicit-any
             memoize: () => Promise.resolve('pagePath' as any),
         },
     });
@@ -322,6 +329,7 @@ Deno.test('PageBuilder: build memoize key depends on data', async () => {
 
     const cache = fakeCache({
         mock: {
+            // deno-lint-ignore no-explicit-any
             memoize: () => Promise.resolve('pagePath' as any),
         },
     });
@@ -361,6 +369,7 @@ Deno.test('PageBuilder: build memoize key depends on url', async () => {
 
     const cache = fakeCache({
         mock: {
+            // deno-lint-ignore no-explicit-any
             memoize: () => Promise.resolve('pagePath' as any),
         },
     });

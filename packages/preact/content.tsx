@@ -2,6 +2,7 @@
 /* @jsxImportSource preact */
 
 import * as server from 'preact-render-to-string';
+import * as signal from 'preact/signals';
 import { HeadProvider } from './Head.tsx';
 
 import * as frugal from '../core/mod.ts';
@@ -72,6 +73,7 @@ export function getContentFrom<PATH extends Record<string, string>, DATA>(
                 }}
             >
                 <DataProvider
+                    count={signal.signal(0)}
                     embedData={embedData}
                     context={{ data, pathname }}
                 >

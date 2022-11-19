@@ -5,7 +5,7 @@ import * as log from '../../../log/mod.ts';
 import { Next } from '../../types.ts';
 import { RouterContext } from '../types.ts';
 
-import { SESSION_COOKIE_NAME } from './const.ts';
+import { SESSION_KEY } from './const.ts';
 
 function logger() {
     return log.getLogger(
@@ -66,27 +66,27 @@ export async function postRedirectMiddleware<ROUTE extends frugal.Route>(
         });
     }
 
-    const sessionId = await context.sessionManager.set(JSON.stringify({
-        content: result.content,
-        headers: Array.from(result.headers.entries()),
-    }));
+    await context.session.attach(result.headers);
+
+    await context.session.write(
+        SESSION_KEY,
+        JSON.stringify({
+            content: result.content,
+            headers: Array.from(result.headers.entries()),
+        }),
+    );
+    context.session.set(SESSION_KEY, '');
 
     logger().debug({
         method: context.request.method,
         pathname: url.pathname,
-        session: sessionId,
         msg() {
-            return `serve ${this.method} ${this.pathname} with a PRG redirection with session ${this.session}`;
+            return `serve ${this.method} ${this.pathname} with a PRG redirection`;
         },
     });
 
     const headers = new Headers({
         'Location': url.href,
-    });
-
-    http.setCookie(headers, {
-        name: SESSION_COOKIE_NAME,
-        value: sessionId,
     });
 
     return new Response(null, {

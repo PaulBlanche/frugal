@@ -5,7 +5,7 @@ import { Page } from './Page.tsx';
 export function getStaticData() {
     return {
         headers: {
-            'Cache-Control': 'public, max-age=3600, must-revalidate', // cached for the hour
+            'Cache-Control': 'public, max-age=300, must-revalidate', // cached for 5min
         },
     };
 }

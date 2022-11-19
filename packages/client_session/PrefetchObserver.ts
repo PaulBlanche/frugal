@@ -1,31 +1,13 @@
 import { Prefetcher, PrefetcherConfig } from './Prefetcher.ts';
 import * as utils from './utils.ts';
 
-const PREFETCH_OBSERVER_INSTANCE = `$$frugal$$prefetch$$observer$$instance$$`;
-
-declare global {
-    interface Window {
-        [PREFETCH_OBSERVER_INSTANCE]?: PrefetchObserver;
-    }
-}
-
 export class PrefetchObserver {
     prefetchers: Map<string, Prefetcher>;
     config: PrefetcherConfig;
 
-    static getInstance(config: PrefetcherConfig) {
-        return new PrefetchObserver(config);
-    }
-
     constructor(config: PrefetcherConfig) {
         this.prefetchers = new Map();
         this.config = config;
-
-        if (window[PREFETCH_OBSERVER_INSTANCE] !== undefined) {
-            return window[PREFETCH_OBSERVER_INSTANCE];
-        }
-
-        window[PREFETCH_OBSERVER_INSTANCE] = this;
     }
 
     observe() {
@@ -84,7 +66,7 @@ export class PrefetchObserver {
             return;
         }
 
-        const url = utils.getAnchorUrl(navigableAnchor);
+        const url = utils.getUrl(navigableAnchor.href);
 
         if (!this.prefetchers.has(url.href)) {
             const instance = new Prefetcher(

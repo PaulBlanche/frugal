@@ -1,73 +1,75 @@
 /* @jsxRuntime automatic */
 /* @jsxImportSource preact */
 import { cx } from '../../dep/frugal/styled.ts';
-import { HeroHeader } from '../../components/HeroHeader.tsx';
-import { Layout } from '../../components/Layout.tsx';
+import { BaseLayout } from '../_layout/BaseLayout.tsx';
 
+import { HeroHeader } from './HeroHeader.tsx';
 import * as s from './Page.style.ts';
 import { link } from '../../styles/link.style.ts';
-import { App } from '../App.tsx';
 import { PageProps } from '../../dep/frugal/preact.server.ts';
 
 export function Page(props: PageProps) {
     return (
-        <App {...props}>
-            <Layout>
-                <HeroHeader />
-                <main class={cx(s.mainContainer)}>
-                    <p>
-                        Frugal is a web framework with resource sparing in mind.
-                        Send the right amount of js, keep what's meant to be
-                        static static, offload to the server when needed.
-                    </p>
-                    <ul>
-                        <li>
-                            <em class={cx(s.emphasis)}>
-                                Static pages rendered at build time
-                            </em>: by default frugal produces static html.
-                        </li>
-                        <li>
-                            <em class={cx(s.emphasis)}>
-                                Server side pages render
-                            </em>{' '}
-                            at request time
-                        </li>
-                        <li>
-                            <em class={cx(s.emphasis)}>
-                                Bring your own framework
-                            </em>: frugal works with any UI framework able to
-                            compile to html
-                        </li>
-                        <li>
-                            <em class={cx(s.emphasis)}>
-                                Manual partial hydration
-                            </em>{' '}
-                            for interactive island in pages of you use{' '}
-                            <a class={cx(link)} href='#'>Preact</a>
-                        </li>
-                        <li>
-                            <em class={cx(s.emphasis)}>
-                                Form submission client-side or server-side
-                            </em>{' '}
-                            for both static and dynamic pages
-                        </li>
-                        <li>
-                            <em class={cx(s.emphasis)}>Incremental build</em>:
-                            if both data and code did not change, the page is
-                            not rebuilt
-                        </li>
-                    </ul>
-                    <p>
-                        Learn more about{' '}
-                        <a class={cx(link)} href='/docs'>
-                            the philosophy frugal embraces
-                        </a>, or{' '}
-                        <a class={cx(link)} href='/example'>
-                            see frugal in action
+        <BaseLayout {...props}>
+            <HeroHeader />
+            <main class={cx(s.mainContainer)}>
+                <p>
+                    Frugal is a web framework with resource sparing in mind.
+                    Send the right amount of js, keep what's meant to be static
+                    static, offload to the server when needed.
+                </p>
+                <ul>
+                    <li>
+                        <strong>
+                            Static pages rendered at build time
+                        </strong>: by default frugal produces static html.
+                    </li>
+                    <li>
+                        <strong>
+                            Server side pages render
+                        </strong>{' '}
+                        at request time
+                    </li>
+                    <li>
+                        <strong>
+                            Bring your own framework
+                        </strong>: frugal works with any UI framework able to
+                        compile to html
+                    </li>
+                    <li>
+                        <strong>
+                            Manual partial hydration
+                        </strong>{' '}
+                        for interactive island in pages of you use{' '}
+                        <a class={cx(link)} href='https://preactjs.com/'>
+                            Preact
                         </a>
-                    </p>
-                </main>
-            </Layout>
-        </App>
+                    </li>
+                    <li>
+                        <strong>
+                            Form submission client-side or server-side
+                        </strong>{' '}
+                        for both static and dynamic pages
+                    </li>
+                    <li>
+                        <strong>Incremental build</strong>: if both data and
+                        code did not change, the page is not rebuilt
+                    </li>
+                    <li>
+                        <strong>Client session</strong>: get an SPA user
+                        experience with a MPA codebase
+                    </li>
+                </ul>
+                <p>
+                    Learn more about{' '}
+                    <a class={cx(link)} href='/docs'>
+                        the philosophy frugal embraces
+                    </a>, or{' '}
+                    <a class={cx(link)} href='/example'>
+                        see frugal in action
+                    </a>
+                </p>
+            </main>
+        </BaseLayout>
     );
 }

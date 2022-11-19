@@ -4,13 +4,13 @@ import * as frugal from '../core/mod.ts';
 import * as log from '../log/mod.ts';
 
 import { composeMiddleware } from './composeMiddleware.ts';
-import { SessionManager } from './SessionManager.ts';
 import { pageRouterMiddleware } from './middleware/pageRouterMiddleware.ts';
 import { CleanConfig } from './Config.ts';
 import { filesystemMiddleware } from './middleware/filesystemMiddleware.ts';
 import { Middleware } from './types.ts';
-import { FrugalContext } from './middleware/types.ts';
+import { Context } from './middleware/types.ts';
 import { statusRewriteMiddleware } from './middleware/statusRewriteMiddleware.ts';
+import { Session } from './Session.ts';
 
 function logger() {
     return log.getLogger(`frugal_server:FrugalServer`);
@@ -19,7 +19,7 @@ function logger() {
 export class FrugalServer {
     #config: CleanConfig;
     #frugal: frugal.Frugal;
-    #middlewares: Middleware<FrugalContext>[];
+    #middlewares: Middleware<Context>[];
 
     constructor(config: CleanConfig, frugal: frugal.Frugal) {
         this.#config = config;
@@ -46,16 +46,11 @@ export class FrugalServer {
         });
     }
 
-    use(middleware: Middleware<FrugalContext>) {
+    use(middleware: Middleware<Context>) {
         this.#middlewares.push(middleware);
     }
 
     #handler() {
-        const sessionManager = new SessionManager(
-            this.#config.sessionPersistence,
-            this.#frugal,
-        );
-
         const composedMiddleware = composeMiddleware(
             ...this.#middlewares,
             pageRouterMiddleware,
@@ -77,21 +72,30 @@ export class FrugalServer {
 
         return async (request: Request, connInfo: http.ConnInfo) => {
             try {
-                const context = {
+                const session = await Session.restore(request, {
+                    config: this.#config,
+                    frugal: this.#frugal,
+                });
+
+                const response = await middleware({
                     request,
                     connInfo,
                     config: this.#config,
-                    sessionManager,
                     frugal: this.#frugal,
                     state: {},
-                };
-                return await middleware(context, next);
+                    session,
+                }, next);
+
+                await session.attach(response.headers);
+
+                return response;
             } catch (error) {
                 logger().error({
                     msg() {
                         return `${error}`;
                     },
                 }, error);
+
                 return new Response(null, {
                     status: http.Status.InternalServerError,
                     statusText:

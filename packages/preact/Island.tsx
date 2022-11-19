@@ -38,6 +38,11 @@ export function Island<PROPS>(
     if (typeof document === 'undefined' && !isInIsland) {
         return (
             <islandContext.Provider value={true}>
+                {preact.h(
+                    `!--start-no-diff--`,
+                    null,
+                )}
+
                 <script
                     data-hydratable={name}
                     data-hydration-strategy={strategy ?? 'load'}
@@ -50,7 +55,7 @@ export function Island<PROPS>(
                 {!clientOnly && Component}
                 {clientOnly && <div /> /* empty node for hydration */}
                 {preact.h(
-                    `!--end-furgal-island--`,
+                    `!--end-no-diff--`,
                     null,
                 )}
             </islandContext.Provider>

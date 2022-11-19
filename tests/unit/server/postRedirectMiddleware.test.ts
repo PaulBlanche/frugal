@@ -1,10 +1,10 @@
 import * as http from '../../../dep/std/http.ts';
-import * as mock from '../../../dep/std/mock.ts';
-import * as asserts from '../../../dep/std/asserts.ts';
+import * as mock from '../../../dep/std/testing/mock.ts';
+import * as asserts from '../../../dep/std/testing/asserts.ts';
 
 import { postRedirectMiddleware } from '../../../packages/server/middleware/postRedirectGet/postRedirectMiddleware.ts';
 import { RouterContext } from '../../../packages/server/middleware/types.ts';
-import { SESSION_COOKIE_NAME } from '../../../packages/server/middleware/postRedirectGet/const.ts';
+import { SESSION_KEY } from '../../../packages/server/middleware/postRedirectGet/const.ts';
 
 Deno.test('postRedirectGet:postRedirectMiddleware: should bail out on invalid methods', async () => {
     for (const method of ['HEAD', 'OPTIONS', 'GET']) {
@@ -23,10 +23,8 @@ Deno.test('postRedirectGet:postRedirectMiddleware: should bail out on invalid me
 Deno.test('postRedirectGet:postRedirectMiddleware: should generate and store in session on valid methods', async () => {
     for (const method of ['POST', 'PUT', 'PATCH', 'DELETE']) {
         const next = mock.spy(async () => new Response());
-        const sessionId = 'sessionId';
-        const sessionManagerSet = mock.spy(() => {
-            return sessionId;
-        });
+        const sessionWrite = mock.spy();
+        const sessionSet = mock.spy();
         const generated = {
             pagePath: '',
             content: 'page-content',
@@ -39,8 +37,15 @@ Deno.test('postRedirectGet:postRedirectMiddleware: should generate and store in 
                 url: 'http://example.com',
                 method,
             },
-            sessionManager: {
-                set: sessionManagerSet,
+            session: {
+                set: sessionSet,
+                write: sessionWrite,
+                attach: (headers: Headers) => {
+                    http.setCookie(headers, {
+                        name: 'sessionCookie',
+                        value: 'sessionToken',
+                    });
+                },
             },
             route: {
                 generator: {
@@ -50,12 +55,19 @@ Deno.test('postRedirectGet:postRedirectMiddleware: should generate and store in 
         } as unknown as RouterContext, next);
 
         mock.assertSpyCalls(next, 0);
-        mock.assertSpyCalls(sessionManagerSet, 1);
-        mock.assertSpyCall(sessionManagerSet, 0, {
-            args: [JSON.stringify({
-                content: generated.content,
-                headers: Array.from(generated.headers.entries()),
-            })],
+        mock.assertSpyCalls(sessionSet, 1);
+        mock.assertSpyCall(sessionSet, 0, {
+            args: [SESSION_KEY, ''],
+        });
+        mock.assertSpyCalls(sessionWrite, 1);
+        mock.assertSpyCall(sessionWrite, 0, {
+            args: [
+                SESSION_KEY,
+                JSON.stringify({
+                    content: generated.content,
+                    headers: Array.from(generated.headers.entries()),
+                }),
+            ],
         });
         asserts.assertEquals(response.status, http.Status.SeeOther);
         asserts.assertEquals(
@@ -64,7 +76,6 @@ Deno.test('postRedirectGet:postRedirectMiddleware: should generate and store in 
         );
         asserts.assertEquals(Array.from(response.headers.entries()), [
             ['location', 'http://example.com/'],
-            ['set-cookie', `${SESSION_COOKIE_NAME}=${sessionId}`],
         ]);
     }
 });

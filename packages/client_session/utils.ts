@@ -16,8 +16,8 @@ export function getClosestParentNavigableAnchor(
     }
 }
 
-export function getAnchorUrl(anchor: HTMLAnchorElement) {
-    return new URL(anchor.href, document.baseURI);
+export function getUrl(path: string) {
+    return new URL(path, document.baseURI);
 }
 
 const readyStateOrder: Record<DocumentReadyState, number> = {
@@ -27,10 +27,12 @@ const readyStateOrder: Record<DocumentReadyState, number> = {
 };
 
 declare global {
+    type FrugalReadyStateChangeEvent = CustomEvent<
+        { readystate: DocumentReadyState }
+    >;
+
     interface WindowEventMap {
-        'frugal:readystatechange': CustomEvent<
-            { readystate: DocumentReadyState }
-        >;
+        'frugal:readystatechange': FrugalReadyStateChangeEvent;
     }
 }
 

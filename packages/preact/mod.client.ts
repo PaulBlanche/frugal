@@ -5,3 +5,5 @@ export { hydrate } from './hydrate.tsx';
 export type { App, GetApp } from './hydrate.tsx';
 export { Head } from './Head.tsx';
 export type { HydrationStrategy } from './types.ts';
+export * from './Form.ts';
+export { useClientSideForm } from './useClientSideForm.ts';

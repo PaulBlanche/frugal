@@ -8,7 +8,7 @@ import { fakePageGenerator } from './PageGenerator.ts';
 import { fakeStaticPage } from './Page.ts';
 import { fakeCache } from './Cache.ts';
 import { fakePersistence } from './Persistence.ts';
-import { spy } from '../../../../dep/std/mock.ts';
+import { spy } from '../../../../dep/std/testing/mock.ts';
 
 type FakePageBuilderConfig<
     PATH extends Record<string, string> = Record<string, string>,

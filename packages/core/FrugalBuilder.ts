@@ -1,6 +1,6 @@
 import * as path from '../../dep/std/path.ts';
 import * as fs from '../../dep/std/fs.ts';
-import { assert } from '../../dep/std/asserts.ts';
+import { assert } from '../../dep/std/testing/asserts.ts';
 
 import * as log from '../log/mod.ts';
 
@@ -140,6 +140,7 @@ export class FrugalBuilder {
         try {
             const moduleList = await ModuleList.load(
                 path.resolve(config.cacheDir, FILENAMES.MODULES_FILENAME),
+                config.root.pathname,
             );
             const cache = await PersistentCache.load(
                 path.resolve(config.cacheDir, FILENAMES.PAGE_CACHE_FILENAME),
@@ -198,7 +199,9 @@ export class FrugalBuilder {
             excludes: config.pages.map((page) => page.self),
         });
 
-        const configModule = configWithoutPagesDependencyTree.moduleList().get(
+        const configModule = configWithoutPagesDependencyTree.moduleList(
+            config.root.pathname,
+        ).get(
             config.self,
         );
 
@@ -240,7 +243,7 @@ export function main() {
 
         return {
             assets,
-            moduleList: dependencyTree.moduleList(),
+            moduleList: dependencyTree.moduleList(config.root.pathname),
             configModule,
         };
     }

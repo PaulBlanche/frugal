@@ -2,19 +2,17 @@ import * as log from '../../log/mod.ts';
 
 import { Next } from '../types.ts';
 import { composeMiddleware } from '../composeMiddleware.ts';
-import { FrugalContext, RouterContext } from './types.ts';
+import { Context, RouterContext } from './types.ts';
 import { dynamicPageMiddleware } from './dynamicPageMiddleware/mod.ts';
 import { staticPageMiddleware } from './staticPageMiddleware/mod.ts';
 import { etagMiddleware } from './etagMiddleware.ts';
+import { csrfMiddleware } from './csrfMiddleware/mod.ts';
 
 function logger() {
     return log.getLogger(`frugal_server:pageRouterMiddleware`);
 }
 
-export function pageRouterMiddleware(
-    context: FrugalContext,
-    next: Next<FrugalContext>,
-) {
+export function pageRouterMiddleware(context: Context, next: Next<Context>) {
     const url = new URL(context.request.url);
     const route = context.frugal.getMatchingRoute(url.pathname);
 
@@ -45,6 +43,8 @@ export function pageRouterMiddleware(
         return next(context);
     }
 
+    context.session.send();
+
     return composedMiddleware(
         { ...context, route },
         next,
@@ -52,7 +52,8 @@ export function pageRouterMiddleware(
 }
 
 const composedMiddleware = composeMiddleware<RouterContext>(
+    csrfMiddleware,
     etagMiddleware,
-    dynamicPageMiddleware,
     staticPageMiddleware,
+    dynamicPageMiddleware,
 );

@@ -1,4 +1,5 @@
-import { Renderer } from './Renderer.ts';
+import { render } from './render/mod.ts';
+import { SessionHistory } from './SessionHistory.ts';
 
 export const LOADING_CLASSNAME = 'frugal-navigate-loading';
 
@@ -33,44 +34,48 @@ export class Navigator {
         return this.#url;
     }
 
-    _shouldNavigate(directive?: string | null) {
+    shouldVisit(directive?: string | null) {
         return this.#config.defaultNavigate
             ? directive !== 'false'
             : directive === 'true';
     }
 
-    async navigate(init?: RequestInit): Promise<void> {
-        try {
-            this.#setReadyState('loading');
+    async visit(init?: RequestInit): Promise<boolean> {
+        SessionHistory.getInstance().saveScroll();
+        const result = await this.navigate(init);
+        SessionHistory.getInstance().push(this);
 
-            const html = await this.#fetch(init);
-            const nextDocument = new DOMParser().parseFromString(
-                html,
-                'text/html',
-            );
+        return result;
+    }
 
-            if (!this.#shouldProcessNavigate(nextDocument)) {
-                this._realNavigate();
-                return;
-            }
-            new Renderer(nextDocument).render();
+    async navigate(init?: RequestInit): Promise<boolean> {
+        this.#setReadyState('loading');
 
-            this.#setReadyState('interactive');
+        const html = await this.#fetch(init);
+        const nextDocument = new DOMParser().parseFromString(
+            html,
+            'text/html',
+        );
 
-            if (!this.#tryToScrollToHash()) {
-                if (this.#shouldRestoreScroll && this.#config.restoreScroll) {
-                    scroll(this.scroll?.x ?? 0, this.scroll?.y ?? 0);
-                } else if (this.#config.resetScroll) {
-                    window.scroll(0, 0);
-                }
-            }
-
-            this.#setReadyState('complete');
-        } catch (error: unknown) {
-            console.error(error);
-            this._realNavigate();
-            return;
+        if (!this.#shouldProcessNavigate(nextDocument)) {
+            return false;
         }
+
+        render(nextDocument);
+
+        this.#setReadyState('interactive');
+
+        if (!this.#tryToScrollToHash()) {
+            if (this.#shouldRestoreScroll && this.#config.restoreScroll) {
+                scroll(this.scroll?.x ?? 0, this.scroll?.y ?? 0);
+            } else if (this.#config.resetScroll) {
+                window.scroll(0, 0);
+            }
+        }
+
+        this.#setReadyState('complete');
+
+        return true;
     }
 
     #tryToScrollToHash() {
@@ -99,7 +104,7 @@ export class Navigator {
         );
         if (frugalVisitTypeMeta) {
             const navigate = frugalVisitTypeMeta.getAttribute('content');
-            return this._shouldNavigate(navigate);
+            return this.shouldVisit(navigate);
         }
 
         return true;
@@ -113,7 +118,9 @@ export class Navigator {
         const response = await fetch(this.#url.href, init);
 
         if (response.redirected) {
+            const hash = this.#url.hash;
             this.#url = new URL(response.url);
+            this.#url.hash = hash;
         }
 
         const html = await response.text();
@@ -122,9 +129,5 @@ export class Navigator {
         document.body.classList.remove(LOADING_CLASSNAME);
 
         return html;
-    }
-
-    _realNavigate() {
-        location.href = this.#url.href;
     }
 }

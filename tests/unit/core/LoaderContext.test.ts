@@ -4,8 +4,12 @@ import { fakePersistentCache } from './__fixtures__/Cache.ts';
 import { fakeAsset, fakeLoader } from './__fixtures__/Loader.ts';
 import { fakeConfig } from './__fixtures__/Config.ts';
 import { asSpy } from '../../test_util/mod.ts';
-import * as asserts from '../../../dep/std/asserts.ts';
-import { assertSpyCall, assertSpyCalls, spy } from '../../../dep/std/mock.ts';
+import * as asserts from '../../../dep/std/testing/asserts.ts';
+import {
+    assertSpyCall,
+    assertSpyCalls,
+    spy,
+} from '../../../dep/std/testing/mock.ts';
 
 Deno.test('LoaderContext: build call all loader with correct assets', async () => {
     const fooLoader = fakeLoader({

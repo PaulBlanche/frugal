@@ -1,5 +1,5 @@
 import * as log from '../../dep/std/log.ts';
-import * as colors from '../../dep/std/colors.ts';
+import * as colors from '../../dep/std/fmt/colors.ts';
 import * as murmur from '../murmur/mod.ts';
 
 /**

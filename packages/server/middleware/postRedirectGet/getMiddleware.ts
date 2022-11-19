@@ -5,7 +5,7 @@ import * as log from '../../../log/mod.ts';
 import { Next } from '../../types.ts';
 import { RouterContext } from '../types.ts';
 
-import { SESSION_COOKIE_NAME } from './const.ts';
+import { SESSION_KEY } from './const.ts';
 
 function logger() {
     return log.getLogger(`frugal_server:postRedirectGet:getMiddleware`);
@@ -28,11 +28,9 @@ export async function getMiddleware<ROUTE extends frugal.Route>(
         return next(context);
     }
 
-    const cookies = http.getCookies(context.request.headers);
-    const sessionId = cookies[SESSION_COOKIE_NAME];
-    if (sessionId === undefined) {
+    if (!context.session.has('PRG')) {
         logger().debug({
-            msg: 'no session cookie. Yield to next middleware',
+            msg: 'no PRG info in session. Yield to next middleware',
         });
 
         return next(context);
@@ -42,13 +40,12 @@ export async function getMiddleware<ROUTE extends frugal.Route>(
         logger().debug({
             method: context.request.method,
             pathname: url.pathname,
-            session: sessionId,
             msg() {
-                return `try to answer ${this.method} ${this.pathname} with page saved in session ${this.session}`;
+                return `try to answer ${this.method} ${this.pathname} with page saved in session`;
             },
         });
 
-        const sessionData = await context.sessionManager.get(sessionId);
+        const sessionData = await context.session.read(SESSION_KEY);
         const result = JSON.parse(sessionData);
 
         const headers = new Headers(result.headers);
@@ -60,9 +57,8 @@ export async function getMiddleware<ROUTE extends frugal.Route>(
             headers.set('cache-control', 'no-store');
         }
 
-        await context.sessionManager.delete(sessionId);
-
-        http.deleteCookie(headers, SESSION_COOKIE_NAME);
+        await context.session.delete(SESSION_KEY);
+        context.session.unset(SESSION_KEY);
 
         return new Response(result.content, {
             status: http.Status.OK,
@@ -74,20 +70,14 @@ export async function getMiddleware<ROUTE extends frugal.Route>(
             logger().debug({
                 method: context.request.method,
                 pathname: url.pathname,
-                session: sessionId,
                 msg() {
-                    return `No page saved in session ${this.session} for ${this.method} ${this.pathname}. Yield to next middleware`;
+                    return `No page stored in session for ${this.method} ${this.pathname}. Yield to next middleware`;
                 },
             });
 
             const response = await next(context);
 
-            if (response !== undefined) {
-                http.deleteCookie(
-                    response.headers,
-                    SESSION_COOKIE_NAME,
-                );
-            }
+            context.session.unset(SESSION_KEY);
 
             return response;
         }

@@ -33,6 +33,7 @@ jobs:
           UPSTASH_URL: ${{ secrets.UPSTASH_URL }}
           UPSTASH_TOKEN: ${{ secrets.UPSTASH_TOKEN }}
           UPSTASH_NAMESPACE: prod
+          CRYPTO_KEY: ${{ secrets.CRYPTO_KEY }}
 
       - name: Upload to Deno Deploy
         uses: denoland/deployctl@v1

@@ -2,7 +2,7 @@ import * as esbuild from '../../dep/esbuild.ts';
 import * as frugal from '../core/mod.ts';
 import * as murmur from '../murmur/mod.ts';
 import * as log from '../log/mod.ts';
-import { assert } from '../../dep/std/asserts.ts';
+import { assert } from '../../dep/std/testing/asserts.ts';
 
 import { bundle, BundleConfig } from './bundle.ts';
 

@@ -1,4 +1,4 @@
-import * as asserts from '../../../dep/std/asserts.ts';
+import * as asserts from '../../../dep/std/testing/asserts.ts';
 import * as graph from '../../../packages/dependency_graph/graph.ts';
 import * as murmur from '../../../packages/murmur/mod.ts';
 

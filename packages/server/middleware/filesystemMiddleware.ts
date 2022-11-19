@@ -4,7 +4,7 @@ import * as http from '../../../dep/std/http.ts';
 import * as log from '../../log/mod.ts';
 
 import { Next } from '../types.ts';
-import { FrugalContext } from './types.ts';
+import { Context } from './types.ts';
 
 const ONE_YEAR_IN_SECONDS = 31536000;
 
@@ -13,8 +13,8 @@ function logger() {
 }
 
 export async function filesystemMiddleware(
-    context: FrugalContext,
-    next: Next<FrugalContext>,
+    context: Context,
+    next: Next<Context>,
 ): Promise<Response> {
     const url = new URL(context.request.url);
 

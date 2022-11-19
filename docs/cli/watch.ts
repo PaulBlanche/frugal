@@ -3,4 +3,9 @@ import * as path from '../dep/std/path.ts';
 
 import { config } from '../frugal.config.ts';
 
-await watch(config, [path.resolve(Deno.cwd(), 'docs/data')]);
+try {
+    await watch(config, [path.resolve(Deno.cwd(), 'docs/pages/docs/data')]);
+} catch (e) {
+    console.log(e);
+    throw e;
+}
