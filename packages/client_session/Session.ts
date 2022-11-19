@@ -5,7 +5,7 @@ import { PrefetchObserver } from './PrefetchObserver.ts';
 import { SessionHistory } from './SessionHistory.ts';
 import { SubmitObserver } from './SubmitObserver.ts';
 import { Submitter } from './Submitter.ts';
-import * as utils from './utils.ts';
+import { Form, Method } from './Form.ts';
 
 type SessionConfig = {
     prefetch: PrefetcherConfig;
@@ -88,14 +88,15 @@ export class Session {
         return await navigator.visit();
     }
 
-    async submit(form: HTMLFormElement): Promise<boolean> {
-        const url = utils.getFormUrl(form);
-        const navigator = new Navigator(
-            new URL(url, location.href),
-            this.#config.navigate,
-        );
+    async submit(formElement: HTMLFormElement): Promise<boolean> {
+        const form = new Form(formElement);
 
-        const submiter = new Submitter(form, undefined, navigator);
+        if (form.method === Method.DIALOG) {
+            return false;
+        }
+
+        const navigator = new Navigator(form.url, this.#config.navigate);
+        const submiter = new Submitter(form, navigator);
 
         return await submiter.submit();
     }

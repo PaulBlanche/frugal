@@ -131,7 +131,6 @@ export function hydrateElement<PROPS>(
         rerender.value += 1;
     });
 
-    let head;
     preact.hydrate(
         <DataProvider count={rerender}>
             <HeadProvider
@@ -172,7 +171,11 @@ export function createRootFragment(
     replaceNode = ([] as Node[]).concat(replaceNode);
     const s = replaceNode[replaceNode.length - 1].nextSibling;
     function insert(c: Node, r: Node) {
-        parent.insertBefore(c, r || s);
+        if (r && r.parentNode === parent) {
+            parent.insertBefore(c, r);
+        } else if (s && s.parentNode === parent) {
+            parent.insertBefore(c, s);
+        }
     }
 
     return parent.__k = {

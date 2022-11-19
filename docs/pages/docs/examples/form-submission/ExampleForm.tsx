@@ -37,6 +37,7 @@ export function ExampleForm() {
                 <div class={cx(s.field)}>
                     <label for='age'>Age</label>
                     <input
+                        autocomplete='off'
                         class={cx(s.input)}
                         type='text'
                         id='age'
@@ -60,6 +61,7 @@ export function ExampleForm() {
                 <div class={cx(s.field)}>
                     <label for='username'>Username</label>
                     <input
+                        autocomplete='off'
                         class={cx(s.input)}
                         type='text'
                         id='username'
@@ -84,6 +86,7 @@ export function ExampleForm() {
                 <div class={cx(s.field)}>
                     <label for='csrftoken'>CSRF token</label>
                     <input
+                        autocomplete='off'
                         class={cx(s.input)}
                         id='csrftoken'
                         type='text'

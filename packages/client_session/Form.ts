@@ -18,7 +18,7 @@ export class Form {
 
     constructor(
         form: HTMLFormElement,
-        submitter: HTMLElement | null | undefined,
+        submitter?: HTMLElement | null | undefined,
     ) {
         this.#form = form;
         this.#submitter = submitter;
