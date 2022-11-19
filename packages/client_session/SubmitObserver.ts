@@ -1,4 +1,3 @@
-import * as utils from './utils.ts';
 import { Navigator, NavigatorConfig } from './Navigator.ts';
 import { Submitter } from './Submitter.ts';
 import { Form, Method } from './Form.ts';
