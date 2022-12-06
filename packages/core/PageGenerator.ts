@@ -6,7 +6,7 @@ import { Generated } from '../loader_script/ScriptLoader.ts';
 import * as log from '../log/mod.ts';
 
 import { LoaderContext } from './LoaderContext.ts';
-import { DynamicDataContext, Handler, Phase } from './PageDescriptor.ts';
+import { DynamicDataContext, Phase } from './PageDescriptor.ts';
 import { Page, StaticPage } from './Page.ts';
 import { PathObject } from './PathObject.ts';
 import { FrugalError } from './FrugalError.ts';

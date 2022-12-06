@@ -1,6 +1,5 @@
 /* @jsxRuntime automatic */
 /* @jsxImportSource preact */
-
 import * as server from 'preact-render-to-string';
 import * as signal from 'preact/signals';
 import { HeadProvider } from './Head.tsx';

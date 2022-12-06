@@ -1,9 +1,9 @@
 {
     "imports": {
-        "preact": "https://esm.sh/preact@10.11.2",
+        "preact": "https://esm.sh/preact@10.11.3",
         "preact/signals": "https://esm.sh/@preact/signals@1.1.2",
-        "preact/jsx-runtime": "https://esm.sh/preact@10.11.2/jsx-runtime",
-        "preact/hooks": "https://esm.sh/preact@10.11.2/hooks",
-        "preact-render-to-string": "https://esm.sh/preact-render-to-string@5.2.5?deps=preact@10.11.2"
+        "preact/jsx-runtime": "https://esm.sh/preact@10.11.3/jsx-runtime",
+        "preact/hooks": "https://esm.sh/preact@10.11.3/hooks",
+        "preact-render-to-string": "https://esm.sh/preact-render-to-string@5.2.6?deps=preact@10.11.3"
     }
 }

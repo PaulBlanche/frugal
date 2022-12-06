@@ -342,6 +342,10 @@ async function baseLoad(resolvedModuleSpecifier: URL): Promise<string> {
         return `//${resolvedModuleSpecifier}`;
     }
 
+    if (resolvedModuleSpecifier.protocol.startsWith('npm:')) {
+        return `//${resolvedModuleSpecifier}`;
+    }
+
     return await Deno.readTextFile(resolvedModuleSpecifier);
 }
 
