@@ -8,7 +8,7 @@ import * as log from '../log/mod.ts';
 import * as frugal from '../core/mod.ts';
 
 function logger() {
-    return log.getLogger('frugal:loader:raw');
+    return log.getLogger('frugal:loader:RawLoader');
 }
 
 type Config = {

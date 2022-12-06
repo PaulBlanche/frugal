@@ -60,6 +60,10 @@ class BasePage<
         return this.#descriptor.OPTIONS;
     }
 
+    get HEAD() {
+        return this.#descriptor.HEAD;
+    }
+
     getContent(context: GetContentContext<DATA, PATH>) {
         return this.#descriptor.getContent(context);
     }

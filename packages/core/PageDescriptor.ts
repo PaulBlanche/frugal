@@ -156,6 +156,7 @@ interface BasePageDescriptor<DATA = unknown, PATH extends string = string> {
     DELETE?: DynamicHandler<DATA, PATH> | RawHandler<PATH>;
     PATCH?: DynamicHandler<DATA, PATH> | RawHandler<PATH>;
     OPTIONS?: RawHandler<PATH>;
+    HEAD?: RawHandler<PATH>;
 }
 
 export interface DynamicPageDescriptor<
@@ -232,6 +233,10 @@ const baseDescriptorSchema = zod.object({
             'Expected a page descriptor with "DELETE" as a function',
     })),
     OPTIONS: zod.optional(zod.function(zod.tuple([]), zod.any(), {
+        invalid_type_error:
+            'Expected a page descriptor with "OPTIONS" as a function',
+    })),
+    HEAD: zod.optional(zod.function(zod.tuple([]), zod.any(), {
         invalid_type_error:
             'Expected a page descriptor with "OPTIONS" as a function',
     })),
