@@ -139,7 +139,7 @@ export class Session {
     }
 
     async read(key: string) {
-        return await this.#persistence.read(this.#contentPath(key));
+        return await this.#persistence.get(this.#contentPath(key));
     }
 
     async delete(key: string) {

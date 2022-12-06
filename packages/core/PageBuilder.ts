@@ -4,10 +4,12 @@ import { assert } from '../../dep/std/testing/asserts.ts';
 import * as mumur from '../murmur/mod.ts';
 import * as log from '../log/mod.ts';
 
-import { Page, Phase, StaticPage } from './Page.ts';
+import { Phase } from './PageDescriptor.ts';
+import { Page, StaticPage } from './Page.ts';
 import { PageGenerator } from './PageGenerator.ts';
 import { Cache } from './Cache.ts';
 import { Persistence } from './Persistence.ts';
+import { PathObject } from './PathObject.ts';
 
 export type PageBuilderConfig = {
     persistence: Persistence;
@@ -22,19 +24,16 @@ function logger() {
  * Class handling the page building process (offloading the actual generation to
  * PageGenerator)
  */
-export class PageBuilder<
-    PATH extends Record<string, string> = Record<string, string>,
-    DATA = unknown,
-> {
-    #generator: PageGenerator<PATH, DATA>;
-    #page: Page<PATH, DATA>;
+export class PageBuilder<DATA = unknown, PATH extends string = string> {
+    #generator: PageGenerator<DATA, PATH>;
+    #page: Page<DATA, PATH>;
     #hash: string;
     #config: PageBuilderConfig;
 
     constructor(
-        page: Page<PATH, DATA>,
+        page: Page<DATA, PATH>,
         hash: string,
-        generator: PageGenerator<PATH, DATA>,
+        generator: PageGenerator<DATA, PATH>,
         config: PageBuilderConfig,
     ) {
         this.#page = page;
@@ -89,7 +88,7 @@ export class PageBuilder<
      * The build process id memoized and will be skiped if nothing has changed
      * since the last build.
      */
-    async build(buildPath: PATH, phase: Phase): Promise<string> {
+    async build(buildPath: PathObject<PATH>, phase: Phase): Promise<string> {
         assert(
             this.#page instanceof StaticPage,
             `Can't statically build DynamicPage ${this.#page.pattern}`,
@@ -108,7 +107,7 @@ export class PageBuilder<
             },
         });
 
-        const result = await this.#page.getStaticData({
+        const result = await this.#page.GET({
             phase,
             path: buildPath,
         });

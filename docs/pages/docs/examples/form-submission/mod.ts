@@ -12,9 +12,10 @@ const TOC: Toc = JSON.parse(
     ),
 );
 
-export function getDynamicData(
-    _request: Request,
-    { state }: frugal.GetDynamicDataContext,
+export const type = 'dynamic' as const;
+
+export function GET(
+    { state }: frugal.DynamicDataContext,
 ): frugal.DataResult<Data> {
     return {
         data: {
@@ -25,27 +26,24 @@ export function getDynamicData(
     };
 }
 
-export const handlers = {
-    POST: async (
-        request: Request,
-        { state }: frugal.GetDynamicDataContext,
-    ): Promise<frugal.DataResult<Data>> => {
-        const form = fromFormData(
-            await request.formData(),
-            state.csrf as string,
-        );
-        const submitted = await form.handle();
+export async function POST(
+    { state, request }: frugal.DynamicDataContext,
+): Promise<frugal.DataResult<Data>> {
+    const form = fromFormData(
+        await request.formData(),
+        state.csrf as string,
+    );
+    const submitted = await form.handle();
 
-        return {
-            data: {
-                toc: TOC,
-                form: form.state,
-                submitted,
-                serverNow: new Date(),
-            },
-        };
-    },
-};
+    return {
+        data: {
+            toc: TOC,
+            form: form.state,
+            submitted,
+            serverNow: new Date(),
+        },
+    };
+}
 
 export const pattern = `/docs/examples/form-submission`;
 

@@ -5,52 +5,48 @@ import {
 import { Page } from '../../../../packages/core/Page.ts';
 import { fakeDynamicPage } from './Page.ts';
 import { fakeLoaderContext } from './LoaderContext.ts';
-import { spy } from '../../../../dep/std/testing/mock.ts';
+import { stub } from '../../../../dep/std/testing/mock.ts';
 
-type FakePageGeneratorConfig<
-    PATH extends Record<string, string> = Record<string, string>,
-    DATA = unknown,
-> = {
-    page?: Page<PATH, DATA>;
+type FakePageGeneratorConfig<DATA = unknown, PATH extends string = string> = {
+    page?: Page<DATA, PATH>;
     config?: PageGeneratorConfig;
     mock?: {
-        generate?: PageGenerator<PATH, DATA>['generate'];
+        generate?: PageGenerator<DATA, PATH>['generate'];
         generateContentFromData?: PageGenerator<
-            PATH,
-            DATA
+            DATA,
+            PATH
         >['generateContentFromData'];
-        getPagePath?: PageGenerator<PATH, DATA>['getPagePath'];
+        getPagePath?: PageGenerator<DATA, PATH>['getPagePath'];
     };
 };
 
-export function fakePageGenerator<
-    PATH extends Record<string, string> = Record<string, string>,
-    DATA = unknown,
->(
+export function fakePageGenerator<DATA = unknown, PATH extends string = string>(
     {
         page = fakeDynamicPage(),
         config = {
             loaderContext: fakeLoaderContext(),
             publicDir: '',
+            rootDir: '',
         },
         mock = {},
-    }: FakePageGeneratorConfig<PATH, DATA> = {},
+    }: FakePageGeneratorConfig<DATA, PATH> = {},
 ) {
-    const generator = new PageGenerator<PATH, DATA>(page, config);
+    const generator = new PageGenerator<DATA, PATH>(page, config);
 
-    const originalGenerate = generator.generate;
-    generator.generate = spy(mock.generate ?? originalGenerate.bind(generator));
-
-    const originalGenerateContentFromData = generator.generateContentFromData;
-    generator.generateContentFromData = spy(
-        mock.generateContentFromData ??
-            originalGenerateContentFromData.bind(generator),
-    );
-
-    const originalGetPagePath = generator.getPagePath;
-    generator.getPagePath = spy(
-        mock.getPagePath ?? originalGetPagePath.bind(generator),
-    );
+    for (
+        const prop of [
+            'generate',
+            'generateContentFromData',
+            'getPagePath',
+        ]
+    ) {
+        const property = prop as keyof typeof mock;
+        stub(
+            generator,
+            property,
+            (mock[property] as any) ?? generator[property],
+        );
+    }
 
     return generator;
 }

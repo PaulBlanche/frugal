@@ -7,20 +7,21 @@ export type { PageGenerator } from './PageGenerator.ts';
 export { DEFAULT_LOGGER_CONFIG, OFF_LOGGER_CONFIG } from './Config.ts';
 export type {
     DataResult,
+    DynamicDataContext,
+    DynamicHandler,
     DynamicPageDescriptor,
     GetContent,
-    GetContentParams,
-    GetDynamicData,
-    GetDynamicDataContext,
+    GetContentContext,
     GetPathList,
     GetPathListParams,
-    GetStaticData,
-    GetStaticDataContext,
-    Page,
+    PageDescriptor,
+    PathList,
     Phase,
+    StaticDataContext,
+    StaticHandler,
     StaticPageDescriptor,
-} from './Page.ts';
-export { DynamicPage, page, StaticPage } from './Page.ts';
+} from './PageDescriptor.ts';
+export { DynamicPage, type Page, page, StaticPage } from './Page.ts';
 export { build, FrugalBuilder } from './FrugalBuilder.ts';
 export { Frugal } from './Frugal.ts';
 export { FrugalWatcher, watch } from './watch/FrugalWatcher.ts';

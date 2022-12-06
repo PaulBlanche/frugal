@@ -163,7 +163,7 @@ export class PersistentCache<VALUE = unknown> extends Cache<VALUE> {
             },
         });
         try {
-            const data = await config.persistence.read(cachePath);
+            const data = await config.persistence.get(cachePath);
             const serializedCache: SerializedCache = JSON.parse(data);
             return new PersistentCache(
                 cachePath,

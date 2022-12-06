@@ -5,8 +5,6 @@ import './scripts/shared.script.ts';
 import './scripts/bar.script.ts';
 import './component.ts';
 
-type Path = { slug: string };
-
 type Data = {
     title: string;
     content: string;
@@ -19,13 +17,15 @@ async function getData() {
     return JSON.parse(data)['bar'];
 }
 
-export async function getPathList(): Promise<Path[]> {
+export async function getPathList(): Promise<
+    frugal.PathObject<typeof pattern>[]
+> {
     const data = await getData();
     return Object.keys(data).map((key) => ({ slug: key }));
 }
 
-export async function getStaticData(
-    { path }: frugal.GetStaticDataContext<Path>,
+export async function GET(
+    { path }: frugal.StaticDataContext<typeof pattern>,
 ): Promise<frugal.DataResult<Data>> {
     const data = await getData();
 
@@ -36,12 +36,17 @@ export async function getStaticData(
     return { data: data[path.slug] };
 }
 
+export const type = 'static' as const;
+
 export const pattern = 'bar/:slug.html';
 
 export const self = new URL(import.meta.url);
 
 export function getContent(
-    { loaderContext, descriptor }: frugal.GetContentParams<Path, Data>,
+    { loaderContext, descriptor }: frugal.GetContentContext<
+        Data,
+        typeof pattern
+    >,
 ) {
     const scriptBodyGenerated = loaderContext.get<Generated>('script');
 

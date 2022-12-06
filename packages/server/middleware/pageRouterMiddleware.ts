@@ -28,15 +28,12 @@ export function pageRouterMiddleware(context: Context, next: Next<Context>) {
     }
 
     // route can't handle the request method, yield
-    if (
-        context.request.method !== 'GET' &&
-        !(context.request.method in route.page.handlers)
-    ) {
+    if (!(context.request.method in route.page)) {
         logger().debug({
             method: context.request.method,
-            handlers: Object.keys(route.page.handlers),
+            pattern: route.page.pattern,
             msg() {
-                return `route can\'t handle ${this.method}, only handle ${this.handlers}. Yield.`;
+                return `Page ${this.pattern} can\'t handle ${this.method}. Yield.`;
             },
         });
 

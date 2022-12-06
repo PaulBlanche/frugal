@@ -1,132 +1,153 @@
 import {
-    DynamicPage,
+    DynamicHandler,
     GetContent,
-    GetDynamicData,
     GetPathList,
-    GetStaticData,
-    Handlers,
-    StaticPage,
-} from '../../../../packages/core/Page.ts';
-import { spy } from '../../../../dep/std/testing/mock.ts';
+    RawHandler,
+    StaticHandler,
+} from '../../../../packages/core/PageDescriptor.ts';
+import { DynamicPage, StaticPage } from '../../../../packages/core/Page.ts';
+import { spy, stub } from '../../../../dep/std/testing/mock.ts';
 
-type FakeDynamicPageConfig<
-    PATH extends Record<string, string> = Record<string, string>,
-    DATA = unknown,
-> = {
+type FakeDynamicPageConfig<DATA = unknown, PATH extends string = string> = {
     self?: URL;
     pattern?: string;
-    getDynamicData?: GetDynamicData<PATH, DATA>;
-    handlers?: Handlers<PATH, DATA>;
-    getContent?: GetContent<PATH, DATA>;
+    GET?: DynamicHandler<DATA, PATH>;
+    POST?: DynamicHandler<DATA, PATH> | RawHandler<PATH>;
+    PUT?: DynamicHandler<DATA, PATH> | RawHandler<PATH>;
+    PATCH?: DynamicHandler<DATA, PATH> | RawHandler<PATH>;
+    DELETE?: DynamicHandler<DATA, PATH> | RawHandler<PATH>;
+    OPTIONS?: RawHandler<PATH>;
+    getContent?: GetContent<DATA, PATH>;
     mock?: {
-        getDynamicData?: DynamicPage<PATH, DATA>['getDynamicData'];
-        handlers?: DynamicPage<PATH, DATA>['handlers'];
-        getContent?: DynamicPage<PATH, DATA>['getContent'];
+        GET?: DynamicPage<DATA, PATH>['GET'];
+        POST?: DynamicPage<DATA, PATH>['POST'];
+        PUT?: DynamicPage<DATA, PATH>['PUT'];
+        PATCH?: DynamicPage<DATA, PATH>['PATCH'];
+        DELETE?: DynamicPage<DATA, PATH>['DELETE'];
+        OPTIONS?: DynamicPage<DATA, PATH>['OPTIONS'];
+        getContent?: DynamicPage<DATA, PATH>['getContent'];
     };
 };
 
-export function fakeDynamicPage<
-    PATH extends Record<string, string> = Record<string, string>,
-    DATA = unknown,
->(
+export function fakeDynamicPage<DATA = unknown, PATH extends string = string>(
     {
         self = new URL('file:///'),
         pattern = '',
-        handlers,
-        getDynamicData = () => ({} as any),
+        GET = () => ({} as any),
+        POST,
+        PUT,
+        PATCH,
+        DELETE,
+        OPTIONS,
         getContent = () => '',
         mock = {},
-    }: FakeDynamicPageConfig<PATH, DATA> = {},
+    }: FakeDynamicPageConfig<DATA, PATH> = {},
 ) {
-    const page = new DynamicPage<PATH, DATA>({
+    const page = new DynamicPage<DATA, PATH>({
+        type: 'dynamic',
         self,
         pattern,
-        handlers,
-        getDynamicData,
+        GET,
+        POST,
+        PUT,
+        PATCH,
+        DELETE,
+        OPTIONS,
         getContent,
     });
 
-    const originalGetContent = page.getContent;
-    page.getContent = spy(mock.getContent ?? originalGetContent.bind(page));
-
-    const originalGetDynamicData = page.getDynamicData;
-    page.getDynamicData = spy(
-        mock.getDynamicData ?? originalGetDynamicData.bind(page),
-    );
-
-    for (const method of Object.keys(page.handlers)) {
-        const originalHandler = page.handlers[method];
-        if (originalHandler) {
-            page.handlers[method] = spy(
-                mock.handlers?.[method] ?? originalHandler,
-            );
-        }
+    for (
+        const prop of [
+            'GET',
+            'POST',
+            'PUT',
+            'PATCH',
+            'DELETE',
+            'OPTIONS',
+            'getContent',
+        ]
+    ) {
+        const property = prop as keyof typeof mock;
+        stub(
+            page,
+            property,
+            (mock[property] as any) ?? page[property]?.bind(page),
+        );
     }
 
     return page;
 }
 
-type FakeStaticPageConfig<
-    PATH extends Record<string, string> = Record<string, string>,
-    DATA = unknown,
-> = {
+type FakeStaticPageConfig<DATA = unknown, PATH extends string = string> = {
     self?: URL;
     pattern?: string;
     getPathList?: GetPathList<PATH>;
-    handlers?: Handlers<PATH, DATA>;
-    getStaticData?: GetStaticData<PATH, DATA>;
-    getContent?: GetContent<PATH, DATA>;
+    GET?: StaticHandler<DATA, PATH>;
+    POST?: DynamicHandler<DATA, PATH> | RawHandler<PATH>;
+    PUT?: DynamicHandler<DATA, PATH> | RawHandler<PATH>;
+    PATCH?: DynamicHandler<DATA, PATH> | RawHandler<PATH>;
+    DELETE?: DynamicHandler<DATA, PATH> | RawHandler<PATH>;
+    OPTIONS?: RawHandler<PATH>;
+    getContent?: GetContent<DATA, PATH>;
     mock?: {
-        getPathList?: StaticPage<PATH, DATA>['getPathList'];
-        handlers?: DynamicPage<PATH, DATA>['handlers'];
-        getStaticData?: StaticPage<PATH, DATA>['getStaticData'];
-        getContent?: StaticPage<PATH, DATA>['getContent'];
+        getPathList?: StaticPage<DATA, PATH>['getPathList'];
+        GET?: StaticPage<DATA, PATH>['GET'];
+        POST?: StaticPage<DATA, PATH>['POST'];
+        PUT?: StaticPage<DATA, PATH>['PUT'];
+        PATCH?: StaticPage<DATA, PATH>['PATCH'];
+        DELETE?: StaticPage<DATA, PATH>['DELETE'];
+        OPTIONS?: StaticPage<DATA, PATH>['OPTIONS'];
+        getContent?: StaticPage<DATA, PATH>['getContent'];
     };
 };
 
-export function fakeStaticPage<
-    PATH extends Record<string, string> = Record<string, string>,
-    DATA = unknown,
->(
+export function fakeStaticPage<DATA = unknown, PATH extends string = string>(
     {
         self = new URL('file:///'),
         pattern = '',
         getPathList = () => [],
-        handlers,
-        getStaticData = () => ({} as any),
+        GET = () => ({} as any),
+        POST,
+        PUT,
+        PATCH,
+        DELETE,
+        OPTIONS,
         getContent = () => '',
         mock = {},
-    }: FakeStaticPageConfig<PATH, DATA> = {},
+    }: FakeStaticPageConfig<DATA, PATH> = {},
 ) {
-    const page = new StaticPage<PATH, DATA>({
+    const page = new StaticPage<DATA, PATH>({
+        type: 'static',
         self,
         pattern,
-        handlers,
-        getPathList,
-        getStaticData,
+        GET,
+        POST,
+        PUT,
+        PATCH,
+        DELETE,
+        OPTIONS,
         getContent,
+        getPathList,
     });
 
-    const originalGetContent = page.getContent;
-    page.getContent = spy(mock.getContent ?? originalGetContent.bind(page));
-
-    const originalGetDynamicData = page.getStaticData;
-    page.getStaticData = spy(
-        mock.getStaticData ?? originalGetDynamicData.bind(page),
-    );
-
-    const originalGetPathList = page.getPathList;
-    page.getPathList = spy(
-        mock.getPathList ?? originalGetPathList.bind(page),
-    );
-
-    for (const method of Object.keys(page.handlers)) {
-        const originalHandler = page.handlers[method];
-        if (originalHandler) {
-            page.handlers[method] = spy(
-                mock.handlers?.[method] ?? originalHandler,
-            );
-        }
+    for (
+        const prop of [
+            'getPathList',
+            'GET',
+            'POST',
+            'PUT',
+            'PATCH',
+            'DELETE',
+            'OPTIONS',
+            'getContent',
+        ]
+    ) {
+        const property = prop as keyof typeof mock;
+        stub(
+            page,
+            property,
+            (mock[property] as any) ?? page[property]?.bind(page),
+        );
     }
 
     return page;

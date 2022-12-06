@@ -14,9 +14,9 @@ import { PageBuilder } from '../../../packages/core/PageBuilder.ts';
 Deno.test('PageBuilder: build without cache hit query data, generate content and write file', async () => {
     const data = { foo: 'bar' };
 
-    const page = fakeStaticPage<{ id: string }, { foo: string }>({
+    const page = fakeStaticPage<{ foo: string }, 'foo/:id'>({
         pattern: 'foo/:id',
-        getStaticData: () => ({ data }),
+        GET: () => ({ data }),
     });
 
     const cache = fakeCache({
@@ -26,7 +26,7 @@ Deno.test('PageBuilder: build without cache hit query data, generate content and
     });
 
     const generated = { pagePath: 'pagePath', content: 'content' };
-    const generator = fakePageGenerator<{ id: string }, { foo: string }>({
+    const generator = fakePageGenerator<{ foo: string }, 'foo/:id'>({
         mock: {
             generateContentFromData: () => Promise.resolve(generated.content),
             getPagePath: () => generated.pagePath,
@@ -46,8 +46,8 @@ Deno.test('PageBuilder: build without cache hit query data, generate content and
 
     asserts.assertEquals(result, generated.pagePath);
 
-    assertSpyCalls(asSpy(page.getStaticData), 1);
-    assertSpyCallArgs(asSpy(page.getStaticData), 0, [{
+    assertSpyCalls(asSpy(page.GET), 1);
+    assertSpyCallArgs(asSpy(page.GET), 0, [{
         phase,
         path: buildPath,
     }]);
@@ -70,9 +70,9 @@ Deno.test('PageBuilder: build without cache hit query data, generate content and
 Deno.test('PageBuilder: build with cache hit query data and return path from cache', async () => {
     const data = { foo: 'bar' };
 
-    const page = fakeStaticPage<{ id: string }, { foo: string }>({
+    const page = fakeStaticPage<{ foo: string }, 'foo/:id'>({
         pattern: 'foo/:id',
-        getStaticData: () => ({ data }),
+        GET: () => ({ data }),
     });
 
     const cached = 'pagePath';
@@ -88,7 +88,7 @@ Deno.test('PageBuilder: build with cache hit query data and return path from cac
         },
     });
 
-    const generator = fakePageGenerator<{ id: string }, { foo: string }>();
+    const generator = fakePageGenerator<{ foo: string }, 'foo/:id'>();
 
     const persistence = fakePersistence();
     const builder = new PageBuilder(page, '', generator, {
@@ -103,8 +103,8 @@ Deno.test('PageBuilder: build with cache hit query data and return path from cac
 
     asserts.assertEquals(result, cached);
 
-    assertSpyCalls(asSpy(page.getStaticData), 1);
-    assertSpyCallArgs(asSpy(page.getStaticData), 0, [{ phase, path }]);
+    assertSpyCalls(asSpy(page.GET), 1);
+    assertSpyCallArgs(asSpy(page.GET), 0, [{ phase, path }]);
 
     assertSpyCalls(asSpy(generator.generateContentFromData), 0);
 
@@ -116,16 +116,16 @@ Deno.test('PageBuilder: build will throw on non matching path', async () => {
     const content = 'page content';
 
     // deno-lint-ignore no-explicit-any
-    const page = fakeStaticPage<any, { foo: string }>({
+    const page = fakeStaticPage<{ foo: string }, 'foo/:id'>({
         pattern: 'foo/:id',
-        getStaticData: () => ({ data }),
+        GET: () => ({ data }),
         getContent: () => content,
     });
 
     const cache = fakeCache();
 
     // deno-lint-ignore no-explicit-any
-    const generator = fakePageGenerator<any, { foo: string }>();
+    const generator = fakePageGenerator<{ foo: string }, 'foo/:id'>();
 
     const builder = new PageBuilder(page, '', generator, {
         persistence: fakePersistence(),
@@ -135,6 +135,7 @@ Deno.test('PageBuilder: build will throw on non matching path', async () => {
     const phase = 'build';
 
     await asserts.assertRejects(async () => {
+        //@ts-expect-error: volontary type error to test runtime behaviour
         await builder.build({ unknownParameter: '776' }, phase);
     });
 });
@@ -165,10 +166,10 @@ Deno.test('PageBuilder: buildAll orchestrate the generation of StaticPage', asyn
         },
     };
 
-    const page = fakeStaticPage<{ id: string }, { foo: string }>({
+    const page = fakeStaticPage<{ foo: string }, 'foo/:id'>({
         pattern: 'foo/:id',
         getPathList: () => Object.values(store).map((entry) => entry.path),
-        getStaticData: ({ path }) => store[path.id],
+        GET: ({ path }) => store[path.id],
     });
 
     const cache = fakeCache({
@@ -177,7 +178,7 @@ Deno.test('PageBuilder: buildAll orchestrate the generation of StaticPage', asyn
         },
     });
 
-    const generator = fakePageGenerator<{ id: string }, { foo: string }>({
+    const generator = fakePageGenerator<{ foo: string }, 'foo/:id'>({
         mock: {
             generateContentFromData: (_0, { path }) => {
                 return Promise.resolve(store[path.id].content);
@@ -196,16 +197,16 @@ Deno.test('PageBuilder: buildAll orchestrate the generation of StaticPage', asyn
     assertSpyCalls(asSpy(page.getPathList), 1);
     assertSpyCallArgs(asSpy(page.getPathList), 0, [{ phase: 'build' }]);
 
-    assertSpyCalls(asSpy(page.getStaticData), 3);
-    assertSpyCallArgs(asSpy(page.getStaticData), 0, [{
+    assertSpyCalls(asSpy(page.GET), 3);
+    assertSpyCallArgs(asSpy(page.GET), 0, [{
         phase: 'build',
         path: store['1'].path,
     }]);
-    assertSpyCallArgs(asSpy(page.getStaticData), 1, [{
+    assertSpyCallArgs(asSpy(page.GET), 1, [{
         phase: 'build',
         path: store['2'].path,
     }]);
-    assertSpyCallArgs(asSpy(page.getStaticData), 2, [{
+    assertSpyCallArgs(asSpy(page.GET), 2, [{
         phase: 'build',
         path: store['3'].path,
     }]);
@@ -322,9 +323,9 @@ Deno.test('PageBuilder: build memoize key depends on data', async () => {
     const firstData = { foo: 'bar' };
     const data = { current: firstData };
 
-    const page = fakeStaticPage<{ id: string }, { foo: string }>({
+    const page = fakeStaticPage<{ foo: string }, 'foo/:id'>({
         pattern: 'foo/:id',
-        getStaticData: () => ({ data: data.current }),
+        GET: () => ({ data: data.current }),
     });
 
     const cache = fakeCache({
@@ -334,7 +335,7 @@ Deno.test('PageBuilder: build memoize key depends on data', async () => {
         },
     });
 
-    const generator = fakePageGenerator<{ id: string }, { foo: string }>();
+    const generator = fakePageGenerator<{ foo: string }, 'foo/:id'>();
 
     const builder = new PageBuilder(page, '', generator, {
         persistence: fakePersistence(),
@@ -363,7 +364,7 @@ Deno.test('PageBuilder: build memoize key depends on data', async () => {
 });
 
 Deno.test('PageBuilder: build memoize key depends on url', async () => {
-    const page = fakeStaticPage<{ id: string }, { foo: string }>({
+    const page = fakeStaticPage<{ foo: string }, 'foo/:id'>({
         pattern: 'foo/:id',
     });
 
@@ -374,7 +375,7 @@ Deno.test('PageBuilder: build memoize key depends on url', async () => {
         },
     });
 
-    const generator = fakePageGenerator<{ id: string }, { foo: string }>();
+    const generator = fakePageGenerator<{ foo: string }, 'foo/:id'>();
 
     const builder = new PageBuilder(page, '', generator, {
         persistence: fakePersistence(),

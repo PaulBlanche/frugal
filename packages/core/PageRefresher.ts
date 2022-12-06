@@ -11,16 +11,13 @@ function logger() {
  * Class handling the page refreshing process (offloading the actual building to
  * PageBuilder)
  */
-export class PageRefresher<
-    PATH extends Record<string, string> = Record<string, string>,
-    DATA = unknown,
-> {
-    #builder: PageBuilder<PATH, DATA>;
-    #page: Page<PATH, DATA>;
+export class PageRefresher<DATA = unknown, PATH extends string = string> {
+    #builder: PageBuilder<DATA, PATH>;
+    #page: Page<DATA, PATH>;
 
     constructor(
-        page: Page<PATH, DATA>,
-        builder: PageBuilder<PATH, DATA>,
+        page: Page<DATA, PATH>,
+        builder: PageBuilder<DATA, PATH>,
     ) {
         this.#page = page;
         this.#builder = builder;

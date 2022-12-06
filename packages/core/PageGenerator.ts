@@ -6,7 +6,10 @@ import { Generated } from '../loader_script/ScriptLoader.ts';
 import * as log from '../log/mod.ts';
 
 import { LoaderContext } from './LoaderContext.ts';
-import { GetDynamicDataContext, Page, Phase, StaticPage } from './Page.ts';
+import { DynamicDataContext, Handler, Phase } from './PageDescriptor.ts';
+import { Page, StaticPage } from './Page.ts';
+import { PathObject } from './PathObject.ts';
+import { FrugalError } from './FrugalError.ts';
 
 export type PageGeneratorConfig = {
     loaderContext: LoaderContext;
@@ -19,27 +22,26 @@ function logger() {
     return log.getLogger('frugal:PageGenerator');
 }
 
-type ContentGenerationContext<DATA, PATH> = {
+type ContentGenerationContext<DATA = unknown, PATH extends string = string> = {
     method: string;
     data: DATA;
-    path: PATH;
+    path: PathObject<PATH>;
     phase: Phase;
 };
+
+type GenerationResult =
+    | { pagePath: string; content: string; headers: Headers }
+    | { status: http.Status; headers: Headers }
+    | Response;
 
 /**
  * Class handling the page generation process.
  */
-export class PageGenerator<
-    PATH extends Record<string, string> = Record<string, string>,
-    DATA = unknown,
-> {
-    #page: Page<PATH, DATA>;
+export class PageGenerator<DATA = unknown, PATH extends string = string> {
+    #page: Page<DATA, PATH>;
     #config: PageGeneratorConfig;
 
-    constructor(
-        page: Page<PATH, DATA>,
-        config: PageGeneratorConfig,
-    ) {
+    constructor(page: Page<DATA, PATH>, config: PageGeneratorConfig) {
         this.#page = page;
         this.#config = config;
     }
@@ -52,12 +54,7 @@ export class PageGenerator<
     async generate(
         request: Request,
         state: Record<string, unknown>,
-    ): Promise<
-        { pagePath: string; content: string; headers: Headers } | {
-            status: http.Status;
-            headers: Headers;
-        }
-    > {
+    ): Promise<GenerationResult> {
         const pathname = new URL(request.url).pathname;
         const match = this.#page.match(pathname);
         assert(match !== false);
@@ -71,11 +68,16 @@ export class PageGenerator<
             },
         });
 
-        const result = await this.#getData(request, {
+        const result = await this.#getData({
             phase: 'generate',
+            request,
             path,
             state,
         });
+
+        if (result instanceof Response) {
+            return result;
+        }
 
         if ('status' in result) {
             const headers = new Headers(result.headers);
@@ -109,10 +111,7 @@ export class PageGenerator<
      */
     async generateContentFromData(
         pathname: string,
-        { data, path, phase, method }: ContentGenerationContext<
-            DATA,
-            PATH
-        >,
+        { data, path, phase, method }: ContentGenerationContext<DATA, PATH>,
     ): Promise<string> {
         logger().debug({
             op: 'start',
@@ -186,25 +185,26 @@ export class PageGenerator<
             : pathUtils.join(this.#config.publicDir, pathname, 'index.html');
     }
 
-    #getData(
-        request: Request,
-        context: GetDynamicDataContext<PATH>,
-    ) {
-        const handler = this.#page.handlers[request.method];
-        if (handler !== undefined) {
-            return handler(request, context);
+    #getData(context: DynamicDataContext<PATH>) {
+        if (!(context.request.method in this.#page)) {
+            throw new FrugalError(
+                `Page ${this.#page.pattern} cannot handle ${context.request.method} requests`,
+            );
         }
 
         if (this.#page instanceof StaticPage) {
-            if (!this.#config.watch) {
-                assert(
-                    false,
-                    `Can't dynamically generate StaticPage ${this.#page.pattern} for GET method`,
-                );
+            if (context.request.method === 'GET') {
+                if (!this.#config.watch) {
+                    throw new FrugalError(
+                        `Can't dynamically generate StaticPage ${this.#page.pattern} for GET method`,
+                    );
+                }
+                return this.#page.GET(context);
             }
-            return this.#page.getStaticData(context);
         }
 
-        return this.#page.getDynamicData(request, context);
+        // need to index this.#page with a string
+        // deno-lint-ignore no-explicit-any
+        return (this.#page as any)[context.request.method](context);
     }
 }

@@ -26,8 +26,8 @@ Deno.test('incremental: files are not regenerated if nothing changes', async () 
 
     mock.assertSpyCalls(page1.getPathList, 1);
     mock.assertSpyCalls(page2.getPathList, 1);
-    mock.assertSpyCalls(page1.getStaticData, 2);
-    mock.assertSpyCalls(page2.getStaticData, 2);
+    mock.assertSpyCalls(page1.GET, 2);
+    mock.assertSpyCalls(page2.GET, 2);
     mock.assertSpyCalls(page1.getContent, 2);
     mock.assertSpyCalls(page2.getContent, 2);
 
@@ -41,8 +41,8 @@ Deno.test('incremental: files are not regenerated if nothing changes', async () 
 
     mock.assertSpyCalls(page1.getPathList, 1);
     mock.assertSpyCalls(page2.getPathList, 1);
-    mock.assertSpyCalls(page1.getStaticData, 2);
-    mock.assertSpyCalls(page2.getStaticData, 2);
+    mock.assertSpyCalls(page1.GET, 2);
+    mock.assertSpyCalls(page2.GET, 2);
     // no new getContent call because data+code did not change
     mock.assertSpyCalls(page1.getContent, 0);
     mock.assertSpyCalls(page2.getContent, 0);
@@ -76,8 +76,8 @@ Deno.test('incremental: files are regenerated if page code changes', async () =>
 
     mock.assertSpyCalls(page1.getPathList, 1);
     mock.assertSpyCalls(page2.getPathList, 1);
-    mock.assertSpyCalls(page1.getStaticData, 2);
-    mock.assertSpyCalls(page2.getStaticData, 2);
+    mock.assertSpyCalls(page1.GET, 2);
+    mock.assertSpyCalls(page2.GET, 2);
     mock.assertSpyCalls(page1.getContent, 2);
     mock.assertSpyCalls(page2.getContent, 2);
 
@@ -98,8 +98,8 @@ Deno.test('incremental: files are regenerated if page code changes', async () =>
 
     mock.assertSpyCalls(page1.getPathList, 1);
     mock.assertSpyCalls(page2.getPathList, 1);
-    mock.assertSpyCalls(page1.getStaticData, 2);
-    mock.assertSpyCalls(page2.getStaticData, 2);
+    mock.assertSpyCalls(page1.GET, 2);
+    mock.assertSpyCalls(page2.GET, 2);
     // page1 getContent was called again
     mock.assertSpyCalls(page1.getContent, 2);
     mock.assertSpyCalls(page2.getContent, 0);
@@ -134,8 +134,8 @@ Deno.test('incremental: files are regenerated if dependency code changes', async
 
     mock.assertSpyCalls(page1.getPathList, 1);
     mock.assertSpyCalls(page2.getPathList, 1);
-    mock.assertSpyCalls(page1.getStaticData, 2);
-    mock.assertSpyCalls(page2.getStaticData, 2);
+    mock.assertSpyCalls(page1.GET, 2);
+    mock.assertSpyCalls(page2.GET, 2);
     mock.assertSpyCalls(page1.getContent, 2);
     mock.assertSpyCalls(page2.getContent, 2);
 
@@ -156,8 +156,8 @@ Deno.test('incremental: files are regenerated if dependency code changes', async
 
     mock.assertSpyCalls(page1.getPathList, 1);
     mock.assertSpyCalls(page2.getPathList, 1);
-    mock.assertSpyCalls(page1.getStaticData, 2);
-    mock.assertSpyCalls(page2.getStaticData, 2);
+    mock.assertSpyCalls(page1.GET, 2);
+    mock.assertSpyCalls(page2.GET, 2);
     // page1 and page2 getContent were called again
     mock.assertSpyCalls(page1.getContent, 2);
     mock.assertSpyCalls(page2.getContent, 2);
@@ -192,8 +192,8 @@ Deno.test('incremental: files are regenerated if data changes', async () => {
 
     mock.assertSpyCalls(page1.getPathList, 1);
     mock.assertSpyCalls(page2.getPathList, 1);
-    mock.assertSpyCalls(page1.getStaticData, 2);
-    mock.assertSpyCalls(page2.getStaticData, 2);
+    mock.assertSpyCalls(page1.GET, 2);
+    mock.assertSpyCalls(page2.GET, 2);
     mock.assertSpyCalls(page1.getContent, 2);
     mock.assertSpyCalls(page2.getContent, 2);
 
@@ -222,8 +222,8 @@ Deno.test('incremental: files are regenerated if data changes', async () => {
 
     mock.assertSpyCalls(page1.getPathList, 1);
     mock.assertSpyCalls(page2.getPathList, 1);
-    mock.assertSpyCalls(page1.getStaticData, 2);
-    mock.assertSpyCalls(page2.getStaticData, 2);
+    mock.assertSpyCalls(page1.GET, 2);
+    mock.assertSpyCalls(page2.GET, 2);
     // page1 getContent was called again but only for the path where data changed
     mock.assertSpyCalls(page1.getContent, 1);
     mock.assertSpyCalls(page2.getContent, 0);
@@ -270,8 +270,8 @@ function publicUrl(frugal: frugal.Frugal, file: string) {
 function resetSpy() {
     page1.getPathList.calls.length = 0;
     page2.getPathList.calls.length = 0;
-    page1.getStaticData.calls.length = 0;
-    page2.getStaticData.calls.length = 0;
+    page1.GET.calls.length = 0;
+    page2.GET.calls.length = 0;
     page1.getContent.calls.length = 0;
     page2.getContent.calls.length = 0;
 }

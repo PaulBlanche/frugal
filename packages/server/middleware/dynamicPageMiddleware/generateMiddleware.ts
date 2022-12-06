@@ -34,6 +34,10 @@ export async function generateMiddleware(
         },
     });
 
+    if (result instanceof Response) {
+        return result;
+    }
+
     const headers = new Headers(result.headers);
 
     if ('status' in result) {

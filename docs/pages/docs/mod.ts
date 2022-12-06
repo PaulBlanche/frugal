@@ -2,7 +2,7 @@ import * as frugal from '../../dep/frugal/core.ts';
 import { getContentFrom } from '../../dep/frugal/preact.server.ts';
 
 import { flattenToc, Toc } from './toc.ts';
-import { Data, Path, PATTERN } from './type.ts';
+import { Data, PATTERN } from './type.ts';
 import { Page } from './Page.tsx';
 
 const TOC: Toc = JSON.parse(
@@ -11,7 +11,7 @@ const TOC: Toc = JSON.parse(
     ),
 );
 
-export function getPathList(): Path[] {
+export function getPathList(): frugal.PathList<typeof PATTERN> {
     const slugs = flattenToc(TOC)
         .filter((node) => node.slug && !node.external)
         .map((node) => node.slug) as string[];
@@ -39,8 +39,8 @@ async function getMarkup(slug: string) {
     }
 }
 
-export async function getStaticData(
-    { path }: frugal.GetStaticDataContext<Path>,
+export async function GET(
+    { path }: frugal.StaticDataContext<typeof PATTERN>,
 ): Promise<frugal.DataResult<Data>> {
     try {
         const markup = await getMarkup(path.slug);
@@ -58,8 +58,10 @@ export async function getStaticData(
     }
 }
 
+export const type = 'static';
+
 export const pattern = PATTERN;
 
 export const self = new URL(import.meta.url);
 
-export const getContent = getContentFrom<Path, Data>(Page);
+export const getContent = getContentFrom<Data, typeof PATTERN>(Page);

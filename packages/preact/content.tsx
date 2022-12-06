@@ -51,13 +51,13 @@ const DEFAULT_DOCUMENT: Document = (
     );
 };
 
-export function getContentFrom<PATH extends Record<string, string>, DATA>(
+export function getContentFrom<DATA = unknown, PATH extends string = string>(
     Page: Page,
     {
         Document = DEFAULT_DOCUMENT,
         embedData = true,
     }: Partial<ContentConfig> = {},
-): frugal.GetContent<PATH, DATA> {
+): frugal.GetContent<DATA, PATH> {
     return ({
         data,
         pathname,

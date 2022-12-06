@@ -8,7 +8,9 @@ export const self = new URL(import.meta.url);
 
 export const pattern = '';
 
-export function getStaticData() {
+export const type = 'static' as const;
+
+export function GET() {
     return {};
 }
 

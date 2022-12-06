@@ -13,13 +13,9 @@ export interface Persistence {
      */
     set(path: string, content: string): Promise<void>;
     /**
-     * Get a stream of the content at the given path
-     */
-    open(path: string): Promise<ReadableStream<Uint8Array>>;
-    /**
      * Get the content at the given path in a string
      */
-    read(path: string): Promise<string>;
+    get(path: string): Promise<string>;
     /**
      * delete the content at the given path
      */
@@ -37,18 +33,7 @@ export class FilesystemPersistence implements Persistence {
         return await Deno.writeTextFile(path, content);
     }
 
-    async open(path: string) {
-        try {
-            return (await Deno.open(path)).readable;
-        } catch (error: unknown) {
-            if (error instanceof Deno.errors.NotFound) {
-                throw new NotFound(`path ${path} was not found`);
-            }
-            throw error;
-        }
-    }
-
-    async read(path: string) {
+    async get(path: string) {
         try {
             return await Deno.readTextFile(path);
         } catch (error: unknown) {
@@ -110,24 +95,7 @@ export class UpstashPersistence implements Persistence {
         }
     }
 
-    async open(path: string) {
-        const response = await this.#sendCommand(['get', this.#key(path)]);
-        const body = await response.json();
-        if (response.status !== 200) {
-            throw new Error(body.error);
-        }
-        if (body.result === null) {
-            throw new NotFound(`path ${path} was not found`);
-        }
-        return new ReadableStream<Uint8Array>({
-            start(controller) {
-                controller.enqueue(new TextEncoder().encode(body.result));
-                controller.close();
-            },
-        });
-    }
-
-    async read(path: string) {
+    async get(path: string) {
         const response = await this.#sendCommand(['get', this.#key(path)]);
         const body = await response.json();
         if (response.status !== 200) {

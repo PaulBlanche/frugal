@@ -5,11 +5,15 @@ import * as mock from '../../../dep/std/testing/mock.ts';
 
 import { Hash } from '../../../packages/murmur/mod.ts';
 import { PageDescriptorError } from '../../../packages/core/Page.ts';
+import { asSpy } from '../../test_util/mod.ts';
+
+import { fakePersistence } from '../../unit/core/__fixtures__/Persistence.ts';
 
 Deno.test('page: bare static page', async () => {
     const content = `${Math.random()}`;
 
-    const page = {
+    const page: frugal.StaticPageDescriptor = {
+        type: 'static',
         pattern: 'bare-static-page',
         self: new URL(import.meta.url),
         getContent: mock.spy(() => {
@@ -25,15 +29,15 @@ Deno.test('page: bare static page', async () => {
     const instance = await getFrugalInstance(config);
     await instance.build();
 
-    mock.assertSpyCalls(page.getContent, 1);
-    mock.assertSpyCall(page.getContent, 0, {
+    mock.assertSpyCalls(asSpy(page.getContent), 1);
+    mock.assertSpyCall(asSpy(page.getContent), 0, {
         args: [{
             data: {},
             descriptor: 'pages.test.ts',
             method: 'GET',
             path: {},
             pathname: 'bare-static-page',
-            loaderContext: new frugal.LoaderContext({}),
+            loaderContext: new frugal.LoaderContext({}, fakePersistence()),
             phase: 'build',
         }],
     });
@@ -54,13 +58,14 @@ Deno.test('page: static page without getPathList', async () => {
         `${Math.random()}`,
     ]];
 
-    const page = {
+    const page: frugal.StaticPageDescriptor = {
+        type: 'static',
         pattern: 'static-page-without-getpathlist',
         self: new URL(import.meta.url),
         getContent: mock.spy(() => {
             return content;
         }),
-        getStaticData: mock.spy(() => {
+        GET: mock.spy(() => {
             return { data, headers };
         }),
     };
@@ -73,22 +78,23 @@ Deno.test('page: static page without getPathList', async () => {
     const instance = await getFrugalInstance(config);
     await instance.build();
 
-    mock.assertSpyCalls(page.getStaticData, 1);
-    mock.assertSpyCall(page.getStaticData, 0, {
+    asserts.assert(page.GET);
+    mock.assertSpyCalls(asSpy(page.GET), 1);
+    mock.assertSpyCall(asSpy(page.GET), 0, {
         args: [{
             path: {},
             phase: 'build',
         }],
     });
-    mock.assertSpyCalls(page.getContent, 1);
-    mock.assertSpyCall(page.getContent, 0, {
+    mock.assertSpyCalls(asSpy(page.getContent), 1);
+    mock.assertSpyCall(asSpy(page.getContent), 0, {
         args: [{
             data,
             descriptor: 'pages.test.ts',
             method: 'GET',
             path: {},
             pathname: 'static-page-without-getpathlist',
-            loaderContext: new frugal.LoaderContext({}),
+            loaderContext: new frugal.LoaderContext({}, fakePersistence()),
             phase: 'build',
         }],
     });
@@ -111,7 +117,8 @@ Deno.test('page: static page without getPathList', async () => {
 Deno.test('page: static page without getPathList with url parameter', async () => {
     const content = `${Math.random()}`;
 
-    const page = {
+    const page: frugal.StaticPageDescriptor = {
+        type: 'static',
         pattern: 'bare-static-page/:id',
         self: new URL(import.meta.url),
         getContent: mock.spy(() => {
@@ -131,7 +138,7 @@ Deno.test('page: static page without getPathList with url parameter', async () =
             await instance.build();
         },
         PageDescriptorError,
-        'Error while compiling pattern "bare-static-page/:id" with path "{}": Expected "id" to be a string',
+        'Error while compiling pattern "bare-static-page/:id" with path "{}"',
     );
 
     await instance.clean();
@@ -143,11 +150,17 @@ Deno.test('page: static page without getStaticData', async () => {
         '2': `${Math.random()}`,
     };
 
-    const page = {
+    const page: frugal.StaticPageDescriptor = {
+        type: 'static',
         pattern: 'static-page-without-getstaticdata/:id',
         self: new URL(import.meta.url),
         getContent: mock.spy(
-            ({ path }: frugal.GetContentParams<{ id: string }>) => {
+            (
+                { path }: frugal.GetContentContext<
+                    unknown,
+                    'static-page-without-getstaticdata/:id'
+                >,
+            ): string => {
                 return content[path.id];
             },
         ),
@@ -164,28 +177,31 @@ Deno.test('page: static page without getStaticData', async () => {
     const instance = await getFrugalInstance(config);
     await instance.build();
 
-    mock.assertSpyCalls(page.getPathList, 1);
-    mock.assertSpyCall(page.getPathList, 0, { args: [{ phase: 'build' }] });
-    mock.assertSpyCalls(page.getContent, 2);
-    mock.assertSpyCall(page.getContent, 0, {
+    asserts.assert(page.getPathList);
+    mock.assertSpyCalls(asSpy(page.getPathList), 1);
+    mock.assertSpyCall(asSpy(page.getPathList), 0, {
+        args: [{ phase: 'build' }],
+    });
+    mock.assertSpyCalls(asSpy(page.getContent), 2);
+    mock.assertSpyCall(asSpy(page.getContent), 0, {
         args: [{
             data: {},
             descriptor: 'pages.test.ts',
             method: 'GET',
             path: { id: '1' },
             pathname: 'static-page-without-getstaticdata/1',
-            loaderContext: new frugal.LoaderContext({}),
+            loaderContext: new frugal.LoaderContext({}, fakePersistence()),
             phase: 'build',
         }],
     });
-    mock.assertSpyCall(page.getContent, 1, {
+    mock.assertSpyCall(asSpy(page.getContent), 1, {
         args: [{
             data: {},
             descriptor: 'pages.test.ts',
             method: 'GET',
             path: { id: '2' },
             pathname: 'static-page-without-getstaticdata/2',
-            loaderContext: new frugal.LoaderContext({}),
+            loaderContext: new frugal.LoaderContext({}, fakePersistence()),
             phase: 'build',
         }],
     });
@@ -223,19 +239,25 @@ Deno.test('page: complete static page', async () => {
         },
     };
 
-    const page = {
+    const page: frugal.StaticPageDescriptor = {
+        type: 'static',
         pattern: 'complete-static-page/:id',
         self: new URL(import.meta.url),
         getContent: mock.spy(
-            (params: frugal.GetContentParams<{ id: string }>) => {
+            (
+                params: frugal.GetContentContext<
+                    unknown,
+                    'complete-static-page/:id'
+                >,
+            ) => {
                 return store[params.path.id].content;
             },
         ),
         getPathList: mock.spy(() => {
             return [{ id: '1' }, { id: '2' }];
         }),
-        getStaticData: mock.spy(
-            (params: frugal.GetStaticDataContext<{ id: string }>) => {
+        GET: mock.spy(
+            (params: frugal.StaticDataContext<'complete-static-page/:id'>) => {
                 return {
                     data: store[params.path.id].data,
                     headers: store[params.path.id].headers,
@@ -252,41 +274,45 @@ Deno.test('page: complete static page', async () => {
     const instance = await getFrugalInstance(config);
     await instance.build();
 
-    mock.assertSpyCalls(page.getPathList, 1);
-    mock.assertSpyCall(page.getPathList, 0, { args: [{ phase: 'build' }] });
-    mock.assertSpyCalls(page.getStaticData, 2);
-    mock.assertSpyCall(page.getStaticData, 0, {
+    asserts.assert(page.getPathList);
+    asserts.assert(page.GET);
+    mock.assertSpyCalls(asSpy(page.getPathList), 1);
+    mock.assertSpyCall(asSpy(page.getPathList), 0, {
+        args: [{ phase: 'build' }],
+    });
+    mock.assertSpyCalls(asSpy(page.GET), 2);
+    mock.assertSpyCall(asSpy(page.GET), 0, {
         args: [{
             path: { id: '1' },
             phase: 'build',
         }],
     });
-    mock.assertSpyCall(page.getStaticData, 1, {
+    mock.assertSpyCall(asSpy(page.GET), 1, {
         args: [{
             path: { id: '2' },
             phase: 'build',
         }],
     });
-    mock.assertSpyCalls(page.getContent, 2);
-    mock.assertSpyCall(page.getContent, 0, {
+    mock.assertSpyCalls(asSpy(page.getContent), 2);
+    mock.assertSpyCall(asSpy(page.getContent), 0, {
         args: [{
             data: store['1'].data,
             descriptor: 'pages.test.ts',
             method: 'GET',
             path: { id: '1' },
             pathname: 'complete-static-page/1',
-            loaderContext: new frugal.LoaderContext({}),
+            loaderContext: new frugal.LoaderContext({}, fakePersistence()),
             phase: 'build',
         }],
     });
-    mock.assertSpyCall(page.getContent, 1, {
+    mock.assertSpyCall(asSpy(page.getContent), 1, {
         args: [{
             data: store['2'].data,
             descriptor: 'pages.test.ts',
             method: 'GET',
             path: { id: '2' },
             pathname: 'complete-static-page/2',
-            loaderContext: new frugal.LoaderContext({}),
+            loaderContext: new frugal.LoaderContext({}, fakePersistence()),
             phase: 'build',
         }],
     });
@@ -316,7 +342,7 @@ Deno.test('page: complete static page', async () => {
     await instance.clean();
 });
 
-Deno.test('page: dynamic page is not generated', async () => {
+Deno.test('page: dynamic page is not built', async () => {
     const content = `${Math.random()}`;
     const data = Math.random();
     const headers: [string, string][] = [[
@@ -324,10 +350,11 @@ Deno.test('page: dynamic page is not generated', async () => {
         `${Math.random()}`,
     ]];
 
-    const page = {
+    const page: frugal.DynamicPageDescriptor = {
+        type: 'dynamic',
         pattern: 'complete-static-page/:id',
         self: new URL(import.meta.url),
-        getDynamicData: mock.spy(() => {
+        GET: mock.spy(() => {
             return { data, headers };
         }),
         getContent: mock.spy(() => {
@@ -343,8 +370,8 @@ Deno.test('page: dynamic page is not generated', async () => {
     const instance = await getFrugalInstance(config);
     await instance.build();
 
-    mock.assertSpyCalls(page.getDynamicData, 0);
-    mock.assertSpyCalls(page.getContent, 0);
+    mock.assertSpyCalls(asSpy(page.GET), 0);
+    mock.assertSpyCalls(asSpy(page.getContent), 0);
 
     await instance.clean();
 });

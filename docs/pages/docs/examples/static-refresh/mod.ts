@@ -11,8 +11,10 @@ const TOC: Toc = JSON.parse(
     ),
 );
 
-export function getStaticData(
-    { phase }: frugal.GetStaticDataContext,
+export const type = 'static';
+
+export function GET(
+    { phase }: frugal.StaticDataContext,
 ): frugal.DataResult<Data> {
     return {
         data: {

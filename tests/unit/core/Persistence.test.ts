@@ -76,7 +76,7 @@ Deno.test('UpstashPersistence: read sends the right command', async () => {
         '/path/to/root',
     );
 
-    const content = await persistence.read('/path/to/my/content');
+    const content = await persistence.get('/path/to/my/content');
 
     mock.assertSpyCalls(spyFetch, 1);
     mock.assertSpyCall(spyFetch, 0, {
@@ -111,7 +111,7 @@ Deno.test('UpstashPersistence: read with non 200 throws', async () => {
     );
 
     await asserts.assertRejects(async () => {
-        await persistence.read('/path/to/my/content');
+        await persistence.get('/path/to/my/content');
     });
 
     spyFetch.restore();
@@ -136,7 +136,7 @@ Deno.test('UpstashPersistence: read with null result throws NotFound', async () 
 
     await asserts.assertRejects(
         async () => {
-            await persistence.read('/path/to/my/content');
+            await persistence.get('/path/to/my/content');
         },
         NotFound,
         'path /path/to/my/content was not found',

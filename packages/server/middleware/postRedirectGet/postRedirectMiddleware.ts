@@ -50,6 +50,18 @@ export async function postRedirectMiddleware<ROUTE extends frugal.Route>(
         context.state,
     );
 
+    if (result instanceof Response) {
+        logger().debug({
+            method: context.request.method,
+            pathname: url.pathname,
+            msg() {
+                return `abort PRG for ${this.method} ${this.pathname} because page returned a raw response`;
+            },
+        });
+
+        return result;
+    }
+
     if ('status' in result) {
         logger().debug({
             method: context.request.method,

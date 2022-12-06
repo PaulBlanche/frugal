@@ -8,27 +8,20 @@ import { fakePageGenerator } from './PageGenerator.ts';
 import { fakeStaticPage } from './Page.ts';
 import { fakeCache } from './Cache.ts';
 import { fakePersistence } from './Persistence.ts';
-import { spy } from '../../../../dep/std/testing/mock.ts';
+import { stub } from '../../../../dep/std/testing/mock.ts';
 
-type FakePageBuilderConfig<
-    PATH extends Record<string, string> = Record<string, string>,
-    DATA = unknown,
-> = {
-    page?: Page<PATH, DATA>;
+type FakePageBuilderConfig<DATA = unknown, PATH extends string = string> = {
+    page?: Page<DATA, PATH>;
     hash?: string;
-    generator?: PageGenerator<PATH, DATA>;
+    generator?: PageGenerator<DATA, PATH>;
     config?: PageBuilderConfig;
     mock?: {
-        build?: PageBuilder<PATH, DATA>['build'];
-        buildAll?: PageBuilder<PATH, DATA>['buildAll'];
+        build?: PageBuilder<DATA, PATH>['build'];
+        buildAll?: PageBuilder<DATA, PATH>['buildAll'];
     };
 };
 
-export function fakePageBuilder<
-    PATH extends Record<string, string> = Record<string, string>,
-    DATA = unknown,
-    BODY = unknown,
->(
+export function fakePageBuilder<DATA = unknown, PATH extends string = string>(
     {
         page = fakeStaticPage(),
         hash = '',
@@ -38,20 +31,24 @@ export function fakePageBuilder<
             persistence: fakePersistence(),
         },
         mock = {},
-    }: FakePageBuilderConfig<PATH, DATA> = {},
+    }: FakePageBuilderConfig<DATA, PATH> = {},
 ) {
-    const builder = new PageBuilder<PATH, DATA>(
+    const builder = new PageBuilder<DATA, PATH>(
         page,
         hash,
         generator,
         config,
     );
 
-    const originalBuild = builder.build;
-    builder.build = spy(mock.build ?? originalBuild.bind(builder));
-
-    const originalBuildAll = builder.buildAll;
-    builder.buildAll = spy(mock.buildAll ?? originalBuildAll.bind(builder));
+    for (
+        const prop of [
+            'build',
+            'buildAll',
+        ]
+    ) {
+        const property = prop as keyof typeof mock;
+        stub(builder, property, (mock[property] as any) ?? builder[property]);
+    }
 
     return builder;
 }
