@@ -10,7 +10,7 @@ import { Next } from '../../types.ts';
 import { RouterContext } from '../types.ts';
 
 function logger() {
-    return log.getLogger(`frugal_server:cacheMiddleware`);
+    return log.getLogger('frugal_server:cacheMiddleware');
 }
 
 export async function cacheMiddleware(

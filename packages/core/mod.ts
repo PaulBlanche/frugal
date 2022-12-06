@@ -1,6 +1,6 @@
 export type { Asset, GenerateParams, Loader } from './loader.ts';
 export { LoaderContext } from './LoaderContext.ts';
-export type { Config } from './Config.ts';
+export { type Config, LOGGERS } from './Config.ts';
 export type { PageRefresher } from './PageRefresher.ts';
 export { metadataPath, type PageBuilder } from './PageBuilder.ts';
 export type { PageGenerator } from './PageGenerator.ts';

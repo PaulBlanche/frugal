@@ -16,7 +16,7 @@ const HEADERS_304 = [
 ];
 
 function logger() {
-    return log.getLogger(`frugal_server:etagMiddleware`);
+    return log.getLogger('frugal_server:etagMiddleware');
 }
 
 export async function etagMiddleware<CONTEXT extends Context>(

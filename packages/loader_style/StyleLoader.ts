@@ -9,7 +9,7 @@ import * as murmur from '../murmur/mod.ts';
 import * as frugal from '../core/mod.ts';
 
 function logger() {
-    return log.getLogger('frugal:loader:style');
+    return log.getLogger('frugal:loader:StyleLoader');
 }
 
 type Config = {

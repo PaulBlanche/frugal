@@ -5,7 +5,7 @@ import * as etag from '../../etag.ts';
 import { RouterContext } from '../types.ts';
 
 function logger() {
-    return log.getLogger(`frugal_server:generateMiddleware`);
+    return log.getLogger('frugal_server:generateMiddleware');
 }
 
 export async function generateMiddleware(

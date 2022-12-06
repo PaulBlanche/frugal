@@ -34,7 +34,10 @@ export class WatchService<
         });
 
         console.log = (...data: unknown[]) => {
-            this.#sendEvent({ type: 'log', data });
+            this.#sendEvent({
+                type: 'log',
+                data: data.map((value) => Deno.inspect(value)),
+            });
         };
 
         this.#sendEvent({ type: 'ready' });

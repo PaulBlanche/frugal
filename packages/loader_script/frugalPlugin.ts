@@ -19,7 +19,7 @@ type FrugalPluginOptions = esbuildDenoLoader.DenoPluginOptions & {
  *
  * These transformers allow for simple transformation, like replacing in a style
  * module each rules with the generated classname. They are no meant for complex
- * transformation.
+ * transformations (like transpiling).
  */
 export function frugalPlugin(options: FrugalPluginOptions): esbuild.Plugin {
     const plugin = esbuildDenoLoader.denoPlugin(options);

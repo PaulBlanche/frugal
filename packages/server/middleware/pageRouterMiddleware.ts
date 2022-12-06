@@ -9,7 +9,7 @@ import { etagMiddleware } from './etagMiddleware.ts';
 import { csrfMiddleware } from './csrfMiddleware/mod.ts';
 
 function logger() {
-    return log.getLogger(`frugal_server:pageRouterMiddleware`);
+    return log.getLogger('frugal_server:pageRouterMiddleware');
 }
 
 export function pageRouterMiddleware(context: Context, next: Next<Context>) {

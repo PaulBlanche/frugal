@@ -1,7 +1,7 @@
 import * as importmap from '../../dep/importmap.ts';
 import * as path from '../../dep/std/path.ts';
 
-import { ScriptLoader } from '../loader_script/ScriptLoader.ts';
+import { esbuildBundler, ScriptLoader } from '../loader_script/mod.ts';
 
 import * as log from '../log/mod.ts';
 import { Loader } from './loader.ts';
@@ -37,25 +37,23 @@ export type Config = {
     logging?: log.Config;
 };
 
-const LOGGERS = [
-    'frugal:asset',
+export const LOGGERS = [
     'frugal:Cache',
+    'frugal:DependencyGraph',
     'frugal:Frugal',
     'frugal:FrugalBuilder',
-    'frugal:FrugalContext',
     'frugal:LoaderContext',
-    'frugal:Page',
     'frugal:PageBuilder',
     'frugal:PageGenerator',
     'frugal:PageRefresher',
     'frugal:dependency_graph',
-    'frugal:DependencyGraph',
     'frugal:loader:jsx_svg',
-    'frugal:loader:script',
-    'frugal:loader:style',
+    'frugal:loader:esbuildBundler',
+    'frugal:loader:ScriptLoader',
+    'frugal:loader:StyleLoader',
 ];
 
-function loggers(level: log.Config['loggers'][string]) {
+export function loggers(level: log.Config['loggers'][string]) {
     return LOGGERS.reduce<log.Config['loggers']>((loggers, logger) => {
         loggers[logger] = level;
         return loggers;
@@ -68,6 +66,11 @@ export const OFF_LOGGER_CONFIG: log.Config = {
 };
 
 export const DEFAULT_LOGGER_CONFIG: log.Config = {
+    type: 'human',
+    loggers: loggers('INFO'),
+};
+
+export const DEBUG_LOGGER_CONFIG: log.Config = {
     type: 'human',
     loggers: loggers('INFO'),
 };
@@ -124,6 +127,12 @@ export class CleanConfig {
                         );
                     },
                 }],
+                bundler: esbuildBundler({
+                    format: 'esm',
+                    minify: false,
+                    splitting: false,
+                    sourcemap: true,
+                }),
             });
 
             scriptLoader.name = 'inject-watch-script';

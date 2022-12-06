@@ -8,7 +8,7 @@ import { RouterContext } from '../types.ts';
 import { SESSION_KEY } from './const.ts';
 
 function logger() {
-    return log.getLogger(`frugal_server:postRedirectGet:getMiddleware`);
+    return log.getLogger('frugal_server:postRedirectGet:getMiddleware');
 }
 
 export async function getMiddleware<ROUTE extends frugal.Route>(

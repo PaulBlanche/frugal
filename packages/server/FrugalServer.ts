@@ -13,7 +13,7 @@ import { statusRewriteMiddleware } from './middleware/statusRewriteMiddleware.ts
 import { Session } from './Session.ts';
 
 function logger() {
-    return log.getLogger(`frugal_server:FrugalServer`);
+    return log.getLogger('frugal_server:FrugalServer');
 }
 
 export class FrugalServer {
@@ -28,7 +28,7 @@ export class FrugalServer {
     }
 
     listen() {
-        return http.serve(this.#handler(), {
+        return http.serve(this.handler(), {
             ...this.#config,
             onListen: (params) => {
                 logger().info({
@@ -50,7 +50,7 @@ export class FrugalServer {
         this.#middlewares.push(middleware);
     }
 
-    #handler() {
+    handler() {
         const composedMiddleware = composeMiddleware(
             ...this.#middlewares,
             pageRouterMiddleware,

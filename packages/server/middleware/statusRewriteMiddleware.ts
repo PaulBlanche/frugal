@@ -5,7 +5,7 @@ import { Middleware, Next } from '../types.ts';
 import { Context } from './types.ts';
 
 function logger() {
-    return log.getLogger(`frugal_server:statusRewriteMiddleware`);
+    return log.getLogger('frugal_server:statusRewriteMiddleware');
 }
 
 async function safeNext(context: Context, next: Next<Context>) {

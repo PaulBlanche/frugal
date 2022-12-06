@@ -11,7 +11,7 @@ import { RouterContext } from '../types.ts';
 import { generateMiddleware } from '../dynamicPageMiddleware/generateMiddleware.ts';
 
 function logger() {
-    return log.getLogger(`frugal_server:staticPageMiddleware`);
+    return log.getLogger('frugal_server:staticPageMiddleware');
 }
 
 export function staticPageMiddleware(

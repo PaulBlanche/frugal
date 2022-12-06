@@ -3,24 +3,21 @@ import * as frugal from '../core/mod.ts';
 import * as murmur from '../murmur/mod.ts';
 import * as log from '../log/mod.ts';
 import { assert } from '../../dep/std/testing/asserts.ts';
-
-import { bundle, BundleConfig } from './bundle.ts';
+import { BundlerParams } from './type.ts';
 
 function logger() {
-    return log.getLogger('frugal:loader:script');
+    return log.getLogger('frugal:loader:ScriptLoader');
 }
-
-type PublicBundleConfig = Omit<
-    BundleConfig,
-    'cacheDir' | 'publicDir' | 'rootDir' | 'facades'
->;
 
 type Config = {
     bundles: {
         test: (url: URL | string) => boolean;
         name: string;
     }[];
-} & PublicBundleConfig;
+    bundler: (
+        params: BundlerParams,
+    ) => Promise<Record<string, Record<string, string>>>;
+};
 
 export type Generated = Record<string, Record<string, string>>;
 
@@ -30,12 +27,10 @@ export type Generated = Record<string, Record<string, string>>;
  */
 export class ScriptLoader implements frugal.Loader<Generated> {
     name = 'script';
-    #bundles: Config['bundles'];
-    #bundleConfig: PublicBundleConfig;
+    #config: Config;
 
-    constructor({ bundles, ...bundleConfig }: Config) {
-        this.#bundleConfig = bundleConfig;
-        this.#bundles = bundles;
+    constructor(config: Config) {
+        this.#config = config;
     }
 
     /**
@@ -45,13 +40,15 @@ export class ScriptLoader implements frugal.Loader<Generated> {
      * matches the rule for any of the defined bundles.
      */
     test(url: URL) {
-        return this.#bundles.some((bundle) => bundle.test(url));
+        return this.#config.bundles.some((bundle) => bundle.test(url));
     }
 
     /**
      * A function called after all loader are done generating.
      *
-     * Since esbuild run as a background service and is not able to stop when deno stops, we must manually stop the background service before exiting deno.
+     * Since esbuild run as a background service and is not able to stop when
+     * deno stops, we must manually stop the background service before exiting
+     * deno.
      */
     onBuildContextEnd() {
         esbuild.stop();
@@ -136,8 +133,7 @@ export class ScriptLoader implements frugal.Loader<Generated> {
             [] as { entrypoint: string; bundle: string; content: string }[],
         );
 
-        return await bundle({
-            ...this.#bundleConfig,
+        return await this.#config.bundler({
             importMapURL: config.importMapURL,
             publicDir: config.publicDir,
             cacheDir: config.cacheDir,
@@ -147,7 +143,7 @@ export class ScriptLoader implements frugal.Loader<Generated> {
     }
 
     #getFacadeBundle(asset: frugal.Asset): string | undefined {
-        const bundle = this.#bundles.find((bundle) =>
+        const bundle = this.#config.bundles.find((bundle) =>
             bundle.test(asset.module)
         );
         return bundle?.name;

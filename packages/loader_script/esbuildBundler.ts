@@ -5,12 +5,13 @@ import * as log from '../log/mod.ts';
 
 import * as esbuild from '../../dep/esbuild.ts';
 import { frugalPlugin, Transformer } from './frugalPlugin.ts';
+import { BundlerParams } from './type.ts';
 
 function logger() {
-    return log.getLogger('frugal:loader:script');
+    return log.getLogger('frugal:loader:esbuildBundler');
 }
 
-export type EsbuildConfig = Omit<
+type EsbuildConfig = Omit<
     esbuild.BuildOptions,
     | 'bundle'
     | 'entryPoints'
@@ -30,69 +31,43 @@ export type EsbuildConfig = Omit<
     | 'watch'
 >;
 
-type Facade = {
-    bundle: string;
-    entrypoint: string;
-    content: string;
-};
+type BundlerConfig =
+    & {
+        transformers?: Transformer[];
+    }
+    & EsbuildConfig;
 
-type Config = {
-    rootDir: string;
-    cacheDir: string;
-    publicDir: string;
-    facades: Facade[];
-    transformers?: Transformer[];
-    importMapURL?: URL;
-};
+export function esbuildBundler(
+    { transformers, ...esbuildConfig }: BundlerConfig,
+) {
+    return async (params: BundlerParams) => {
+        const {
+            entryPoints,
+            facadeToEntrypoint,
+        } = await writeEntrypoints(params);
 
-export type BundleConfig = Config & EsbuildConfig;
+        const result = await bundleWithEsbuild(
+            entryPoints,
+            transformers,
+            params,
+            esbuildConfig,
+        );
 
-export async function bundle(
-    {
-        cacheDir,
-        publicDir,
-        rootDir,
-        facades,
-        transformers,
-        importMapURL,
-        ...esbuildConfig
-    }: BundleConfig,
-): Promise<Record<string, Record<string, string>>> {
-    const config = {
-        cacheDir,
-        publicDir,
-        rootDir,
-        facades,
-        transformers,
-        importMapURL,
+        return writeBundles(result, facadeToEntrypoint, params);
     };
-
-    const {
-        entryPoints,
-        facadeToEntrypoint,
-    } = await generateEntrypoints(config);
-
-    const result = await build(entryPoints, config, esbuildConfig);
-
-    return write(result, facadeToEntrypoint, config);
 }
 
-type FacadeToEntrypoint = Record<string, {
-    entrypoint: string;
-    bundle: string;
-}[]>;
-
-async function generateEntrypoints(config: Config) {
+async function writeEntrypoints(params: BundlerParams) {
     const facadeToEntrypoint: FacadeToEntrypoint = {};
 
     const entryPoints = await Promise.all(
-        config.facades.map(async (facade, i) => {
+        params.facades.map(async (facade, i) => {
             const facadeId = new murmur.Hash().update(facade.bundle).update(
                 String(i),
             ).digest();
 
             const facadePath = path.join(
-                config.cacheDir,
+                params.cacheDir,
                 'script_loader',
                 `${facadeId}.ts`,
             );
@@ -118,9 +93,10 @@ type BuildResult = esbuild.BuildIncremental & {
     metafile: esbuild.Metafile;
 };
 
-async function build(
+async function bundleWithEsbuild(
     entryPoints: string[],
-    config: Config,
+    transformers: Transformer[] | undefined,
+    params: BundlerParams,
     esbuildConfig: EsbuildConfig,
 ): Promise<BuildResult> {
     return await esbuild.build({
@@ -131,22 +107,27 @@ async function build(
         metafile: true,
         platform: 'neutral',
         incremental: true,
-        outdir: config.publicDir,
+        outdir: params.publicDir,
         entryNames: `js/${esbuildConfig.entryNames ?? '[dir]/[name]-[hash]'}`,
         chunkNames: `js/${esbuildConfig.chunkNames ?? '[dir]/[name]-[hash]'}`,
         assetNames: `js/${esbuildConfig.assetNames ?? '[dir]/[name]-[hash]'}`,
         plugins: [frugalPlugin({
             loader: 'portable',
-            importMapURL: config.importMapURL,
-            transformers: config.transformers,
+            importMapURL: params.importMapURL,
+            transformers: transformers,
         })],
     }) as BuildResult;
 }
 
-async function write(
+type FacadeToEntrypoint = Record<string, {
+    entrypoint: string;
+    bundle: string;
+}[]>;
+
+async function writeBundles(
     result: BuildResult,
     facadeToEntrypoint: FacadeToEntrypoint,
-    config: Config,
+    params: BundlerParams,
 ) {
     const url: Record<string, Record<string, string>> = {};
 
@@ -162,12 +143,12 @@ async function write(
             if (facades !== undefined) {
                 for (const { entrypoint, bundle } of facades) {
                     const entrypointKey = path.relative(
-                        config.rootDir,
+                        params.rootDir,
                         new URL(entrypoint).pathname,
                     );
                     url[entrypointKey] = url[entrypoint] ?? {};
                     url[entrypointKey][bundle] = `/${
-                        path.relative(config.publicDir, outputFile.path)
+                        path.relative(params.publicDir, outputFile.path)
                     }`;
 
                     logger().debug({
@@ -186,7 +167,7 @@ async function write(
         await Deno.writeFile(outputFile.path, outputFile.contents);
     }));
 
-    const metaPath = path.join(config.publicDir, 'js', 'meta.json');
+    const metaPath = path.join(params.publicDir, 'js', 'meta.json');
     await fs.ensureFile(metaPath);
     await Deno.writeTextFile(metaPath, JSON.stringify(result.metafile));
 

@@ -6,7 +6,7 @@ import {
     UpstashPersistence,
 } from './dep/frugal/core.ts';
 import { Config, importKey } from './dep/frugal/server.ts';
-import { ScriptLoader } from './dep/frugal/loader_script.ts';
+import { esbuildBundler, ScriptLoader } from './dep/frugal/loader_script.ts';
 import { StyleLoader, styleTransformer } from './dep/frugal/loader_style.ts';
 import * as stylis from './dep/stylis.ts';
 import { svg, svgTransformer } from './dep/frugal/loader_jsx_svg.ts';
@@ -39,17 +39,19 @@ export const config: Config = {
                 name: 'body',
                 test: IS_SCRIPT_FILE,
             }],
-            transformers: [{
-                test: IS_STYLE_FILE,
-                transform: styleTransformer,
-            }, {
-                test: IS_SVG,
-                transform: svgTransformer,
-            }],
-            format: 'esm',
-            minify: false,
-            splitting: true,
-            sourcemap: true,
+            bundler: esbuildBundler({
+                transformers: [{
+                    test: IS_STYLE_FILE,
+                    transform: styleTransformer,
+                }, {
+                    test: IS_SVG,
+                    transform: svgTransformer,
+                }],
+                format: 'esm',
+                minify: false,
+                splitting: true,
+                sourcemap: true,
+            }),
         }),
         new StyleLoader({
             test: IS_STYLE_FILE,
@@ -78,7 +80,7 @@ export const config: Config = {
     pagePersistence: UPSTASH_PERSISTENCE,
     cachePersistence: UPSTASH_PERSISTENCE,
 
-    logging: {
+    /*logging: {
         type: 'human',
         loggers: {
             'frugal:asset': 'DEBUG',
@@ -110,7 +112,7 @@ export const config: Config = {
             'frugal_server:statusRewriteMiddleware': 'DEBUG',
             'frugal_server:FrugalServer': 'DEBUG',
         },
-    },
+    },*/
 
     server: {
         refreshKey: 'refresh_key',

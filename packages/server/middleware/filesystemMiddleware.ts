@@ -9,7 +9,7 @@ import { Context } from './types.ts';
 const ONE_YEAR_IN_SECONDS = 31536000;
 
 function logger() {
-    return log.getLogger(`frugal_server:filesystemMiddleware`);
+    return log.getLogger('frugal_server:filesystemMiddleware');
 }
 
 export async function filesystemMiddleware(
