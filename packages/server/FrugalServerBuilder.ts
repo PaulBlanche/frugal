@@ -7,17 +7,17 @@ import { CleanConfig, Config } from './Config.ts';
 const LOGGERS = [
     ...frugal.LOGGERS,
     'frugal_server:FrugalServer',
-    'frugal:etagMiddleware',
-    'frugal:filesystemMiddleware',
-    'frugal:pageRouterMiddleware',
-    'frugal:statusRewriteMiddleware',
-    'frugal:generateMiddleware',
-    'frugal:dynamicPageMiddleware',
-    'frugal:postRedirectGet:getMiddleware',
-    'frugal:cacheMiddleware',
-    'frugal:forceRefreshMiddleware',
-    'frugal:staticPageMiddleware',
-    'frugal:refreshJitMiddleware',
+    'frugal_server:etagMiddleware',
+    'frugal_server:filesystemMiddleware',
+    'frugal_server:pageRouterMiddleware',
+    'frugal_server:statusRewriteMiddleware',
+    'frugal_server:generateMiddleware',
+    'frugal_server:dynamicPageMiddleware',
+    'frugal_server:postRedirectGet:getMiddleware',
+    'frugal_server:cacheMiddleware',
+    'frugal_server:forceRefreshMiddleware',
+    'frugal_server:staticPageMiddleware',
+    'frugal_server:refreshJitMiddleware',
 ];
 
 export function loggers(level: log.Config['loggers'][string]) {
@@ -39,7 +39,7 @@ export const DEFAULT_LOGGER_CONFIG: log.Config = {
 
 export const DEBUG_LOGGER_CONFIG: log.Config = {
     type: 'human',
-    loggers: loggers('INFO'),
+    loggers: loggers('DEBUG'),
 };
 
 export async function serve(config: Config) {

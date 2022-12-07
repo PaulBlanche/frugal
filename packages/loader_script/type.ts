@@ -10,4 +10,5 @@ export type BundlerParams = {
     publicDir: string;
     cacheDir: string;
     rootDir: string;
+    outputDir: string;
 };

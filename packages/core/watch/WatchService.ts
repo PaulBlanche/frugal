@@ -36,7 +36,9 @@ export class WatchService<
         console.log = (...data: unknown[]) => {
             this.#sendEvent({
                 type: 'log',
-                data: data.map((value) => Deno.inspect(value)),
+                data: data.map((value) =>
+                    typeof value === 'string' ? value : Deno.inspect(value)
+                ),
             });
         };
 

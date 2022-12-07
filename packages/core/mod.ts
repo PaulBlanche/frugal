@@ -5,21 +5,21 @@ export type { PageRefresher } from './PageRefresher.ts';
 export { metadataPath, type PageBuilder } from './PageBuilder.ts';
 export type { PageGenerator } from './PageGenerator.ts';
 export { DEFAULT_LOGGER_CONFIG, OFF_LOGGER_CONFIG } from './Config.ts';
-export type {
-    DataResult,
-    DynamicDataContext,
-    DynamicHandler,
-    DynamicPageDescriptor,
-    GetContent,
-    GetContentContext,
-    GetPathList,
-    GetPathListParams,
-    PageDescriptor,
-    PathList,
-    Phase,
-    StaticDataContext,
-    StaticHandler,
-    StaticPageDescriptor,
+export {
+    type DataResult,
+    type DynamicDataContext,
+    type DynamicHandler,
+    type DynamicPageDescriptor,
+    type GetContent,
+    type GetContentContext,
+    type GetPathList,
+    type GetPathListParams,
+    type PageDescriptor,
+    type PathList,
+    type Phase,
+    type StaticDataContext,
+    type StaticHandler,
+    type StaticPageDescriptor,
 } from './PageDescriptor.ts';
 export { DynamicPage, type Page, page, StaticPage } from './Page.ts';
 export { build, FrugalBuilder } from './FrugalBuilder.ts';

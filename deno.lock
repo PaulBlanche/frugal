@@ -170,6 +170,7 @@
     "https://deno.land/x/djwt@v2.8/signature.ts": "a5649368a4b433b2810e7d47f53661fe3b0f7fe1778cb49234ceae3d6e861185",
     "https://deno.land/x/djwt@v2.8/util.ts": "0d78272bd23a4656ceabe137d496fcca37cf3de36212477642aa5d85a880d87a",
     "https://deno.land/x/esbuild@v0.15.10/mod.d.ts": "12e96a8d05c8e2c5638aa9cb09f24222134d437abb2f3f52de0156adb2270719",
+    "https://deno.land/x/esbuild@v0.15.10/mod.js": "b6076f05f58057025ce0eddb404a4da3b7a0e3768c53f6c87959c8c32240e9cd",
     "https://deno.land/x/esbuild@v0.15.18/mod.d.ts": "30f2dc94c3e143ae1c9a37b06208a0ac98f0bc9f56d21397acf1fd88827989ab",
     "https://deno.land/x/esbuild@v0.15.18/mod.js": "c67f3df40fdc326e6c68a9d4a527ea83bc32bfb13e087f22aafd9de32336d143",
     "https://deno.land/x/esbuild_deno_loader@0.6.0/deps.ts": "fe86f62cb954edc2580868cdc3292d4446f22cd2c4eedbf8ee26513fdf74e343",

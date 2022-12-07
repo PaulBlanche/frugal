@@ -53,7 +53,7 @@ export function esbuildBundler(
             esbuildConfig,
         );
 
-        return writeBundles(result, facadeToEntrypoint, params);
+        return await writeBundles(result, facadeToEntrypoint, params);
     };
 }
 
@@ -72,9 +72,10 @@ async function writeEntrypoints(params: BundlerParams) {
                 `${facadeId}.ts`,
             );
 
-            facadeToEntrypoint[`deno:file://${facadePath}`] =
-                facadeToEntrypoint[`deno:file://${facadePath}`] ?? [];
-            facadeToEntrypoint[`deno:file://${facadePath}`].push({
+            const key = path.relative(params.outputDir, facadePath);
+
+            facadeToEntrypoint[key] = facadeToEntrypoint[key] ?? [];
+            facadeToEntrypoint[key].push({
                 entrypoint: facade.entrypoint,
                 bundle: facade.bundle,
             });
@@ -137,7 +138,9 @@ async function writeBundles(
 
         // if the outputed file is an entry point
         if (output?.entryPoint) {
-            const facades = facadeToEntrypoint[output.entryPoint];
+            const facades = facadeToEntrypoint[
+                path.relative(params.outputDir, output.entryPoint)
+            ];
             // if there is a matching facade, it means the entrypoint is a static
             // entrypoint (no dynamic import)
             if (facades !== undefined) {
@@ -169,7 +172,10 @@ async function writeBundles(
 
     const metaPath = path.join(params.publicDir, 'js', 'meta.json');
     await fs.ensureFile(metaPath);
-    await Deno.writeTextFile(metaPath, JSON.stringify(result.metafile));
+    await Deno.writeTextFile(
+        metaPath,
+        JSON.stringify(result.metafile, null, 2),
+    );
 
     return url;
 }

@@ -72,7 +72,7 @@ export const DEFAULT_LOGGER_CONFIG: log.Config = {
 
 export const DEBUG_LOGGER_CONFIG: log.Config = {
     type: 'human',
-    loggers: loggers('INFO'),
+    loggers: loggers('DEBUG'),
 };
 
 await log.setup(DEFAULT_LOGGER_CONFIG);
