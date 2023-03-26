@@ -36,7 +36,7 @@ jobs:
       run: deno lint
 
     - name: run test
-      run: deno test
+      run: deno task test
 
     - name: generate coverage report
       if: matrix.coverage
