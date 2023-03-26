@@ -37,6 +37,7 @@ Deno.test('PageBuilder: build should fetch data and add the response to the cach
 
     mock.assertSpyCalls(cacheAddStub, 1);
     mock.assertSpyCall(cacheAddStub, 0, {
+        // deno-lint-ignore no-explicit-any
         args: ['foo/776', name, hash, dataResponse as any],
         returned: Promise.resolve(undefined),
     });
