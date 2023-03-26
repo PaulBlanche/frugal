@@ -32,6 +32,9 @@ jobs:
       with:
         deno-version: ${{ matrix.deno-version }}
 
+    - name: install puppeteer
+      run: deno run -A --unstable https://deno.land/x/puppeteer@16.2.0/install.ts
+
     - name: run lint
       run: deno lint
 
