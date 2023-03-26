@@ -9,7 +9,7 @@ import { Config } from '../Config.ts';
 import { BuildCache } from '../persistence/BuildCache.ts';
 import { RuntimeCache } from '../persistence/RuntimeCache.ts';
 
-type CacheEntry = {
+export type CacheEntry = {
     name: string;
     hash: string;
     updatedAt: number;
@@ -88,6 +88,7 @@ export class ResponseCache {
                 response: frugalResponse.serialize(),
             });
         } else {
+            console.log('cache hit');
             log(
                 `cache hit, skip render content for path "${pathname}"`,
                 {
