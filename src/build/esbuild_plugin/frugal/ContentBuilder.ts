@@ -156,7 +156,9 @@ export class ContentBuilder {
         const hash = xxhash.digest('hex') as string;
 
         const pageDescriptorUrl = new URL(outputPath, this.#config.self);
-        pageDescriptorUrl.hash = hash;
+        if (this.#config.isDevMode) {
+            pageDescriptorUrl.hash = hash;
+        }
 
         log(
             `import page descriptor at`,

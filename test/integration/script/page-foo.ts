@@ -11,7 +11,7 @@ type Data = {
 
 async function getData() {
     const data = await Deno.readTextFile(
-        new URL('../../../data.json', import.meta.url),
+        new URL('../../../../data.json', import.meta.url),
     );
     return JSON.parse(data)['foo'];
 }

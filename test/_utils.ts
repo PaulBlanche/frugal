@@ -7,17 +7,19 @@ type Builder = {
 };
 
 export function getBuilder(config: frugal.FrugalConfig): Builder {
-    const outdir = `./${crypto.randomUUID()}/`;
+    const outdir = `./.temp/${crypto.randomUUID()}/`;
 
     return {
         build: () => frugal.build({ outdir, ...config }),
         clean: async () => {
-            try {
-                await Deno.remove(new URL(outdir, config.self), {
-                    recursive: true,
-                });
-            } catch {
-                /* empty on purpose */
+            if (Deno.env.get('CI') !== 'true') {
+                try {
+                    await Deno.remove(new URL(outdir, config.self), {
+                        recursive: true,
+                    });
+                } catch {
+                    // empty on purpose
+                }
             }
         },
     };
