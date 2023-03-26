@@ -35,9 +35,7 @@ export class Navigator {
     }
 
     shouldVisit(directive?: string | null) {
-        return this.#config.defaultNavigate
-            ? directive !== 'false'
-            : directive === 'true';
+        return this.#config.defaultNavigate ? directive !== 'false' : directive === 'true';
     }
 
     async visit(init?: RequestInit): Promise<boolean> {

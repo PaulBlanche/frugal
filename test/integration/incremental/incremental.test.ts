@@ -1,5 +1,6 @@
-import * as frugal from '../../../mod.ts';
 import * as asserts from '../../../dep/std/testing/asserts.ts';
+
+import { getBuilder } from '../../_utils.ts';
 
 Deno.test('incremental', async () => {
     const builder = getBuilder({
@@ -171,27 +172,3 @@ Deno.test('incremental: files are regenerated if data changes', async () => {
     await builder.clean();
     await Deno.writeTextFile(dataURL, originalData);
 });
-
-type Builder = {
-    build: () => Promise<frugal.Frugal>;
-    clean: () => Promise<void>;
-};
-
-function getBuilder(config: frugal.FrugalConfig): Builder {
-    const outdir = `./${crypto.randomUUID()}/`;
-
-    return {
-        build: () =>
-            frugal.build({
-                ...config,
-                outdir,
-            }),
-        clean: async () => {
-            try {
-                await Deno.remove(new URL(outdir, config.self), {
-                    recursive: true,
-                });
-            } catch {}
-        },
-    };
-}

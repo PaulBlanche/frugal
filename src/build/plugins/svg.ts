@@ -187,7 +187,7 @@ async function getSymbol(asset: Asset) {
 
     symbol.attributes['id'] = id;
 
-    $svg.find('[id]').each((index, element) => {
+    $svg.find('[id]').each((_, element) => {
         const id = $(element).attr('id');
         if (id !== undefined) {
             symbol.gatheredIds.push(id);

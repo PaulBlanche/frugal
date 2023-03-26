@@ -1,8 +1,6 @@
-import * as path from '../../../dep/std/path.ts';
 import * as esbuild from '../../../dep/esbuild.ts';
 
-import { Plugin, RegisteredPlugin } from '../../Plugin.ts';
-import { Config } from '../../Config.ts';
+import { Plugin } from '../../Plugin.ts';
 import { log } from '../../log.ts';
 
 import { compile } from 'svelte/compiler';
@@ -171,60 +169,6 @@ function convertMessage({ message, start, end, filename, frame }: Warning) {
             column: start.column,
             length: start.line === end.line ? end.column - start.column : 0,
             lineText: frame,
-        },
-    };
-}
-
-type ServerSvelteOptions = {
-    filter: RegExp;
-    config: Config;
-};
-
-type AssetSvelteOptions = {
-    filter: RegExp;
-    config: Config;
-};
-function assetSvelte({ filter, config }: AssetSvelteOptions): RegisteredPlugin {
-    return {
-        type: 'asset',
-        setup(build) {
-            build.onLoad({ filter }, async (args) => {
-                const { specifier, loaded } = await config.loader.load(args);
-
-                const entrypoint = path.relative(
-                    path.fromFileUrl(new URL('.', config.self)),
-                    path.fromFileUrl(new URL(specifier)),
-                );
-                log(
-                    `found svelte entrypoint "${entrypoint}"`,
-                    {
-                        kind: 'debug',
-                        scope: 'asset-svelte',
-                    },
-                );
-
-                const source = typeof loaded.contents === 'string'
-                    ? loaded.contents
-                    : new TextDecoder().decode(loaded.contents);
-                const { js } = compile(source, {
-                    generate: 'dom',
-                    hydratable: true,
-                    preserveComments: true,
-                });
-
-                js.code = js.code.replaceAll(
-                    'svelte/internal',
-                    'npm:svelte/internal',
-                );
-
-                const contents = `${js.code}`;
-
-                return {
-                    ...loaded,
-                    contents,
-                    loader: 'js',
-                };
-            });
         },
     };
 }

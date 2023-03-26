@@ -1,1 +1,1 @@
-export * from "frugal/plugins/script.ts";
+export * from 'frugal/plugins/script.ts';

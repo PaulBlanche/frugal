@@ -34,7 +34,7 @@ export function cssModule(
 
                     build.onLoad(
                         { filter: /css-module-utils/, namespace: 'virtual' },
-                        async (args) => {
+                        async () => {
                             return {
                                 contents: await Deno.readFile(
                                     new URL('./cssModuleUtils.ts', import.meta.url),
@@ -91,7 +91,7 @@ export function cssModule(
 
                     build.onLoad(
                         { filter: /css-module-utils/, namespace: 'virtual' },
-                        async (args) => {
+                        async () => {
                             return {
                                 contents: await Deno.readFile(
                                     new URL('./cssModuleUtils.ts', import.meta.url),

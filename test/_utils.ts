@@ -16,7 +16,9 @@ export function getBuilder(config: frugal.FrugalConfig): Builder {
                 await Deno.remove(new URL(outdir, config.self), {
                     recursive: true,
                 });
-            } catch {}
+            } catch {
+                /* empty on purpose */
+            }
         },
     };
 }

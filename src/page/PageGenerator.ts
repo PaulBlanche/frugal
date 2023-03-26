@@ -13,6 +13,7 @@ type ContentGenerationContext<DATA = unknown, PATH extends string = string> = {
 
 export type PageGeneratorConfig<DATA = unknown, PATH extends string = string> = {
     page: Page<DATA, PATH>;
+    // deno-lint-ignore no-explicit-any
     assets: Record<string, any>;
     descriptor: string;
     watch?: boolean;

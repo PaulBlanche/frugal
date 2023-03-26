@@ -15,6 +15,7 @@ const HYDRATED = new WeakSet();
 
 export function hydrateIsland(
     root: HTMLElement,
+    // deno-lint-ignore no-explicit-any
     component: any,
 ) {
     if (HYDRATED.has(root)) {
@@ -26,9 +27,7 @@ export function hydrateIsland(
     console.log('hydrate', root);
 
     const propsScript = root.querySelector('script');
-    const props = propsScript?.textContent
-        ? JSON.parse(propsScript.textContent)
-        : {};
+    const props = propsScript?.textContent ? JSON.parse(propsScript.textContent) : {};
 
     new Hydratable({
         target: root,

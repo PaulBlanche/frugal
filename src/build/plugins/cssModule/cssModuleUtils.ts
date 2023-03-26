@@ -16,6 +16,7 @@ export function flatten(
 export function wrap(names: Record<string, string>, moduleName: string) {
     return new Proxy(names, {
         get(target, prop) {
+            // deno-lint-ignore no-explicit-any
             const value = (target as any)[prop];
             if (value === undefined && typeof prop === 'string') {
                 throw Error(

@@ -24,9 +24,7 @@ export class UpstashPersistence implements Persistence {
     }
 
     async get(key: string | [string, string]) {
-        const command = Array.isArray(key)
-            ? ['hget', key[0], key[1]]
-            : ['get', key];
+        const command = Array.isArray(key) ? ['hget', key[0], key[1]] : ['get', key];
 
         const response = await this.#sendCommand(command);
         const body = await response.json();
@@ -40,9 +38,7 @@ export class UpstashPersistence implements Persistence {
     }
 
     async delete(key: string | [string, string]) {
-        const command = Array.isArray(key)
-            ? ['hdel', key[0], key[1]]
-            : ['del', key];
+        const command = Array.isArray(key) ? ['hdel', key[0], key[1]] : ['del', key];
 
         const response = await this.#sendCommand(command);
         if (response.status !== 200) {

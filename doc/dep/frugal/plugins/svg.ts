@@ -1,1 +1,1 @@
-export * from "frugal/plugins/svg.ts";
+export * from 'frugal/plugins/svg.ts';

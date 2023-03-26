@@ -160,9 +160,7 @@ export class Session {
     async attach(headers: Headers) {
         if (this.#shouldAttach) {
             const cookies = http.getSetCookies(headers);
-            const hasSessionCookie = cookies.some((cookie) =>
-                cookie.name === this.#cookieName
-            );
+            const hasSessionCookie = cookies.some((cookie) => cookie.name === this.#cookieName);
             if (!hasSessionCookie) {
                 this.#log(`attach session ${this.#payload.jti}`, {
                     kind: 'debug',

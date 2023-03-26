@@ -1,1 +1,1 @@
-export * from "frugal/persistence.ts";
+export * from 'frugal/persistence.ts';

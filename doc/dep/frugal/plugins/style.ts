@@ -1,1 +1,1 @@
-export * from "frugal/plugins/style.ts";
+export * from 'frugal/plugins/style.ts';

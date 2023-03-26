@@ -1,32 +1,32 @@
-import * as frugal from "$dep/frugal/mod.ts";
-import * as dotenv from "$dep/std/dotenv.ts";
-import config from "./src/frugal.config.ts";
+import * as frugal from '$dep/frugal/mod.ts';
+import * as dotenv from '$dep/std/dotenv.ts';
+import config from './src/frugal.config.ts';
 
-if (Deno.env.get("CI") === undefined) {
-  await dotenv.config({
-    safe: true,
-    export: true,
-    path: new URL(".env", import.meta.url).pathname,
-  });
+if (Deno.env.get('CI') === undefined) {
+    await dotenv.config({
+        safe: true,
+        export: true,
+        path: new URL('.env', import.meta.url).pathname,
+    });
 }
 
 const [mode] = Deno.args;
 
 switch (mode) {
-  case "dev": {
-    (await frugal.dev(config)).start();
-    break;
-  }
-  case "build": {
-    await frugal.build(config);
-    break;
-  }
-  case "static-build": {
-    await frugal.staticBuild(config);
-    break;
-  }
-  case "serve": {
-    await frugal.serve(config);
-    break;
-  }
+    case 'dev': {
+        (await frugal.dev(config)).start();
+        break;
+    }
+    case 'build': {
+        await frugal.build(config);
+        break;
+    }
+    case 'static-build': {
+        await frugal.staticBuild(config);
+        break;
+    }
+    case 'serve': {
+        await frugal.serve(config);
+        break;
+    }
 }

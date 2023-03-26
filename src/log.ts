@@ -71,9 +71,9 @@ export function log(
         `${DATE_FOMATTER.format(now)} ${TIME_FORMATTER.format(now)}`,
     );
 
-    const message = `${date} ${formatKind(kind)} ${
-        formatScope(scope, scopeExtra, kind)
-    } ${formatMessage(messageOrError, kind, extra)}`;
+    const message = `${date} ${formatKind(kind)} ${formatScope(scope, scopeExtra, kind)} ${
+        formatMessage(messageOrError, kind, extra)
+    }`;
 
     console.log(message);
 }
@@ -106,6 +106,7 @@ function formatMessage(
     }
 }
 
+// deno-lint-ignore no-explicit-any
 function formatMessageContent(messageOrError: any) {
     if (messageOrError instanceof Error) {
         return `${messageOrError.name} : ${messageOrError.message}`;
@@ -122,6 +123,7 @@ function formatExtra(messageOrError: Error | string, extra?: string) {
     return `\n${formatError(messageOrError)}`;
 }
 
+// deno-lint-ignore no-explicit-any
 function formatCause(cause: any) {
     if (cause instanceof Error) {
         return formatError(cause);

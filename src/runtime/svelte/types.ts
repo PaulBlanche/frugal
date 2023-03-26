@@ -20,4 +20,5 @@ export type HydrationStrategy =
     | 'media-query'
     | 'never';
 
+// deno-lint-ignore no-explicit-any
 export type GetApp = () => Promise<any> | any;

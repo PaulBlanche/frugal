@@ -1,1 +1,1 @@
-export * from "frugal/runtime/client_session.ts";
+export * from 'frugal/runtime/client_session.ts';

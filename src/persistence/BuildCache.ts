@@ -46,7 +46,9 @@ export class BuildCache<VALUE = unknown> implements Cache<VALUE> {
                         config.hash,
                         '_cache.json',
                     ]);
-                } catch {}
+                } catch {
+                    /* empty on purpose */
+                }
 
                 return new BuildCache<VALUE>(
                     { hash: config.hash, data: {} },

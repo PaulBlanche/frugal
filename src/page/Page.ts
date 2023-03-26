@@ -8,8 +8,10 @@ import { DataResponse } from './FrugalResponse.ts';
 class BasePage<
     DATA = unknown,
     PATH extends string = string,
-    DESCRIPTOR extends descriptor.PageDescriptor<DATA, PATH> =
-        descriptor.PageDescriptor<DATA, PATH>,
+    DESCRIPTOR extends descriptor.PageDescriptor<DATA, PATH> = descriptor.PageDescriptor<
+        DATA,
+        PATH
+    >,
 > {
     #descriptor: DESCRIPTOR;
     #urlCompiler: pathToRegexp.PathFunction<PathObject<PATH>>;
@@ -174,6 +176,7 @@ export function compile<
     const result = descriptor.parseStaticDescriptor<DATA, PATH>(pageDescriptor);
     if (result.success) {
         return new StaticPage<DATA, PATH>(
+            // deno-lint-ignore no-explicit-any
             pageDescriptor as any,
         ) as Page;
     } else {

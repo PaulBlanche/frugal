@@ -34,7 +34,7 @@ export class DataResponse<DATA> {
     }
 }
 
-export class EmptyResponse extends DataResponse<any> {
+export class EmptyResponse extends DataResponse<unknown> {
     constructor(responseInit?: ResponseInit) {
         super(null, responseInit);
     }

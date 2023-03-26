@@ -28,6 +28,7 @@ type OnBuildAssetsArgs = {
 
 export type OnBuildAssetsCallback = (
     args: OnBuildAssetsArgs,
+    // deno-lint-ignore no-explicit-any
 ) => any | Promise<any>;
 
 export type Asset = {

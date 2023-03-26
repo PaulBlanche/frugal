@@ -6,6 +6,7 @@ import * as fs from '../../../../dep/std/fs.ts';
 import { Config } from '../../../Config.ts';
 import { log } from '../../../log.ts';
 import { RoutablePage, Router } from '../../../page/Router.ts';
+import { Assets } from '../../../page/PageDescriptor.ts';
 
 type MetafileOutput = esbuild.Metafile['outputs'][string];
 
@@ -21,7 +22,7 @@ export class ContentBuilder {
         this.#config = config;
     }
 
-    async build(assets: Record<string, any>, isExport?: boolean) {
+    async build(assets: Assets, isExport?: boolean) {
         log('building contents', { scope: 'ContentBuilder' });
         const responseCache = await this.#config.responseCache('build');
 

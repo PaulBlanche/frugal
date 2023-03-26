@@ -1,53 +1,53 @@
 /* @jsxRuntime automatic */
 /* @jsxImportSource preact */
-import { usePathname } from "$dep/frugal/runtime/preact.client.ts";
-import { clsx } from "$dep/clsx.ts";
+import { usePathname } from '$dep/frugal/runtime/preact.client.ts';
+import { clsx } from '$dep/clsx.ts';
 
 // @deno-types="frugal/css-module.d.ts"
-import navigation from "./Navigation.module.css";
+import navigation from './Navigation.module.css';
 
-export const NAVIGATION_CLASS = "mobile-toggle-navigation";
+export const NAVIGATION_CLASS = 'mobile-toggle-navigation';
 
 export function Navigation() {
-  const pathname = usePathname();
+    const pathname = usePathname();
 
-  const isHome = pathname === "/";
-  const isDocs = pathname.startsWith("/docs");
+    const isHome = pathname === '/';
+    const isDocs = pathname.startsWith('/docs');
 
-  return (
-    <nav class={clsx(navigation["navigation"], NAVIGATION_CLASS)}>
-      <div class={clsx(navigation["navigation-container"])}>
-        <NavigationEntry active={isHome} href="/">
-          Home
-        </NavigationEntry>{" "}
-        <NavigationEntry active={isDocs} href="/docs">
-          Docs
-        </NavigationEntry>
-        {" "}
-      </div>
-    </nav>
-  );
+    return (
+        <nav class={clsx(navigation['navigation'], NAVIGATION_CLASS)}>
+            <div class={clsx(navigation['navigation-container'])}>
+                <NavigationEntry active={isHome} href='/'>
+                    Home
+                </NavigationEntry>{' '}
+                <NavigationEntry active={isDocs} href='/docs'>
+                    Docs
+                </NavigationEntry>
+                {' '}
+            </div>
+        </nav>
+    );
 }
 
 type NavigationEntryProps = {
-  children: preact.ComponentChildren;
-  active?: boolean;
-  href?: string;
+    children: preact.ComponentChildren;
+    active?: boolean;
+    href?: string;
 };
 
 function NavigationEntry(
-  { active = false, children, href }: NavigationEntryProps,
+    { active = false, children, href }: NavigationEntryProps,
 ) {
-  if (active) {
+    if (active) {
+        return (
+            <span class={clsx(navigation['entry-active'])}>
+                {children}
+            </span>
+        );
+    }
     return (
-      <span class={clsx(navigation["entry-active"])}>
-        {children}
-      </span>
+        <a class={clsx(navigation['entry'])} href={href}>
+            {children}
+        </a>
     );
-  }
-  return (
-    <a class={clsx(navigation["entry"])} href={href}>
-      {children}
-    </a>
-  );
 }

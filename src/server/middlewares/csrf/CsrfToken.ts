@@ -1,7 +1,6 @@
 import * as http from '../../../../dep/std/http.ts';
-import { Config } from '../../../Config.ts';
 
-import { Context } from '../../Context.ts';
+import { Config } from '../../../Config.ts';
 import { Session } from '../../Session.ts';
 import { xor } from './xor.ts';
 

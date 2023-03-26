@@ -1,1 +1,1 @@
-export * from "frugal/page.ts";
+export * from 'frugal/page.ts';

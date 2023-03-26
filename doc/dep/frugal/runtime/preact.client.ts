@@ -1,1 +1,1 @@
-export * from "frugal/runtime/preact.client.ts";
+export * from 'frugal/runtime/preact.client.ts';

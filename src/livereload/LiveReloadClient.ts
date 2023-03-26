@@ -1,5 +1,3 @@
-import { Session } from '../runtime/client_session/mod.ts';
-
 enum LiveReloadStatus {
     CONNECTED,
     PRISTINE,

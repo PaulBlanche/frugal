@@ -6,6 +6,7 @@ import { PageBuilder } from './PageBuilder.ts';
 import { PageRefresher } from './PageRefresher.ts';
 import { PageGenerator } from './PageGenerator.ts';
 import { ResponseCache } from './ResponseCache.ts';
+import { Assets } from './PageDescriptor.ts';
 
 type BaseRoute = {
     name: string;
@@ -40,7 +41,7 @@ export type RoutablePage = {
 
 export type RouterConfig = {
     pages: RoutablePage[];
-    assets: Record<string, any>;
+    assets: Assets;
 };
 
 /**

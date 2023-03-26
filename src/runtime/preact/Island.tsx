@@ -3,10 +3,7 @@
 import * as hooks from 'preact/hooks';
 import * as preact from 'preact';
 import type { HydrationStrategy } from './types.ts';
-import {
-    END_NO_DIFF_COMMENT,
-    START_NO_DIFF_COMMENT,
-} from '../client_session/mod.ts';
+import { END_NO_DIFF_COMMENT, START_NO_DIFF_COMMENT } from '../client_session/mod.ts';
 
 export type IslandProps<PROPS> =
     & {
@@ -35,9 +32,7 @@ export function Island<PROPS>(
 ) {
     const isInIsland = hooks.useContext(islandContext);
 
-    const Component = 'props' in rest
-        ? <rest.Component {...rest.props} />
-        : <rest.Component />;
+    const Component = 'props' in rest ? <rest.Component {...rest.props} /> : <rest.Component />;
 
     // client side or inside an island, simply render the component
     if (typeof document !== 'undefined' || isInIsland) {

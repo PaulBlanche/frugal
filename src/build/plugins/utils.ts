@@ -1,6 +1,5 @@
 import * as bytes from '../../../dep/std/fmt/bytes.ts';
 import * as esbuild from '../../../dep/esbuild.ts';
-import * as path from '../../../dep/std/path.ts';
 
 import { Config } from '../../Config.ts';
 import { log } from '../../log.ts';

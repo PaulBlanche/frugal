@@ -81,9 +81,7 @@ export function parseNpmSpecifier(specifier: URL): NpmSpecifier {
         version: versionStartIndex === pathStartIndex
             ? null
             : path.slice(versionStartIndex + 1, pathStartIndex),
-        path: pathStartIndex === path.length
-            ? null
-            : path.slice(pathStartIndex),
+        path: pathStartIndex === path.length ? null : path.slice(pathStartIndex),
     };
 }
 

@@ -1,6 +1,5 @@
 import * as esbuild from '../dep/esbuild.ts';
 import * as path from '../dep/std/path.ts';
-import * as fs from '../dep/std/fs.ts';
 
 import { getPlugins } from './build/esbuild_plugin/getPlugins.ts';
 import { Config, FrugalConfig } from './Config.ts';

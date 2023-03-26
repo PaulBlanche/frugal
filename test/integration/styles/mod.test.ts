@@ -33,7 +33,7 @@ Deno.test('script_loader: file structure', async (t) => {
     await builder.clean();
 });
 
-Deno.test('script_loader: style order', async (t) => {
+Deno.test('script_loader: style order', async () => {
     const builder = getBuilder({
         self: import.meta.url,
         pages: ['./page-bar.ts', './page-foo.ts'],

@@ -3,6 +3,7 @@ import * as esbuild from '../../../../dep/esbuild.ts';
 import { Config } from '../../../Config.ts';
 import { Asset, OutputEntryPoint } from '../../../Plugin.ts';
 import { log } from '../../../log.ts';
+import { Assets } from '../../../page/PageDescriptor.ts';
 
 export class AssetBuilder {
     #metafile: esbuild.Metafile;
@@ -15,7 +16,7 @@ export class AssetBuilder {
 
     async build() {
         log('building assets', { scope: 'AssetBuilder' });
-        const assets: Record<string, any> = {};
+        const assets: Assets = {};
 
         await Promise.all(this.#config.plugins.map(async (plugin) => {
             const buildAssets = plugin.buildAssets;

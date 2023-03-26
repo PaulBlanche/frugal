@@ -3,11 +3,7 @@ import * as path from '../../dep/std/path.ts';
 
 import { Cache } from '../persistence/Cache.ts';
 import { Persistence } from '../persistence/Persistence.ts';
-import {
-    DataResponse,
-    FrugalResponse,
-    SerializedFrugalResponse,
-} from './FrugalResponse.ts';
+import { DataResponse, FrugalResponse, SerializedFrugalResponse } from './FrugalResponse.ts';
 import { log } from '../log.ts';
 import { Config } from '../Config.ts';
 import { BuildCache } from '../persistence/BuildCache.ts';

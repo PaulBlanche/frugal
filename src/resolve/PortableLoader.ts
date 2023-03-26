@@ -1,4 +1,3 @@
-import * as esbuild from '../../dep/esbuild.ts';
 import * as path from '../../dep/std/path.ts';
 
 import * as shared from './shared.ts';

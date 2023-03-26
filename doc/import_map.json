@@ -1,9 +1,9 @@
 {
-  "imports": {
-    "$dep/": "./dep/",
-    "frugal/": "../",
-    "preact": "npm:/preact@10.13.1",
-    "preact/": "npm:/preact@10.13.1/",
-    "preact-render-to-string": "npm:/preact-render-to-string@5.2.6"
-  }
+    "imports": {
+        "$dep/": "./dep/",
+        "frugal/": "../",
+        "preact": "npm:/preact@10.13.1",
+        "preact/": "npm:/preact@10.13.1/",
+        "preact-render-to-string": "npm:/preact-render-to-string@5.2.6"
+    }
 }
