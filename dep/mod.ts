@@ -19,6 +19,7 @@ import './esbuild.ts';
 import './importmap.ts';
 import './lightningcss.ts';
 import './path-to-regexp.ts';
-import './puppeteer.ts';
+import './puppeteer/mod.ts';
+import './puppeteer/install.ts';
 import './xxhash.ts';
 import './zod.ts';

@@ -1,5 +1,5 @@
 import * as frugal from '../mod.ts';
-import puppeteer, { Browser } from '../dep/puppeteer.ts';
+import puppeteer, { Browser } from '../dep/puppeteer/mod.ts';
 
 type Builder = {
     build: () => Promise<frugal.Frugal>;
