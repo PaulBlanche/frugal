@@ -1,1 +1,1 @@
-export * from 'npm:path-to-regexp@6.2.1';
+export * from 'https://esm.sh/path-to-regexp@6.2.1';

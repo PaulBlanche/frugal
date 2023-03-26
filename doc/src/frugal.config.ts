@@ -5,6 +5,9 @@ import { cssModule } from '$dep/frugal/plugins/cssModule.ts';
 import { FrugalConfig, importKey } from '$dep/frugal/mod.ts';
 import { UpstashPersistence } from '$dep/frugal/persistence.ts';
 
+const CRYPTO_KEY = Deno.env.get('CRYPTO_KEY');
+const PERSISTENCE = Deno.env.get('PERSISTENCE');
+
 export default {
     self: import.meta.url,
     outdir: '../dist/',
@@ -27,16 +30,14 @@ export default {
         speed: 6 * 1000 * 1000,
         delay: 1,
     },
-    runtimePersistence: Deno.env.get('PERSISTENCE') === 'filesystem'
-        ? undefined
-        : new UpstashPersistence(
-            Deno.env.get('UPSTASH_URL') ?? '',
-            Deno.env.get('UPSTASH_TOKEN') ?? '',
-        ),
+    runtimePersistence: PERSISTENCE === 'filesystem' ? undefined : new UpstashPersistence(
+        Deno.env.get('UPSTASH_URL') ?? '',
+        Deno.env.get('UPSTASH_TOKEN') ?? '',
+    ),
     server: {
         port: 8000,
         session: {
-            key: await importKey(Deno.env.get('CRYPTO_KEY')!),
+            key: CRYPTO_KEY ? await importKey(CRYPTO_KEY) : undefined,
         },
     },
 } as FrugalConfig;

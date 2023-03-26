@@ -186,7 +186,10 @@
     "https://deno.land/x/zod@v3.20.0/index.ts": "035a7422d9f2be54daa0fe464254b69225b443000673e4794095d672471e8792",
     "https://deno.land/x/zod@v3.20.0/locales/en.ts": "8ee8b6f6fc22a64de4f638eb123670e7d5bc969c45ce879498001be8ec570d33",
     "https://deno.land/x/zod@v3.20.0/mod.ts": "64e55237cb4410e17d968cd08975566059f27638ebb0b86048031b987ba251c4",
-    "https://deno.land/x/zod@v3.20.0/types.ts": "aa2a8af17bce0de4b08992031f61b01294c588d7958eb3dee87969c642b665d8"
+    "https://deno.land/x/zod@v3.20.0/types.ts": "aa2a8af17bce0de4b08992031f61b01294c588d7958eb3dee87969c642b665d8",
+    "https://esm.sh/path-to-regexp@6.2.1": "8d1e71df8868da0c77531f4656aef2aa43e24bfd79af35b24ff684aeea51453b",
+    "https://esm.sh/v99/path-to-regexp@6.2.1/deno/path-to-regexp.js": "2591e6ebf25ef48f42f7fa7f54baec84ea47dd5542e36d2cc3e4e90e765b4bb8",
+    "https://esm.sh/v99/path-to-regexp@6.2.1/dist/index.d.ts": "6e7936b20cd2022c2a71f9d780e7f87216c19fde5c18448aaff60059a46ae2e7"
   },
   "npm": {
     "specifiers": {

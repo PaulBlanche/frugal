@@ -1,6 +1,5 @@
 import * as frugal from '$dep/frugal/mod.ts';
 import * as dotenv from '$dep/std/dotenv.ts';
-import config from './src/frugal.config.ts';
 
 if (Deno.env.get('CI') === undefined) {
     await dotenv.config({
@@ -9,6 +8,8 @@ if (Deno.env.get('CI') === undefined) {
         path: new URL('.env', import.meta.url).pathname,
     });
 }
+
+const { default: config } = await import('./src/frugal.config.ts');
 
 const [mode] = Deno.args;
 

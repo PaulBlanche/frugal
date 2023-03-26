@@ -88,7 +88,6 @@ export class ResponseCache {
                 response: frugalResponse.serialize(),
             });
         } else {
-            console.log('cache hit');
             log(
                 `cache hit, skip render content for path "${pathname}"`,
                 {

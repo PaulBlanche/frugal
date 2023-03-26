@@ -1,5 +1,5 @@
 import * as lightning from '../../../../dep/lightningcss.ts';
-import * as buffer from '../../../../dep/std/node/buffer.ts';
+import { Buffer } from 'node:buffer';
 
 import { Plugin } from '../../../Plugin.ts';
 import { log } from '../../../log.ts';
@@ -141,7 +141,7 @@ export function cssModule(
         const name = utils.name(specifier, config);
         const { code, exports = {} } = lightning.transform({
             filename: name,
-            code: buffer.Buffer.from(
+            code: Buffer.from(
                 typeof cssCode === 'string' ? TEXT_ENCODER.encode(cssCode) : cssCode,
             ),
             cssModules: true,
