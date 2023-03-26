@@ -1,0 +1,5 @@
+.foo {
+    composes: common from './common.module.css';
+
+    background: red;
+}

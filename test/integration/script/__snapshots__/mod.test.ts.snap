@@ -1,0 +1,49 @@
+export const snapshot = {};
+
+snapshot[`script_loader: file structure 1`] = `
+'<html>
+    <head>
+        <title>foo</title>
+    </head>
+    <body>
+        <div id="log"></div>
+        <script type="module" src="/js/page-foo.js"></script>
+    </body>
+</html>'
+`;
+
+snapshot[`script_loader: file structure 2`] = `
+'<html>
+    <head>
+        <title>foo</title>
+    </head>
+    <body>
+        <div id="log"></div>
+        <script type="module" src="/js/page-foo.js"></script>
+    </body>
+</html>'
+`;
+
+snapshot[`script_loader: file structure 3`] = `
+'<html>
+    <head>
+        <title>bar</title>
+    </head>
+    <body>
+        <div id="log"></div>
+        <script type="module" src="/js/page-bar.js"></script>
+    </body>
+</html>'
+`;
+
+snapshot[`script_loader: file structure 4`] = `
+'<html>
+    <head>
+        <title>bar</title>
+    </head>
+    <body>
+        <div id="log"></div>
+        <script type="module" src="/js/page-bar.js"></script>
+    </body>
+</html>'
+`;

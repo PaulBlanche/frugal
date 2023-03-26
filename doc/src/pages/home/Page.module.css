@@ -1,0 +1,60 @@
+.main-container {
+    composes: container from "../../styles/container.module.css";
+
+    max-width: 860px;
+    padding: 0 20px;
+    margin-bottom: 5rem;
+}
+
+@media (min-width: 660px) {
+    .main-container {
+        margin: 0 auto;
+    }
+}
+
+.emphasis {
+    font-weight: bold;
+}
+
+.entry {
+    display: grid;
+    max-width: 860px;
+    margin: 30px 0 60px;
+    grid-template: "image" min-content "title" min-content "text" 1fr / 1fr;
+}
+
+@media (min-width: 660px) {
+    .entry:nth-child(odd) {
+        grid-template: "title image" min-content "text image" 1fr / 1fr min-content;
+    }
+
+    .entry:nth-child(even) {
+        grid-template: "image title" min-content "image text" 1fr / min-content 1fr;
+    }
+}
+
+
+.entry .illustration {
+    grid-area: image;
+
+    width: 150px;
+    height: 150px;
+    margin: 0 auto 40px;
+}
+
+@media (min-width: 660px) {
+    .entry .illustration {
+        margin: 0 20px;
+    }
+}
+
+
+
+.entry .title {
+    grid-area: title;
+    margin: 0;
+}
+
+.entry .text {
+    grid-area: text;
+}

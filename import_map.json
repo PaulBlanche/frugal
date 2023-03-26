@@ -1,5 +1,6 @@
 {
     "imports": {
+        "svelte/": "npm:/svelte@3.50.0/",
         "preact": "https://esm.sh/preact@10.11.3",
         "preact/signals": "https://esm.sh/@preact/signals@1.1.2",
         "preact/jsx-runtime": "https://esm.sh/preact@10.11.3/jsx-runtime",

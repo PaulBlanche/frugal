@@ -1,0 +1,19 @@
+@import "https://raw.githubusercontent.com/PrismJS/prism-themes/master/themes/prism-gruvbox-dark.css";
+
+.highlight {
+    border-radius: 0px;
+    margin-left: -1rem;
+    margin-right: -1rem;
+    padding: 16px;
+    font-size: 85%;
+    line-height: 1.45;
+    overflow: auto;
+}
+
+@media (min-width: 900px) {
+    .highlight {
+        border-radius: 6px;
+        margin-left: 0;
+        margin-right: 0;
+    }
+}

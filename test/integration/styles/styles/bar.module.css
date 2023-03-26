@@ -1,0 +1,5 @@
+.bar {
+    composes: common from './common.module.css';
+
+    background: blue;
+}

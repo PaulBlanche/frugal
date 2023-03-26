@@ -1,0 +1,6 @@
+{
+    "imports": {
+        "svelte/": "npm:/svelte@3.50.0/",
+        "frugal/": "http://localhost:8001/08cad56d-d07e-4d70-a8f0-da54e4ec7677/"
+    }
+}

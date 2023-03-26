@@ -1,0 +1,7 @@
+{
+  "importMap": "./import_map.json",
+  "tasks": {
+    "dev": "deno run -A --unstable cli.ts dev",
+    "build": "deno run -A --unstable cli.ts build"
+  }
+}

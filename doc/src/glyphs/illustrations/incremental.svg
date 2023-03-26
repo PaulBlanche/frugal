@@ -1,0 +1,27 @@
+<svg width="100" height="100" version="1.1" viewBox="0 0 26.458 26.458" xmlns="http://www.w3.org/2000/svg">
+ <g fill="#ffe300">
+  <rect x="5.0075" y="14.353" width="3.3156" height="7.5647" ry=".26458" stop-color="#000000"/>
+  <rect x="9.3814" y="11.73" width="3.3156" height="2.0947" ry=".26458" stop-color="#000000"/>
+  <rect x="13.755" y="7.7774" width="3.3156" height="3.9522" ry=".26458" stop-color="#000000"/>
+  <rect x="18.129" y="5.6827" width="3.3156" height="2.0947" ry=".26458" stop-color="#000000"/>
+ </g>
+ <g stroke="#000" stroke-linecap="round" stroke-width=".26458">
+  <rect x="17.6" y="8.8357" width="3.3156" height="13.612" ry=".26458" fill="none" stop-color="#000000"/>
+  <rect x="13.226" y="12.788" width="3.3156" height="9.6594" ry=".26458" fill="none" stop-color="#000000"/>
+  <path d="m3.42 23.251h19.408" fill="#ffe300" stop-color="#000000"/>
+ </g>
+ <g fill="none" stroke="#000" stroke-linecap="round" stroke-width=".26458">
+  <rect x="4.4783" y="14.883" width="3.3156" height="7.5647" ry=".26458" stop-color="#000000"/>
+  <rect x="8.8523" y="14.883" width="3.3156" height="7.5647" ry=".26458" stop-color="#000000"/>
+  <rect x="8.8523" y="12.259" width="3.3156" height="2.0947" ry=".26458" stop-color="#000000"/>
+  <rect x="13.226" y="8.3066" width="3.3156" height="3.9522" ry=".26458" stop-color="#000000"/>
+  <rect x="17.6" y="6.2119" width="3.3156" height="2.0947" ry=".26458" stop-color="#000000"/>
+  <path d="m22.828 23.251-0.96996-0.57339" stop-color="#000000"/>
+  <path d="m22.828 23.251-0.96996 0.57339" stop-color="#000000"/>
+ </g>
+ <g stroke="#000" stroke-linecap="round" stroke-width=".26458">
+  <path d="m3.42 23.251v-19.534" fill="#ffe300" stop-color="#000000"/>
+  <path d="m3.42 3.7172-0.57339 0.96996" fill="none" stop-color="#000000"/>
+  <path d="m3.42 3.7172 0.57339 0.96996" fill="none" stop-color="#000000"/>
+ </g>
+</svg>

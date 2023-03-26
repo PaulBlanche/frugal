@@ -1,0 +1,151 @@
+.blob {
+    position: relative;
+    width: 250px;
+    height: 250px;
+}
+
+@keyframes move {
+    0% {
+        transform: rotate(0);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+.particule {
+    border-radius: 100%;
+    position: absolute;
+    background-color: #FFD300;
+
+    animation-name: move;
+    animation-timing-function: linear;
+    animation-iteration-count: infinite;
+}
+
+.center {
+    composes: particule;
+
+    width: 150px;
+    height: 150px;
+
+    top: calc(50% - 75px);
+    left: calc(50% - 75px);
+
+}
+
+.big {
+    composes: particule;
+
+    width: 100px;
+    height: 100px;
+}
+
+.big_1 {
+    composes: big;
+
+    animation-duration: 11s;
+    transform-origin: 39% 40%;
+    top: calc(42% - 50px);
+    left: calc(43% - 50px);
+
+}
+
+.big_2 {
+    composes: big;
+
+
+    animation-duration: 13s;
+    transform-origin: 63% 38%;
+    top: calc(52% - 50px);
+    left: calc(56% - 50px);
+
+}
+
+.big_3 {
+    composes: big;
+
+    animation-duration: 12s;
+    animation-delay: 6s;
+    transform-origin: 31% 62%;
+    top: calc(43% - 50px);
+    left: calc(55% - 50px);
+}
+
+.big_4 {
+    composes: big;
+
+    animation-duration: 14s;
+    transform-origin: 61% 67%;
+    top: calc(54% - 50px);
+    left: calc(41% - 50px);
+}
+
+.medium {
+    composes: particule;
+
+    width: 60px;
+    height: 60px;
+}
+
+.medium_1 {
+    composes: medium;
+
+    animation-duration: 8s;
+    transform-origin: 32% 38%;
+    top: calc(33% - 30px);
+    left: calc(56% - 30px);
+}
+
+.medium_2 {
+    composes: medium;
+
+    animation-duration: 9s;
+    transform-origin: 78% 36%;
+    top: calc(54% - 30px);
+    left: calc(31% - 30px);
+}
+
+.medium_3 {
+    composes: medium;
+
+    animation-duration: 10s;
+    transform-origin: 69% 56%;
+    top: calc(51% - 30px);
+    left: calc(68% - 30px);
+}
+
+.medium_4 {
+    composes: medium;
+
+    animation-duration: 7s;
+    transform-origin: 48% 65%;
+    top: calc(67% - 30px);
+    left: calc(54% - 30px);
+}
+
+.small {
+    composes: particule;
+
+    width: 30px;
+    height: 30px;
+}
+
+.small_1 {
+    composes: small;
+
+    animation-duration: 17s;
+    transform-origin: 48% 170%;
+    top: calc(67% - 15px);
+    left: calc(54% - 15px);
+}
+
+.small_2 {
+    composes: small;
+
+    animation-duration: 16s;
+    transform-origin: 142% -150%;
+    top: calc(67% - 15px);
+    left: calc(54% - 15px);
+}

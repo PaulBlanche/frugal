@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width="210mm"
+   height="297mm"
+   viewBox="0 0 210 297"
+   version="1.1"
+   id="svg5"
+   inkscape:version="1.2.2 (b0a8486541, 2022-12-01)"
+   sodipodi:docname="logo.svg"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview
+     id="namedview7"
+     pagecolor="#ffffff"
+     bordercolor="#000000"
+     borderopacity="0.25"
+     inkscape:showpageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1"
+     inkscape:document-units="mm"
+     showgrid="false"
+     inkscape:zoom="4.6449692"
+     inkscape:cx="420.13196"
+     inkscape:cy="223.57522"
+     inkscape:window-width="878"
+     inkscape:window-height="992"
+     inkscape:window-x="0"
+     inkscape:window-y="0"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="layer1" />
+  <defs
+     id="defs2">
+    <rect
+       x="112.41004"
+       y="221.54278"
+       width="502.78397"
+       height="146.85261"
+       id="rect236" />
+    <filter
+       style="color-interpolation-filters:sRGB"
+       id="filter294"
+       inkscape:label="Test"
+       x="-0.15165877"
+       y="-0.13427329"
+       width="1.3033175"
+       height="1.2685466">
+      <feGaussianBlur
+         stdDeviation="4"
+         id="feGaussianBlur296" />
+      <feColorMatrix
+         id="feColorMatrix300"
+         values="1.0000000 0.0000000 0.0000000 0.0000000 0.0000000 0.0000000 1.0000000 0.0000000 0.0000000 0.0000000 0.0000000 0.0000000 1.0000000 0.0000000 0.0000000 0.0000000 0.0000000 0.0000000 100.00000 -50.000000 " />
+    </filter>
+    <rect
+       x="112.41004"
+       y="221.54279"
+       width="502.78397"
+       height="146.85262"
+       id="rect236-3" />
+  </defs>
+  <g
+     inkscape:label="Calque 1"
+     inkscape:groupmode="layer"
+     id="layer1">
+    <rect
+       style="fill:#000000;fill-opacity:1;stroke:#000000;stroke-width:0.264583;stroke-linecap:square;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;stop-color:#000000"
+       id="rect6501-5"
+       width="23.570528"
+       height="23.570528"
+       x="108.58479"
+       y="53.495342" />
+    <rect
+       style="fill:#ffffff;fill-opacity:1;stroke:#000000;stroke-width:0.264583;stroke-linecap:square;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;stop-color:#000000"
+       id="rect6501"
+       width="23.570528"
+       height="23.570528"
+       x="84.749672"
+       y="53.495342" />
+    <rect
+       style="fill:#ffd300;fill-opacity:1;stroke-width:0.461589;stroke-linecap:square;stroke-dasharray:0.461589, 2.76953;-inkscape-stroke:none;stop-color:#000000"
+       id="rect2564"
+       width="13.427077"
+       height="6.0192719"
+       x="85.746353"
+       y="69.26429"
+       transform="rotate(-3)" />
+    <text
+       xml:space="preserve"
+       transform="scale(0.26458333)"
+       id="text234"
+       style="font-size:72px;line-height:1;font-family:'Fira Sans';-inkscape-font-specification:'Fira Sans';text-align:end;white-space:pre;shape-inside:url(#rect236);fill:#000000;fill-opacity:1;stroke-width:1.88976;stroke-linecap:square;stroke-dasharray:1.88976, 11.3386;-inkscape-stroke:none;stop-color:#000000"
+       x="-13.779835"
+       y="0"><tspan
+         x="352.97363"
+         y="279.00329"
+         id="tspan20519"><tspan
+           style="font-family:'Fjalla One';-inkscape-font-specification:'Fjalla One';text-align:center;text-anchor:middle;fill:#333333"
+           id="tspan20517">f</tspan></tspan></text>
+    <rect
+       style="fill:#ffffff;fill-opacity:1;stroke-width:0.461589;stroke-linecap:square;stroke-dasharray:0.461589, 2.76953;-inkscape-stroke:none;stop-color:#000000"
+       id="rect2564-6"
+       width="13.427077"
+       height="6.0192719"
+       x="109.5488"
+       y="70.511726"
+       transform="rotate(-3)" />
+    <text
+       xml:space="preserve"
+       transform="matrix(0.26458333,0,0,0.26458333,23.835101,1.5807129e-6)"
+       id="text234-7"
+       style="font-size:72px;line-height:1;font-family:'Fira Sans';-inkscape-font-specification:'Fira Sans';text-align:end;white-space:pre;shape-inside:url(#rect236-3);fill:#ffd300;fill-opacity:1;stroke-width:1.88976;stroke-linecap:square;stroke-dasharray:1.88976, 11.3386;-inkscape-stroke:none;stop-color:#000000"
+       x="-13.779835"
+       y="0"><tspan
+         x="352.97363"
+         y="279.00329"
+         id="tspan20523"><tspan
+           style="font-family:'Fjalla One';-inkscape-font-specification:'Fjalla One';text-align:center;text-anchor:middle"
+           id="tspan20521">f</tspan></tspan></text>
+  </g>
+</svg>
