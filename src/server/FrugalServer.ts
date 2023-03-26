@@ -100,7 +100,7 @@ export class FrugalServer implements Server {
         const secure = this.#config.server.secure;
         const handler = this.handler(secure);
         return http.serve(handler, {
-            port: 8000,
+            port: this.#config.server.port,
             signal,
             onListen: (args) => {
                 onListen?.(args);

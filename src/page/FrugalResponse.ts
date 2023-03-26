@@ -34,7 +34,8 @@ export class DataResponse<DATA> {
     }
 }
 
-export class EmptyResponse extends DataResponse<unknown> {
+// deno-lint-ignore no-explicit-any
+export class EmptyResponse extends DataResponse<any> {
     constructor(responseInit?: ResponseInit) {
         super(null, responseInit);
     }

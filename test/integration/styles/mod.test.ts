@@ -8,9 +8,7 @@ Deno.test('script_loader: file structure', async (t) => {
     const builder = getBuilder({
         self: import.meta.url,
         pages: ['./page-bar.ts', './page-foo.ts'],
-        log: {
-            level: 'silent',
-        },
+        log: { level: 'silent' },
         plugins: [
             cssModule(),
             style(),
@@ -35,8 +33,10 @@ Deno.test('script_loader: file structure', async (t) => {
 
 Deno.test('script_loader: style order', async () => {
     const builder = getBuilder({
+        server: { port: 8002 },
         self: import.meta.url,
         pages: ['./page-bar.ts', './page-foo.ts'],
+        log: { level: 'silent' },
         plugins: [
             cssModule(),
             style(),
@@ -50,7 +50,7 @@ Deno.test('script_loader: style order', async () => {
     await withBrowser(async (browser) => {
         const page = await browser.newPage();
 
-        await page.goto('http://localhost:8000/foo/1');
+        await page.goto('http://localhost:8002/foo/1');
 
         const fooStyles = await page.evaluate(getStyles);
 
@@ -60,7 +60,7 @@ Deno.test('script_loader: style order', async () => {
             global: ['rgb(255, 255, 0)'],
         });
 
-        await page.goto('http://localhost:8000/bar/1');
+        await page.goto('http://localhost:8002/bar/1');
 
         const barStyles = await page.evaluate(getStyles);
 

@@ -36,5 +36,11 @@
     },
     "importMap": "./import_map.json",
     "tasks": {
+        "test:unit": "deno test --allow-all --coverage=tests/cov_profile/unit --parallel --shuffle test/unit",
+        "test:unit:snapshot": "deno test --allow-all test/unit -- --update",
+        "test:integration": "deno test --allow-all --coverage=tests/cov_profile/integration --parallel --shuffle test/integration",
+        "test:integration:snapshot": "deno test --allow-all test/integration --  --update",
+        "test:snapshot": "deno task test:unit:snapshot && deno task test:integration:snapshot",
+        "test": "deno task test:unit && deno task test:integration"
     }
 }

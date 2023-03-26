@@ -7,9 +7,7 @@ Deno.test('script_loader: file structure', async (t) => {
     const builder = getBuilder({
         self: import.meta.url,
         pages: ['./page-bar.ts', './page-foo.ts'],
-        log: {
-            level: 'silent',
-        },
+        log: { level: 'silent' },
         plugins: [
             script(),
         ],
@@ -33,8 +31,10 @@ Deno.test('script_loader: file structure', async (t) => {
 
 Deno.test('script_loader: script execution and order', async () => {
     const builder = getBuilder({
+        server: { port: 8001 },
         self: import.meta.url,
         pages: ['./page-bar.ts', './page-foo.ts'],
+        log: { level: 'silent' },
         plugins: [
             script(),
         ],
@@ -47,13 +47,13 @@ Deno.test('script_loader: script execution and order', async () => {
     await withBrowser(async (browser) => {
         const page = await browser.newPage();
 
-        await page.goto('http://localhost:8000/foo/1');
+        await page.goto('http://localhost:8001/foo/1');
 
         const _logFoo = await page.evaluate('_log');
 
         asserts.assertEquals(_logFoo, ['component', 'foo', 'shared']);
 
-        await page.goto('http://localhost:8000/bar/1');
+        await page.goto('http://localhost:8001/bar/1');
 
         const _logBar = await page.evaluate('_log');
 
