@@ -18,6 +18,7 @@
         "dev": "deno run -A --unstable cli.ts dev",
         "build": "deno run -A --unstable cli.ts build",
         "serve": "deno run -A --unstable cli.ts serve",
-        "create_key": "deno run -A --unstable cli.ts create_key"
+        "create_key": "deno run -A --unstable cli.ts create_key",
+        "cache": "deno cache --reload dep/mod.ts"
     }
 }

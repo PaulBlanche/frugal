@@ -1,0 +1,19 @@
+import './frugal/plugins/cssModule.ts';
+import './frugal/plugins/script.ts';
+import './frugal/plugins/style.ts';
+import './frugal/plugins/svg.ts';
+import './frugal/runtime/client_session.ts';
+import './frugal/runtime/preact.client.ts';
+import './frugal/runtime/preact.server.ts';
+import './frugal/mod.ts';
+import './frugal/page.ts';
+import './frugal/persistence.ts';
+import './std/dotenv.ts';
+import './clsx.ts';
+import './he.ts';
+import './prism.ts';
+
+import 'preact';
+import 'preact/hooks';
+import 'preact/jsx-runtime';
+import 'preact-render-to-string';
