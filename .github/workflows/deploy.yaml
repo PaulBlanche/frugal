@@ -28,17 +28,17 @@ jobs:
         uses: denoland/setup-deno@v1
 
       - name: run build
-        run: deno task doc:build
+        run: deno task build
+        working-directory: ./doc
         env:
           UPSTASH_URL: ${{ secrets.UPSTASH_URL }}
           UPSTASH_TOKEN: ${{ secrets.UPSTASH_TOKEN }}
-          UPSTASH_NAMESPACE: prod
           CRYPTO_KEY: ${{ secrets.CRYPTO_KEY }}
 
       - name: Upload to Deno Deploy
         uses: denoland/deployctl@v1
         with:
           project: frugal
-          entrypoint: docs/cli/serve.ts
-          import-map: import_map.json
+          entrypoint: doc/cli.ts
+          import-map: doc/import_map.json
 

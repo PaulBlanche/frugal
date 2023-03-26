@@ -1,7 +1,23 @@
 {
     "importMap": "./import_map.json",
+    "fmt": {
+        "files": {
+            "exclude": [
+                "dist"
+            ]
+        },
+        "options": {
+            "useTabs": false,
+            "lineWidth": 100,
+            "indentWidth": 4,
+            "singleQuote": true,
+            "proseWrap": "preserve"
+        }
+    },
     "tasks": {
         "dev": "deno run -A --unstable cli.ts dev",
-        "build": "deno run -A --unstable cli.ts build"
+        "build": "deno run -A --unstable cli.ts build",
+        "serve": "deno run -A --unstable cli.ts serve",
+        "create_key": "deno run -A --unstable cli.ts create_key"
     }
 }

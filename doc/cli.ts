@@ -21,10 +21,11 @@ switch (mode) {
         await frugal.build(config);
         break;
     }
-    case 'static-build': {
-        await frugal.staticBuild(config);
+    case 'create_key': {
+        console.log(await frugal.exportKey());
         break;
     }
+    default:
     case 'serve': {
         await frugal.serve(config);
         break;
