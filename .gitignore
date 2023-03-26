@@ -5,3 +5,4 @@ cov_profile/
 TODO
 .env
 node_modules/
+.temp/
