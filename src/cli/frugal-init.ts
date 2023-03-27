@@ -130,8 +130,12 @@ async function createDenoConfig(root: string) {
 }
 
 async function createFromTemplate(root: string, name: string, template: string) {
+    const dotenvAbsoluteURL = new URL(import.meta.resolve('../../dep/std/dotenv.ts'));
+    const dotenvPath = dotenvAbsoluteURL.protocol === 'file:'
+        ? path.relative(root, path.fromFileUrl(dotenvAbsoluteURL))
+        : dotenvAbsoluteURL.href;
     const content = (await Deno.readTextFile(new URL(template, import.meta.url)))
-        .replaceAll('%%dotenv%%', import.meta.resolve('../../dep/std/dotenv.ts'));
+        .replaceAll('%%dotenv%%', dotenvPath);
 
     const filePath = path.resolve(root, name);
     await fs.ensureFile(filePath);

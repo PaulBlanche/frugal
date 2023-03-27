@@ -1,5 +1,5 @@
 import * as frugal from 'frugal/mod.ts';
-import * as dotenv from 'file:///home/whiteshoulders/projects/personnal/frugal/dep/std/dotenv.ts';
+import * as dotenv from '../dep/std/dotenv.ts';
 
 if (Deno.env.get('CI') === undefined) {
     await dotenv.config({
