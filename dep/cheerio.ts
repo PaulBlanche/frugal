@@ -1,1 +1,1 @@
-export * from 'npm:cheerio@1.0.0-rc.12';
+export * from 'https://esm.sh/cheerio@1.0.0-rc.12';

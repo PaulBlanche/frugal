@@ -1,5 +1,4 @@
 import * as lightning from '../../../../dep/lightningcss.ts';
-import { Buffer } from 'node:buffer';
 
 import { Plugin } from '../../../Plugin.ts';
 import { log } from '../../../log.ts';
@@ -28,6 +27,10 @@ export function cssModule(
             build.register({
                 type: 'server',
                 setup(build) {
+                    build.onStart(async () => {
+                        await lightning.default();
+                    });
+
                     build.onResolve({ filter: /css-module-utils/ }, (args) => {
                         return { path: args.path, namespace: 'virtual' };
                     });
@@ -141,9 +144,7 @@ export function cssModule(
         const name = utils.name(specifier, config);
         const { code, exports = {} } = lightning.transform({
             filename: name,
-            code: Buffer.from(
-                typeof cssCode === 'string' ? TEXT_ENCODER.encode(cssCode) : cssCode,
-            ),
+            code: typeof cssCode === 'string' ? TEXT_ENCODER.encode(cssCode) : cssCode,
             cssModules: true,
         });
 
