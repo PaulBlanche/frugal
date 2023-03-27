@@ -14,7 +14,14 @@ export function getBuilder(config: frugal.FrugalConfig): Builder {
         clean: async () => {
             if (Deno.env.get('CI') !== 'true') {
                 try {
-                    await Deno.remove(new URL(outdir, config.self), {
+                    await Deno.remove(new URL(config.outdir ?? outdir, config.self), {
+                        recursive: true,
+                    });
+                } catch {
+                    // empty on purpose
+                }
+                try {
+                    await Deno.remove(new URL('cli', config.self), {
                         recursive: true,
                     });
                 } catch {

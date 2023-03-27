@@ -65,7 +65,7 @@ export function frugal({ config, isExport }: FrugalOptions): esbuild.Plugin {
                             }";`,
                         );
                         pagesExport.push(
-                            `{ descriptor : page_${page.hash}, name: "${page.name}", hash: "${page.hash}" }`,
+                            `{ descriptor : page_${page.hash} as any, name: "${page.name}", hash: "${page.hash}" }`,
                         );
                     }
 
@@ -75,7 +75,7 @@ export function frugal({ config, isExport }: FrugalOptions): esbuild.Plugin {
                         `export async function serve(options?: frugal.ServeOptions) {
     const instance = new frugal.Frugal(config);
     instance.config.setHash(configHash)
-    await instance._serve({ routablePages, assets, ...options })
+    await instance.serve({ routablePages, assets, ...options })
 }
 `,
                     ]);

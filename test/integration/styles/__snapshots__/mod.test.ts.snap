@@ -1,56 +1,56 @@
 export const snapshot = {};
 
-snapshot[`script_loader: file structure 1`] = `
+snapshot[`styles: file structure 1`] = `
 '<html>
     <head>
         <title>bar</title>
         <link rel="stylesheet" href="/css/page-foo.css" />
     </head>
     <body>
-        <div id="page" class="dA6UxW_foo oUtnuW_common">page</div>
-        <div id="shared" class="IJOK1q_shared">shared</div>
+        <div id="page" class="_SWsgq_foo Swq73q_common">page</div>
+        <div id="shared" class="-CnuFW_shared">shared</div>
         <div id="global" class="global">global</div>
     </body>
 </html>'
 `;
 
-snapshot[`script_loader: file structure 2`] = `
+snapshot[`styles: file structure 2`] = `
 '<html>
     <head>
         <title>bar</title>
         <link rel="stylesheet" href="/css/page-foo.css" />
     </head>
     <body>
-        <div id="page" class="dA6UxW_foo oUtnuW_common">page</div>
-        <div id="shared" class="IJOK1q_shared">shared</div>
+        <div id="page" class="_SWsgq_foo Swq73q_common">page</div>
+        <div id="shared" class="-CnuFW_shared">shared</div>
         <div id="global" class="global">global</div>
     </body>
 </html>'
 `;
 
-snapshot[`script_loader: file structure 3`] = `
+snapshot[`styles: file structure 3`] = `
 '<html>
     <head>
         <title>bar</title>
         <link rel="stylesheet" href="/css/page-bar.css" />
     </head>
     <body>
-        <div id="page" class="S4Nd0G_bar oUtnuW_common">page</div>
-        <div id="shared" class="IJOK1q_shared">shared</div>
+        <div id="page" class="tFrb0a_bar Swq73q_common">page</div>
+        <div id="shared" class="-CnuFW_shared">shared</div>
         <div id="global" class="global">global</div>
     </body>
 </html>'
 `;
 
-snapshot[`script_loader: file structure 4`] = `
+snapshot[`styles: file structure 4`] = `
 '<html>
     <head>
         <title>bar</title>
         <link rel="stylesheet" href="/css/page-bar.css" />
     </head>
     <body>
-        <div id="page" class="S4Nd0G_bar oUtnuW_common">page</div>
-        <div id="shared" class="IJOK1q_shared">shared</div>
+        <div id="page" class="tFrb0a_bar Swq73q_common">page</div>
+        <div id="shared" class="-CnuFW_shared">shared</div>
         <div id="global" class="global">global</div>
     </body>
 </html>'

@@ -71,7 +71,7 @@ export class Frugal {
         }
     }
 
-    async _serve({ routablePages, assets, ...options }: ServeOptions) {
+    async serve({ routablePages, assets, ...options }: ServeOptions) {
         await this.#config.validate();
 
         log('start frugal server', { scope: 'Frugal' });
@@ -140,7 +140,6 @@ export class Frugal {
 export async function build(config: FrugalConfig) {
     const frugal = new Frugal(config);
     await frugal.build();
-    await frugal.config.buildPersistence.set('configHash', await frugal.config.hash);
     return frugal;
 }
 

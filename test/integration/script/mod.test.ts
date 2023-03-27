@@ -1,7 +1,8 @@
-import { script } from '../../../plugins/script.ts';
 import * as asserts from '../../../dep/std/testing/asserts.ts';
 import { assertSnapshot } from '../../../dep/std/testing/snapshot.ts';
+import { script } from '../../../src/build/plugins/script.ts';
 import { getBuilder, withBrowser } from '../../_utils.ts';
+import config from './frugal.config.ts';
 
 Deno.test('script_loader: file structure', async (t) => {
     const builder = getBuilder({
@@ -29,31 +30,29 @@ Deno.test('script_loader: file structure', async (t) => {
     await builder.clean();
 });
 
-Deno.test('script_loader: script execution and order', async () => {
-    const builder = getBuilder({
-        server: { port: 8001 },
-        self: import.meta.url,
-        pages: ['./page-bar.ts', './page-foo.ts'],
-        log: { level: 'silent' },
-        plugins: [
-            script(),
-        ],
-    });
+Deno.test('script: script execution and order', async () => {
+    const builder = getBuilder(config);
 
-    const frugal = await builder.build();
+    await builder.build();
+
+    // trick deno check into no analysing dynamic import, because imported file
+    // does not exists yet
+    const serverScript = './cli/_server.ts';
+    const { serve } = await import(serverScript);
+
     const controller = new AbortController();
-    frugal.serve({ signal: controller.signal });
+    serve({ signal: controller.signal });
 
     await withBrowser(async (browser) => {
         const page = await browser.newPage();
 
-        await page.goto('http://localhost:8001/foo/1');
+        await page.goto('http://localhost:8000/foo/1');
 
         const _logFoo = await page.evaluate('_log');
 
         asserts.assertEquals(_logFoo, ['component', 'foo', 'shared']);
 
-        await page.goto('http://localhost:8001/bar/1');
+        await page.goto('http://localhost:8000/bar/1');
 
         const _logBar = await page.evaluate('_log');
 

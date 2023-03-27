@@ -3,8 +3,9 @@ import { cssModule } from '../../../plugins/cssModule.ts';
 import { assertSnapshot } from '../../../dep/std/testing/snapshot.ts';
 import { getBuilder, withBrowser } from '../../_utils.ts';
 import * as asserts from '../../../dep/std/testing/asserts.ts';
+import config from './frugal.config.ts';
 
-Deno.test('script_loader: file structure', async (t) => {
+Deno.test('styles: file structure', async (t) => {
     const builder = getBuilder({
         self: import.meta.url,
         pages: ['./page-bar.ts', './page-foo.ts'],
@@ -31,26 +32,23 @@ Deno.test('script_loader: file structure', async (t) => {
     await builder.clean();
 });
 
-Deno.test('script_loader: style order', async () => {
-    const builder = getBuilder({
-        server: { port: 8002 },
-        self: import.meta.url,
-        pages: ['./page-bar.ts', './page-foo.ts'],
-        log: { level: 'silent' },
-        plugins: [
-            cssModule(),
-            style(),
-        ],
-    });
+Deno.test('styles: style order', async () => {
+    const builder = getBuilder(config);
 
-    const frugal = await builder.build();
+    await builder.build();
+
+    // trick deno check into no analysing dynamic import, because imported file
+    // does not exists yet
+    const serverScript = './cli/_server.ts';
+    const { serve } = await import(serverScript);
+
     const controller = new AbortController();
-    frugal.serve({ signal: controller.signal });
+    serve({ signal: controller.signal });
 
     await withBrowser(async (browser) => {
         const page = await browser.newPage();
 
-        await page.goto('http://localhost:8002/foo/1');
+        await page.goto('http://localhost:8000/foo/1');
 
         const fooStyles = await page.evaluate(getStyles);
 
@@ -60,7 +58,7 @@ Deno.test('script_loader: style order', async () => {
             global: ['rgb(255, 255, 0)'],
         });
 
-        await page.goto('http://localhost:8002/bar/1');
+        await page.goto('http://localhost:8000/bar/1');
 
         const barStyles = await page.evaluate(getStyles);
 
