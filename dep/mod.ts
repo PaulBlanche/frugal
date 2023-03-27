@@ -6,6 +6,8 @@ import './std/testing/asserts.ts';
 import './std/testing/mock.ts';
 import './std/testing/snapshot.ts';
 import './std/testing/time.ts';
+import './std/dotenv.ts';
+import './std/flags.ts';
 import './std/fs.ts';
 import './std/http.ts';
 import './std/path.ts';

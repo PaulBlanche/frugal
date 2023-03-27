@@ -6,7 +6,7 @@ import { PageBuilder } from './PageBuilder.ts';
 import { PageRefresher } from './PageRefresher.ts';
 import { PageGenerator } from './PageGenerator.ts';
 import { ResponseCache } from './ResponseCache.ts';
-import { Assets } from './PageDescriptor.ts';
+import { Assets, PageDescriptor } from './PageDescriptor.ts';
 
 type BaseRoute = {
     name: string;
@@ -35,8 +35,8 @@ export type Route = StaticRoute | DynamicRoute;
 
 export type RoutablePage = {
     name: string;
-    url: URL;
     hash: string;
+    descriptor: PageDescriptor;
 };
 
 export type RouterConfig = {
@@ -62,10 +62,9 @@ export class Router {
         return this.#responseCache;
     }
 
-    async setup(config: RouterConfig) {
-        await Promise.all(config.pages.map(async (routablePage) => {
-            const pageDescriptor = await import(routablePage.url.href);
-            const page = compile(routablePage.name, pageDescriptor);
+    setup(config: RouterConfig) {
+        config.pages.map((routablePage) => {
+            const page = compile(routablePage.name, routablePage.descriptor);
 
             const alreadyMatchingRoute = this.#routes.find((route) =>
                 route.page.pattern === page.pattern
@@ -113,7 +112,7 @@ export class Router {
                     generator,
                 });
             }
-        }));
+        });
 
         log('setup router with routes', {
             scope: 'Router',

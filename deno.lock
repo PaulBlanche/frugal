@@ -36,6 +36,8 @@
     "https://deno.land/std@0.167.0/datetime/formatter.ts": "7c8e6d16a0950f400aef41b9f1eb9168249869776ec520265dfda785d746589e",
     "https://deno.land/std@0.167.0/datetime/mod.ts": "eb120e30ce33f23ccd885dbd38002e446c719834330ef8d1d7b4c0848ba6288e",
     "https://deno.land/std@0.167.0/datetime/tokenizer.ts": "7381e28f6ab51cb504c7e132be31773d73ef2f3e1e50a812736962b9df1e8c47",
+    "https://deno.land/std@0.167.0/dotenv/mod.ts": "9846f28b263c0c793345d74939f69bf34b46446aa2450e070c10a2140064165a",
+    "https://deno.land/std@0.167.0/dotenv/util.ts": "6cc392f087577a26a27f0463f77cc0c31a390aa055917099935b36eb2454592d",
     "https://deno.land/std@0.167.0/encoding/base64.ts": "8605e018e49211efc767686f6f687827d7f5fd5217163e981d8d693105640d7a",
     "https://deno.land/std@0.167.0/encoding/base64url.ts": "0283b12fcd306c11e3cf26fc022fecc800c6acc19704ea8bdb3908898fcd06d6",
     "https://deno.land/std@0.167.0/encoding/hex.ts": "b51e99b684486a3ad2406807a8be953f5ef8bac95af202774a759f9fcf0d87a6",

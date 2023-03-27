@@ -214,13 +214,17 @@ export class Config {
         }
     }
 
-    relative(url: string) {
-        return `.${
+    relative(url: string | URL) {
+        const relativePath = `${
             path.relative(
                 path.fromFileUrl(this.root),
                 path.fromFileUrl(url),
             )
         }`;
+        if (!relativePath.startsWith('.')) {
+            return `./${relativePath}`;
+        }
+        return relativePath;
     }
 
     isAsset(type: string, path: string) {
@@ -288,6 +292,10 @@ export class Config {
 
     get cachedir() {
         return new URL('.cache/', this.outdir);
+    }
+
+    get clidir() {
+        return new URL('cli/', this.root);
     }
 
     get builddir() {

@@ -10,13 +10,13 @@ const PERSISTENCE = Deno.env.get('PERSISTENCE');
 
 export default {
     self: import.meta.url,
-    outdir: '../dist/',
-    pages: ['./pages/home/mod.ts'],
-    importMap: '../import_map.json',
+    outdir: './dist/',
+    pages: ['./src/pages/home/mod.ts'],
+    importMap: './import_map.json',
     log: {
         level: 'verbose',
     },
-    nodeModuleDir: '../node_modules/',
+    nodeModuleDir: './node_modules/',
     plugins: [
         cssModule({}),
         svg({}),
@@ -36,8 +36,10 @@ export default {
     ),
     server: {
         port: 8000,
-        session: {
-            key: CRYPTO_KEY ? await importKey(CRYPTO_KEY) : undefined,
-        },
+        session: CRYPTO_KEY
+            ? {
+                key: await importKey(CRYPTO_KEY),
+            }
+            : undefined,
     },
 } as FrugalConfig;

@@ -9,8 +9,13 @@ import { FrugalContext } from './watch/FrugalContext.ts';
 import { Context } from './watch/Context.ts';
 import { RoutablePage, Router } from './page/Router.ts';
 import { FrugalServer, StaticFileServer } from './server/mod.ts';
-import { ServeOptions } from './server/Server.ts';
+import { Assets } from './page/PageDescriptor.ts';
+import { ServeOptions as BaseServeOptions } from './server/Server.ts';
 
+type ServeOptions = BaseServeOptions & {
+    routablePages: RoutablePage[];
+    assets: Assets;
+};
 export class Frugal {
     #config: Config;
 
@@ -28,7 +33,21 @@ export class Frugal {
         if (!this.#config.isDevMode) {
             return new FrugalContext(
                 this.#config,
-                () => this.#server('build', isStatic),
+                async () => {
+                    if (isStatic) {
+                        new StaticFileServer(this.#config);
+                    }
+
+                    const responseCache = await this.#config.responseCache('build');
+                    const { assets, routablePages } = await import(
+                        new URL('_devserver.ts', this.#config.clidir).href
+                    );
+
+                    const router = new Router(this.#config, responseCache);
+                    router.setup({ pages: routablePages, assets });
+
+                    return new FrugalServer(this.#config, router);
+                },
             );
         } else {
             const esbuildContext = await esbuild.context(
@@ -52,18 +71,27 @@ export class Frugal {
         }
     }
 
-    async serve(options?: ServeOptions) {
+    async _serve({ routablePages, assets, ...options }: ServeOptions) {
         await this.#config.validate();
 
         log('start frugal server', { scope: 'Frugal' });
-        const server = await this.#server('runtime');
-        server.serve(options);
+
+        const responseCache = await this.#config.responseCache('runtime');
+        const router = new Router(this.#config, responseCache);
+        router.setup({
+            pages: routablePages,
+            assets,
+        });
+
+        const server = new FrugalServer(this.#config, router);
+        await server.serve(options);
     }
 
     async staticBuild() {
         await this.#config.validate();
 
         log('start frugal export', { scope: 'Frugal' });
+
         this.#config.budget.logBudget();
 
         try {
@@ -71,13 +99,6 @@ export class Frugal {
         } finally {
             esbuild.stop();
         }
-    }
-
-    async #server(mode: 'build' | 'runtime', isStatic?: boolean) {
-        const router = await this.#loadRouter(mode);
-        return isStatic
-            ? new StaticFileServer(this.#config)
-            : new FrugalServer(this.#config, router);
     }
 
     #getEsbuildConfig(isStatic?: boolean): esbuild.BuildOptions {
@@ -114,35 +135,6 @@ export class Frugal {
 
         return esbuildConfig;
     }
-
-    async #loadRouter(mode: 'build' | 'runtime') {
-        const { pages, assets } = JSON.parse(
-            await Deno.readTextFile(
-                new URL('context.json', this.#config.runtimedir),
-            ),
-        );
-
-        const routablePages: RoutablePage[] = [];
-        for (const page of pages) {
-            const pageUrl = new URL(page.name, this.#config.self);
-            const matchingPage = this.#config.pages.find((page) => page.href === pageUrl.href);
-
-            if (matchingPage) {
-                routablePages.push({
-                    name: page.name,
-                    url: new URL(page.url),
-                    hash: page.hash,
-                });
-            }
-        }
-
-        const responseCache = await this.#config.responseCache(mode);
-
-        const router = new Router(this.#config, responseCache);
-        await router.setup({ pages: routablePages, assets });
-
-        return router;
-    }
 }
 
 export async function build(config: FrugalConfig) {
@@ -170,11 +162,4 @@ export async function staticBuild(config: FrugalConfig) {
     const frugal = new Frugal(config);
     await frugal.staticBuild();
     return frugal;
-}
-
-export async function serve(config: FrugalConfig) {
-    const frugal = new Frugal(config);
-    const hash = await frugal.config.buildPersistence.get('configHash');
-    frugal.config.setHash(hash);
-    await frugal.serve();
 }

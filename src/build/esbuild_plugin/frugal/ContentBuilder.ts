@@ -172,7 +172,7 @@ export class ContentBuilder {
         return {
             hash,
             name: output.entryPoint,
-            url: pageDescriptorUrl,
+            descriptor: await import(pageDescriptorUrl.href),
         };
     }
 }

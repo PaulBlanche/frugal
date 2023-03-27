@@ -1,0 +1,6 @@
+import * as frugal from 'frugal/mod.ts'
+
+export default {
+    self: import.meta.url,
+    importMap: './import_map.json',
+} as frugal.FrugalConfig
