@@ -6,30 +6,30 @@
  * DOM nodes, which can then be passed as the `parent` argument to Preact's `render()` method.
  */
 export function createRootFragment(
-    parent: Node & { __k?: unknown },
-    replaceNode: Node | Node[],
+  parent: Node & { __k?: unknown },
+  replaceNode: Node | Node[],
 ) {
-    replaceNode = ([] as Node[]).concat(replaceNode);
+  replaceNode = ([] as Node[]).concat(replaceNode);
 
-    const s = replaceNode[replaceNode.length - 1].nextSibling;
+  const s = replaceNode[replaceNode.length - 1].nextSibling;
 
-    function insert(c: Node, r: Node) {
-        if (r && r.parentNode === parent) {
-            parent.insertBefore(c, r);
-        } else if (s && s.parentNode === parent) {
-            parent.insertBefore(c, s);
-        }
+  function insert(c: Node, r: Node) {
+    if (r && r.parentNode === parent) {
+      parent.insertBefore(c, r);
+    } else if (s && s.parentNode === parent) {
+      parent.insertBefore(c, s);
     }
+  }
 
-    return (parent.__k = {
-        nodeType: 1,
-        parentNode: parent,
-        firstChild: replaceNode[0],
-        childNodes: replaceNode,
-        insertBefore: insert,
-        appendChild: insert,
-        removeChild: function (c: Node) {
-            parent.removeChild(c);
-        },
-    }) as unknown as DocumentFragment;
+  return (parent.__k = {
+    nodeType: 1,
+    parentNode: parent,
+    firstChild: replaceNode[0],
+    childNodes: replaceNode,
+    insertBefore: insert,
+    appendChild: insert,
+    removeChild: function (c: Node) {
+      parent.removeChild(c);
+    },
+  }) as unknown as DocumentFragment;
 }

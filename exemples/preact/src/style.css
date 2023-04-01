@@ -1,0 +1,19 @@
+html,
+body {
+    font-family: system-ui;
+    margin: 0;
+}
+
+body {
+    padding: 2rem;
+}
+
+main {
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.scroll-padder {
+    padding: 200px 0 400px;
+    text-align: center;
+}

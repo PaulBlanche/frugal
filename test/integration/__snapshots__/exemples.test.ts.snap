@@ -1,0 +1,3337 @@
+export const snapshot = {};
+
+snapshot[`exemple:svelte > css assets 1`] = `
+"/* virtual:../../runtime/svelte/Island.svelte.css */
+[data-svelte-slot].svelte-1vvptqv {
+  display: none;
+}
+
+/* virtual:./src/Counter.svelte.css */
+.counter.svelte-olmbld {
+  display: grid;
+  font-size: 2em;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  margin-top: 2em;
+  place-items: center;
+  border: 1px solid grey;
+}
+.counter-message.svelte-olmbld {
+  text-align: center;
+}
+
+/* virtual:./src/HomePage.svelte.css */
+html {
+  font-family: system-ui;
+  margin: 0;
+}
+body {
+  padding: 2rem;
+}
+main {
+  max-width: 600px;
+  margin: 0 auto;
+}
+.scroll-padder {
+  padding: 200px 0 400px;
+  text-align: center;
+}
+
+/* dist/.cache/asset/style/src/home.css */
+"
+`;
+
+snapshot[`exemple:svelte > css assets 2`] = `
+'{
+  "inputs": {
+    "virtual:../../runtime/svelte/Island.svelte.css": {
+      "bytes": 47,
+      "imports": []
+    },
+    "virtual:./src/Counter.svelte.css": {
+      "bytes": 203,
+      "imports": []
+    },
+    "virtual:./src/HomePage.svelte.css": {
+      "bytes": 144,
+      "imports": []
+    },
+    "dist/.cache/asset/style/src/home.css": {
+      "bytes": 146,
+      "imports": [
+        {
+          "path": "virtual:../../runtime/svelte/Island.svelte.css",
+          "kind": "import-rule",
+          "original": "virtual:../../runtime/svelte/Island.svelte.css"
+        },
+        {
+          "path": "virtual:./src/Counter.svelte.css",
+          "kind": "import-rule",
+          "original": "virtual:./src/Counter.svelte.css"
+        },
+        {
+          "path": "virtual:./src/HomePage.svelte.css",
+          "kind": "import-rule",
+          "original": "virtual:./src/HomePage.svelte.css"
+        }
+      ]
+    }
+  },
+  "outputs": {
+    "dist/public/css/home.css": {
+      "imports": [],
+      "entryPoint": "dist/.cache/asset/style/src/home.css",
+      "inputs": {
+        "virtual:../../runtime/svelte/Island.svelte.css": {
+          "bytesInOutput": 55
+        },
+        "virtual:./src/Counter.svelte.css": {
+          "bytesInOutput": 239
+        },
+        "virtual:./src/HomePage.svelte.css": {
+          "bytesInOutput": 188
+        },
+        "dist/.cache/asset/style/src/home.css": {
+          "bytesInOutput": 0
+        }
+      },
+      "bytes": 660
+    }
+  }
+}'
+`;
+
+snapshot[`exemple:svelte > js assets 1`] = `
+'import {
+  hydrate
+} from "./chunk-5RTQNANM.js";
+
+// src/Counter.script.ts
+var NAME = "Counter";
+if (true) {
+  hydrate(NAME, async () => {
+    const mod = await import("./Counter-CWDVNELK.js");
+    return mod.default;
+  });
+}
+'
+`;
+
+snapshot[`exemple:svelte > js assets 2`] = `
+'import {
+  SvelteComponent,
+  append_hydration,
+  attr,
+  children,
+  claim_element,
+  claim_space,
+  claim_text,
+  create_slot,
+  detach,
+  element,
+  getData,
+  get_all_dirty_from_scope,
+  get_slot_changes,
+  init,
+  insert_hydration,
+  listen,
+  noop,
+  run_all,
+  safe_not_equal,
+  set_data,
+  space,
+  text,
+  transition_in,
+  transition_out,
+  update_slot_base
+} from "./chunk-5RTQNANM.js";
+
+// https://cdn.skypack.dev/-/svelte@v3.58.0-QIyracdaCWAEmGjWtYVE/dist=es2019,mode=imports/optimized/svelte/store.js
+var subscriber_queue = [];
+function writable(value, start = noop) {
+  let stop;
+  const subscribers = /* @__PURE__ */ new Set();
+  function set(new_value) {
+    if (safe_not_equal(value, new_value)) {
+      value = new_value;
+      if (stop) {
+        const run_queue = !subscriber_queue.length;
+        for (const subscriber of subscribers) {
+          subscriber[1]();
+          subscriber_queue.push(subscriber, value);
+        }
+        if (run_queue) {
+          for (let i = 0; i < subscriber_queue.length; i += 2) {
+            subscriber_queue[i][0](subscriber_queue[i + 1]);
+          }
+          subscriber_queue.length = 0;
+        }
+      }
+    }
+  }
+  function update(fn) {
+    set(fn(value));
+  }
+  function subscribe2(run, invalidate = noop) {
+    const subscriber = [run, invalidate];
+    subscribers.add(subscriber);
+    if (subscribers.size === 1) {
+      stop = start(set) || noop;
+    }
+    run(value);
+    return () => {
+      subscribers.delete(subscriber);
+      if (subscribers.size === 0 && stop) {
+        stop();
+        stop = null;
+      }
+    };
+  }
+  return { set, update, subscribe: subscribe2 };
+}
+
+// src/store.ts
+var countWritable = writable(0);
+
+// src/Counter.svelte
+function create_fragment(ctx) {
+  let div0;
+  let button0;
+  let t0;
+  let t1;
+  let pre;
+  let t2;
+  let t3;
+  let button1;
+  let t4;
+  let t5;
+  let div1;
+  let t6;
+  let t7_value = (
+    /*data*/
+    ctx[1].framework + ""
+  );
+  let t7;
+  let current;
+  let mounted;
+  let dispose;
+  const default_slot_template = (
+    /*#slots*/
+    ctx[5].default
+  );
+  const default_slot = create_slot(
+    default_slot_template,
+    ctx,
+    /*\$\$scope*/
+    ctx[4],
+    null
+  );
+  return {
+    c() {
+      div0 = element("div");
+      button0 = element("button");
+      t0 = text("-");
+      t1 = space();
+      pre = element("pre");
+      t2 = text(
+        /*count*/
+        ctx[0]
+      );
+      t3 = space();
+      button1 = element("button");
+      t4 = text("+");
+      t5 = space();
+      div1 = element("div");
+      if (default_slot)
+        default_slot.c();
+      t6 = space();
+      t7 = text(t7_value);
+      this.h();
+    },
+    l(nodes) {
+      div0 = claim_element(nodes, "DIV", { class: true });
+      var div0_nodes = children(div0);
+      button0 = claim_element(div0_nodes, "BUTTON", {});
+      var button0_nodes = children(button0);
+      t0 = claim_text(button0_nodes, "-");
+      button0_nodes.forEach(detach);
+      t1 = claim_space(div0_nodes);
+      pre = claim_element(div0_nodes, "PRE", {});
+      var pre_nodes = children(pre);
+      t2 = claim_text(
+        pre_nodes,
+        /*count*/
+        ctx[0]
+      );
+      pre_nodes.forEach(detach);
+      t3 = claim_space(div0_nodes);
+      button1 = claim_element(div0_nodes, "BUTTON", {});
+      var button1_nodes = children(button1);
+      t4 = claim_text(button1_nodes, "+");
+      button1_nodes.forEach(detach);
+      div0_nodes.forEach(detach);
+      t5 = claim_space(nodes);
+      div1 = claim_element(nodes, "DIV", { class: true });
+      var div1_nodes = children(div1);
+      if (default_slot)
+        default_slot.l(div1_nodes);
+      t6 = claim_space(div1_nodes);
+      t7 = claim_text(div1_nodes, t7_value);
+      div1_nodes.forEach(detach);
+      this.h();
+    },
+    h() {
+      attr(div0, "class", "counter svelte-olmbld");
+      attr(div1, "class", "counter-message svelte-olmbld");
+    },
+    m(target, anchor) {
+      insert_hydration(target, div0, anchor);
+      append_hydration(div0, button0);
+      append_hydration(button0, t0);
+      append_hydration(div0, t1);
+      append_hydration(div0, pre);
+      append_hydration(pre, t2);
+      append_hydration(div0, t3);
+      append_hydration(div0, button1);
+      append_hydration(button1, t4);
+      insert_hydration(target, t5, anchor);
+      insert_hydration(target, div1, anchor);
+      if (default_slot) {
+        default_slot.m(div1, null);
+      }
+      append_hydration(div1, t6);
+      append_hydration(div1, t7);
+      current = true;
+      if (!mounted) {
+        dispose = [
+          listen(
+            button0,
+            "click",
+            /*subtract*/
+            ctx[3]
+          ),
+          listen(
+            button1,
+            "click",
+            /*add*/
+            ctx[2]
+          )
+        ];
+        mounted = true;
+      }
+    },
+    p(ctx2, [dirty]) {
+      if (!current || dirty & /*count*/
+      1)
+        set_data(
+          t2,
+          /*count*/
+          ctx2[0]
+        );
+      if (default_slot) {
+        if (default_slot.p && (!current || dirty & /*\$\$scope*/
+        16)) {
+          update_slot_base(
+            default_slot,
+            default_slot_template,
+            ctx2,
+            /*\$\$scope*/
+            ctx2[4],
+            !current ? get_all_dirty_from_scope(
+              /*\$\$scope*/
+              ctx2[4]
+            ) : get_slot_changes(
+              default_slot_template,
+              /*\$\$scope*/
+              ctx2[4],
+              dirty,
+              null
+            ),
+            null
+          );
+        }
+      }
+    },
+    i(local) {
+      if (current)
+        return;
+      transition_in(default_slot, local);
+      current = true;
+    },
+    o(local) {
+      transition_out(default_slot, local);
+      current = false;
+    },
+    d(detaching) {
+      if (detaching)
+        detach(div0);
+      if (detaching)
+        detach(t5);
+      if (detaching)
+        detach(div1);
+      if (default_slot)
+        default_slot.d(detaching);
+      mounted = false;
+      run_all(dispose);
+    }
+  };
+}
+function instance(\$\$self, \$\$props, \$\$invalidate) {
+  let { \$\$slots: slots = {}, \$\$scope } = \$\$props;
+  const data = getData();
+  function add() {
+    countWritable.update((count2) => count2 + 1);
+  }
+  function subtract() {
+    countWritable.update((count2) => count2 - 1);
+  }
+  let count;
+  countWritable.subscribe((value) => {
+    \$\$invalidate(0, count = value);
+  });
+  \$\$self.\$\$set = (\$\$props2) => {
+    if ("\$\$scope" in \$\$props2)
+      \$\$invalidate(4, \$\$scope = \$\$props2.\$\$scope);
+  };
+  return [count, data, add, subtract, \$\$scope, slots];
+}
+var Counter = class extends SvelteComponent {
+  constructor(options) {
+    super();
+    init(this, options, instance, create_fragment, safe_not_equal, {});
+  }
+};
+var Counter_default = Counter;
+export {
+  Counter_default as default
+};
+'
+`;
+
+snapshot[`exemple:svelte > js assets 3`] = `
+"var __accessCheck = (obj, member, msg) => {
+  if (!member.has(obj))
+    throw TypeError(\\"Cannot \\" + msg);
+};
+var __privateGet = (obj, member, getter) => {
+  __accessCheck(obj, member, \\"read from private field\\");
+  return getter ? getter.call(obj) : member.get(obj);
+};
+var __privateAdd = (obj, member, value) => {
+  if (member.has(obj))
+    throw TypeError(\\"Cannot add the same private member more than once\\");
+  member instanceof WeakSet ? member.add(obj) : member.set(obj, value);
+};
+var __privateSet = (obj, member, value, setter) => {
+  __accessCheck(obj, member, \\"write to private field\\");
+  setter ? setter.call(obj, value) : member.set(obj, value);
+  return value;
+};
+var __privateMethod = (obj, member, method) => {
+  __accessCheck(obj, member, \\"access private method\\");
+  return method;
+};
+
+// https://cdn.skypack.dev/-/svelte@v3.58.0-QIyracdaCWAEmGjWtYVE/dist=es2019,mode=imports/optimized/svelte/internal.js
+function noop() {
+}
+function assign(tar, src) {
+  for (const k in src)
+    tar[k] = src[k];
+  return tar;
+}
+function run(fn) {
+  return fn();
+}
+function blank_object() {
+  return /* @__PURE__ */ Object.create(null);
+}
+function run_all(fns) {
+  fns.forEach(run);
+}
+function is_function(thing) {
+  return typeof thing === \\"function\\";
+}
+function safe_not_equal(a, b) {
+  return a != a ? b == b : a !== b || (a && typeof a === \\"object\\" || typeof a === \\"function\\");
+}
+function is_empty(obj) {
+  return Object.keys(obj).length === 0;
+}
+function create_slot(definition, ctx, \$\$scope, fn) {
+  if (definition) {
+    const slot_ctx = get_slot_context(definition, ctx, \$\$scope, fn);
+    return definition[0](slot_ctx);
+  }
+}
+function get_slot_context(definition, ctx, \$\$scope, fn) {
+  return definition[1] && fn ? assign(\$\$scope.ctx.slice(), definition[1](fn(ctx))) : \$\$scope.ctx;
+}
+function get_slot_changes(definition, \$\$scope, dirty, fn) {
+  if (definition[2] && fn) {
+    const lets = definition[2](fn(dirty));
+    if (\$\$scope.dirty === void 0) {
+      return lets;
+    }
+    if (typeof lets === \\"object\\") {
+      const merged = [];
+      const len = Math.max(\$\$scope.dirty.length, lets.length);
+      for (let i = 0; i < len; i += 1) {
+        merged[i] = \$\$scope.dirty[i] | lets[i];
+      }
+      return merged;
+    }
+    return \$\$scope.dirty | lets;
+  }
+  return \$\$scope.dirty;
+}
+function update_slot_base(slot, slot_definition, ctx, \$\$scope, slot_changes, get_slot_context_fn) {
+  if (slot_changes) {
+    const slot_context = get_slot_context(slot_definition, ctx, \$\$scope, get_slot_context_fn);
+    slot.p(slot_context, slot_changes);
+  }
+}
+function get_all_dirty_from_scope(\$\$scope) {
+  if (\$\$scope.ctx.length > 32) {
+    const dirty = [];
+    const length = \$\$scope.ctx.length / 32;
+    for (let i = 0; i < length; i++) {
+      dirty[i] = -1;
+    }
+    return dirty;
+  }
+  return -1;
+}
+var is_hydrating = false;
+function start_hydrating() {
+  is_hydrating = true;
+}
+function end_hydrating() {
+  is_hydrating = false;
+}
+function upper_bound(low, high, key, value) {
+  while (low < high) {
+    const mid = low + (high - low >> 1);
+    if (key(mid) <= value) {
+      low = mid + 1;
+    } else {
+      high = mid;
+    }
+  }
+  return low;
+}
+function init_hydrate(target) {
+  if (target.hydrate_init)
+    return;
+  target.hydrate_init = true;
+  let children2 = target.childNodes;
+  if (target.nodeName === \\"HEAD\\") {
+    const myChildren = [];
+    for (let i = 0; i < children2.length; i++) {
+      const node = children2[i];
+      if (node.claim_order !== void 0) {
+        myChildren.push(node);
+      }
+    }
+    children2 = myChildren;
+  }
+  const m = new Int32Array(children2.length + 1);
+  const p = new Int32Array(children2.length);
+  m[0] = -1;
+  let longest = 0;
+  for (let i = 0; i < children2.length; i++) {
+    const current = children2[i].claim_order;
+    const seqLen = (longest > 0 && children2[m[longest]].claim_order <= current ? longest + 1 : upper_bound(1, longest, (idx) => children2[m[idx]].claim_order, current)) - 1;
+    p[i] = m[seqLen] + 1;
+    const newLen = seqLen + 1;
+    m[newLen] = i;
+    longest = Math.max(newLen, longest);
+  }
+  const lis = [];
+  const toMove = [];
+  let last = children2.length - 1;
+  for (let cur = m[longest] + 1; cur != 0; cur = p[cur - 1]) {
+    lis.push(children2[cur - 1]);
+    for (; last >= cur; last--) {
+      toMove.push(children2[last]);
+    }
+    last--;
+  }
+  for (; last >= 0; last--) {
+    toMove.push(children2[last]);
+  }
+  lis.reverse();
+  toMove.sort((a, b) => a.claim_order - b.claim_order);
+  for (let i = 0, j = 0; i < toMove.length; i++) {
+    while (j < lis.length && toMove[i].claim_order >= lis[j].claim_order) {
+      j++;
+    }
+    const anchor = j < lis.length ? lis[j] : null;
+    target.insertBefore(toMove[i], anchor);
+  }
+}
+function append_hydration(target, node) {
+  if (is_hydrating) {
+    init_hydrate(target);
+    if (target.actual_end_child === void 0 || target.actual_end_child !== null && target.actual_end_child.parentNode !== target) {
+      target.actual_end_child = target.firstChild;
+    }
+    while (target.actual_end_child !== null && target.actual_end_child.claim_order === void 0) {
+      target.actual_end_child = target.actual_end_child.nextSibling;
+    }
+    if (node !== target.actual_end_child) {
+      if (node.claim_order !== void 0 || node.parentNode !== target) {
+        target.insertBefore(node, target.actual_end_child);
+      }
+    } else {
+      target.actual_end_child = node.nextSibling;
+    }
+  } else if (node.parentNode !== target || node.nextSibling !== null) {
+    target.appendChild(node);
+  }
+}
+function insert(target, node, anchor) {
+  target.insertBefore(node, anchor || null);
+}
+function insert_hydration(target, node, anchor) {
+  if (is_hydrating && !anchor) {
+    append_hydration(target, node);
+  } else if (node.parentNode !== target || node.nextSibling != anchor) {
+    target.insertBefore(node, anchor || null);
+  }
+}
+function detach(node) {
+  if (node.parentNode) {
+    node.parentNode.removeChild(node);
+  }
+}
+function element(name) {
+  return document.createElement(name);
+}
+function svg_element(name) {
+  return document.createElementNS(\\"http://www.w3.org/2000/svg\\", name);
+}
+function text(data) {
+  return document.createTextNode(data);
+}
+function space() {
+  return text(\\" \\");
+}
+function empty() {
+  return text(\\"\\");
+}
+function listen(node, event, handler, options) {
+  node.addEventListener(event, handler, options);
+  return () => node.removeEventListener(event, handler, options);
+}
+function attr(node, attribute, value) {
+  if (value == null)
+    node.removeAttribute(attribute);
+  else if (node.getAttribute(attribute) !== value)
+    node.setAttribute(attribute, value);
+}
+function children(element2) {
+  return Array.from(element2.childNodes);
+}
+function init_claim_info(nodes) {
+  if (nodes.claim_info === void 0) {
+    nodes.claim_info = { last_index: 0, total_claimed: 0 };
+  }
+}
+function claim_node(nodes, predicate, processNode, createNode, dontUpdateLastIndex = false) {
+  init_claim_info(nodes);
+  const resultNode = (() => {
+    for (let i = nodes.claim_info.last_index; i < nodes.length; i++) {
+      const node = nodes[i];
+      if (predicate(node)) {
+        const replacement = processNode(node);
+        if (replacement === void 0) {
+          nodes.splice(i, 1);
+        } else {
+          nodes[i] = replacement;
+        }
+        if (!dontUpdateLastIndex) {
+          nodes.claim_info.last_index = i;
+        }
+        return node;
+      }
+    }
+    for (let i = nodes.claim_info.last_index - 1; i >= 0; i--) {
+      const node = nodes[i];
+      if (predicate(node)) {
+        const replacement = processNode(node);
+        if (replacement === void 0) {
+          nodes.splice(i, 1);
+        } else {
+          nodes[i] = replacement;
+        }
+        if (!dontUpdateLastIndex) {
+          nodes.claim_info.last_index = i;
+        } else if (replacement === void 0) {
+          nodes.claim_info.last_index--;
+        }
+        return node;
+      }
+    }
+    return createNode();
+  })();
+  resultNode.claim_order = nodes.claim_info.total_claimed;
+  nodes.claim_info.total_claimed += 1;
+  return resultNode;
+}
+function claim_element_base(nodes, name, attributes, create_element) {
+  return claim_node(nodes, (node) => node.nodeName === name, (node) => {
+    const remove = [];
+    for (let j = 0; j < node.attributes.length; j++) {
+      const attribute = node.attributes[j];
+      if (!attributes[attribute.name]) {
+        remove.push(attribute.name);
+      }
+    }
+    remove.forEach((v) => node.removeAttribute(v));
+    return void 0;
+  }, () => create_element(name));
+}
+function claim_element(nodes, name, attributes) {
+  return claim_element_base(nodes, name, attributes, element);
+}
+function claim_text(nodes, data) {
+  return claim_node(nodes, (node) => node.nodeType === 3, (node) => {
+    const dataStr = \\"\\" + data;
+    if (node.data.startsWith(dataStr)) {
+      if (node.data.length !== dataStr.length) {
+        return node.splitText(dataStr.length);
+      }
+    } else {
+      node.data = dataStr;
+    }
+  }, () => text(data), true);
+}
+function claim_space(nodes) {
+  return claim_text(nodes, \\" \\");
+}
+function find_comment(nodes, text2, start) {
+  for (let i = start; i < nodes.length; i += 1) {
+    const node = nodes[i];
+    if (node.nodeType === 8 && node.textContent.trim() === text2) {
+      return i;
+    }
+  }
+  return nodes.length;
+}
+function claim_html_tag(nodes, is_svg) {
+  const start_index = find_comment(nodes, \\"HTML_TAG_START\\", 0);
+  const end_index = find_comment(nodes, \\"HTML_TAG_END\\", start_index);
+  if (start_index === end_index) {
+    return new HtmlTagHydration(void 0, is_svg);
+  }
+  init_claim_info(nodes);
+  const html_tag_nodes = nodes.splice(start_index, end_index - start_index + 1);
+  detach(html_tag_nodes[0]);
+  detach(html_tag_nodes[html_tag_nodes.length - 1]);
+  const claimed_nodes = html_tag_nodes.slice(1, html_tag_nodes.length - 1);
+  for (const n of claimed_nodes) {
+    n.claim_order = nodes.claim_info.total_claimed;
+    nodes.claim_info.total_claimed += 1;
+  }
+  return new HtmlTagHydration(claimed_nodes, is_svg);
+}
+function set_data(text2, data) {
+  data = \\"\\" + data;
+  if (text2.data === data)
+    return;
+  text2.data = data;
+}
+var HtmlTag = class {
+  constructor(is_svg = false) {
+    this.is_svg = false;
+    this.is_svg = is_svg;
+    this.e = this.n = null;
+  }
+  c(html) {
+    this.h(html);
+  }
+  m(html, target, anchor = null) {
+    if (!this.e) {
+      if (this.is_svg)
+        this.e = svg_element(target.nodeName);
+      else
+        this.e = element(target.nodeType === 11 ? \\"TEMPLATE\\" : target.nodeName);
+      this.t = target.tagName !== \\"TEMPLATE\\" ? target : target.content;
+      this.c(html);
+    }
+    this.i(anchor);
+  }
+  h(html) {
+    this.e.innerHTML = html;
+    this.n = Array.from(this.e.nodeName === \\"TEMPLATE\\" ? this.e.content.childNodes : this.e.childNodes);
+  }
+  i(anchor) {
+    for (let i = 0; i < this.n.length; i += 1) {
+      insert(this.t, this.n[i], anchor);
+    }
+  }
+  p(html) {
+    this.d();
+    this.h(html);
+    this.i(this.a);
+  }
+  d() {
+    this.n.forEach(detach);
+  }
+};
+var HtmlTagHydration = class extends HtmlTag {
+  constructor(claimed_nodes, is_svg = false) {
+    super(is_svg);
+    this.e = this.n = null;
+    this.l = claimed_nodes;
+  }
+  c(html) {
+    if (this.l) {
+      this.n = this.l;
+    } else {
+      super.c(html);
+    }
+  }
+  i(anchor) {
+    for (let i = 0; i < this.n.length; i += 1) {
+      insert_hydration(this.t, this.n[i], anchor);
+    }
+  }
+};
+function construct_svelte_component(component, props) {
+  return new component(props);
+}
+var current_component;
+function set_current_component(component) {
+  current_component = component;
+}
+function get_current_component() {
+  if (!current_component)
+    throw new Error(\\"Function called outside component initialization\\");
+  return current_component;
+}
+function getContext(key) {
+  return get_current_component().\$\$.context.get(key);
+}
+var dirty_components = [];
+var binding_callbacks = [];
+var render_callbacks = [];
+var flush_callbacks = [];
+var resolved_promise = /* @__PURE__ */ Promise.resolve();
+var update_scheduled = false;
+function schedule_update() {
+  if (!update_scheduled) {
+    update_scheduled = true;
+    resolved_promise.then(flush);
+  }
+}
+function add_render_callback(fn) {
+  render_callbacks.push(fn);
+}
+var seen_callbacks = /* @__PURE__ */ new Set();
+var flushidx = 0;
+function flush() {
+  if (flushidx !== 0) {
+    return;
+  }
+  const saved_component = current_component;
+  do {
+    try {
+      while (flushidx < dirty_components.length) {
+        const component = dirty_components[flushidx];
+        flushidx++;
+        set_current_component(component);
+        update(component.\$\$);
+      }
+    } catch (e) {
+      dirty_components.length = 0;
+      flushidx = 0;
+      throw e;
+    }
+    set_current_component(null);
+    dirty_components.length = 0;
+    flushidx = 0;
+    while (binding_callbacks.length)
+      binding_callbacks.pop()();
+    for (let i = 0; i < render_callbacks.length; i += 1) {
+      const callback = render_callbacks[i];
+      if (!seen_callbacks.has(callback)) {
+        seen_callbacks.add(callback);
+        callback();
+      }
+    }
+    render_callbacks.length = 0;
+  } while (dirty_components.length);
+  while (flush_callbacks.length) {
+    flush_callbacks.pop()();
+  }
+  update_scheduled = false;
+  seen_callbacks.clear();
+  set_current_component(saved_component);
+}
+function update(\$\$) {
+  if (\$\$.fragment !== null) {
+    \$\$.update();
+    run_all(\$\$.before_update);
+    const dirty = \$\$.dirty;
+    \$\$.dirty = [-1];
+    \$\$.fragment && \$\$.fragment.p(\$\$.ctx, dirty);
+    \$\$.after_update.forEach(add_render_callback);
+  }
+}
+function flush_render_callbacks(fns) {
+  const filtered = [];
+  const targets = [];
+  render_callbacks.forEach((c) => fns.indexOf(c) === -1 ? filtered.push(c) : targets.push(c));
+  targets.forEach((c) => c());
+  render_callbacks = filtered;
+}
+var outroing = /* @__PURE__ */ new Set();
+var outros;
+function group_outros() {
+  outros = {
+    r: 0,
+    c: [],
+    p: outros
+  };
+}
+function check_outros() {
+  if (!outros.r) {
+    run_all(outros.c);
+  }
+  outros = outros.p;
+}
+function transition_in(block, local) {
+  if (block && block.i) {
+    outroing.delete(block);
+    block.i(local);
+  }
+}
+function transition_out(block, local, detach2, callback) {
+  if (block && block.o) {
+    if (outroing.has(block))
+      return;
+    outroing.add(block);
+    outros.c.push(() => {
+      outroing.delete(block);
+      if (callback) {
+        if (detach2)
+          block.d(1);
+        callback();
+      }
+    });
+    block.o(local);
+  } else if (callback) {
+    callback();
+  }
+}
+function get_spread_update(levels, updates) {
+  const update2 = {};
+  const to_null_out = {};
+  const accounted_for = { \$\$scope: 1 };
+  let i = levels.length;
+  while (i--) {
+    const o = levels[i];
+    const n = updates[i];
+    if (n) {
+      for (const key in o) {
+        if (!(key in n))
+          to_null_out[key] = 1;
+      }
+      for (const key in n) {
+        if (!accounted_for[key]) {
+          update2[key] = n[key];
+          accounted_for[key] = 1;
+        }
+      }
+      levels[i] = n;
+    } else {
+      for (const key in o) {
+        accounted_for[key] = 1;
+      }
+    }
+  }
+  for (const key in to_null_out) {
+    if (!(key in update2))
+      update2[key] = void 0;
+  }
+  return update2;
+}
+function get_spread_object(spread_props) {
+  return typeof spread_props === \\"object\\" && spread_props !== null ? spread_props : {};
+}
+var _boolean_attributes = [
+  \\"allowfullscreen\\",
+  \\"allowpaymentrequest\\",
+  \\"async\\",
+  \\"autofocus\\",
+  \\"autoplay\\",
+  \\"checked\\",
+  \\"controls\\",
+  \\"default\\",
+  \\"defer\\",
+  \\"disabled\\",
+  \\"formnovalidate\\",
+  \\"hidden\\",
+  \\"inert\\",
+  \\"ismap\\",
+  \\"loop\\",
+  \\"multiple\\",
+  \\"muted\\",
+  \\"nomodule\\",
+  \\"novalidate\\",
+  \\"open\\",
+  \\"playsinline\\",
+  \\"readonly\\",
+  \\"required\\",
+  \\"reversed\\",
+  \\"selected\\"
+];
+var boolean_attributes = /* @__PURE__ */ new Set([..._boolean_attributes]);
+function create_component(block) {
+  block && block.c();
+}
+function claim_component(block, parent_nodes) {
+  block && block.l(parent_nodes);
+}
+function mount_component(component, target, anchor, customElement) {
+  const { fragment, after_update } = component.\$\$;
+  fragment && fragment.m(target, anchor);
+  if (!customElement) {
+    add_render_callback(() => {
+      const new_on_destroy = component.\$\$.on_mount.map(run).filter(is_function);
+      if (component.\$\$.on_destroy) {
+        component.\$\$.on_destroy.push(...new_on_destroy);
+      } else {
+        run_all(new_on_destroy);
+      }
+      component.\$\$.on_mount = [];
+    });
+  }
+  after_update.forEach(add_render_callback);
+}
+function destroy_component(component, detaching) {
+  const \$\$ = component.\$\$;
+  if (\$\$.fragment !== null) {
+    flush_render_callbacks(\$\$.after_update);
+    run_all(\$\$.on_destroy);
+    \$\$.fragment && \$\$.fragment.d(detaching);
+    \$\$.on_destroy = \$\$.fragment = null;
+    \$\$.ctx = [];
+  }
+}
+function make_dirty(component, i) {
+  if (component.\$\$.dirty[0] === -1) {
+    dirty_components.push(component);
+    schedule_update();
+    component.\$\$.dirty.fill(0);
+  }
+  component.\$\$.dirty[i / 31 | 0] |= 1 << i % 31;
+}
+function init(component, options, instance2, create_fragment2, not_equal2, props, append_styles2, dirty = [-1]) {
+  const parent_component = current_component;
+  set_current_component(component);
+  const \$\$ = component.\$\$ = {
+    fragment: null,
+    ctx: [],
+    props,
+    update: noop,
+    not_equal: not_equal2,
+    bound: blank_object(),
+    on_mount: [],
+    on_destroy: [],
+    on_disconnect: [],
+    before_update: [],
+    after_update: [],
+    context: new Map(options.context || (parent_component ? parent_component.\$\$.context : [])),
+    callbacks: blank_object(),
+    dirty,
+    skip_bound: false,
+    root: options.target || parent_component.\$\$.root
+  };
+  append_styles2 && append_styles2(\$\$.root);
+  let ready = false;
+  \$\$.ctx = instance2 ? instance2(component, options.props || {}, (i, ret, ...rest) => {
+    const value = rest.length ? rest[0] : ret;
+    if (\$\$.ctx && not_equal2(\$\$.ctx[i], \$\$.ctx[i] = value)) {
+      if (!\$\$.skip_bound && \$\$.bound[i])
+        \$\$.bound[i](value);
+      if (ready)
+        make_dirty(component, i);
+    }
+    return ret;
+  }) : [];
+  \$\$.update();
+  ready = true;
+  run_all(\$\$.before_update);
+  \$\$.fragment = create_fragment2 ? create_fragment2(\$\$.ctx) : false;
+  if (options.target) {
+    if (options.hydrate) {
+      start_hydrating();
+      const nodes = children(options.target);
+      \$\$.fragment && \$\$.fragment.l(nodes);
+      nodes.forEach(detach);
+    } else {
+      \$\$.fragment && \$\$.fragment.c();
+    }
+    if (options.intro)
+      transition_in(component.\$\$.fragment);
+    mount_component(component, options.target, options.anchor, options.customElement);
+    end_hydrating();
+    flush();
+  }
+  set_current_component(parent_component);
+}
+var SvelteElement;
+if (typeof HTMLElement === \\"function\\") {
+  SvelteElement = class extends HTMLElement {
+    constructor() {
+      super();
+      this.attachShadow({ mode: \\"open\\" });
+    }
+    connectedCallback() {
+      const { on_mount } = this.\$\$;
+      this.\$\$.on_disconnect = on_mount.map(run).filter(is_function);
+      for (const key in this.\$\$.slotted) {
+        this.appendChild(this.\$\$.slotted[key]);
+      }
+    }
+    attributeChangedCallback(attr2, _oldValue, newValue) {
+      this[attr2] = newValue;
+    }
+    disconnectedCallback() {
+      run_all(this.\$\$.on_disconnect);
+    }
+    \$destroy() {
+      destroy_component(this, 1);
+      this.\$destroy = noop;
+    }
+    \$on(type, callback) {
+      if (!is_function(callback)) {
+        return noop;
+      }
+      const callbacks = this.\$\$.callbacks[type] || (this.\$\$.callbacks[type] = []);
+      callbacks.push(callback);
+      return () => {
+        const index = callbacks.indexOf(callback);
+        if (index !== -1)
+          callbacks.splice(index, 1);
+      };
+    }
+    \$set(\$\$props) {
+      if (this.\$\$set && !is_empty(\$\$props)) {
+        this.\$\$.skip_bound = true;
+        this.\$\$set(\$\$props);
+        this.\$\$.skip_bound = false;
+      }
+    }
+  };
+}
+var SvelteComponent = class {
+  \$destroy() {
+    destroy_component(this, 1);
+    this.\$destroy = noop;
+  }
+  \$on(type, callback) {
+    if (!is_function(callback)) {
+      return noop;
+    }
+    const callbacks = this.\$\$.callbacks[type] || (this.\$\$.callbacks[type] = []);
+    callbacks.push(callback);
+    return () => {
+      const index = callbacks.indexOf(callback);
+      if (index !== -1)
+        callbacks.splice(index, 1);
+    };
+  }
+  \$set(\$\$props) {
+    if (this.\$\$set && !is_empty(\$\$props)) {
+      this.\$\$.skip_bound = true;
+      this.\$\$set(\$\$props);
+      this.\$\$.skip_bound = false;
+    }
+  }
+};
+
+// ../../src/runtime/svelte/dataContext.ts
+var DATA_CONTEXT_KEY = Symbol(\\"DATA_CONTEXT_KEY\\");
+function getData() {
+  return getContext(DATA_CONTEXT_KEY).data;
+}
+
+// ../../src/runtime/client_session/utils.ts
+function isInternalUrl(url) {
+  const rootURL = new URL(\\"/\\", document.baseURI);
+  return url.href.startsWith(rootURL.href);
+}
+function getClosestParentNavigableAnchor(target) {
+  if (target instanceof Element) {
+    const anchor = target.closest(
+      \\"a[href]:not([target^=_]:not([download])\\"
+    );
+    if (anchor !== null) {
+      return anchor;
+    }
+  }
+}
+function getUrl(path) {
+  return new URL(path, document.baseURI);
+}
+var readyStateOrder = {
+  \\"loading\\": 0,
+  \\"interactive\\": 1,
+  \\"complete\\": 2
+};
+function onReadyStateChange(readyState, callback) {
+  if (typeof document === \\"undefined\\") {
+    return;
+  }
+  if (readyStateOrder[document.readyState] >= readyStateOrder[readyState]) {
+    callback();
+  } else {
+    document.addEventListener(\\"readystatechange\\", () => {
+      if (document.readyState === readyState) {
+        callback();
+      }
+    });
+  }
+  addEventListener(
+    \\"frugal:readystatechange\\",
+    (event) => {
+      if (event.detail.readystate === readyState) {
+        callback();
+      }
+    }
+  );
+}
+
+// ../../src/runtime/client_session/render/utils.ts
+function clone(node) {
+  if (isScriptElement(node)) {
+    const script = document.createElement(\\"script\\");
+    for (const attribute of node.attributes) {
+      script.setAttribute(attribute.name, attribute.value);
+    }
+    script.innerHTML = node.innerHTML;
+    return script;
+  }
+  return node.cloneNode(true);
+}
+function isScriptElement(node) {
+  return isElement(node) && node.nodeName === \\"SCRIPT\\";
+}
+function isElement(node) {
+  return node.nodeType === 1 /* ELEMENT_NODE */;
+}
+function hash(element2, attributeFilter) {
+  const key = [];
+  if (attributeFilter) {
+    for (const name of attributeFilter) {
+      const value = element2.getAttribute(name);
+      if (value) {
+        key.push(\`\${name}=\\"\${element2.getAttribute(name)}\\"\`);
+      }
+    }
+  } else {
+    for (const attribute of element2.attributes) {
+      key.push(\`\${attribute.name}=\\"\${attribute.value}\\"\`);
+    }
+  }
+  key.sort();
+  return \`\${element2.tagName} \${key.join(\\" \\")} \${element2.innerHTML}\`;
+}
+var BOOLEAN_ATTRIBUTES = [
+  \\"allowfullscreen\\",
+  \\"async\\",
+  \\"autofocus\\",
+  \\"autoplay\\",
+  \\"checked\\",
+  \\"controls\\",
+  \\"default\\",
+  \\"defer\\",
+  \\"disabled\\",
+  \\"formnovalidate\\",
+  \\"inert\\",
+  \\"ismap\\",
+  \\"itemscope\\",
+  \\"loop\\",
+  \\"multiple\\",
+  \\"muted\\",
+  \\"nomodule\\",
+  \\"novalidate\\",
+  \\"open\\",
+  \\"playsinline\\",
+  \\"readonly\\",
+  \\"required\\",
+  \\"reversed\\",
+  \\"selected\\"
+];
+function getAttributes(element2) {
+  const attributes = {};
+  for (const { name, value } of element2.attributes) {
+    attributes[name] = value;
+  }
+  for (const name of BOOLEAN_ATTRIBUTES) {
+    attributes[name] = element2.hasAttribute(name);
+  }
+  return Object.entries(attributes);
+}
+
+// ../../src/runtime/client_session/render/diff.ts
+function preserveNode() {
+  return { type: 0 /* PRESERVE_NODE */ };
+}
+function removeNode() {
+  return { type: 1 /* REMOVE_NODE */ };
+}
+function appendNode(target) {
+  return {
+    type: 2 /* APPEND_NODE */,
+    node: clone(target)
+  };
+}
+function replaceNode(target) {
+  return {
+    type: 3 /* REPLACE_NODE */,
+    node: clone(target)
+  };
+}
+function childNodes(node) {
+  return node.childNodes;
+}
+function diff(actual, target) {
+  const patchList = [];
+  const queue = [[patchList, actual, target]];
+  let current;
+  let noDiff = false;
+  while ((current = queue.shift()) !== void 0) {
+    const [patch2, items, inhibit] = visit(current[1], current[2]);
+    if (inhibit === true) {
+      noDiff = true;
+    }
+    if (noDiff) {
+      current[0].push(preserveNode());
+    } else {
+      current[0].push(patch2);
+      if (items !== void 0) {
+        queue.push(...items);
+      }
+    }
+    if (inhibit === false) {
+      noDiff = false;
+    }
+  }
+  return {
+    node: actual,
+    patch: patchList[0]
+  };
+}
+function visit(actual, target) {
+  if (actual === void 0 || actual === null) {
+    if (target === void 0 || target === null) {
+      return [preserveNode()];
+    } else {
+      return [appendNode(target)];
+    }
+  }
+  if (target === void 0 || target === null) {
+    return [removeNode()];
+  }
+  if (actual.nodeType !== target.nodeType) {
+    return [replaceNode(target)];
+  }
+  switch (actual.nodeType) {
+    case 8 /* COMMENT_NODE */: {
+      return visitComment(actual, target);
+    }
+    case 3 /* TEXT_NODE */: {
+      return visitText(actual, target);
+    }
+    case 1 /* ELEMENT_NODE */: {
+      return visitElement(actual, target);
+    }
+    case 9 /* DOCUMENT_NODE */: {
+      return visit(
+        actual.documentElement,
+        target.documentElement
+      );
+    }
+  }
+  return [replaceNode(target)];
+}
+function visitComment(actual, target) {
+  if (actual.data.match(/start-no-diff/) && target.data.match(/start-no-diff/)) {
+    return [preserveNode(), [], true];
+  }
+  if (target.data.match(/end-no-diff/)) {
+    return [preserveNode(), [], false];
+  }
+  return [replaceNode(target)];
+}
+function visitText(actual, target) {
+  if (actual.nodeValue.trim() === target.nodeValue.trim()) {
+    return [preserveNode()];
+  } else {
+    return [{
+      type: 4 /* UPDATE_TEXT */,
+      text: target.nodeValue
+    }];
+  }
+}
+function visitElement(actual, target) {
+  if (actual.tagName !== target.tagName) {
+    return [replaceNode(target)];
+  }
+  const patch2 = {
+    type: 5 /* UPDATE_ELEMENT */,
+    children: [],
+    attributes: computeAttributePatch(actual, target)
+  };
+  if (childNodes(actual).length === 0 && childNodes(target).length === 0) {
+    return [patch2];
+  }
+  const items = actual.tagName !== \\"HEAD\\" ? computeElementPatch(patch2, actual, target) : computeHeadPatch(
+    patch2,
+    actual,
+    target
+  );
+  return [patch2, items];
+}
+function computeAttributePatch(actual, target) {
+  const patches = [];
+  const removes = /* @__PURE__ */ new Map();
+  const sets = /* @__PURE__ */ new Map();
+  for (const [name, value] of getAttributes(actual)) {
+    if (value !== false) {
+      removes.set(name, value);
+    }
+  }
+  for (const [name, value] of getAttributes(target)) {
+    const actualAttributeValue = removes.get(name);
+    if (actualAttributeValue === null) {
+      sets.set(name, value);
+    } else if (actualAttributeValue === value) {
+      removes.delete(name);
+    } else {
+      if (value) {
+        removes.delete(name);
+      }
+      sets.set(name, value);
+    }
+  }
+  for (const [name] of removes) {
+    patches.push({ type: 6 /* REMOVE_ATTRIBUTE */, name });
+  }
+  for (const [name, value] of sets) {
+    if (value) {
+      patches.push({ type: 7 /* SET_ATTRIBUTE */, name, value });
+    }
+  }
+  return patches;
+}
+function computeElementPatch(patch2, actual, target) {
+  const items = [];
+  const max = Math.max(
+    childNodes(actual).length,
+    childNodes(target).length
+  );
+  for (let i = 0; i < max; i++) {
+    items.push([
+      patch2.children,
+      childNodes(actual)[i],
+      childNodes(target)[i]
+    ]);
+  }
+  return items;
+}
+function computeHeadPatch(patch2, actual, target) {
+  const removes = /* @__PURE__ */ new Map();
+  const inserts = /* @__PURE__ */ new Map();
+  const updates = /* @__PURE__ */ new Map();
+  for (const actualChild of actual.children) {
+    removes.set(headChildHash(actualChild), actualChild);
+  }
+  for (const targetChild of target.children) {
+    const headHash = headChildHash(targetChild);
+    const actualChild = removes.get(headHash);
+    if (actualChild !== void 0) {
+      if (hash(actualChild) !== hash(targetChild)) {
+        updates.set(headHash, targetChild);
+      }
+      removes.delete(headHash);
+    } else {
+      inserts.set(headHash, targetChild);
+    }
+  }
+  const items = [];
+  for (const node of childNodes(actual)) {
+    if (node.nodeType !== 1 /* ELEMENT_NODE */) {
+      patch2.children.push(preserveNode());
+      continue;
+    }
+    const element2 = node;
+    const key = headChildHash(element2);
+    if (removes.has(key)) {
+      patch2.children.push(removeNode());
+      continue;
+    }
+    const update2 = updates.get(key);
+    if (update2 !== void 0) {
+      const [elementPatch, elementItems] = visitElement(element2, update2);
+      patch2.children.push(elementPatch);
+      elementItems && items.push(...elementItems);
+      continue;
+    }
+    patch2.children.push(preserveNode());
+  }
+  for (const node of inserts.values()) {
+    patch2.children.push(appendNode(node));
+  }
+  return items;
+}
+function headChildHash(element2) {
+  switch (element2.tagName) {
+    case \\"BASE\\":
+    case \\"TITLE\\":
+      return element2.tagName;
+    case \\"META\\": {
+      if (element2.hasAttribute(\\"name\\")) {
+        return hash(element2, [\\"name\\"]);
+      } else if (element2.hasAttribute(\\"property\\")) {
+        return hash(element2, [\\"property\\"]);
+      } else if (element2.hasAttribute(\\"http-equiv\\")) {
+        return hash(element2, [\\"http-equiv\\"]);
+      }
+      return hash(element2);
+    }
+    case \\"LINK\\": {
+      return hash(element2, [\\"rel\\", \\"href\\"]);
+    }
+    default: {
+      return hash(element2);
+    }
+  }
+}
+
+// ../../src/runtime/client_session/render/patch.ts
+function patch(diff2) {
+  const parent = diff2.node.documentElement;
+  if (parent === null || parent === void 0) {
+    return;
+  }
+  const queue = [];
+  queue.push({
+    patch: diff2.patch,
+    parent
+  });
+  let current;
+  while ((current = queue.shift()) !== void 0) {
+    const { items } = patchNode(
+      current.patch,
+      current.parent,
+      current.child
+    );
+    if (items) {
+      queue.unshift(...items);
+    }
+  }
+}
+function patchNode(patch2, parent, child) {
+  switch (patch2.type) {
+    case 0 /* PRESERVE_NODE */: {
+      return {};
+    }
+    case 2 /* APPEND_NODE */: {
+      parent.appendChild(patch2.node);
+      return {};
+    }
+    case 1 /* REMOVE_NODE */: {
+      if (!child) {
+        return {};
+      }
+      parent.removeChild(child);
+      return {};
+    }
+    case 4 /* UPDATE_TEXT */: {
+      if (!child) {
+        return {};
+      }
+      child.nodeValue = patch2.text;
+      return {};
+    }
+    case 3 /* REPLACE_NODE */: {
+      if (!child) {
+        return {};
+      }
+      parent.replaceChild(patch2.node, child);
+      return {};
+    }
+    case 5 /* UPDATE_ELEMENT */: {
+      const element2 = child ?? parent;
+      if (element2 && isElement(element2)) {
+        patchAttribute(element2, patch2.attributes);
+      }
+      return {
+        items: patch2.children.map((childPatch, index) => ({
+          patch: childPatch,
+          parent: element2,
+          child: element2.childNodes[index]
+        }))
+      };
+    }
+  }
+}
+function patchAttribute(element2, patches) {
+  for (const patch2 of patches) {
+    switch (patch2.type) {
+      case 6 /* REMOVE_ATTRIBUTE */: {
+        if (patch2.name === \\"checked\\" && element2 instanceof HTMLInputElement) {
+          element2.checked = false;
+        }
+        element2.removeAttribute(patch2.name);
+        break;
+      }
+      case 7 /* SET_ATTRIBUTE */: {
+        if (patch2.name === \\"checked\\" && element2 instanceof HTMLInputElement) {
+          element2.checked = true;
+        }
+        const value = patch2.value;
+        element2.setAttribute(
+          patch2.name,
+          typeof value === \\"string\\" ? value : \\"\\"
+        );
+        break;
+      }
+    }
+  }
+}
+
+// ../../src/runtime/client_session/render/mod.ts
+function render(nextDocument) {
+  patch(diff(document, nextDocument));
+  if (document.activeElement instanceof HTMLButtonElement || document.activeElement instanceof HTMLAnchorElement) {
+    document.activeElement.blur();
+  }
+}
+
+// ../../src/runtime/client_session/SessionHistory.ts
+var HISTORY_INSTANCE = \`\$\$frugal\$\$history\$\$instance\$\$\`;
+var _stack, _index, _observing, _config;
+var _SessionHistory = class {
+  constructor(config) {
+    __privateAdd(this, _stack, void 0);
+    __privateAdd(this, _index, void 0);
+    __privateAdd(this, _observing, void 0);
+    __privateAdd(this, _config, void 0);
+    __privateSet(this, _config, config);
+    __privateSet(this, _stack, [new Navigator(new URL(location.href), __privateGet(this, _config))]);
+    __privateSet(this, _index, 0);
+    __privateSet(this, _observing, false);
+  }
+  static create(config) {
+    if (window[HISTORY_INSTANCE] !== void 0) {
+      throw Error(
+        \\"A SessionHistory instance was already created\\"
+      );
+    }
+    window[HISTORY_INSTANCE] = new _SessionHistory(config);
+    return window[HISTORY_INSTANCE];
+  }
+  static getInstance() {
+    if (window[HISTORY_INSTANCE] === void 0) {
+      throw Error(
+        \\"You need to create a SessionHistory first\\"
+      );
+    }
+    return window[HISTORY_INSTANCE];
+  }
+  observe() {
+    if (__privateGet(this, _observing)) {
+      return;
+    }
+    __privateSet(this, _observing, true);
+    addEventListener(\\"popstate\\", (event) => {
+      event.preventDefault();
+      const previous = __privateGet(this, _stack)[__privateGet(this, _index)];
+      previous.saveScroll();
+      __privateSet(this, _index, event.state ?? 0);
+      const current = __privateGet(this, _stack)[__privateGet(this, _index)];
+      current.shouldRestoreScroll();
+      dispatchEvent(
+        new CustomEvent(\\"frugal:popstate\\", {
+          detail: { navigator: current }
+        })
+      );
+    });
+  }
+  saveScroll() {
+    const current = __privateGet(this, _stack)[__privateGet(this, _index)];
+    current.saveScroll();
+  }
+  push(navigator) {
+    __privateSet(this, _stack, __privateGet(this, _stack).slice(0, __privateGet(this, _index) + 1));
+    __privateGet(this, _stack).push(navigator);
+    __privateSet(this, _index, __privateGet(this, _index) + 1);
+    history.pushState(__privateGet(this, _index), \\"\\", navigator.url);
+  }
+  back() {
+    history.back();
+  }
+  forward() {
+    history.forward();
+  }
+  go(delta) {
+    history.go(delta);
+  }
+};
+var SessionHistory = _SessionHistory;
+_stack = new WeakMap();
+_index = new WeakMap();
+_observing = new WeakMap();
+_config = new WeakMap();
+
+// ../../src/runtime/client_session/Navigator.ts
+var LOADING_CLASSNAME = \\"frugal-navigate-loading\\";
+var _url, _config2, _shouldRestoreScroll, _tryToScrollToHash, tryToScrollToHash_fn, _setReadyState, setReadyState_fn, _shouldProcessNavigate, shouldProcessNavigate_fn, _fetch, fetch_fn;
+var Navigator = class {
+  constructor(url, config) {
+    __privateAdd(this, _tryToScrollToHash);
+    __privateAdd(this, _setReadyState);
+    __privateAdd(this, _shouldProcessNavigate);
+    __privateAdd(this, _fetch);
+    __privateAdd(this, _url, void 0);
+    __privateAdd(this, _config2, void 0);
+    __privateAdd(this, _shouldRestoreScroll, void 0);
+    __privateSet(this, _url, url);
+    __privateSet(this, _config2, config);
+    __privateSet(this, _shouldRestoreScroll, false);
+  }
+  saveScroll() {
+    this.scroll = { x: scrollX, y: scrollY };
+  }
+  shouldRestoreScroll() {
+    __privateSet(this, _shouldRestoreScroll, true);
+  }
+  get url() {
+    return __privateGet(this, _url);
+  }
+  shouldVisit(directive) {
+    return __privateGet(this, _config2).defaultNavigate ? directive !== \\"false\\" : directive === \\"true\\";
+  }
+  async visit(init2) {
+    SessionHistory.getInstance().saveScroll();
+    const result = await this.navigate(init2);
+    SessionHistory.getInstance().push(this);
+    return result;
+  }
+  async navigate(init2) {
+    var _a, _b;
+    __privateMethod(this, _setReadyState, setReadyState_fn).call(this, \\"loading\\");
+    const html = await __privateMethod(this, _fetch, fetch_fn).call(this, init2);
+    const nextDocument = new DOMParser().parseFromString(
+      html,
+      \\"text/html\\"
+    );
+    if (!__privateMethod(this, _shouldProcessNavigate, shouldProcessNavigate_fn).call(this, nextDocument)) {
+      return false;
+    }
+    render(nextDocument);
+    __privateMethod(this, _setReadyState, setReadyState_fn).call(this, \\"interactive\\");
+    if (!__privateMethod(this, _tryToScrollToHash, tryToScrollToHash_fn).call(this)) {
+      if (__privateGet(this, _shouldRestoreScroll) && __privateGet(this, _config2).restoreScroll) {
+        scroll(((_a = this.scroll) == null ? void 0 : _a.x) ?? 0, ((_b = this.scroll) == null ? void 0 : _b.y) ?? 0);
+      } else if (__privateGet(this, _config2).resetScroll) {
+        window.scroll(0, 0);
+      }
+    }
+    __privateMethod(this, _setReadyState, setReadyState_fn).call(this, \\"complete\\");
+    return true;
+  }
+};
+_url = new WeakMap();
+_config2 = new WeakMap();
+_shouldRestoreScroll = new WeakMap();
+_tryToScrollToHash = new WeakSet();
+tryToScrollToHash_fn = function() {
+  if (__privateGet(this, _url).hash.startsWith(\\"#\\")) {
+    const scrollTarget = document.querySelector(__privateGet(this, _url).hash);
+    if (scrollTarget !== null) {
+      scrollTarget.scrollIntoView();
+      return true;
+    }
+  }
+  return false;
+};
+_setReadyState = new WeakSet();
+setReadyState_fn = function(readystate) {
+  dispatchEvent(
+    new CustomEvent(\\"frugal:readystatechange\\", {
+      detail: { readystate }
+    })
+  );
+};
+_shouldProcessNavigate = new WeakSet();
+shouldProcessNavigate_fn = function(document2) {
+  const frugalVisitTypeMeta = document2.querySelector(
+    'head meta[name=\\"frugal-navigate\\"]'
+  );
+  if (frugalVisitTypeMeta) {
+    const navigate = frugalVisitTypeMeta.getAttribute(\\"content\\");
+    return this.shouldVisit(navigate);
+  }
+  return true;
+};
+_fetch = new WeakSet();
+fetch_fn = async function(init2) {
+  const handle = setTimeout(() => {
+    document.body.classList.add(LOADING_CLASSNAME);
+  }, __privateGet(this, _config2).timeout);
+  const response = await fetch(__privateGet(this, _url).href, init2);
+  if (response.redirected) {
+    const hash2 = __privateGet(this, _url).hash;
+    __privateSet(this, _url, new URL(response.url));
+    __privateGet(this, _url).hash = hash2;
+  }
+  const html = await response.text();
+  clearTimeout(handle);
+  document.body.classList.remove(LOADING_CLASSNAME);
+  return html;
+};
+
+// ../../src/runtime/client_session/Visitor.ts
+var _navigator, _shouldVisit, shouldVisit_fn;
+var Visitor = class {
+  constructor(anchor, navigator) {
+    __privateAdd(this, _shouldVisit);
+    __privateAdd(this, _navigator, void 0);
+    __privateSet(this, _navigator, navigator);
+    this.anchor = anchor;
+  }
+  async visit() {
+    if (!__privateMethod(this, _shouldVisit, shouldVisit_fn).call(this)) {
+      return false;
+    }
+    return await __privateGet(this, _navigator).visit();
+  }
+};
+_navigator = new WeakMap();
+_shouldVisit = new WeakSet();
+shouldVisit_fn = function() {
+  const rel = this.anchor.rel ?? \\"\\";
+  const isExternal = rel.split(\\" \\").includes(\\"external\\");
+  const directive = this.anchor.dataset[\\"frugalNavigate\\"];
+  return __privateGet(this, _navigator).shouldVisit(directive) && !isExternal && isInternalUrl(__privateGet(this, _navigator).url);
+};
+
+// ../../src/runtime/client_session/VisitObserver.ts
+var _config3, _observing2;
+var VisitObserver = class {
+  constructor(config) {
+    __privateAdd(this, _config3, void 0);
+    __privateAdd(this, _observing2, void 0);
+    __privateSet(this, _config3, config);
+    __privateSet(this, _observing2, false);
+  }
+  observe() {
+    if (__privateGet(this, _observing2)) {
+      return;
+    }
+    __privateSet(this, _observing2, true);
+    const visit2 = this.visit.bind(this);
+    const restore = this.restore.bind(this);
+    addEventListener(\\"click\\", visit2, { capture: false });
+    addEventListener(\\"keypress\\", visit2, { capture: false });
+    addEventListener(\\"frugal:popstate\\", restore, { capture: false });
+    return () => {
+      removeEventListener(\\"click\\", visit2, { capture: false });
+      removeEventListener(\\"keypress\\", visit2, { capture: false });
+      removeEventListener(\\"frugal:popstate\\", restore, { capture: false });
+    };
+  }
+  async restore(event) {
+    const navigator = event.detail.navigator;
+    await navigator.navigate();
+  }
+  async visit(event) {
+    if (!event.cancelable || event.defaultPrevented || event.target === null || event instanceof MouseEvent && !shouldMouseEventBeHandled(event) || event instanceof KeyboardEvent && !shouldKeyboardEventBeHandled(event)) {
+      return;
+    }
+    const navigableAnchor = getClosestParentNavigableAnchor(
+      event.target
+    );
+    if (navigableAnchor === void 0) {
+      return;
+    }
+    const url = getUrl(navigableAnchor.href);
+    const navigator = new Navigator(url, __privateGet(this, _config3));
+    const visitor = new Visitor(navigableAnchor, navigator);
+    event.preventDefault();
+    try {
+      const result = await visitor.visit();
+      if (!result) {
+        window.location.href = url.href;
+      }
+    } catch (error) {
+      console.error(error);
+      window.location.href = url.href;
+    }
+  }
+};
+_config3 = new WeakMap();
+_observing2 = new WeakMap();
+function shouldMouseEventBeHandled(event) {
+  return !event.ctrlKey && !event.altKey && !event.shiftKey && !event.metaKey;
+}
+function shouldKeyboardEventBeHandled(event) {
+  return document.activeElement === event.target && event.key === \\"Enter\\";
+}
+
+// ../../src/runtime/client_session/Prefetcher.ts
+var _url2, _anchor, _timeoutHandle, _garbageCollectHandle, _status, _config4, _onGarbageCollectable, _lastPrefetch, _link, _shouldPrefetch, shouldPrefetch_fn, _shouldRefresh, shouldRefresh_fn, _prefetch, prefetch_fn;
+var Prefetcher = class {
+  constructor(url, anchor, config, onGarbageCollectable) {
+    __privateAdd(this, _shouldPrefetch);
+    __privateAdd(this, _shouldRefresh);
+    __privateAdd(this, _prefetch);
+    __privateAdd(this, _url2, void 0);
+    __privateAdd(this, _anchor, void 0);
+    __privateAdd(this, _timeoutHandle, void 0);
+    __privateAdd(this, _garbageCollectHandle, void 0);
+    __privateAdd(this, _status, void 0);
+    __privateAdd(this, _config4, void 0);
+    __privateAdd(this, _onGarbageCollectable, void 0);
+    __privateAdd(this, _lastPrefetch, void 0);
+    __privateAdd(this, _link, void 0);
+    __privateSet(this, _url2, url);
+    __privateSet(this, _anchor, anchor);
+    __privateSet(this, _status, 0 /* INITIAL */);
+    __privateSet(this, _timeoutHandle, void 0);
+    __privateSet(this, _garbageCollectHandle, void 0);
+    __privateSet(this, _config4, config);
+    __privateSet(this, _onGarbageCollectable, onGarbageCollectable);
+    __privateSet(this, _lastPrefetch, 0);
+  }
+  schedule() {
+    if (__privateMethod(this, _shouldRefresh, shouldRefresh_fn).call(this)) {
+      __privateSet(this, _status, 0 /* INITIAL */);
+    }
+    if (!__privateMethod(this, _shouldPrefetch, shouldPrefetch_fn).call(this) || __privateGet(this, _status) !== 0 /* INITIAL */) {
+      return;
+    }
+    clearTimeout(__privateGet(this, _garbageCollectHandle));
+    __privateSet(this, _status, 1 /* WAITING */);
+    __privateSet(this, _timeoutHandle, setTimeout(() => {
+      __privateMethod(this, _prefetch, prefetch_fn).call(this);
+    }, __privateGet(this, _config4).timeout));
+  }
+  cancel() {
+    if (!__privateMethod(this, _shouldPrefetch, shouldPrefetch_fn).call(this) || __privateGet(this, _status) !== 1 /* WAITING */) {
+      return;
+    }
+    __privateSet(this, _status, 0 /* INITIAL */);
+    clearTimeout(__privateGet(this, _timeoutHandle));
+    __privateSet(this, _garbageCollectHandle, setTimeout(() => {
+      if (__privateGet(this, _link)) {
+        document.head.removeChild(__privateGet(this, _link));
+      }
+      __privateGet(this, _onGarbageCollectable).call(this);
+    }, 5e3));
+  }
+};
+_url2 = new WeakMap();
+_anchor = new WeakMap();
+_timeoutHandle = new WeakMap();
+_garbageCollectHandle = new WeakMap();
+_status = new WeakMap();
+_config4 = new WeakMap();
+_onGarbageCollectable = new WeakMap();
+_lastPrefetch = new WeakMap();
+_link = new WeakMap();
+_shouldPrefetch = new WeakSet();
+shouldPrefetch_fn = function() {
+  const prefetch = __privateGet(this, _anchor).dataset[\\"frugalPrefetch\\"];
+  const shouldPrefetch = __privateGet(this, _config4).defaultPrefetch ? prefetch !== \\"false\\" : prefetch === \\"true\\";
+  return shouldPrefetch && isInternalUrl(__privateGet(this, _url2));
+};
+_shouldRefresh = new WeakSet();
+shouldRefresh_fn = function() {
+  return __privateGet(this, _status) === 2 /* DONE */ && Date.now() - __privateGet(this, _lastPrefetch) > __privateGet(this, _config4).cooldown;
+};
+_prefetch = new WeakSet();
+prefetch_fn = function() {
+  if (!__privateMethod(this, _shouldPrefetch, shouldPrefetch_fn).call(this) || __privateGet(this, _status) !== 1 /* WAITING */) {
+    return;
+  }
+  __privateSet(this, _status, 2 /* DONE */);
+  __privateSet(this, _lastPrefetch, Date.now());
+  if (__privateGet(this, _link) === void 0 || !document.head.contains(__privateGet(this, _link))) {
+    __privateSet(this, _link, document.createElement(\\"link\\"));
+    __privateGet(this, _link).rel = \\"prefetch\\";
+    __privateGet(this, _link).href = __privateGet(this, _url2).href;
+    document.head.appendChild(__privateGet(this, _link));
+  } else {
+    document.head.removeChild(__privateGet(this, _link));
+    document.head.appendChild(__privateGet(this, _link));
+  }
+  __privateSet(this, _garbageCollectHandle, setTimeout(() => {
+    if (__privateGet(this, _link) && __privateGet(this, _link).parentNode !== null) {
+      document.head.removeChild(__privateGet(this, _link));
+    }
+    __privateGet(this, _onGarbageCollectable).call(this);
+  }, 5e3));
+};
+
+// ../../src/runtime/client_session/PrefetchObserver.ts
+var PrefetchObserver = class {
+  constructor(config) {
+    this.prefetchers = /* @__PURE__ */ new Map();
+    this.config = config;
+  }
+  observe() {
+    const schedule = this.schedule.bind(this);
+    const cancel = this.cancel.bind(this);
+    addEventListener(\\"mouseover\\", schedule, { capture: false });
+    addEventListener(\\"mouseout\\", cancel, { capture: false });
+    addEventListener(\\"touchstart\\", schedule, { capture: false });
+    addEventListener(\\"touchend\\", cancel, { capture: false });
+    addEventListener(\\"touchcancel\\", cancel, { capture: false });
+    addEventListener(\\"focusin\\", schedule, { capture: false });
+    addEventListener(\\"focusout\\", cancel, { capture: false });
+    return () => {
+      removeEventListener(\\"mouseover\\", schedule, { capture: false });
+      removeEventListener(\\"mouseout\\", cancel, { capture: false });
+      removeEventListener(\\"touchstart\\", schedule, { capture: false });
+      removeEventListener(\\"touchend\\", cancel, { capture: false });
+      removeEventListener(\\"touchcancel\\", cancel, { capture: false });
+      removeEventListener(\\"focusin\\", schedule, { capture: false });
+      removeEventListener(\\"focusout\\", cancel, { capture: false });
+    };
+  }
+  schedule(event) {
+    if (event.target === null) {
+      return;
+    }
+    const prefetcher = this.getPrefetcher(event.target);
+    if (prefetcher === void 0) {
+      return;
+    }
+    prefetcher.schedule();
+  }
+  cancel(event) {
+    if (event.target === null) {
+      return;
+    }
+    const prefetcher = this.getPrefetcher(event.target);
+    if (prefetcher === void 0) {
+      return;
+    }
+    prefetcher.cancel();
+  }
+  getPrefetcher(target) {
+    const navigableAnchor = getClosestParentNavigableAnchor(target);
+    if (navigableAnchor === void 0) {
+      return;
+    }
+    const url = getUrl(navigableAnchor.href);
+    if (!this.prefetchers.has(url.href)) {
+      const instance2 = new Prefetcher(
+        url,
+        navigableAnchor,
+        this.config,
+        () => {
+          this.prefetchers.delete(url.href);
+        }
+      );
+      this.prefetchers.set(url.href, instance2);
+    }
+    return this.prefetchers.get(url.href);
+  }
+};
+
+// ../../src/runtime/client_session/Form.ts
+var _form, _submitter;
+var Form = class {
+  constructor(form, submitter) {
+    __privateAdd(this, _form, void 0);
+    __privateAdd(this, _submitter, void 0);
+    __privateSet(this, _form, form);
+    __privateSet(this, _submitter, submitter);
+  }
+  submit() {
+    __privateGet(this, _form).submit();
+  }
+  get directive() {
+    return __privateGet(this, _form).dataset[\\"frugalNavigate\\"];
+  }
+  get enctype() {
+    return getEncType(__privateGet(this, _form).enctype);
+  }
+  get url() {
+    var _a;
+    const url = getUrl(
+      ((_a = __privateGet(this, _submitter)) == null ? void 0 : _a.getAttribute(\\"formaction\\")) ?? __privateGet(this, _form).getAttribute(\\"action\\") ?? __privateGet(this, _form).action ?? \\"\\"
+    );
+    if (this.method === \\"GET\\" /* GET */) {
+      url.search = formDataToUrlSearchParams(this.formData).toString();
+    }
+    return url;
+  }
+  get method() {
+    var _a;
+    const method = ((_a = __privateGet(this, _submitter)) == null ? void 0 : _a.getAttribute(\\"formmethod\\")) || __privateGet(this, _form).getAttribute(\\"method\\") || \\"GET\\";
+    return getMethod(method);
+  }
+  get formData() {
+    var _a, _b;
+    const formData = new FormData(__privateGet(this, _form));
+    const submitterName = (_a = __privateGet(this, _submitter)) == null ? void 0 : _a.getAttribute(\\"name\\");
+    const submitterValue = (_b = __privateGet(this, _submitter)) == null ? void 0 : _b.getAttribute(\\"value\\");
+    if (typeof submitterName === \\"string\\") {
+      formData.set(submitterName, submitterValue ?? \\"\\");
+    }
+    return formData;
+  }
+  get body() {
+    if (this.enctype === \\"application/x-www-form-urlencoded\\" /* URLENCODED */) {
+      return formDataToUrlSearchParams(this.formData);
+    }
+    return this.formData;
+  }
+};
+_form = new WeakMap();
+_submitter = new WeakMap();
+function getEncType(enctype) {
+  switch (enctype) {
+    case \\"multipart/form-data\\" /* MULTIPART */: {
+      return \\"multipart/form-data\\" /* MULTIPART */;
+    }
+    case \\"text/plain\\" /* PLAIN */: {
+      return \\"text/plain\\" /* PLAIN */;
+    }
+    default: {
+      return \\"application/x-www-form-urlencoded\\" /* URLENCODED */;
+    }
+  }
+}
+function getMethod(method) {
+  switch (method.toUpperCase()) {
+    case \\"GET\\" /* GET */: {
+      return \\"GET\\" /* GET */;
+    }
+    case \\"DIALOG\\" /* DIALOG */: {
+      return \\"DIALOG\\" /* DIALOG */;
+    }
+    case \\"POST\\" /* POST */:
+    default: {
+      return \\"POST\\" /* POST */;
+    }
+  }
+}
+function formDataToUrlSearchParams(formData) {
+  const urlSearchParams = new URLSearchParams();
+  for (const [name, value] of formData.entries()) {
+    if (typeof value === \\"string\\") {
+      urlSearchParams.set(name, value);
+    }
+  }
+  return urlSearchParams;
+}
+
+// ../../src/runtime/client_session/Submitter.ts
+var _form2, _navigator2, _shouldSubmit, shouldSubmit_fn;
+var Submitter = class {
+  constructor(formWrapper, navigator) {
+    __privateAdd(this, _shouldSubmit);
+    __privateAdd(this, _form2, void 0);
+    __privateAdd(this, _navigator2, void 0);
+    __privateSet(this, _form2, formWrapper);
+    __privateSet(this, _navigator2, navigator);
+  }
+  async submit() {
+    if (!__privateMethod(this, _shouldSubmit, shouldSubmit_fn).call(this)) {
+      return false;
+    }
+    const requestInit = {
+      method: __privateGet(this, _form2).method
+    };
+    if (requestInit.method !== \\"GET\\" /* GET */) {
+      requestInit.body = __privateGet(this, _form2).body;
+    }
+    return await __privateGet(this, _navigator2).visit(requestInit);
+  }
+};
+_form2 = new WeakMap();
+_navigator2 = new WeakMap();
+_shouldSubmit = new WeakSet();
+shouldSubmit_fn = function() {
+  return __privateGet(this, _form2).method !== \\"DIALOG\\" /* DIALOG */ && isInternalUrl(__privateGet(this, _navigator2).url) && __privateGet(this, _navigator2).shouldVisit(__privateGet(this, _form2).directive);
+};
+
+// ../../src/runtime/client_session/SubmitObserver.ts
+var _config5, _observing3;
+var SubmitObserver = class {
+  constructor(config) {
+    __privateAdd(this, _config5, void 0);
+    __privateAdd(this, _observing3, void 0);
+    __privateSet(this, _config5, config);
+    __privateSet(this, _observing3, false);
+  }
+  observe() {
+    if (__privateGet(this, _observing3)) {
+      return;
+    }
+    __privateSet(this, _observing3, true);
+    const submit = this.submit.bind(this);
+    document.addEventListener(\\"submit\\", submit, { capture: false });
+    return () => {
+      document.removeEventListener(\\"submit\\", submit, { capture: false });
+    };
+  }
+  async submit(event) {
+    if (!event.cancelable || event.defaultPrevented || !(event.target instanceof HTMLFormElement)) {
+      return;
+    }
+    const form = new Form(event.target, event.submitter);
+    if (form.method === \\"DIALOG\\" /* DIALOG */) {
+      return;
+    }
+    const navigator = new Navigator(form.url, __privateGet(this, _config5));
+    const submitter = new Submitter(form, navigator);
+    event.preventDefault();
+    try {
+      const result = await submitter.submit();
+      if (!result) {
+        form.submit();
+      }
+    } catch (error) {
+      console.error(error);
+      form.submit();
+    }
+  }
+};
+_config5 = new WeakMap();
+_observing3 = new WeakMap();
+
+// ../../src/runtime/client_session/Session.ts
+var SESSION_INSTANCE = \`\$\$frugal-session-instance\$\$\`;
+var _config6, _visitObserver, _submitObserver, _prefetchObserver;
+var _Session = class {
+  constructor(config = {}) {
+    __privateAdd(this, _config6, void 0);
+    __privateAdd(this, _visitObserver, void 0);
+    __privateAdd(this, _submitObserver, void 0);
+    __privateAdd(this, _prefetchObserver, void 0);
+    var _a, _b, _c, _d, _e, _f, _g;
+    __privateSet(this, _config6, {
+      prefetch: {
+        defaultPrefetch: ((_a = config.prefetch) == null ? void 0 : _a.defaultPrefetch) ?? true,
+        timeout: ((_b = config.prefetch) == null ? void 0 : _b.timeout) ?? 80,
+        cooldown: ((_c = config.prefetch) == null ? void 0 : _c.cooldown) ?? 1e3
+      },
+      navigate: {
+        defaultNavigate: ((_d = config.navigate) == null ? void 0 : _d.defaultNavigate) ?? true,
+        timeout: ((_e = config.navigate) == null ? void 0 : _e.timeout) ?? 150,
+        resetScroll: ((_f = config.navigate) == null ? void 0 : _f.resetScroll) ?? true,
+        restoreScroll: ((_g = config.navigate) == null ? void 0 : _g.restoreScroll) ?? true
+      }
+    });
+    __privateSet(this, _visitObserver, new VisitObserver(__privateGet(this, _config6).navigate));
+    __privateSet(this, _submitObserver, new SubmitObserver(__privateGet(this, _config6).navigate));
+    __privateSet(this, _prefetchObserver, new PrefetchObserver(__privateGet(this, _config6).prefetch));
+    SessionHistory.create(__privateGet(this, _config6).navigate);
+  }
+  static create(config) {
+    if (window[SESSION_INSTANCE] !== void 0) {
+      throw Error(
+        \\"A Session instance was already created\\"
+      );
+    }
+    window[SESSION_INSTANCE] = new _Session(config);
+    return window[SESSION_INSTANCE];
+  }
+  static getInstance() {
+    if (window[SESSION_INSTANCE] === void 0) {
+      return _Session.create();
+    }
+    return window[SESSION_INSTANCE];
+  }
+  start() {
+    SessionHistory.getInstance().observe();
+    __privateGet(this, _visitObserver).observe();
+    __privateGet(this, _submitObserver).observe();
+    __privateGet(this, _prefetchObserver).observe();
+  }
+  async navigate(url) {
+    const navigator = new Navigator(
+      new URL(url, location.href),
+      __privateGet(this, _config6).navigate
+    );
+    return await navigator.visit();
+  }
+  async submit(formElement) {
+    const form = new Form(formElement);
+    if (form.method === \\"DIALOG\\" /* DIALOG */) {
+      return false;
+    }
+    const navigator = new Navigator(form.url, __privateGet(this, _config6).navigate);
+    const submiter = new Submitter(form, navigator);
+    return await submiter.submit();
+  }
+};
+var Session = _Session;
+_config6 = new WeakMap();
+_visitObserver = new WeakMap();
+_submitObserver = new WeakMap();
+_prefetchObserver = new WeakMap();
+
+// ../../src/runtime/svelte/hydrate/Hydratable.svelte
+function create_default_slot(ctx) {
+  let html_tag;
+  let html_anchor;
+  return {
+    c() {
+      html_tag = new HtmlTagHydration(false);
+      html_anchor = empty();
+      this.h();
+    },
+    l(nodes) {
+      html_tag = claim_html_tag(nodes, false);
+      html_anchor = empty();
+      this.h();
+    },
+    h() {
+      html_tag.a = html_anchor;
+    },
+    m(target, anchor) {
+      html_tag.m(
+        /*html*/
+        ctx[2],
+        target,
+        anchor
+      );
+      insert_hydration(target, html_anchor, anchor);
+    },
+    p(ctx2, dirty) {
+      if (dirty & /*html*/
+      4)
+        html_tag.p(
+          /*html*/
+          ctx2[2]
+        );
+    },
+    d(detaching) {
+      if (detaching)
+        detach(html_anchor);
+      if (detaching)
+        html_tag.d();
+    }
+  };
+}
+function create_fragment(ctx) {
+  let switch_instance;
+  let switch_instance_anchor;
+  let current;
+  const switch_instance_spread_levels = [
+    /*props*/
+    ctx[1]
+  ];
+  var switch_value = (
+    /*component*/
+    ctx[0]
+  );
+  function switch_props(ctx2) {
+    let switch_instance_props = {
+      \$\$slots: { default: [create_default_slot] },
+      \$\$scope: { ctx: ctx2 }
+    };
+    for (let i = 0; i < switch_instance_spread_levels.length; i += 1) {
+      switch_instance_props = assign(switch_instance_props, switch_instance_spread_levels[i]);
+    }
+    return { props: switch_instance_props };
+  }
+  if (switch_value) {
+    switch_instance = construct_svelte_component(switch_value, switch_props(ctx));
+  }
+  return {
+    c() {
+      if (switch_instance)
+        create_component(switch_instance.\$\$.fragment);
+      switch_instance_anchor = empty();
+    },
+    l(nodes) {
+      if (switch_instance)
+        claim_component(switch_instance.\$\$.fragment, nodes);
+      switch_instance_anchor = empty();
+    },
+    m(target, anchor) {
+      if (switch_instance)
+        mount_component(switch_instance, target, anchor);
+      insert_hydration(target, switch_instance_anchor, anchor);
+      current = true;
+    },
+    p(ctx2, [dirty]) {
+      const switch_instance_changes = dirty & /*props*/
+      2 ? get_spread_update(switch_instance_spread_levels, [get_spread_object(
+        /*props*/
+        ctx2[1]
+      )]) : {};
+      if (dirty & /*\$\$scope, html*/
+      12) {
+        switch_instance_changes.\$\$scope = { dirty, ctx: ctx2 };
+      }
+      if (dirty & /*component*/
+      1 && switch_value !== (switch_value = /*component*/
+      ctx2[0])) {
+        if (switch_instance) {
+          group_outros();
+          const old_component = switch_instance;
+          transition_out(old_component.\$\$.fragment, 1, 0, () => {
+            destroy_component(old_component, 1);
+          });
+          check_outros();
+        }
+        if (switch_value) {
+          switch_instance = construct_svelte_component(switch_value, switch_props(ctx2));
+          create_component(switch_instance.\$\$.fragment);
+          transition_in(switch_instance.\$\$.fragment, 1);
+          mount_component(switch_instance, switch_instance_anchor.parentNode, switch_instance_anchor);
+        } else {
+          switch_instance = null;
+        }
+      } else if (switch_value) {
+        switch_instance.\$set(switch_instance_changes);
+      }
+    },
+    i(local) {
+      if (current)
+        return;
+      if (switch_instance)
+        transition_in(switch_instance.\$\$.fragment, local);
+      current = true;
+    },
+    o(local) {
+      if (switch_instance)
+        transition_out(switch_instance.\$\$.fragment, local);
+      current = false;
+    },
+    d(detaching) {
+      if (detaching)
+        detach(switch_instance_anchor);
+      if (switch_instance)
+        destroy_component(switch_instance, detaching);
+    }
+  };
+}
+function instance(\$\$self, \$\$props, \$\$invalidate) {
+  let { component } = \$\$props;
+  let { props } = \$\$props;
+  let { html } = \$\$props;
+  \$\$self.\$\$set = (\$\$props2) => {
+    if (\\"component\\" in \$\$props2)
+      \$\$invalidate(0, component = \$\$props2.component);
+    if (\\"props\\" in \$\$props2)
+      \$\$invalidate(1, props = \$\$props2.props);
+    if (\\"html\\" in \$\$props2)
+      \$\$invalidate(2, html = \$\$props2.html);
+  };
+  return [component, props, html];
+}
+var Hydratable = class extends SvelteComponent {
+  constructor(options) {
+    super();
+    init(this, options, instance, create_fragment, safe_not_equal, { component: 0, props: 1, html: 2 });
+  }
+};
+var Hydratable_default = Hydratable;
+
+// ../../src/runtime/svelte/hydrate/hydrateIsland.ts
+var HYDRATED = /* @__PURE__ */ new WeakSet();
+function hydrateIsland(root, component) {
+  var _a;
+  if (HYDRATED.has(root)) {
+    return;
+  }
+  HYDRATED.add(root);
+  const propsScript = root.querySelector(\\"script\\");
+  const props = (propsScript == null ? void 0 : propsScript.textContent) ? JSON.parse(propsScript.textContent) : {};
+  const html = (_a = root.querySelector(\\"[data-svelte-slot]\\")) == null ? void 0 : _a.innerHTML;
+  new Hydratable_default({
+    target: root,
+    hydrate: true,
+    props: {
+      component,
+      props,
+      html
+    },
+    context: /* @__PURE__ */ new Map([[DATA_CONTEXT_KEY, window.__FRUGAL__.context]])
+  });
+}
+
+// ../../src/runtime/svelte/hydrate/mod.ts
+function hydrate(name, getApp) {
+  onReadyStateChange(\\"complete\\", () => {
+    const hydratableOnLoad = queryHydratables(name, \\"load\\");
+    if (hydratableOnLoad.length !== 0) {
+      hydrateOnLoad(hydratableOnLoad, getApp);
+    }
+    const hydratableOnVisible = queryHydratables(name, \\"visible\\");
+    if (hydratableOnVisible.length !== 0) {
+      hydrateOnVisible(hydratableOnVisible, getApp);
+    }
+    const hydratableOnIdle = queryHydratables(name, \\"idle\\");
+    if (hydratableOnIdle.length !== 0) {
+      hydrateOnIdle(hydratableOnIdle, getApp);
+    }
+    const hydratableOnMediaQuery = queryHydratables(name, \\"media-query\\");
+    if (hydratableOnMediaQuery.length !== 0) {
+      hydrateOnMediaQuery(hydratableOnMediaQuery, getApp);
+    }
+  });
+}
+function queryHydratables(name, strategy) {
+  return document.querySelectorAll(
+    \`[data-hydratable=\\"\${name}\\"][data-hydration-strategy=\\"\${strategy}\\"]\`
+  );
+}
+function hydrateOnLoad(hydratables, getApp) {
+  Array.from(hydratables).map(async (root) => {
+    hydrateIsland(root, await getApp());
+  });
+}
+function hydrateOnIdle(hydratables, getApp) {
+  setTimeout(() => {
+    Array.from(hydratables).map(async (root) => {
+      hydrateIsland(root, await getApp());
+    });
+  }, 10);
+}
+function hydrateOnVisible(hydratables, getApp) {
+  const observer = new IntersectionObserver((entries, observer2) => {
+    entries.map(async (entry) => {
+      if (entry.isIntersecting) {
+        hydrateIsland(entry.target, await getApp());
+        observer2.unobserve(entry.target);
+      }
+    });
+  });
+  hydratables.forEach((root) => {
+    observer.observe(root);
+  });
+}
+function hydrateOnMediaQuery(hydratables, getApp) {
+  Array.from(hydratables).map(async (root) => {
+    const query = root.dataset[\\"hydrationQuery\\"];
+    if (query && matchMedia(query)) {
+      hydrateIsland(root, await getApp());
+    }
+  });
+}
+
+export {
+  noop,
+  run_all,
+  safe_not_equal,
+  create_slot,
+  get_slot_changes,
+  update_slot_base,
+  get_all_dirty_from_scope,
+  append_hydration,
+  insert_hydration,
+  detach,
+  element,
+  text,
+  space,
+  listen,
+  attr,
+  children,
+  claim_element,
+  claim_text,
+  claim_space,
+  set_data,
+  transition_in,
+  transition_out,
+  init,
+  SvelteComponent,
+  getData,
+  hydrate
+};
+"
+`;
+
+snapshot[`exemple:svelte > js assets 4`] = `
+'{
+  "inputs": {
+    "https://cdn.skypack.dev/-/svelte@v3.58.0-QIyracdaCWAEmGjWtYVE/dist=es2019,mode=imports/optimized/common/global-5c50bad9.js": {
+      "bytes": 183,
+      "imports": [],
+      "format": "esm"
+    },
+    "https://cdn.skypack.dev/-/svelte@v3.58.0-QIyracdaCWAEmGjWtYVE/dist=es2019,mode=imports/optimized/svelte/internal.js": {
+      "bytes": 62678,
+      "imports": [
+        {
+          "path": "https://cdn.skypack.dev/-/svelte@v3.58.0-QIyracdaCWAEmGjWtYVE/dist=es2019,mode=imports/optimized/common/global-5c50bad9.js",
+          "kind": "import-statement",
+          "original": "../common/global-5c50bad9.js"
+        }
+      ],
+      "format": "esm"
+    },
+    "https://cdn.skypack.dev/-/svelte@v3.58.0-QIyracdaCWAEmGjWtYVE/dist=es2019,mode=imports/optimized/svelte.js": {
+      "bytes": 285,
+      "imports": [
+        {
+          "path": "https://cdn.skypack.dev/-/svelte@v3.58.0-QIyracdaCWAEmGjWtYVE/dist=es2019,mode=imports/optimized/svelte/internal.js",
+          "kind": "import-statement",
+          "original": "./svelte/internal.js"
+        },
+        {
+          "path": "https://cdn.skypack.dev/-/svelte@v3.58.0-QIyracdaCWAEmGjWtYVE/dist=es2019,mode=imports/optimized/common/global-5c50bad9.js",
+          "kind": "import-statement",
+          "original": "./common/global-5c50bad9.js"
+        }
+      ],
+      "format": "esm"
+    },
+    "https://cdn.skypack.dev/svelte@3.58.0": {
+      "bytes": 772,
+      "imports": [
+        {
+          "path": "https://cdn.skypack.dev/-/svelte@v3.58.0-QIyracdaCWAEmGjWtYVE/dist=es2019,mode=imports/optimized/svelte.js",
+          "kind": "import-statement",
+          "original": "/-/svelte@v3.58.0-QIyracdaCWAEmGjWtYVE/dist=es2019,mode=imports/optimized/svelte.js"
+        },
+        {
+          "path": "https://cdn.skypack.dev/-/svelte@v3.58.0-QIyracdaCWAEmGjWtYVE/dist=es2019,mode=imports/optimized/svelte.js",
+          "kind": "import-statement",
+          "original": "/-/svelte@v3.58.0-QIyracdaCWAEmGjWtYVE/dist=es2019,mode=imports/optimized/svelte.js"
+        }
+      ],
+      "format": "esm"
+    },
+    "../../src/runtime/svelte/dataContext.ts": {
+      "bytes": 360,
+      "imports": [
+        {
+          "path": "https://cdn.skypack.dev/svelte@3.58.0",
+          "kind": "import-statement",
+          "original": "svelte"
+        }
+      ],
+      "format": "esm"
+    },
+    "../../src/runtime/client_session/utils.ts": {
+      "bytes": 1432,
+      "imports": [],
+      "format": "esm"
+    },
+    "../../src/runtime/client_session/render/types.ts": {
+      "bytes": 898,
+      "imports": [],
+      "format": "esm"
+    },
+    "../../src/runtime/client_session/render/utils.ts": {
+      "bytes": 2030,
+      "imports": [
+        {
+          "path": "../../src/runtime/client_session/render/types.ts",
+          "kind": "import-statement",
+          "original": "./types.ts"
+        }
+      ],
+      "format": "esm"
+    },
+    "../../src/runtime/client_session/render/diff.ts": {
+      "bytes": 7676,
+      "imports": [
+        {
+          "path": "../../src/runtime/client_session/render/types.ts",
+          "kind": "import-statement",
+          "original": "./types.ts"
+        },
+        {
+          "path": "../../src/runtime/client_session/render/utils.ts",
+          "kind": "import-statement",
+          "original": "./utils.ts"
+        }
+      ],
+      "format": "esm"
+    },
+    "../../src/runtime/client_session/render/patch.ts": {
+      "bytes": 2801,
+      "imports": [
+        {
+          "path": "../../src/runtime/client_session/render/types.ts",
+          "kind": "import-statement",
+          "original": "./types.ts"
+        },
+        {
+          "path": "../../src/runtime/client_session/render/utils.ts",
+          "kind": "import-statement",
+          "original": "./utils.ts"
+        }
+      ],
+      "format": "esm"
+    },
+    "../../src/runtime/client_session/render/mod.ts": {
+      "bytes": 634,
+      "imports": [
+        {
+          "path": "../../src/runtime/client_session/render/diff.ts",
+          "kind": "import-statement",
+          "original": "./diff.ts"
+        },
+        {
+          "path": "../../src/runtime/client_session/render/patch.ts",
+          "kind": "import-statement",
+          "original": "./patch.ts"
+        }
+      ],
+      "format": "esm"
+    },
+    "../../src/runtime/client_session/SessionHistory.ts": {
+      "bytes": 2094,
+      "imports": [
+        {
+          "path": "../../src/runtime/client_session/Navigator.ts",
+          "kind": "import-statement",
+          "original": "./Navigator.ts"
+        },
+        {
+          "path": "./Navigator.ts",
+          "kind": "import-statement",
+          "external": true
+        },
+        {
+          "path": "<runtime>",
+          "kind": "import-statement",
+          "external": true
+        }
+      ],
+      "format": "esm"
+    },
+    "../../src/runtime/client_session/Navigator.ts": {
+      "bytes": 3080,
+      "imports": [
+        {
+          "path": "../../src/runtime/client_session/render/mod.ts",
+          "kind": "import-statement",
+          "original": "./render/mod.ts"
+        },
+        {
+          "path": "../../src/runtime/client_session/SessionHistory.ts",
+          "kind": "import-statement",
+          "original": "./SessionHistory.ts"
+        },
+        {
+          "path": "<runtime>",
+          "kind": "import-statement",
+          "external": true
+        }
+      ],
+      "format": "esm"
+    },
+    "../../src/runtime/client_session/Visitor.ts": {
+      "bytes": 746,
+      "imports": [
+        {
+          "path": "./Navigator.ts",
+          "kind": "import-statement",
+          "external": true
+        },
+        {
+          "path": "../../src/runtime/client_session/utils.ts",
+          "kind": "import-statement",
+          "original": "./utils.ts"
+        },
+        {
+          "path": "<runtime>",
+          "kind": "import-statement",
+          "external": true
+        }
+      ],
+      "format": "esm"
+    },
+    "../../src/runtime/client_session/VisitObserver.ts": {
+      "bytes": 2284,
+      "imports": [
+        {
+          "path": "../../src/runtime/client_session/utils.ts",
+          "kind": "import-statement",
+          "original": "./utils.ts"
+        },
+        {
+          "path": "../../src/runtime/client_session/Navigator.ts",
+          "kind": "import-statement",
+          "original": "./Navigator.ts"
+        },
+        {
+          "path": "../../src/runtime/client_session/Visitor.ts",
+          "kind": "import-statement",
+          "original": "./Visitor.ts"
+        },
+        {
+          "path": "<runtime>",
+          "kind": "import-statement",
+          "external": true
+        }
+      ],
+      "format": "esm"
+    },
+    "../../src/runtime/client_session/Prefetcher.ts": {
+      "bytes": 2788,
+      "imports": [
+        {
+          "path": "../../src/runtime/client_session/utils.ts",
+          "kind": "import-statement",
+          "original": "./utils.ts"
+        },
+        {
+          "path": "<runtime>",
+          "kind": "import-statement",
+          "external": true
+        }
+      ],
+      "format": "esm"
+    },
+    "../../src/runtime/client_session/PrefetchObserver.ts": {
+      "bytes": 2440,
+      "imports": [
+        {
+          "path": "../../src/runtime/client_session/Prefetcher.ts",
+          "kind": "import-statement",
+          "original": "./Prefetcher.ts"
+        },
+        {
+          "path": "../../src/runtime/client_session/utils.ts",
+          "kind": "import-statement",
+          "original": "./utils.ts"
+        }
+      ],
+      "format": "esm"
+    },
+    "../../src/runtime/client_session/Form.ts": {
+      "bytes": 2506,
+      "imports": [
+        {
+          "path": "../../src/runtime/client_session/utils.ts",
+          "kind": "import-statement",
+          "original": "./utils.ts"
+        },
+        {
+          "path": "<runtime>",
+          "kind": "import-statement",
+          "external": true
+        }
+      ],
+      "format": "esm"
+    },
+    "../../src/runtime/client_session/Submitter.ts": {
+      "bytes": 840,
+      "imports": [
+        {
+          "path": "../../src/runtime/client_session/Form.ts",
+          "kind": "import-statement",
+          "original": "./Form.ts"
+        },
+        {
+          "path": "./Navigator.ts",
+          "kind": "import-statement",
+          "external": true
+        },
+        {
+          "path": "../../src/runtime/client_session/utils.ts",
+          "kind": "import-statement",
+          "original": "./utils.ts"
+        },
+        {
+          "path": "<runtime>",
+          "kind": "import-statement",
+          "external": true
+        }
+      ],
+      "format": "esm"
+    },
+    "../../src/runtime/client_session/SubmitObserver.ts": {
+      "bytes": 1274,
+      "imports": [
+        {
+          "path": "../../src/runtime/client_session/Navigator.ts",
+          "kind": "import-statement",
+          "original": "./Navigator.ts"
+        },
+        {
+          "path": "../../src/runtime/client_session/Submitter.ts",
+          "kind": "import-statement",
+          "original": "./Submitter.ts"
+        },
+        {
+          "path": "../../src/runtime/client_session/Form.ts",
+          "kind": "import-statement",
+          "original": "./Form.ts"
+        },
+        {
+          "path": "<runtime>",
+          "kind": "import-statement",
+          "external": true
+        }
+      ],
+      "format": "esm"
+    },
+    "../../src/runtime/client_session/Session.ts": {
+      "bytes": 2877,
+      "imports": [
+        {
+          "path": "../../src/runtime/client_session/VisitObserver.ts",
+          "kind": "import-statement",
+          "original": "./VisitObserver.ts"
+        },
+        {
+          "path": "../../src/runtime/client_session/Navigator.ts",
+          "kind": "import-statement",
+          "original": "./Navigator.ts"
+        },
+        {
+          "path": "./Prefetcher.ts",
+          "kind": "import-statement",
+          "external": true
+        },
+        {
+          "path": "../../src/runtime/client_session/PrefetchObserver.ts",
+          "kind": "import-statement",
+          "original": "./PrefetchObserver.ts"
+        },
+        {
+          "path": "../../src/runtime/client_session/SessionHistory.ts",
+          "kind": "import-statement",
+          "original": "./SessionHistory.ts"
+        },
+        {
+          "path": "../../src/runtime/client_session/SubmitObserver.ts",
+          "kind": "import-statement",
+          "original": "./SubmitObserver.ts"
+        },
+        {
+          "path": "../../src/runtime/client_session/Submitter.ts",
+          "kind": "import-statement",
+          "original": "./Submitter.ts"
+        },
+        {
+          "path": "../../src/runtime/client_session/Form.ts",
+          "kind": "import-statement",
+          "original": "./Form.ts"
+        },
+        {
+          "path": "<runtime>",
+          "kind": "import-statement",
+          "external": true
+        }
+      ],
+      "format": "esm"
+    },
+    "../../src/runtime/client_session/render/constant.ts": {
+      "bytes": 207,
+      "imports": [],
+      "format": "esm"
+    },
+    "../../src/runtime/client_session/mod.ts": {
+      "bytes": 127,
+      "imports": [
+        {
+          "path": "../../src/runtime/client_session/utils.ts",
+          "kind": "import-statement",
+          "original": "./utils.ts"
+        },
+        {
+          "path": "../../src/runtime/client_session/Session.ts",
+          "kind": "import-statement",
+          "original": "./Session.ts"
+        },
+        {
+          "path": "../../src/runtime/client_session/render/constant.ts",
+          "kind": "import-statement",
+          "original": "./render/constant.ts"
+        }
+      ],
+      "format": "esm"
+    },
+    "https://cdn.skypack.dev/svelte@3.58.0/internal": {
+      "bytes": 808,
+      "imports": [
+        {
+          "path": "https://cdn.skypack.dev/-/svelte@v3.58.0-QIyracdaCWAEmGjWtYVE/dist=es2019,mode=imports/optimized/svelte/internal.js",
+          "kind": "import-statement",
+          "original": "/-/svelte@v3.58.0-QIyracdaCWAEmGjWtYVE/dist=es2019,mode=imports/optimized/svelte/internal.js"
+        },
+        {
+          "path": "https://cdn.skypack.dev/-/svelte@v3.58.0-QIyracdaCWAEmGjWtYVE/dist=es2019,mode=imports/optimized/svelte/internal.js",
+          "kind": "import-statement",
+          "original": "/-/svelte@v3.58.0-QIyracdaCWAEmGjWtYVE/dist=es2019,mode=imports/optimized/svelte/internal.js"
+        }
+      ],
+      "format": "esm"
+    },
+    "../../src/runtime/svelte/hydrate/Hydratable.svelte": {
+      "bytes": 4295,
+      "imports": [
+        {
+          "path": "https://cdn.skypack.dev/svelte@3.58.0/internal",
+          "kind": "import-statement",
+          "original": "svelte/internal"
+        }
+      ],
+      "format": "esm"
+    },
+    "../../src/runtime/svelte/types.ts": {
+      "bytes": 498,
+      "imports": [
+        {
+          "path": "./ClientComponent.ts",
+          "kind": "import-statement",
+          "external": true
+        }
+      ],
+      "format": "esm"
+    },
+    "../../src/runtime/svelte/hydrate/hydrateIsland.ts": {
+      "bytes": 866,
+      "imports": [
+        {
+          "path": "../ClientComponent.ts",
+          "kind": "import-statement",
+          "external": true
+        },
+        {
+          "path": "../../src/runtime/svelte/dataContext.ts",
+          "kind": "import-statement",
+          "original": "../dataContext.ts"
+        },
+        {
+          "path": "../../src/runtime/svelte/hydrate/Hydratable.svelte",
+          "kind": "import-statement",
+          "original": "./Hydratable.svelte"
+        },
+        {
+          "path": "../../src/runtime/svelte/types.ts",
+          "kind": "import-statement",
+          "original": "../types.ts"
+        }
+      ],
+      "format": "esm"
+    },
+    "../../src/runtime/svelte/hydrate/mod.ts": {
+      "bytes": 2449,
+      "imports": [
+        {
+          "path": "../../src/runtime/client_session/mod.ts",
+          "kind": "import-statement",
+          "original": "../../client_session/mod.ts"
+        },
+        {
+          "path": "../../src/runtime/svelte/hydrate/hydrateIsland.ts",
+          "kind": "import-statement",
+          "original": "./hydrateIsland.ts"
+        }
+      ],
+      "format": "esm"
+    },
+    "../../src/runtime/svelte/ClientComponent.ts": {
+      "bytes": 332,
+      "imports": [],
+      "format": "esm"
+    },
+    "../../src/runtime/svelte/mod.client.ts": {
+      "bytes": 223,
+      "imports": [
+        {
+          "path": "../../src/runtime/svelte/dataContext.ts",
+          "kind": "import-statement",
+          "original": "./dataContext.ts"
+        },
+        {
+          "path": "../../src/runtime/svelte/hydrate/mod.ts",
+          "kind": "import-statement",
+          "original": "./hydrate/mod.ts"
+        },
+        {
+          "path": "../../src/runtime/svelte/ClientComponent.ts",
+          "kind": "import-statement",
+          "original": "./ClientComponent.ts"
+        }
+      ],
+      "format": "esm"
+    },
+    "../../runtime/svelte.client.ts": {
+      "bytes": 53,
+      "imports": [
+        {
+          "path": "../../src/runtime/svelte/mod.client.ts",
+          "kind": "import-statement",
+          "original": "../src/runtime/svelte/mod.client.ts"
+        }
+      ],
+      "format": "esm"
+    },
+    "https://cdn.skypack.dev/-/svelte@v3.58.0-QIyracdaCWAEmGjWtYVE/dist=es2019,mode=imports/optimized/svelte/store.js": {
+      "bytes": 2505,
+      "imports": [
+        {
+          "path": "https://cdn.skypack.dev/-/svelte@v3.58.0-QIyracdaCWAEmGjWtYVE/dist=es2019,mode=imports/optimized/svelte/internal.js",
+          "kind": "import-statement",
+          "original": "./internal.js"
+        },
+        {
+          "path": "https://cdn.skypack.dev/-/svelte@v3.58.0-QIyracdaCWAEmGjWtYVE/dist=es2019,mode=imports/optimized/svelte/internal.js",
+          "kind": "import-statement",
+          "original": "./internal.js"
+        },
+        {
+          "path": "https://cdn.skypack.dev/-/svelte@v3.58.0-QIyracdaCWAEmGjWtYVE/dist=es2019,mode=imports/optimized/common/global-5c50bad9.js",
+          "kind": "import-statement",
+          "original": "../common/global-5c50bad9.js"
+        }
+      ],
+      "format": "esm"
+    },
+    "https://cdn.skypack.dev/svelte@3.58.0/store": {
+      "bytes": 796,
+      "imports": [
+        {
+          "path": "https://cdn.skypack.dev/-/svelte@v3.58.0-QIyracdaCWAEmGjWtYVE/dist=es2019,mode=imports/optimized/svelte/store.js",
+          "kind": "import-statement",
+          "original": "/-/svelte@v3.58.0-QIyracdaCWAEmGjWtYVE/dist=es2019,mode=imports/optimized/svelte/store.js"
+        },
+        {
+          "path": "https://cdn.skypack.dev/-/svelte@v3.58.0-QIyracdaCWAEmGjWtYVE/dist=es2019,mode=imports/optimized/svelte/store.js",
+          "kind": "import-statement",
+          "original": "/-/svelte@v3.58.0-QIyracdaCWAEmGjWtYVE/dist=es2019,mode=imports/optimized/svelte/store.js"
+        }
+      ],
+      "format": "esm"
+    },
+    "src/store.ts": {
+      "bytes": 84,
+      "imports": [
+        {
+          "path": "https://cdn.skypack.dev/svelte@3.58.0/store",
+          "kind": "import-statement",
+          "original": "svelte/store"
+        }
+      ],
+      "format": "esm"
+    },
+    "src/Counter.svelte": {
+      "bytes": 4754,
+      "imports": [
+        {
+          "path": "https://cdn.skypack.dev/svelte@3.58.0/internal",
+          "kind": "import-statement",
+          "original": "svelte/internal"
+        },
+        {
+          "path": "../../runtime/svelte.client.ts",
+          "kind": "import-statement",
+          "original": "frugal/runtime/svelte.client.ts"
+        },
+        {
+          "path": "src/store.ts",
+          "kind": "import-statement",
+          "original": "./store.ts"
+        }
+      ],
+      "format": "esm"
+    },
+    "src/Counter.script.ts": {
+      "bytes": 228,
+      "imports": [
+        {
+          "path": "../../runtime/svelte.client.ts",
+          "kind": "import-statement",
+          "original": "frugal/runtime/svelte.client.ts"
+        },
+        {
+          "path": "src/Counter.svelte",
+          "kind": "dynamic-import",
+          "original": "./Counter.svelte"
+        }
+      ],
+      "format": "esm"
+    },
+    "dist/.cache/asset/script/src/home.ts": {
+      "bytes": 94,
+      "imports": [
+        {
+          "path": "src/Counter.script.ts",
+          "kind": "import-statement",
+          "original": "/home/whiteshoulders/projects/personnal/frugal/exemples/svelte/src/Counter.script.ts"
+        }
+      ],
+      "format": "esm"
+    }
+  },
+  "outputs": {
+    "dist/public/js/home.js": {
+      "imports": [
+        {
+          "path": "dist/public/js/chunk-5RTQNANM.js",
+          "kind": "import-statement"
+        },
+        {
+          "path": "dist/public/js/Counter-CWDVNELK.js",
+          "kind": "dynamic-import"
+        }
+      ],
+      "exports": [],
+      "entryPoint": "dist/.cache/asset/script/src/home.ts",
+      "inputs": {
+        "src/Counter.script.ts": {
+          "bytesInOutput": 151
+        },
+        "dist/.cache/asset/script/src/home.ts": {
+          "bytesInOutput": 0
+        }
+      },
+      "bytes": 226
+    },
+    "dist/public/js/Counter-CWDVNELK.js": {
+      "imports": [
+        {
+          "path": "dist/public/js/chunk-5RTQNANM.js",
+          "kind": "import-statement"
+        }
+      ],
+      "exports": [
+        "default"
+      ],
+      "entryPoint": "src/Counter.svelte",
+      "inputs": {
+        "https://cdn.skypack.dev/-/svelte@v3.58.0-QIyracdaCWAEmGjWtYVE/dist=es2019,mode=imports/optimized/svelte/store.js": {
+          "bytesInOutput": 1131
+        },
+        "https://cdn.skypack.dev/svelte@3.58.0/store": {
+          "bytesInOutput": 0
+        },
+        "src/store.ts": {
+          "bytesInOutput": 33
+        },
+        "src/Counter.svelte": {
+          "bytesInOutput": 5056
+        }
+      },
+      "bytes": 6815
+    },
+    "dist/public/js/chunk-5RTQNANM.js": {
+      "imports": [],
+      "exports": [
+        "SvelteComponent",
+        "append_hydration",
+        "attr",
+        "children",
+        "claim_element",
+        "claim_space",
+        "claim_text",
+        "create_slot",
+        "detach",
+        "element",
+        "getData",
+        "get_all_dirty_from_scope",
+        "get_slot_changes",
+        "hydrate",
+        "init",
+        "insert_hydration",
+        "listen",
+        "noop",
+        "run_all",
+        "safe_not_equal",
+        "set_data",
+        "space",
+        "text",
+        "transition_in",
+        "transition_out",
+        "update_slot_base"
+      ],
+      "inputs": {
+        "https://cdn.skypack.dev/-/svelte@v3.58.0-QIyracdaCWAEmGjWtYVE/dist=es2019,mode=imports/optimized/svelte/internal.js": {
+          "bytesInOutput": 19693
+        },
+        "https://cdn.skypack.dev/-/svelte@v3.58.0-QIyracdaCWAEmGjWtYVE/dist=es2019,mode=imports/optimized/svelte.js": {
+          "bytesInOutput": 0
+        },
+        "https://cdn.skypack.dev/svelte@3.58.0": {
+          "bytesInOutput": 0
+        },
+        "../../src/runtime/svelte/dataContext.ts": {
+          "bytesInOutput": 118
+        },
+        "https://cdn.skypack.dev/svelte@3.58.0/internal": {
+          "bytesInOutput": 0
+        },
+        "../../src/runtime/svelte/mod.client.ts": {
+          "bytesInOutput": 0
+        },
+        "../../src/runtime/client_session/utils.ts": {
+          "bytesInOutput": 1029
+        },
+        "../../src/runtime/client_session/mod.ts": {
+          "bytesInOutput": 0
+        },
+        "../../src/runtime/client_session/render/utils.ts": {
+          "bytesInOutput": 1620
+        },
+        "../../src/runtime/client_session/render/diff.ts": {
+          "bytesInOutput": 6116
+        },
+        "../../src/runtime/client_session/render/patch.ts": {
+          "bytesInOutput": 2158
+        },
+        "../../src/runtime/client_session/render/mod.ts": {
+          "bytesInOutput": 228
+        },
+        "../../src/runtime/client_session/SessionHistory.ts": {
+          "bytesInOutput": 2301
+        },
+        "../../src/runtime/client_session/Navigator.ts": {
+          "bytesInOutput": 3825
+        },
+        "../../src/runtime/client_session/Visitor.ts": {
+          "bytesInOutput": 822
+        },
+        "../../src/runtime/client_session/VisitObserver.ts": {
+          "bytesInOutput": 2144
+        },
+        "../../src/runtime/client_session/Prefetcher.ts": {
+          "bytesInOutput": 4176
+        },
+        "../../src/runtime/client_session/PrefetchObserver.ts": {
+          "bytesInOutput": 2144
+        },
+        "../../src/runtime/client_session/Form.ts": {
+          "bytesInOutput": 2669
+        },
+        "../../src/runtime/client_session/Submitter.ts": {
+          "bytesInOutput": 1062
+        },
+        "../../src/runtime/client_session/SubmitObserver.ts": {
+          "bytesInOutput": 1272
+        },
+        "../../src/runtime/client_session/Session.ts": {
+          "bytesInOutput": 2760
+        },
+        "../../src/runtime/svelte/hydrate/Hydratable.svelte": {
+          "bytesInOutput": 4361
+        },
+        "../../src/runtime/svelte/hydrate/hydrateIsland.ts": {
+          "bytesInOutput": 648
+        },
+        "../../src/runtime/svelte/hydrate/mod.ts": {
+          "bytesInOutput": 1852
+        },
+        "../../runtime/svelte.client.ts": {
+          "bytesInOutput": 0
+        }
+      },
+      "bytes": 63264
+    }
+  }
+}'
+`;

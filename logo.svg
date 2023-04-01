@@ -1,20 +1,20 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<!-- Created with Inkscape (http://www.inkscape.org/) -->
-
 <svg
-   width="210mm"
-   height="297mm"
-   viewBox="0 0 210 297"
+   width="23.835mm"
+   height="23.835mm"
    version="1.1"
-   id="svg5"
-   inkscape:version="1.2.2 (b0a8486541, 2022-12-01)"
+   viewBox="0 0 23.835 23.835"
+   id="svg10"
    sodipodi:docname="logo.svg"
+   inkscape:version="1.2.2 (b0a8486541, 2022-12-01)"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns="http://www.w3.org/2000/svg"
    xmlns:svg="http://www.w3.org/2000/svg">
+  <defs
+     id="defs14" />
   <sodipodi:namedview
-     id="namedview7"
+     id="namedview12"
      pagecolor="#ffffff"
      bordercolor="#000000"
      borderopacity="0.25"
@@ -24,102 +24,39 @@
      inkscape:deskcolor="#d1d1d1"
      inkscape:document-units="mm"
      showgrid="false"
-     inkscape:zoom="4.6449692"
-     inkscape:cx="420.13196"
-     inkscape:cy="223.57522"
-     inkscape:window-width="878"
+     inkscape:zoom="2.9169015"
+     inkscape:cx="83.478993"
+     inkscape:cy="43.025107"
+     inkscape:window-width="1886"
      inkscape:window-height="992"
      inkscape:window-x="0"
      inkscape:window-y="0"
      inkscape:window-maximized="1"
-     inkscape:current-layer="layer1" />
-  <defs
-     id="defs2">
-    <rect
-       x="112.41004"
-       y="221.54278"
-       width="502.78397"
-       height="146.85261"
-       id="rect236" />
-    <filter
-       style="color-interpolation-filters:sRGB"
-       id="filter294"
-       inkscape:label="Test"
-       x="-0.15165877"
-       y="-0.13427329"
-       width="1.3033175"
-       height="1.2685466">
-      <feGaussianBlur
-         stdDeviation="4"
-         id="feGaussianBlur296" />
-      <feColorMatrix
-         id="feColorMatrix300"
-         values="1.0000000 0.0000000 0.0000000 0.0000000 0.0000000 0.0000000 1.0000000 0.0000000 0.0000000 0.0000000 0.0000000 0.0000000 1.0000000 0.0000000 0.0000000 0.0000000 0.0000000 0.0000000 100.00000 -50.000000 " />
-    </filter>
-    <rect
-       x="112.41004"
-       y="221.54279"
-       width="502.78397"
-       height="146.85262"
-       id="rect236-3" />
-  </defs>
+     inkscape:current-layer="svg10" />
   <g
-     inkscape:label="Calque 1"
-     inkscape:groupmode="layer"
-     id="layer1">
-    <rect
-       style="fill:#000000;fill-opacity:1;stroke:#000000;stroke-width:0.264583;stroke-linecap:square;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;stop-color:#000000"
-       id="rect6501-5"
-       width="23.570528"
-       height="23.570528"
-       x="108.58479"
-       y="53.495342" />
-    <rect
-       style="fill:#ffffff;fill-opacity:1;stroke:#000000;stroke-width:0.264583;stroke-linecap:square;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;stop-color:#000000"
-       id="rect6501"
-       width="23.570528"
-       height="23.570528"
-       x="84.749672"
-       y="53.495342" />
-    <rect
-       style="fill:#ffd300;fill-opacity:1;stroke-width:0.461589;stroke-linecap:square;stroke-dasharray:0.461589, 2.76953;-inkscape-stroke:none;stop-color:#000000"
-       id="rect2564"
-       width="13.427077"
-       height="6.0192719"
-       x="85.746353"
-       y="69.26429"
-       transform="rotate(-3)" />
-    <text
-       xml:space="preserve"
-       transform="scale(0.26458333)"
-       id="text234"
-       style="font-size:72px;line-height:1;font-family:'Fira Sans';-inkscape-font-specification:'Fira Sans';text-align:end;white-space:pre;shape-inside:url(#rect236);fill:#000000;fill-opacity:1;stroke-width:1.88976;stroke-linecap:square;stroke-dasharray:1.88976, 11.3386;-inkscape-stroke:none;stop-color:#000000"
-       x="-13.779835"
-       y="0"><tspan
-         x="352.97363"
-         y="279.00329"
-         id="tspan20519"><tspan
-           style="font-family:'Fjalla One';-inkscape-font-specification:'Fjalla One';text-align:center;text-anchor:middle;fill:#333333"
-           id="tspan20517">f</tspan></tspan></text>
-    <rect
-       style="fill:#ffffff;fill-opacity:1;stroke-width:0.461589;stroke-linecap:square;stroke-dasharray:0.461589, 2.76953;-inkscape-stroke:none;stop-color:#000000"
-       id="rect2564-6"
-       width="13.427077"
-       height="6.0192719"
-       x="109.5488"
-       y="70.511726"
-       transform="rotate(-3)" />
-    <text
-       xml:space="preserve"
-       transform="matrix(0.26458333,0,0,0.26458333,23.835101,1.5807129e-6)"
-       id="text234-7"
-       style="font-size:72px;line-height:1;font-family:'Fira Sans';-inkscape-font-specification:'Fira Sans';text-align:end;white-space:pre;shape-inside:url(#rect236-3);fill:#ffd300;fill-opacity:1;stroke-width:1.88976;stroke-linecap:square;stroke-dasharray:1.88976, 11.3386;-inkscape-stroke:none;stop-color:#000000"
-       x="-13.779835"
-       y="0"><tspan
-         x="352.97363"
-         y="279.00329"
-         id="tspan20523"><tspan
-           style="font-family:'Fjalla One';-inkscape-font-specification:'Fjalla One';text-align:center;text-anchor:middle"
-           id="tspan20521">f</tspan></tspan></text>
+     transform="matrix(1.1346524,0,0,1.1346524,-97.559154,-62.153034)"
+     stroke-linecap="square"
+     id="g8">
+    <path
+       transform="rotate(-3)"
+       d="m 85.746,69.264 h 13.427 v 6.0193 H 85.746 Z"
+       fill="#ffd300"
+       stop-color="#000000"
+       stroke-dasharray="0.461589, 2.76953"
+       stroke-width="0.46159"
+       id="path2" />
+    <g
+       transform="scale(0.26458)"
+       stop-color="#000000"
+       stroke-dasharray="1.88976, 11.3386"
+       stroke-width="1.8898"
+       style="white-space:pre;shape-inside:url(#rect236)"
+       aria-label="f"
+       id="g6">
+      <path
+         d="m 358.74,236.92 h -4.1836 v -6.3281 h 4.1836 v -3.4805 q 0,-3.9375 0.80859,-6.3984 0.8086,-2.4961 2.2148,-3.8672 1.4414,-1.4062 3.3398,-1.8984 1.9336,-0.49219 4.1484,-0.49219 0.63281,0 1.4062,0.0703 0.80859,0.0703 1.582,0.2461 0.80859,0.14062 1.5469,0.35156 0.77344,0.21094 1.3711,0.52734 v 6.2578 q -1.4766,-0.38672 -3.3047,-0.38672 -0.87891,0 -1.6875,0.28125 -0.77344,0.28125 -1.3711,0.94922 -0.59766,0.63281 -0.94922,1.7226 -0.35157,1.0547 -0.35157,2.6367 v 3.4805 h 6.7148 v 6.3281 h -6.7148 v 42.082 h -8.7539 z"
+         fill="#333333"
+         id="path4" />
+    </g>
   </g>
 </svg>

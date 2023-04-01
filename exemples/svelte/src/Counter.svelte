@@ -1,20 +1,43 @@
 <script>
-    import { count } from "./store.ts";
-    export let title;
+    import { getData } from "frugal/runtime/svelte.client.ts";
+    import { countWritable } from "./store.ts";
 
-    function incrementCount() {
-        count.update((count) => count + 1);
+    const data = getData();
+
+    function add() {
+        countWritable.update((count) => count + 1);
+    }
+    function subtract() {
+        countWritable.update((count) => count - 1);
     }
 
-    let countValue;
+    let count;
 
-    count.subscribe((value) => {
-        countValue = value;
+    countWritable.subscribe((value) => {
+        count = value;
     });
 </script>
 
-<div>
-    <h2>{title}</h2>
-    <div>value: {countValue}</div>
-    <button on:click={incrementCount}>Increment</button>
+<div class="counter">
+    <button on:click={subtract}>-</button>
+    <pre>{count}</pre>
+    <button on:click={add}>+</button>
 </div>
+<div class="counter-message">
+    <slot />
+    {data.framework}
+</div>
+
+<style>
+    .counter {
+        display: grid;
+        font-size: 2em;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        margin-top: 2em;
+        place-items: center;
+        border: 1px solid grey;
+    }
+    .counter-message {
+        text-align: center;
+    }
+</style>

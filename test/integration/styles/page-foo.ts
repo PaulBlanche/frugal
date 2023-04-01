@@ -7,32 +7,32 @@ import shared from './styles/shared.module.css';
 import './styles/global.css';
 
 type Data = {
-    title: string;
-    content: string;
+  title: string;
+  content: string;
 };
 
 async function getData() {
-    const data = await Deno.readTextFile(
-        new URL('../../../../data.json', import.meta.url),
-    );
-    return JSON.parse(data)['foo'];
+  const data = await Deno.readTextFile(
+    new URL('../../../../data.json', import.meta.url),
+  );
+  return JSON.parse(data)['foo'];
 }
 
 export async function getPathList(): Promise<page.PathList<typeof pattern>> {
-    const data = await getData();
-    return Object.keys(data).map((key) => ({ slug: key }));
+  const data = await getData();
+  return Object.keys(data).map((key) => ({ slug: key }));
 }
 
 export async function GET(
-    { path }: page.StaticDataContext<typeof pattern>,
+  { path }: page.StaticDataContext<typeof pattern>,
 ): Promise<page.DataResponse<Data>> {
-    const data = await getData();
+  const data = await getData();
 
-    if (!(path.slug in data)) {
-        throw Error();
-    }
+  if (!(path.slug in data)) {
+    throw Error();
+  }
 
-    return new page.DataResponse(data[path.slug]);
+  return new page.DataResponse(data[path.slug]);
 }
 
 export const pattern = '/foo/:slug';
@@ -40,12 +40,12 @@ export const pattern = '/foo/:slug';
 export const self = import.meta.url;
 
 export function getContent({ assets, descriptor }: page.GetContentContext<
-    Data,
-    typeof pattern
+  Data,
+  typeof pattern
 >) {
-    const styleHref = assets['style'][descriptor];
+  const styleHref = assets['style'][descriptor];
 
-    return `<html>
+  return `<html>
     <head>
         <title>bar</title>
         <link rel="stylesheet" href="${styleHref}" />

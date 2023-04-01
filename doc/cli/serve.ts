@@ -1,4 +1,4 @@
-import * as dotenv from '../dep/std/dotenv.ts';
+import * as dotenv from '../../dep/std/dotenv.ts';
 
 if (Deno.env.get('CI') === undefined) {
     await dotenv.config({

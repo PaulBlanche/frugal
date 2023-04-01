@@ -9,41 +9,41 @@ import { StaticRoute } from '../../../page/Router.ts';
 import { generate } from '../dynamicPage/generate.ts';
 
 export function staticPage(context: RouteContext, next: Next<RouteContext>) {
-    const route = context.route;
+  const route = context.route;
 
-    if (route.type !== 'static') {
-        context.log(
-            'can\'t statically serve dynamic route. Yield to next middleware',
-        );
+  if (route.type !== 'static') {
+    context.log(
+      'can\'t statically serve dynamic route. Yield to next middleware',
+    );
 
-        return next(context);
-    }
+    return next(context);
+  }
 
-    return composedMiddleware({ ...context, route }, next);
+  return composedMiddleware({ ...context, route }, next);
 }
 
 const composedMiddleware = composeMiddleware<RouteContext<StaticRoute>>(
-    forceRefresh,
-    prg.get,
-    prg.postRedirect,
-    devMode,
-    cache,
-    refreshJit,
-    cache,
+  forceRefresh,
+  prg.get,
+  prg.postRedirect,
+  devMode,
+  cache,
+  refreshJit,
+  cache,
 );
 
 function devMode(
-    context: RouteContext<StaticRoute>,
-    next: Next<RouteContext<StaticRoute>>,
+  context: RouteContext<StaticRoute>,
+  next: Next<RouteContext<StaticRoute>>,
 ) {
-    if (!context.config.isDevMode) {
-        return next(context);
-    }
+  if (!context.config.isDevMode) {
+    return next(context);
+  }
 
-    context.log(`dynamically generating static page for dev mode`, {
-        kind: 'debug',
-        scope: 'devMode',
-    });
+  context.log(`dynamically generating static page for dev mode`, {
+    kind: 'debug',
+    scope: 'devMode',
+  });
 
-    return generate(context);
+  return generate(context);
 }

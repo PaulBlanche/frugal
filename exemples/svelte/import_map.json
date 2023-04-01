@@ -1,6 +1,8 @@
 {
-    "imports": {
-        "svelte/": "npm:/svelte@3.50.0/",
-        "frugal/": "http://localhost:8001/08cad56d-d07e-4d70-a8f0-da54e4ec7677/"
-    }
+  "imports": {
+    "svelte-preprocess/": "https://cdn.skypack.dev/svelte-preprocess@5.0.3/",
+    "svelte/": "https://cdn.skypack.dev/svelte@3.58.0/",
+    "svelte": "https://cdn.skypack.dev/svelte@3.58.0",
+    "frugal/": "file:///home/whiteshoulders/projects/personnal/frugal/"
+  }
 }

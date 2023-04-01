@@ -1,9 +1,9 @@
 {
-    "imports": {
-        "$dep/": "./dep/",
-        "frugal/": "../",
-        "preact": "https://esm.sh/preact@10.13.1",
-        "preact/": "https://esm.sh/preact@10.13.1/",
-        "preact-render-to-string": "https://esm.sh/preact-render-to-string@5.2.6?deps=preact@10.13.1"
-    }
+  "imports": {
+    "$dep/": "./dep/",
+    "frugal/": "../",
+    "preact": "https://esm.sh/preact@10.13.1",
+    "preact/": "https://esm.sh/preact@10.13.1/",
+    "preact-render-to-string": "https://esm.sh/preact-render-to-string@5.2.6?deps=preact@10.13.1"
+  }
 }

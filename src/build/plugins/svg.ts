@@ -8,213 +8,211 @@ import { log } from '../../log.ts';
 import { Config } from '../../Config.ts';
 
 type SvgOptions = {
-    outdir: string;
-    filter: RegExp;
+  outdir: string;
+  filter: RegExp;
 };
 
 export function svg(
-    { outdir = 'svg/', filter = /\.svg$/ }: Partial<SvgOptions> = {},
+  { outdir = 'svg/', filter = /\.svg$/ }: Partial<SvgOptions> = {},
 ): Plugin {
-    return {
-        name: 'svg',
-        create(build) {
-            build.includeAsset({ type: 'svg', filter });
+  return {
+    name: 'svg',
+    create(build) {
+      build.includeAsset({ type: 'svg', filter });
 
-            const esbuildPlugin = esbuildSvgPlugin({
-                filter,
-                config: build.config,
-                outdir,
-            });
+      const esbuildPlugin = esbuildSvgPlugin({
+        filter,
+        config: build.config,
+        outdir,
+      });
 
-            build.register(esbuildPlugin);
+      build.register(esbuildPlugin);
 
-            build.onBuildAssets(async ({ getAssets }) => {
-                log('bundling svg spritesheets ', { scope: 'plugin:svg' });
+      build.onBuildAssets(async ({ getAssets }) => {
+        log('bundling svg spritesheets ', { scope: 'plugin:svg' });
 
-                const assets = getAssets('svg');
+        const assets = getAssets('svg');
 
-                const spritesheets: Record<string, Symbol[]> = {};
+        const spritesheets: Record<string, Symbol[]> = {};
 
-                await Promise.all(assets.map(async (asset) => {
-                    const { spritesheet, symbol } = await getSymbol(asset);
-                    spritesheets[spritesheet] = spritesheets[spritesheet] ?? [];
-                    spritesheets[spritesheet].push(symbol);
-                }));
+        await Promise.all(assets.map(async (asset) => {
+          const { spritesheet, symbol } = await getSymbol(asset);
+          spritesheets[spritesheet] = spritesheets[spritesheet] ?? [];
+          spritesheets[spritesheet].push(symbol);
+        }));
 
-                const generated = [];
+        const generated = [];
 
-                for (const [name, symbols] of Object.entries(spritesheets)) {
-                    const svg = renderSpritesheet(symbols, build.config);
-                    const svgPath = path.join('svg', name);
-                    const svgUrl = new URL(svgPath, build.config.publicdir);
+        for (const [name, symbols] of Object.entries(spritesheets)) {
+          const svg = renderSpritesheet(symbols, build.config);
+          const svgPath = path.join('svg', name);
+          const svgUrl = new URL(svgPath, build.config.publicdir);
 
-                    generated.push(`/${svgPath}`);
+          generated.push(`/${svgPath}`);
 
-                    await fs.ensureFile(svgUrl);
-                    await Deno.writeTextFile(svgUrl, svg);
-                }
+          await fs.ensureFile(svgUrl);
+          await Deno.writeTextFile(svgUrl, svg);
+        }
 
-                return generated;
-            });
-        },
-    };
+        return generated;
+      });
+    },
+  };
 }
 
 type ServerSvgOptions = {
-    filter: RegExp;
-    config: Config;
-    outdir: string;
+  filter: RegExp;
+  config: Config;
+  outdir: string;
 };
 
 function esbuildSvgPlugin(
-    { filter, config, outdir }: ServerSvgOptions,
+  { filter, config, outdir }: ServerSvgOptions,
 ): RegisteredPlugin {
-    return {
-        type: 'server',
-        setup(build) {
-            build.onLoad({ filter }, async (args) => {
-                const { specifier, loaded } = await config.loader.load(args);
+  return {
+    type: 'server',
+    setup(build) {
+      build.onLoad({ filter }, async (args) => {
+        const { specifier, loaded } = await config.loader.load(args);
 
-                const { id, basename } = await symbolUrl(
-                    path.fromFileUrl(new URL(specifier)),
-                );
+        const { id, basename } = await symbolUrl(
+          path.fromFileUrl(new URL(specifier)),
+        );
 
-                log(
-                    `found svg symbol "${
-                        path.relative(
-                            path.fromFileUrl(
-                                new URL('.', config.self),
-                            ),
-                            path.fromFileUrl(new URL(specifier)),
-                        )
-                    }"`,
-                    {
-                        kind: 'debug',
-                        scope: 'plugin:svg',
-                    },
-                );
+        log(
+          `found svg symbol "${
+            path.relative(
+              path.fromFileUrl(
+                new URL('.', config.self),
+              ),
+              path.fromFileUrl(new URL(specifier)),
+            )
+          }"`,
+          {
+            kind: 'debug',
+            scope: 'plugin:svg',
+          },
+        );
 
-                return {
-                    ...loaded,
-                    contents: `/${outdir}${basename}#${id}`,
-                    loader: 'text',
-                };
-            });
-        },
-    };
+        return {
+          ...loaded,
+          contents: `/${outdir}${basename}#${id}`,
+          loader: 'text',
+        };
+      });
+    },
+  };
 }
 
 function renderSpritesheet(symbols: Symbol[], config: Config) {
-    const seenId: Record<string, string[]> = {};
-    const svgContent = [];
-    const defs = [];
-    for (const symbol of symbols) {
-        for (const id of symbol.gatheredIds) {
-            seenId[id] = seenId[id] ?? [];
-            seenId[id].push(symbol.path);
-        }
-
-        if (symbol.defs) {
-            defs.push(symbol.defs);
-        }
-
-        const symbolAttributes = Object.entries(
-            symbol.attributes,
-        ).filter(([key, _]) =>
-            ['id', 'viewBox', 'preserveAspectRatio']
-                .includes(key)
-        ).map(([key, value]) => `${key}="${value}"`).join(
-            ' ',
-        );
-
-        svgContent.push(
-            `<symbol ${symbolAttributes}>${symbol.content}</symbol><use href="#${
-                symbol.attributes['id']
-            }" />`,
-        );
+  const seenId: Record<string, string[]> = {};
+  const svgContent = [];
+  const defs = [];
+  for (const symbol of symbols) {
+    for (const id of symbol.gatheredIds) {
+      seenId[id] = seenId[id] ?? [];
+      seenId[id].push(symbol.path);
     }
 
-    for (const [id, paths] of Object.entries(seenId)) {
-        if (paths.length > 1) {
-            log(
-                `found the same id "${id}" in multiple symbols : ${
-                    paths.map((conflictPath) =>
-                        path.relative(
-                            path.fromFileUrl(
-                                new URL('.', config.self),
-                            ),
-                            conflictPath,
-                        )
-                    ).join(', ')
-                }`,
-                { scope: 'plugin:svg', kind: 'warning' },
-            );
-        }
+    if (symbol.defs) {
+      defs.push(symbol.defs);
     }
 
-    return `<svg xmlns="http://www.w3.org/2000/svg">${
-        defs.length !== 0 ? `<defs>${defs.join('\n')}</defs>` : ''
-    }${svgContent.join('\n')}</svg>`;
+    const symbolAttributes = Object.entries(
+      symbol.attributes,
+    ).filter(([key, _]) =>
+      ['id', 'viewBox', 'preserveAspectRatio']
+        .includes(key)
+    ).map(([key, value]) => `${key}="${value}"`).join(
+      ' ',
+    );
+
+    svgContent.push(
+      `<symbol ${symbolAttributes}>${symbol.content}</symbol><use href="#${
+        symbol.attributes['id']
+      }" />`,
+    );
+  }
+
+  for (const [id, paths] of Object.entries(seenId)) {
+    if (paths.length > 1) {
+      log(
+        `found the same id "${id}" in multiple symbols : ${
+          paths.map((conflictPath) =>
+            path.relative(
+              path.fromFileUrl(
+                new URL('.', config.self),
+              ),
+              conflictPath,
+            )
+          ).join(', ')
+        }`,
+        { scope: 'plugin:svg', kind: 'warning' },
+      );
+    }
+  }
+
+  return `<svg xmlns="http://www.w3.org/2000/svg">${
+    defs.length !== 0 ? `<defs>${defs.join('\n')}</defs>` : ''
+  }${svgContent.join('\n')}</svg>`;
 }
 
 type Symbol = {
-    attributes: Record<string, string>;
-    gatheredIds: string[];
-    defs?: string;
-    content?: string;
-    path: string;
+  attributes: Record<string, string>;
+  gatheredIds: string[];
+  defs?: string;
+  content?: string;
+  path: string;
 };
 
 async function getSymbol(asset: Asset) {
-    const assetPath = path.fromFileUrl(asset.url);
-    const svg = await Deno.readTextFile(assetPath);
+  const assetPath = path.fromFileUrl(asset.url);
+  const svg = await Deno.readTextFile(assetPath);
 
-    const { id, basename } = await symbolUrl(assetPath);
+  const { id, basename } = await symbolUrl(assetPath);
 
-    const $ = cheerio.load(svg, {
-        xml: true,
-    });
+  const $ = cheerio.load(svg, {
+    xml: true,
+  });
 
-    const $svg = $('svg');
+  const $svg = $('svg');
 
-    console.log($svg.html());
+  const symbol: Symbol = {
+    attributes: $svg.attr() ?? {},
+    gatheredIds: [],
+    path: assetPath,
+  };
 
-    const symbol: Symbol = {
-        attributes: $svg.attr() ?? {},
-        gatheredIds: [],
-        path: assetPath,
-    };
+  symbol.attributes['id'] = id;
 
-    symbol.attributes['id'] = id;
-
-    $svg.find('[id]').each((_, element) => {
-        const id = $(element).attr('id');
-        if (id !== undefined) {
-            symbol.gatheredIds.push(id);
-        }
-    });
-
-    const $defs = $svg.find(`defs`);
-    if ($defs.children().length) {
-        symbol.defs = $defs.html() ?? undefined;
+  $svg.find('[id]').each((_, element) => {
+    const id = $(element).attr('id');
+    if (id !== undefined) {
+      symbol.gatheredIds.push(id);
     }
-    $defs.remove();
+  });
 
-    symbol.content = $svg.html() ?? undefined;
+  const $defs = $svg.find(`defs`);
+  if ($defs.children().length) {
+    symbol.defs = $defs.html() ?? undefined;
+  }
+  $defs.remove();
 
-    return { spritesheet: basename, symbol };
+  symbol.content = $svg.html() ?? undefined;
+
+  return { spritesheet: basename, symbol };
 }
 
 async function symbolUrl(svgPath: string) {
-    const svg = await Deno.readTextFile(svgPath);
-    const svgHash = (await XXH64.create()).update(svg)
-        .digest('hex');
+  const svg = await Deno.readTextFile(svgPath);
+  const svgHash = (await XXH64.create()).update(svg)
+    .digest('hex');
 
-    const id = `${path.basename(svgPath, path.extname(svgPath))}-${svgHash}`;
-    const spritesheet = path.basename(path.dirname(svgPath));
+  const id = `${path.basename(svgPath, path.extname(svgPath))}-${svgHash}`;
+  const spritesheet = path.basename(path.dirname(svgPath));
 
-    return {
-        id,
-        basename: `${spritesheet}.svg`,
-    };
+  return {
+    id,
+    basename: `${spritesheet}.svg`,
+  };
 }

@@ -1,5 +1,5 @@
 import { log } from './common.ts';
 
 if (import.meta.main) {
-    log('foo');
+  log('foo');
 }

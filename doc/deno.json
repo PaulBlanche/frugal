@@ -1,29 +1,27 @@
 {
-    "importMap": "./import_map.json",
-    "compilerOptions": {
-        "lib": [
-            "dom",
-            "esnext"
-        ]
+  "importMap": "./import_map.json",
+  "compilerOptions": {
+    "lib": [
+      "deno.ns",
+      "dom",
+      "esnext"
+    ]
+  },
+  "fmt": {
+    "files": {
+      "exclude": [
+        "dist"
+      ]
     },
-    "fmt": {
-        "files": {
-            "exclude": [
-                "dist"
-            ]
-        },
-        "options": {
-            "useTabs": false,
-            "lineWidth": 100,
-            "indentWidth": 4,
-            "singleQuote": true,
-            "proseWrap": "preserve"
-        }
-    },
-    "tasks": {
-        "dev": "deno run -A --unstable cli/dev.ts",
-        "build": "deno run -A --unstable cli/build.ts",
-        "serve": "deno run -A --unstable cli/serve.ts",
-        "cache": "deno cache --reload dep/mod.ts"
+    "options": {
+      "singleQuote": true,
+      "proseWrap": "preserve"
     }
+  },
+  "tasks": {
+    "dev": "deno run -A --unstable cli/dev.ts",
+    "build": "deno run -A --unstable cli/build.ts",
+    "serve": "deno run -A --unstable cli/serve.ts",
+    "cache": "deno cache --reload dep/mod.ts"
+  }
 }

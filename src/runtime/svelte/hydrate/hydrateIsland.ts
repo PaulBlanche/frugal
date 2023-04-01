@@ -1,40 +1,40 @@
-import Hydratable from './Hydratable.svelte';
-
-//import { DataProvider } from '../dataContext.tsx';
-//import { HeadProvider } from '../Head.tsx';
-//import { App } from '../types.ts';
-
-// Setup a signal that changes on each session navigation (will force rerender
-// each hydrated island)
-/*const RERENDER_SIGNAL = signal.signal(0);
-onReadyStateChange('complete', () => {
-    RERENDER_SIGNAL.value += 1;
-});*/
+import { ClientComponent } from "../ClientComponent.ts";
+import { DATA_CONTEXT_KEY } from "../dataContext.ts";
+//@deno-types="../../../../runtime/svelte/island.d.ts"
+import Hydratable from "./Hydratable.svelte";
+import "../types.ts";
 
 const HYDRATED = new WeakSet();
 
 export function hydrateIsland(
-    root: HTMLElement,
-    // deno-lint-ignore no-explicit-any
-    component: any,
+  root: HTMLElement,
+  name: string,
+  component: ClientComponent,
 ) {
-    if (HYDRATED.has(root)) {
-        // the island was already hydrated
-        return;
-    }
+  if (HYDRATED.has(root)) {
+    // the island was already hydrated
+    return;
+  }
 
-    HYDRATED.add(root);
-    console.log('hydrate', root);
+  HYDRATED.add(root);
 
-    const propsScript = root.querySelector('script');
-    const props = propsScript?.textContent ? JSON.parse(propsScript.textContent) : {};
+  const propsScript = root.querySelector("script");
+  const props = propsScript?.textContent
+    ? JSON.parse(propsScript.textContent)
+    : {};
 
-    new Hydratable({
-        target: root,
-        hydrate: true,
-        props: {
-            component,
-            props,
-        },
-    });
+  const html = root.querySelector("[data-svelte-slot]")?.innerHTML;
+
+  new Hydratable({
+    target: root,
+    hydrate: true,
+    props: {
+      component,
+      props,
+      html,
+    },
+    context: new Map([[DATA_CONTEXT_KEY, window.__FRUGAL__.context]]),
+  });
+
+  root.dataset["hydrated"] = "";
 }

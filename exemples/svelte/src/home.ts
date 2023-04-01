@@ -1,16 +1,15 @@
-import { GetContent } from '../../../src/page/PageDescriptor.ts';
+import { getContentFrom } from 'frugal/runtime/svelte.server.ts';
+
+//@deno-types="frugal/runtime/svelte/page.d.ts"
 import HomePage from './HomePage.svelte';
+import { DataResponse } from '../../../src/page/FrugalResponse.ts';
 
 export const self = import.meta.url;
 
 export const pattern = '/';
 
-export const getContent = getContentFrom(HomePage);
-
-// deno-lint-ignore no-explicit-any
-function getContentFrom(component: any): GetContent {
-    return ({ descriptor, assets }) => {
-        const { html, head } = component.render({ descriptor, assets });
-        return `<!DOCTYPE html><html><head>${head}</head></body>${html}</body>`;
-    };
+export function GET() {
+  return new DataResponse({ framework: 'svelte' });
 }
+
+export const getContent = getContentFrom(HomePage);

@@ -3,55 +3,55 @@ import * as preact from 'preact';
 const isServer = typeof document === 'undefined';
 
 export type Manager = {
-    update(state: preact.VNode[]): void;
-    instanceStack: Set<Effect>;
+  update(state: preact.VNode[]): void;
+  instanceStack: Set<Effect>;
 };
 
 type SideEffectProps = {
-    reduceComponentsToState: (
-        components: Effect[],
-    ) => preact.VNode[];
-    manager: Manager;
+  reduceComponentsToState: (
+    components: Effect[],
+  ) => preact.VNode[];
+  manager: Manager;
 };
 
 export class Effect extends preact.Component<SideEffectProps> {
-    emitChange = (): void => {
-        this.props.manager.update(
-            this.props.reduceComponentsToState(
-                [...this.props.manager.instanceStack],
-            ),
-        );
-    };
+  emitChange = (): void => {
+    this.props.manager.update(
+      this.props.reduceComponentsToState(
+        [...this.props.manager.instanceStack],
+      ),
+    );
+  };
 
-    constructor(props: SideEffectProps) {
-        super(props);
+  constructor(props: SideEffectProps) {
+    super(props);
 
-        if (isServer) {
-            this.#pushToStack();
-            this.emitChange();
-        }
+    if (isServer) {
+      this.#pushToStack();
+      this.emitChange();
     }
-    componentDidMount() {
-        this.#pushToStack();
-        this.emitChange();
-    }
-    componentDidUpdate() {
-        this.emitChange();
-    }
-    componentWillUnmount() {
-        this.#popFromStack();
-        this.emitChange();
-    }
+  }
+  componentDidMount() {
+    this.#pushToStack();
+    this.emitChange();
+  }
+  componentDidUpdate() {
+    this.emitChange();
+  }
+  componentWillUnmount() {
+    this.#popFromStack();
+    this.emitChange();
+  }
 
-    render() {
-        return null;
-    }
+  render() {
+    return null;
+  }
 
-    #pushToStack() {
-        this.props.manager.instanceStack.add(this);
-    }
+  #pushToStack() {
+    this.props.manager.instanceStack.add(this);
+  }
 
-    #popFromStack() {
-        this.props.manager.instanceStack.delete(this);
-    }
+  #popFromStack() {
+    this.props.manager.instanceStack.delete(this);
+  }
 }

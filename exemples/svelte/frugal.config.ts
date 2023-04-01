@@ -1,15 +1,25 @@
-import * as frugal from '../../mod.ts';
-import * as plugins from '../../plugins.ts';
+import * as frugal from 'frugal/mod.ts';
+import { svelte } from 'frugal/plugins/svelte.ts';
+import { style } from 'frugal/plugins/style.ts';
+import { script } from 'frugal/plugins/script.ts';
 
-const config: frugal.FrugalConfig = {
-    self: import.meta.url,
-    pages: ['./src/home.ts', './src/counter.ts'],
-    importMap: './import_map.json',
-    plugins: [
-        plugins.svelte(),
-        plugins.script(),
-        plugins.style(),
-    ],
-};
+import globalStyle from 'svelte-preprocess/dist/processors/globalStyle';
 
-(await frugal.dev(config)).start();
+export default {
+  pages: ['./src/home.ts'],
+  self: import.meta.url,
+  importMap: './import_map.json',
+  plugins: [
+    svelte({
+      preprocess: globalStyle(),
+    }),
+    script(),
+    style(),
+  ],
+  log: {
+    level: 'verbose',
+  },
+  esbuild: {
+    splitting: true,
+  },
+} satisfies frugal.FrugalConfig;

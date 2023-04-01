@@ -5,24 +5,24 @@ import { generate } from './generate.ts';
 import { RouteContext } from '../RouteContext.ts';
 
 export function dynamicPage(context: RouteContext, next: Next<RouteContext>) {
-    if (
-        context.request.method === 'GET' &&
-        context.route.type === 'static' &&
-        !context.config.isDevMode
-    ) {
-        context.log(
-            'can\'t dynamically handle static route in non-watch mode. Yield',
-            { scope: 'dynamicPage', kind: 'debug' },
-        );
+  if (
+    context.request.method === 'GET' &&
+    context.route.type === 'static' &&
+    !context.config.isDevMode
+  ) {
+    context.log(
+      'can\'t dynamically handle static route in non-watch mode. Yield',
+      { scope: 'dynamicPage', kind: 'debug' },
+    );
 
-        return next(context);
-    }
+    return next(context);
+  }
 
-    return composedMiddleware(context, next);
+  return composedMiddleware(context, next);
 }
 
 const composedMiddleware = composeMiddleware<RouteContext>(
-    prg.get,
-    prg.postRedirect,
-    generate,
+  prg.get,
+  prg.postRedirect,
+  generate,
 );

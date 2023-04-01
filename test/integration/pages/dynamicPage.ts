@@ -7,9 +7,9 @@ export const pattern = '/';
 export const type = 'dynamic';
 
 export function GET() {
-    return new DataResponse({});
+  return new DataResponse({});
 }
 
 export function getContent() {
-    return 'Hello world';
+  return 'Hello world';
 }

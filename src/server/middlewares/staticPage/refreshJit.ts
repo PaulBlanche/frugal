@@ -3,17 +3,17 @@ import { Next } from '../../types.ts';
 import { RouteContext } from '../RouteContext.ts';
 
 export async function refreshJit(
-    context: RouteContext<StaticRoute>,
-    next: Next<RouteContext<StaticRoute>>,
+  context: RouteContext<StaticRoute>,
+  next: Next<RouteContext<StaticRoute>>,
 ) {
-    const url = new URL(context.request.url);
+  const url = new URL(context.request.url);
 
-    context.log(`refresh page`, {
-        kind: 'debug',
-        scope: 'refreshJit',
-    });
+  context.log(`refresh page`, {
+    kind: 'debug',
+    scope: 'refreshJit',
+  });
 
-    await context.route.refresher.refresh(url.pathname);
+  await context.route.refresher.refresh(url.pathname);
 
-    return next(context);
+  return next(context);
 }

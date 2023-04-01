@@ -1,3 +1,3 @@
-import { writable } from 'npm:svelte/store';
+import { writable } from 'svelte/store';
 
-export const count = writable(0);
+export const countWritable = writable(0);
