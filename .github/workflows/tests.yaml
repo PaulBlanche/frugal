@@ -13,7 +13,7 @@ jobs:
 
     strategy:
       matrix:
-        deno-version: ["1.33", 1.x, canary]
+        deno-version: ["1.34", 1.x, canary]
         include:
           - deno-version: canary
             coverage: true
