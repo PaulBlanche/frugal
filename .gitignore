@@ -1,6 +1,4 @@
 dist/
 .vscode
-.deno_dir/
-cov_profile/
-TODO
+cov_profile.lcov
 .env

@@ -49,7 +49,11 @@ async function lcovReport() {
         }
 
         if (!filter) {
-            filteredLcov.write(ENCODER.encode(`${line}\n`));
+            let writeLine = line;
+            if (line.startsWith("SF:")) {
+                writeLine = writeLine.replace(/SF:.*\/frugal\/(.*)/, "SF:$1");
+            }
+            filteredLcov.write(ENCODER.encode(`${writeLine}\n`));
         }
 
         if (line.match(/end_of_record/)) {
