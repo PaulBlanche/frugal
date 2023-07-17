@@ -1,0 +1,35 @@
+.hero {
+    height: 100vh;
+    position: relative;
+    inset: 0;
+    box-sizing: content-box;
+}
+
+.down-positionner {
+    position: absolute;
+    bottom: 0;
+    height: 20vh;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+}
+
+.button {
+    appearance: none;
+    border: none;
+    background: none;
+    padding: 0;
+    opacity: 0.3;
+    transition: opacity 0.2s linear;
+
+    &:hover {
+        opacity: 1;
+    }
+}
+
+.down-icon {
+    width: 70px;
+    color: white;
+}

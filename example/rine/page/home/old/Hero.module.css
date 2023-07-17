@@ -1,0 +1,136 @@
+.hero {
+    padding-top: 100px;
+    height: calc(100vh - 100px);
+    position: relative;
+    inset: 0;
+    box-sizing: content-box;
+
+    .navigation {
+        position: absolute;
+        display: flex;
+        align-items: center;
+        z-index: 100;
+        top: 0;
+        bottom: 0;
+        padding: 40px;
+        width: 25%;
+
+        &.previous {
+            left: 0;
+            justify-content: end;
+        }
+
+        &.next {
+            right: 0;
+            justify-content: start;
+        }
+
+        .navigate {
+            background: transparent;
+            border: none;
+            padding: 0;
+            position: relative;
+            opacity: 0.6;
+            transition: opacity 0.2s linear;
+
+            .icon {
+                color: white;
+                width: 50px;
+            }
+
+            &:hover {
+                opacity: 1;
+            }
+        }
+    }
+}
+
+.slide {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    opacity: 0;
+    transition: opacity 0.4s linear 0.1s;
+
+    &[data-active] {
+        opacity: 100%;
+        z-index: 10;
+        transition-delay: 0s;
+    }
+
+    .slide-content {
+        backdrop-filter: blur(4px) saturate(60%) brightness(50%);
+        padding: 3rem 5rem;
+        color: white;
+        width: 50%;
+        height: 70%;
+        text-align: center;
+        border: 2px solid white;
+        display: flex;
+        flex-direction: column;
+        margin-top: 100px;
+
+        & h1 {
+            font-size: 6rem;
+            font-family: 'Bebas Neue', sans-serif;
+            margin: 0;
+        }
+
+        & date {
+            font-size: 1.5rem;
+            font-style: italic;
+            color: #CCC;
+        }
+
+        & h2 {
+            font-size: 3rem;
+            margin: 2rem 0;
+            display: -webkit-box;
+            -webkit-box-orient: vertical;
+            -webkit-line-clamp: 3;
+            overflow: hidden;
+            height: 3.07em;
+        }
+
+        & a {
+            display: inline-block;
+            border: 2px solid white;
+            background: black;
+            color: white;
+            text-decoration: none;
+            padding: 1rem 3rem;
+            margin: 2rem 0;
+            font-weight: 700;
+
+            transition: background 0.2s linear;
+            align-self: center;
+
+            &:hover {
+                background-color: #333;
+            }
+        }
+    }
+
+    .background {
+        background-repeat: no-repeat;
+        background-position: center;
+        background-size: cover;
+        opacity: 0.8;
+        filter: brightness(70%) contrast(150%);
+        position: absolute;
+        inset: 0;
+        z-index: -1;
+        transform: translateZ(-2px);
+    }
+
+    .overlay {
+        content: "";
+        display: block;
+        background-position: center;
+        position: absolute;
+        inset: 0;
+        z-index: -2;
+    }
+}

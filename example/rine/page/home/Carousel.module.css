@@ -1,0 +1,178 @@
+.carousel {
+    height: 100%;
+    display: grid;
+    grid-template: 'previous slide next' 1fr / min-content min-content min-content;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+
+    .slide {
+        grid-area: slide
+    }
+
+    .previous {
+        grid-area: previous;
+    }
+
+    .next {
+        grid-area: next;
+    }
+
+}
+
+.navigation {
+    appearance: none;
+    padding: 0;
+    background: transparent;
+    border: none;
+    margin: 70px;
+}
+
+.icon {
+    width: 70px;
+    color: white;
+}
+
+.slide {
+    height: 60vh;
+    max-height: 450px;
+    width: 60vw;
+    max-width: 1000px;
+    min-width: 800px;
+
+    display: grid;
+    grid-template: 'image text' 1fr / 1.5fr 1fr;
+    background-color: white;
+    opacity: 0;
+
+    transition: opacity 0.2s linear;
+
+    .image {
+        grid-area: image;
+    }
+
+    .text {
+        grid-area: text;
+    }
+
+    &[data-carousel-slide-active] {
+        z-index: 1;
+        opacity: 1;
+    }
+}
+
+.background {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    filter: brightness(50%) contrast(80%) blur(10px);
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: cover;
+    transform: scale(1.1);
+}
+
+.overlay {
+    z-index: -1;
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background-repeat: repeat;
+    background-image: url("/texture.jpg");
+    mix-blend-mode: multiply;
+    pointer-events: none;
+}
+
+
+.image {
+    & img {
+        height: 100%;
+        width: 100%;
+        object-fit: cover;
+    }
+}
+
+.text {
+    background-color: white;
+    color: black;
+    padding: 3rem 2rem;
+    display: grid;
+    grid-template: 'title register' min-content 'date register' min-content 'description description' 1fr / 1fr min-content;
+
+    .register {
+        grid-area: register;
+        align-self: self-start;
+    }
+
+    .title {
+        grid-area: title;
+    }
+
+    .date {
+        grid-area: date;
+    }
+
+    .description {
+        grid-area: description;
+    }
+}
+
+.title {
+    margin-top: 0;
+}
+
+.register {
+    padding: 1rem;
+    align-self: flex-end;
+    text-decoration: none;
+    border: 1px solid currentColor;
+}
+
+@media screen and (max-width: 1200px) {
+    .slide {
+        grid-template: 'image' minmax(200px, 1fr) 'text' min-content / 1fr;
+        min-width: auto;
+    }
+
+    .navigation {
+        margin: 30px;
+
+    }
+}
+
+@media screen and (max-width: 750px) {
+    .carousel {
+        grid-template: 'slide' 1fr / 1fr;
+
+        .slide {
+            grid-area: slide;
+            width: calc(100% - 40px);
+            max-width: none;
+            align-self: top;
+            align-self: flex-start;
+            justify-self: center;
+            margin-top: 120px;
+            max-height: none;
+            height: 65vh;
+
+        }
+
+        .previous {
+            grid-area: slide;
+            z-index: 3;
+            justify-self: self-start;
+            margin-bottom: 100px;
+        }
+
+        .next {
+            grid-area: slide;
+            z-index: 3;
+            justify-self: self-end;
+            margin-bottom: 100px;
+        }
+
+    }
+}

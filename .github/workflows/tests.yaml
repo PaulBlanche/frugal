@@ -38,20 +38,10 @@ jobs:
     - name: run test
       run: deno task test
 
-    - name: generate coverage report
-      if: matrix.coverage
-      run: deno task coverage
-      
-    - name: unit test code coverage
-      if: matrix.coverage
-      uses: codecov/codecov-action@v2
-      with: 
-        files: ./tests/cov_profile/unit/cov_profile.lcov
-        flags: unit
 
     - name: integration test code coverage
       if: matrix.coverage
       uses: codecov/codecov-action@v2
       with: 
-        files: ./tests/cov_profile/integration/cov_profile.lcov
-        flags: integration
+        files: ./cov_profile.lcov
+        

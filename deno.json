@@ -7,53 +7,25 @@
             "deno.unstable",
             "dom.iterable",
             "dom.asynciterable"
-        ]
+        ],
+        "jsxImportSource": "preact",
+        "jsx": "react-jsx"
     },
     "fmt": {
-        "files": {
-            "exclude": [
-                "examples",
-                "docs/dist",
-                ".vscode/",
-                ".deno_dir",
-                "tests/cov_profile/"
-            ]
-        },
-        "options": {
-            "useTabs": false,
-            "lineWidth": 80,
-            "indentWidth": 4,
-            "singleQuote": true,
-            "proseWrap": "preserve"
-        }
+        "lineWidth": 120,
+        "indentWidth": 4,
+        "proseWrap": "preserve"
     },
     "lint": {
-        "files": {
-            "exclude": [
-                "examples",
-                "docs/dist",
-                "tests/",
-                ".vscode",
-                ".deno_dir"
-            ]
-        }
+        "exclude": [
+            "example/",
+            "test/",
+            "src/**/*.script.min.js"
+        ]
     },
     "importMap": "./import_map.json",
     "tasks": {
-        "test:unit": "DENO_FUTURE_CHECK=1 deno test --no-check --allow-all --coverage=tests/cov_profile/unit --parallel --shuffle tests/unit",
-        "test:unit:snapshot": "DENO_FUTURE_CHECK=1 deno test --no-check --allow-all tests/unit -- --update",
-        "test:integration": "DENO_FUTURE_CHECK=1 deno test --no-check --allow-all --coverage=tests/cov_profile/integration --parallel --shuffle tests/integration",
-        "test:integration:snapshot": "DENO_FUTURE_CHECK=1 deno test --no-check --allow-all tests/integration --  --update",
-        "test:snapshot": "deno task test:unit:snapshot && deno task test:integration:snapshot",
-        "test": "deno task test:unit && deno task test:integration",
-        "check": "deno check packages/core/mod.ts packages/server/mod.ts packages/preact/mod.client.ts packages/preact/mod.server.ts packages/loader_jsx_svg/mod.ts packages/loader_jsx_svg/spritesheet.ts packages/loader_script/mod.ts packages/loader_style/mod.ts packages/loader_style/styled.ts docs/cli.ts",
-        "cache": "deno run --reload --lock=deno.lock --lock-write --allow-all _cache.ts",
-        "coverage": "DENO_FUTURE_CHECK=1 deno coverage tests/cov_profile/unit --lcov --include=packages --output=tests/cov_profile/unit/cov_profile.lcov && DENO_FUTURE_CHECK=1 deno coverage tests/cov_profile/integration --lcov --include=packages --output=tests/cov_profile/integration/cov_profile.lcov",
-        "doc:dev": "DENO_FUTURE_CHECK=1 deno run --unstable --no-check --allow-all docs/cli/mod.ts dev",
-        "doc:build": "DENO_FUTURE_CHECK=0 deno run --unstable --no-check --allow-all docs/cli/mod.ts build",
-        "doc:serve": "DENO_FUTURE_CHECK=1 deno run --unstable --no-check --allow-all docs/cli/mod.ts serve",
-        "doc:create_key": "DENO_FUTURE_CHECK=1 deno run --unstable --no-check --allow-all docs/cli/mod.ts create_key",
-        "example:run": "DENO_FUTURE_CHECK=1 deno run --no-check --allow-all",
-        "swc:cache": "DENO_FUTURE_CHECK=1 deno run --no-check --allow-all packages/swc-wasm/cache.ts"
+        "compile:livereload": "deno run -A tasks/compileLivereload.ts",
+        "test": "deno run -A tasks/test.ts"
     }
 }

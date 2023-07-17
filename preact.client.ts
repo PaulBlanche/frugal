@@ -1,1 +1,1 @@
-export * from './packages/preact/mod.client.ts';
+export * from "./src/runtime/preact/mod.client.ts";

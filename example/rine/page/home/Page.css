@@ -1,0 +1,15 @@
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    position: relative;
+    font: 16px/1 'Montserrat', sans-serif;
+}
+
+a {
+    text-decoration-thickness: max(0.08em, 1px);
+    text-underline-offset: 0.15em;
+    color: currentColor;
+}
