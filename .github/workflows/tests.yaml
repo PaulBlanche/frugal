@@ -41,7 +41,8 @@ jobs:
 
     - name: integration test code coverage
       if: matrix.coverage
-      uses: codecov/codecov-action@v2
+      uses: codecov/codecov-action@v3
       with: 
+        token: ${{ secrets.CODECOV_TOKEN }}
         files: ./cov_profile.lcov
-        
+        fail_ci_if_error: true
