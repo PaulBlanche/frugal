@@ -35,9 +35,11 @@ jobs:
     - name: run lint
       run: deno lint
 
+    - name: install binaries
+      run: deno run -A test/install_binaries.ts
+
     - name: run test
       run: deno task test
-
 
     - name: integration test code coverage
       if: matrix.coverage
