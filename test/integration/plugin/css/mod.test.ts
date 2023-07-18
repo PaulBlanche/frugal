@@ -23,9 +23,7 @@ Deno.test("css: css dependencies are watched", async () => {
     const context = helper.context();
     context.watch();
 
-    console.log("1");
     await context.awaitNextBuild();
-    console.log("2");
 
     const firstBuildCache = await context.cacheExplorer();
     const updatedAt = firstBuildCache.get("/page").updatedAt;
@@ -35,11 +33,7 @@ Deno.test("css: css dependencies are watched", async () => {
     const originalData = await Deno.readTextFile(depModuleURL);
     await Deno.writeTextFile(depModuleURL, `/*comment*/\n${originalData}`);
 
-    console.log("3");
-
     await context.awaitNextBuild();
-
-    console.log("4");
 
     const secondBuildChache = await context.cacheExplorer();
     asserts.assertNotEquals(updatedAt, secondBuildChache.get("/page").updatedAt);

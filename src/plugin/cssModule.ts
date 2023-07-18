@@ -24,8 +24,7 @@ export function cssModule({ filter = /\.module.css$/ }: Partial<CssModuleOptions
                 const cssCache = new Map<string, Uint8Array>();
 
                 build.onResolve({ filter: /\.frugal-compiled-module.css/ }, (args) => {
-                    const url = frugal.url(args);
-                    if (cssCache.has(url.href)) {
+                    if (cssCache.has(args.path)) {
                         return { path: args.path, namespace: "virtual" };
                     }
                 });
@@ -40,8 +39,7 @@ export function cssModule({ filter = /\.module.css$/ }: Partial<CssModuleOptions
                 });
 
                 build.onLoad({ filter: /\.frugal-compiled-module.css/, namespace: "virtual" }, (args) => {
-                    const url = frugal.url({ path: args.path, namespace: "file" });
-                    const contents = cssCache.get(url.href);
+                    const contents = cssCache.get(args.path);
                     return { loader: "css", contents };
                 });
 
@@ -60,14 +58,11 @@ export function cssModule({ filter = /\.module.css$/ }: Partial<CssModuleOptions
                     const contents = await frugal.load(url);
                     const contentHash = (await xxhash.create()).update(contents).digest("hex").toString();
 
-                    const cssPath = path.resolve(
-                        path.dirname(modulePath),
-                        `${path.basename(modulePath)}-${contentHash}.frugal-compiled-module.css`,
-                    );
+                    const cssPath = `/${path.basename(modulePath)}-${contentHash}.frugal-compiled-module.css`;
 
                     const module = await cssModuleBuilder.bundle(modulePath, cssPath, contents);
 
-                    cssCache.set(path.toFileUrl(cssPath).href, module.css);
+                    cssCache.set(cssPath, module.css);
 
                     return { loader: "js", contents: module.js };
                 });
