@@ -199,7 +199,7 @@
     "https://deno.land/x/zod@v3.21.4/locales/en.ts": "a7a25cd23563ccb5e0eed214d9b31846305ddbcdb9c5c8f508b108943366ab4c",
     "https://deno.land/x/zod@v3.21.4/mod.ts": "64e55237cb4410e17d968cd08975566059f27638ebb0b86048031b987ba251c4",
     "https://deno.land/x/zod@v3.21.4/types.ts": "b5d061babea250de14fc63764df5b3afa24f2b088a1d797fc060ba49a0ddff28",
-    "https://esm.sh/path-to-regexp@6.2.1": "188e422b8b80c40b7bffa675d3013145a6e03d5921cd7ccf06013972d71284c5",
+    "https://esm.sh/path-to-regexp@6.2.1?pin=v128": "1278abc6df1ac9ad0c31a255c4b934d4814219be6632fb84e57015a54a4daf36",
     "https://esm.sh/v128/path-to-regexp@6.2.1/denonext/path-to-regexp.mjs": "15a559bf5c42c36764fff3c0659d9312aeeef07c1186b09b94944ca63401638f"
   }
 }
