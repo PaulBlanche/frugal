@@ -68,6 +68,7 @@ await test("test/unit/page/Page.test.ts");
 await test("test/integration/server/mod.test.ts");
 await test("test/integration/incremental/mod.test.ts");
 await test("test/integration/pages/mod.test.ts");
+await test("test/integration/watch/mod.test.ts");
 
 await lcovReport();
 

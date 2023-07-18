@@ -6,6 +6,9 @@ import { WatchProcess } from "./WatchProcess.ts";
 import { LiveReloadServer } from "./livereload/LiveReloadServer.ts";
 import { loadManifest } from "../loadManifest.ts";
 
+type EventType = "ready";
+
+export type ParentContextListener = (type: EventType) => void;
 export class ParentContext {
     #config: FrugalConfig;
     #serverController: AbortController;
@@ -13,14 +16,27 @@ export class ParentContext {
     #liveReloadServer: LiveReloadServer;
     #watchProcess: WatchProcess;
     #watchCache: WatchCache;
+    #listeners: ((event: EventType) => void)[];
 
-    constructor(config: FrugalConfig) {
+    constructor(config: FrugalConfig, watchCache: WatchCache) {
         this.#config = config;
         this.#serverController = new AbortController();
         this.#liveReloadController = new AbortController();
         this.#liveReloadServer = new LiveReloadServer();
         this.#watchProcess = new WatchProcess(this.#config);
-        this.#watchCache = new WatchCache();
+        this.#watchCache = watchCache;
+        this.#listeners = [];
+    }
+
+    addEventListener(listener: ParentContextListener) {
+        this.#listeners.push(listener);
+    }
+
+    removeEventListener(listener: ParentContextListener) {
+        const index = this.#listeners.indexOf(listener);
+        if (index !== -1) {
+            this.#listeners.splice(index, 1);
+        }
     }
 
     setup() {
@@ -44,6 +60,7 @@ export class ParentContext {
                             this.#liveReloadServer.dispatch({ type: "reload" });
                         },
                     });
+                    this.#listeners.forEach((listener) => listener("ready"));
                     break;
                 }
                 case "suspend": {
@@ -84,10 +101,9 @@ export class ParentContext {
         });
     }
 
-    dispose() {
+    async dispose() {
         this.#liveReloadController.abort();
         this.#serverController.abort();
-        this.#watchProcess.kill();
-        return Promise.resolve();
+        await this.#watchProcess.kill();
     }
 }

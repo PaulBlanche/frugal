@@ -5,7 +5,7 @@ import { GenerationResult, SerializedGenerationResult } from "../page/Generation
 import { JSONValue } from "../page/JSONValue.ts";
 import * as etag from "../server/etag.ts";
 
-export type WatchCacheData = Record<string, SerializedGenerationResult>;
+export type WatchCacheData = Record<string, SerializedGenerationResult & { updatedAt: number }>;
 
 export class WatchCache implements RuntimeCache {
     #data: WatchCacheData;
@@ -14,9 +14,22 @@ export class WatchCache implements RuntimeCache {
         this.#data = data;
     }
 
+    get _data() {
+        return this.#data;
+    }
+
     async add<PATH extends string, DATA extends JSONValue>(generationResult: GenerationResult<PATH, DATA>) {
+        if (generationResult.path in this.#data) {
+            const previous = this.#data[generationResult.path];
+            const hash = await generationResult.hash;
+            if (previous.hash === hash) {
+                return;
+            }
+        }
+
         this.#data[generationResult.path] = {
             ...await generationResult.serialize(),
+            updatedAt: Date.now(),
         };
     }
 

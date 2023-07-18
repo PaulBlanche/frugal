@@ -3,6 +3,7 @@ import { WatchContext } from "./WatchContext.ts";
 import { Builder } from "./build/Builder.ts";
 import { BuildCache } from "./cache/BuildCache.ts";
 import { BuildCacheSnapshot } from "./cache/BuildCacheSnapshot.ts";
+import { WatchCache } from "./cache/WatchCache.ts";
 import { loadManifest } from "./loadManifest.ts";
 import { Router } from "./page/Router.ts";
 
@@ -41,7 +42,7 @@ export class Frugal {
     }
 
     context() {
-        return WatchContext.create(this.#config);
+        return WatchContext.create(this.#config, new WatchCache());
     }
 }
 

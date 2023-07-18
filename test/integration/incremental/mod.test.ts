@@ -1,7 +1,7 @@
 import * as asserts from "../../../dep/std/testing/asserts.ts";
 
 import { Config } from "../../../mod.ts";
-import { getHelper } from "../../utils.ts";
+import { BuildHelper } from "../../utils.ts";
 
 const config: Config = {
     self: import.meta.url,
@@ -10,7 +10,7 @@ const config: Config = {
 };
 
 Deno.test("incremental", async () => {
-    const helper = getHelper(config);
+    const helper = new BuildHelper(config);
 
     await helper.build();
     const firstBuildCache = await helper.cacheExplorer();
@@ -28,7 +28,7 @@ Deno.test("incremental", async () => {
 });
 
 Deno.test("incremental: files are regenerated if page code changes", async () => {
-    const helper = getHelper(config);
+    const helper = new BuildHelper(config);
 
     await helper.build();
 
@@ -49,7 +49,7 @@ Deno.test("incremental: files are regenerated if page code changes", async () =>
 });
 
 Deno.test("incremental: files are regenerated if dependency code changes", async () => {
-    const helper = getHelper(config);
+    const helper = new BuildHelper(config);
 
     await helper.build();
 
@@ -70,7 +70,7 @@ Deno.test("incremental: files are regenerated if dependency code changes", async
 });
 
 Deno.test("incremental: files are regenerated if data changes", async () => {
-    const helper = getHelper(config);
+    const helper = new BuildHelper(config);
 
     await helper.build();
 

@@ -11,6 +11,8 @@ export class ChildContext {
         this.#builder = builder;
     }
 
+    addEventListener() {}
+
     async watch() {
         const originalLog = console.log;
         console.log = (...args) => {
@@ -23,6 +25,12 @@ export class ChildContext {
                 originalLog(...args);
             }
         };
+
+        // cleanup on when killing the child process
+        Deno.addSignalListener("SIGINT", async () => {
+            await this.dispose();
+            Deno.exit();
+        });
 
         this.#context = await this.#builder.context();
 

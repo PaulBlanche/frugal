@@ -2,7 +2,7 @@ import * as asserts from "../../../dep/std/testing/asserts.ts";
 import { Config } from "../../../mod.ts";
 import { MemorySessionStorage } from "../../../src/server/session/MemorySessionStorage.ts";
 
-import { getHelper } from "../../utils.ts";
+import { BuildHelper } from "../../utils.ts";
 
 const config: Config = {
     self: import.meta.url,
@@ -18,7 +18,7 @@ const config: Config = {
 Deno.test("server ", async (t) => {
     const fetch = cookieFetch();
 
-    const helper = getHelper(config);
+    const helper = new BuildHelper(config);
 
     await helper.build();
 

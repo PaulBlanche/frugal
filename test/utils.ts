@@ -2,73 +2,146 @@ import * as asserts from "../dep/std/testing/asserts.ts";
 
 import { build, Config, Frugal } from "../mod.ts";
 import { FrugalConfig } from "../src/Config.ts";
+import { WatchContext } from "../src/WatchContext.ts";
 import { BuildCacheData, loadBuildCacheData } from "../src/cache/BuildCache.ts";
-import { WatchCache } from "../src/cache/WatchCache.ts";
+import { WatchCache, WatchCacheData } from "../src/cache/WatchCache.ts";
 import { loadManifest } from "../src/loadManifest.ts";
 import { Router } from "../src/page/Router.ts";
 import { FrugalServer } from "../src/server/FrugalServer.ts";
 
-export type Helper = {
-    config: FrugalConfig;
-    build: () => Promise<void>;
-    cacheExplorer: () => Promise<CacheExplorer>;
-    serve: (signal: AbortSignal) => Promise<void>;
-    clean: () => Promise<void>;
-};
+export class WatchHelper {
+    #context: WatchContext;
+    #cache: WatchCache;
 
-export function getHelper(config: Config): Helper {
-    const outdir = `./dist/${crypto.randomUUID()}/`;
-    const patchedConfig = { outdir, ...config };
-    const frugalConfig = new FrugalConfig(patchedConfig);
+    constructor(context: WatchContext, watchCache: WatchCache) {
+        this.#cache = watchCache;
+        this.#context = context;
+    }
 
-    return {
-        config: frugalConfig,
-        build: async () => {
-            const frugal = new Frugal(patchedConfig);
-            await frugal.build();
-        },
-        cacheExplorer: async () => {
-            return await CacheExplorer.load(frugalConfig);
-        },
-        serve: async (signal) => {
-            const cache = new WatchCache();
+    async watch() {
+        return this.#context.watch();
+    }
 
-            const manifest = await loadManifest(frugalConfig);
+    async dispose() {
+        return this.#context.dispose();
+    }
 
-            const router = new Router({
-                config: frugalConfig,
-                manifest,
-                cache,
-            });
+    async awaitNextBuild() {
+        await new Promise<void>((res) => {
+            const listener = () => {
+                res();
+                this.#context.removeEventListener(listener);
+            };
+            this.#context.addEventListener(listener);
+        });
+    }
 
-            for (const route of router.routes) {
-                if (route.type === "static") {
-                    await route.generator.buildAll();
-                }
-            }
-
-            const server = new FrugalServer({
-                config: frugalConfig,
-                router,
-                cache,
-                watchMode: false,
-            });
-
-            return new Promise((resolve) => server.serve({ signal, onListen: () => resolve() }));
-        },
-        clean: async () => {
-            try {
-                await Deno.remove(new URL(patchedConfig.outdir, config.self), {
-                    recursive: true,
-                });
-            } catch {
-                // empty on purpose
-            }
-        },
-    };
+    async cacheExplorer() {
+        return new WatchCachExplorer(this.#cache._data);
+    }
 }
 
-class CacheExplorer {
+export class BuildHelper {
+    #config: Config;
+    #frugalConfig: FrugalConfig;
+
+    constructor(config: Config) {
+        const outdir = `./dist/${crypto.randomUUID()}/`;
+        this.#config = { outdir, ...config };
+        this.#frugalConfig = new FrugalConfig(this.#config);
+    }
+
+    get config() {
+        return this.#frugalConfig;
+    }
+
+    async build() {
+        const frugal = new Frugal(this.#config);
+        await frugal.build();
+    }
+
+    context() {
+        const cache = new WatchCache();
+        const context = WatchContext.create(this.#frugalConfig, cache);
+        return new WatchHelper(context, cache);
+    }
+
+    async cacheExplorer() {
+        return await BuildCacheExplorer.load(this.#frugalConfig);
+    }
+
+    async serve(signal: AbortSignal): Promise<void> {
+        const cache = new WatchCache();
+
+        const manifest = await loadManifest(this.#frugalConfig);
+
+        const router = new Router({
+            config: this.#frugalConfig,
+            manifest,
+            cache,
+        });
+
+        for (const route of router.routes) {
+            if (route.type === "static") {
+                await route.generator.buildAll();
+            }
+        }
+
+        const server = new FrugalServer({
+            config: this.#frugalConfig,
+            router,
+            cache,
+            watchMode: false,
+        });
+
+        return new Promise((resolve) =>
+            server.serve({
+                signal,
+                onListen: () => resolve(),
+            })
+        );
+    }
+
+    async clean() {
+        try {
+            await Deno.remove(this.#frugalConfig.outdir, { recursive: true });
+        } catch {
+            // empty on purpose
+        }
+    }
+}
+
+class WatchCachExplorer {
+    #data: WatchCacheData;
+
+    constructor(data: WatchCacheData) {
+        this.#data = data;
+    }
+
+    get(path: string) {
+        return this.#data[path];
+    }
+
+    entries() {
+        return Object.entries(this.#data).sort((a, b) => a[0].localeCompare(b[0]));
+    }
+
+    keys() {
+        return Object.keys(this.#data).sort((a, b) => a.localeCompare(b));
+    }
+
+    async assertContent(expected: [string, Partial<WatchCacheData[string]>][]) {
+        const actual = this.entries();
+        asserts.assertEquals(actual.length, expected.length);
+        await Promise.all(actual.map(async ([actualKey, actualValue], index) => {
+            const [expectedKey, expectedValue] = expected[index];
+            asserts.assertEquals(actualKey, expectedKey);
+            asserts.assertObjectMatch(actualValue, expectedValue);
+        }));
+    }
+}
+
+class BuildCacheExplorer {
     #config: FrugalConfig;
     #data: BuildCacheData;
 
@@ -77,7 +150,7 @@ class CacheExplorer {
         if (data === undefined) {
             throw Error("error while loading cache data");
         }
-        return new CacheExplorer(config, data.current);
+        return new BuildCacheExplorer(config, data.current);
     }
 
     constructor(config: FrugalConfig, data: BuildCacheData) {

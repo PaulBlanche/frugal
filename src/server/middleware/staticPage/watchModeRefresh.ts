@@ -31,5 +31,7 @@ export async function watchModeRefresh(context: RouteContext<StaticRoute>, next:
         context.session,
     );
 
+    await context.cache.add(generationResult);
+
     return await generationResult.toResponse();
 }

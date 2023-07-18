@@ -1,7 +1,7 @@
 import * as asserts from "../../../dep/std/testing/asserts.ts";
 import { Config } from "../../../mod.ts";
 
-import { getHelper } from "../../utils.ts";
+import { BuildHelper } from "../../utils.ts";
 
 const config: Config = {
     self: import.meta.url,
@@ -10,7 +10,7 @@ const config: Config = {
 };
 
 Deno.test("pages: build with no page ", async () => {
-    const helper = getHelper({
+    const helper = new BuildHelper({
         ...config,
         pages: [],
     });
@@ -22,7 +22,7 @@ Deno.test("pages: build with no page ", async () => {
 });
 
 Deno.test("pages: build with page that do not exists", async () => {
-    const helper = getHelper({
+    const helper = new BuildHelper({
         ...config,
         pages: ["./page-that-does-not-exists.ts"],
     });
@@ -34,7 +34,7 @@ Deno.test("pages: build with page that do not exists", async () => {
 });
 
 Deno.test("pages: build with trivial static page", async () => {
-    const helper = getHelper({
+    const helper = new BuildHelper({
         ...config,
         pages: ["./trivialPage.ts"],
     });
@@ -51,7 +51,7 @@ Deno.test("pages: build with trivial static page", async () => {
 });
 
 Deno.test("pages: build with trivial static page with getData", async () => {
-    const helper = getHelper({
+    const helper = new BuildHelper({
         ...config,
         pages: ["./trivialPageWithGetData.ts"],
     });
@@ -69,7 +69,7 @@ Deno.test("pages: build with trivial static page with getData", async () => {
 });
 
 Deno.test("pages: build with trivial static page with getPathList", async () => {
-    const helper = getHelper({
+    const helper = new BuildHelper({
         ...config,
         pages: ["./trivialPageWithGetPathList.ts"],
     });
@@ -91,7 +91,7 @@ Deno.test("pages: build with trivial static page with getPathList", async () => 
 });
 
 Deno.test("pages: build complete static page", async () => {
-    const helper = getHelper({
+    const helper = new BuildHelper({
         ...config,
         pages: ["./completePage.ts"],
     });
@@ -115,7 +115,7 @@ Deno.test("pages: build complete static page", async () => {
 });
 
 Deno.test("pages: build dynamic page", async () => {
-    const helper = getHelper({
+    const helper = new BuildHelper({
         ...config,
         pages: ["./dynamicPage.ts"],
     });
@@ -127,7 +127,7 @@ Deno.test("pages: build dynamic page", async () => {
 });
 
 Deno.test("pages: build pages with non ok responses", async () => {
-    const helper = getHelper({
+    const helper = new BuildHelper({
         ...config,
         pages: ["./pageWithNonOkResponse.ts"],
     });
@@ -145,7 +145,7 @@ Deno.test("pages: build pages with non ok responses", async () => {
 });
 
 Deno.test("pages: build pages with empty responses", async () => {
-    const helper = getHelper({
+    const helper = new BuildHelper({
         ...config,
         pages: ["./pageWithEmptyResponse.ts"],
     });
