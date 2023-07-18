@@ -33,33 +33,31 @@ export class AssetCollector {
             const visited = new Set();
             const queue = [outputEntryPoint.entryPoint];
             let current: string | undefined = undefined;
-            while ((current = queue.shift()) !== undefined) {
+            while ((current = queue.pop()) !== undefined) {
                 if (visited.has(current)) {
                     continue;
                 }
                 visited.add(current);
 
+                if (filter.test(current)) {
+                    const url = new URL(current, this.#config.self);
+                    if (url.protocol !== "facade:") {
+                        assets.push({
+                            entrypoint: outputEntryPoint.entryPoint,
+                            url: new URL(current, this.#config.self),
+                        });
+                    }
+                }
+
                 const input = inputs[current];
 
-                const imports = input.imports.slice().reverse();
+                const imports = input.imports;
                 for (const imported of imports) {
                     if (imported.external) {
                         continue;
                     }
 
-                    if (filter.test(imported.path)) {
-                        const url = new URL(imported.path, this.#config.self);
-                        if (url.protocol !== "facade:") {
-                            assets.push({
-                                entrypoint: outputEntryPoint.entryPoint,
-                                url: new URL(imported.path, this.#config.self),
-                            });
-                        } else {
-                            queue.push(imported.path);
-                        }
-                    } else {
-                        queue.push(imported.path);
-                    }
+                    queue.push(imported.path);
                 }
             }
         }

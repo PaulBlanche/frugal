@@ -26,7 +26,7 @@ export class ChildContext {
             }
         };
 
-        // cleanup on when killing the child process
+        // cleanup when killing the child process
         Deno.addSignalListener("SIGINT", async () => {
             await this.dispose();
             Deno.exit();

@@ -1,3 +1,5 @@
+//comment
+//comment
 import { Config } from "../../../mod.ts";
 
 export const config: Config = {

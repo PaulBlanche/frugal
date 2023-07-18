@@ -21,6 +21,62 @@ export function cssModule({ filter = /\.module.css$/ }: Partial<CssModuleOptions
                     projectRoot: build.initialOptions.absWorkingDir,
                 });
 
+                const cssCache = new Map<string, Uint8Array>();
+
+                build.onResolve({ filter: /\.frugal-compiled-module.css/ }, (args) => {
+                    const url = frugal.url(args);
+                    if (cssCache.has(url.href)) {
+                        return { path: args.path, namespace: "virtual" };
+                    }
+                });
+
+                build.onResolve({ filter }, (args) => {
+                    const url = frugal.url(args);
+                    if (url.protocol !== "file:") {
+                        throw Error(`Can't bundle remote css module ${url.href}`);
+                    }
+
+                    return { path: args.path, namespace: args.namespace };
+                });
+
+                build.onLoad({ filter: /\.frugal-compiled-module.css/, namespace: "virtual" }, (args) => {
+                    const url = frugal.url({ path: args.path, namespace: "file" });
+                    const contents = cssCache.get(url.href);
+                    return { loader: "css", contents };
+                });
+
+                build.onLoad({ filter }, async (args) => {
+                    const url = frugal.url(args);
+                    if (url.protocol !== "file:") {
+                        throw Error(`Can't bundle remote css module ${url.href}`);
+                    }
+
+                    log(
+                        `found css module "${args.path}"`,
+                        { scope: "frugal:css", level: "debug" },
+                    );
+
+                    const modulePath = path.fromFileUrl(url);
+                    const contents = await frugal.load(url);
+                    const contentHash = (await xxhash.create()).update(contents).digest("hex").toString();
+
+                    const cssPath = path.resolve(
+                        path.dirname(modulePath),
+                        `${path.basename(modulePath)}-${contentHash}.frugal-compiled-module.css`,
+                    );
+
+                    const module = await cssModuleBuilder.bundle(modulePath, cssPath, contents);
+
+                    cssCache.set(path.toFileUrl(cssPath).href, module.css);
+
+                    return { loader: "js", contents: module.js };
+                });
+
+                /*const cssModuleBuilder = new CssModuleBuilder({
+                    sourceMap: Boolean(build.initialOptions.sourcemap),
+                    projectRoot: build.initialOptions.absWorkingDir,
+                });
+
                 // resolve css module and move them in the "facade" namespace :
                 // won't be considered as asset, but its dependencies will the
                 // .module.css will not be part of the css bundle (because it's
@@ -83,7 +139,7 @@ export function cssModule({ filter = /\.module.css$/ }: Partial<CssModuleOptions
                     frugal.setVirtualFile(path.toFileUrl(cssPath).href, module.css);
 
                     return { loader: "js", contents: module.js, watchFiles: [modulePath] };
-                });
+                });*/
             },
         };
     };
@@ -156,7 +212,7 @@ function isSameUint8Array(a: Uint8Array, b: Uint8Array) {
 
 type ClassName =
     | { type: "dependency"; importIdentifier: string; name: string }
-    | { type: "local"; names: ClassName[] }
+    | { type: "local"; name: string; names: ClassName[] }
     | {
         type: "global";
         name: string;
@@ -216,7 +272,9 @@ export default {
                 return className.name;
             }
             case "local": {
-                return className.names.map((className) => this.#toJsCode(className)).join(", ");
+                return [`"${className.name}"`, ...className.names.map((className) => this.#toJsCode(className))].join(
+                    ", ",
+                );
             }
         }
     }
@@ -249,7 +307,7 @@ export default {
                     name: compose.name,
                 };
             } else if (compose.type === "local") {
-                return { type: "local", names: this.#resolveClassNames(compose.name) };
+                return { type: "local", name: compose.name, names: this.#resolveClassNames(compose.name) };
             } else {
                 return { type: "global", name: compose.name };
             }

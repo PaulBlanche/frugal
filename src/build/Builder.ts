@@ -12,7 +12,6 @@ import { watchEmitter } from "./plugins/watchEmitter.ts";
 import { log } from "../log.ts";
 import { copyStatic } from "./plugins/copyStatic.ts";
 import { PluginContext } from "../Plugin.ts";
-import { cssLoader } from "./plugins/cssLoader.ts";
 
 export class Builder {
     #config: FrugalConfig;
@@ -74,7 +73,6 @@ export class Builder {
                 },
             },
             ...this.#config.plugins.map((plugin) => plugin(context)),
-            cssLoader(context),
             denoLoaderPlugin({
                 importMapURL: this.#config.importMapURL?.href,
                 nodeModulesDir: true,

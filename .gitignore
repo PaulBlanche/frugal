@@ -2,3 +2,4 @@ dist/
 .vscode
 cov_profile.lcov
 .env
+node_modules

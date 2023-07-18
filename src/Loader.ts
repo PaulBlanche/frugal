@@ -8,17 +8,22 @@ export class Loader {
     #fetchRedirects = new Map<string, string>();
 
     async load(url: URL): Promise<Uint8Array> {
-        switch (url.protocol) {
-            case "file:": {
-                return await this.#loadLocal(url);
+        try {
+            switch (url.protocol) {
+                case "file:": {
+                    return await this.#loadLocal(url);
+                }
+                case "http:":
+                case "https:":
+                case "data:": {
+                    return await this.#loadRemote(url.href);
+                }
+                default:
+                    throw new Error("[unreachable] unsupported esm scheme " + url.protocol);
             }
-            case "http:":
-            case "https:":
-            case "data:": {
-                return await this.#loadRemote(url.href);
-            }
-            default:
-                throw new Error("[unreachable] unsupported esm scheme " + url.protocol);
+        } catch (e) {
+            console.log(url.href);
+            throw e;
         }
     }
 

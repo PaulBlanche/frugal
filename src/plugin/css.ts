@@ -1,5 +1,6 @@
+import { denoLoaderPlugin } from "../../dep/esbuild_deno_loader.ts";
 import * as path from "../../dep/std/path.ts";
-
+import * as fs from "../../dep/std/fs.ts";
 import { Plugin } from "../Plugin.ts";
 import { log } from "../log.ts";
 
@@ -11,33 +12,61 @@ export function css(
     { filter = /\.css$/ }: Partial<StyleOptions> = {},
 ): Plugin {
     return (frugal) => {
+        const loader = denoLoaderPlugin({
+            importMapURL: frugal.config.importMapURL?.href,
+            nodeModulesDir: true,
+            loader: "portable",
+        });
         return {
             name: "frugal:css",
             setup(build) {
-                build.onResolve({ filter }, (args) => {
-                    return { path: args.path };
+                loader.setup({
+                    ...build,
+                    onResolve(options, onResolve) {
+                        build.onResolve({ ...options, filter }, async (args) => {
+                            return await onResolve(args);
+                        });
+                    },
+                    onLoad(options, onLoad) {
+                        build.onLoad({ ...options, filter }, async (args) => {
+                            log(
+                                `found css module "${args.path}"`,
+                                { scope: "frugal:css", level: "debug" },
+                            );
+
+                            // try denoloaderplugin first to load npm files.
+                            // files and http will throw because of the `.css`
+                            // extension. Those will be loaded with
+                            // `frugal.load`
+                            try {
+                                const loaded = await onLoad(args);
+                                return { ...loaded, loader: "css" };
+                            } catch {
+                                const url = frugal.url(args);
+                                const contents = await frugal.load(url);
+                                return { contents, loader: "css" };
+                            }
+                        });
+                    },
                 });
 
-                build.onLoad({ filter }, async (args) => {
-                    const url = frugal.url(args);
-                    const contents = await frugal.load(url);
+                build.onEnd((result) => {
+                    const metafile = result.metafile;
+                    const errors = result.errors;
 
-                    log(
-                        `found css file "${
-                            path.relative(
-                                path.fromFileUrl(
-                                    new URL(".", frugal.config.self),
-                                ),
-                                path.fromFileUrl(url),
-                            )
-                        }"`,
-                        {
-                            level: "debug",
-                            scope: "frugal:css",
-                        },
-                    );
+                    if (metafile === undefined || errors.length !== 0) {
+                        return;
+                    }
 
-                    return { loader: "empty", contents };
+                    Object.keys(metafile.outputs).map((outputPath) => {
+                        if (outputPath.match(filter)) {
+                            const basename = path.basename(outputPath);
+                            const dest = new URL(`css/${basename}`, frugal.config.publicdir);
+                            fs.ensureFile(dest);
+                            fs.copy(new URL(outputPath, frugal.config.rootdir), dest, { overwrite: true });
+                            frugal.output("style", dest);
+                        }
+                    });
                 });
             },
         };

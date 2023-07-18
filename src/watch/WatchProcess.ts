@@ -37,15 +37,8 @@ export class WatchProcess {
         this.#listeners.push(listener);
     }
 
-    async spawn() {
-        if (this.#process !== undefined) {
-            log(`watch process restarted`, { scope: "WatchProcess" });
-            this.#process.kill("SIGINT");
-            await this.#process?.status;
-            this.#process = undefined;
-        } else {
-            log(`watch process started`, { scope: "WatchProcess" });
-        }
+    spawn() {
+        log(`watch process started`, { scope: "WatchProcess" });
 
         this.#process = this.#command.spawn();
         const pid = this.#process.pid;

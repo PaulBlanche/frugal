@@ -1,7 +1,7 @@
 import * as asserts from "../../../dep/std/testing/asserts.ts";
 
 import { Config, context } from "../../../mod.ts";
-import { BuildHelper } from "../../utils.ts";
+import { BuildHelper, withPage } from "../../utils.ts";
 import { config } from "./frugal.config.ts";
 
 if (import.meta.main) {
@@ -114,6 +114,84 @@ Deno.test("watch: files are regenerated on demand if data changes", async (t) =>
     asserts.assertEquals(updatedAt22, secondBuildChache.get("/page2/2").updatedAt);
 
     await Deno.writeTextFile(dataURL, originalData);
+
+    await context.dispose();
+});
+
+Deno.test("watch: browser reload on file change", async (t) => {
+    const helper = new BuildHelper(config);
+
+    const context = helper.context();
+    context.watch();
+
+    await context.awaitNextBuild();
+
+    const page1ModuleURL = new URL("./page1.ts", import.meta.url);
+    let originalData;
+
+    await withPage(async ({ page }) => {
+        await page.setJavaScriptEnabled(true);
+        await page.goto("http://localhost:8000/page1/1");
+
+        const pageReloadPromise = new Promise((res) => {
+            page.exposeFunction("markReloaded", () => res(true));
+        });
+        await page.evaluate(`
+            addEventListener("beforeunload", () => {
+                markReloaded();
+            });
+        `);
+
+        // add a comment at the top of page1.ts
+        originalData = await Deno.readTextFile(page1ModuleURL);
+        await Deno.writeTextFile(page1ModuleURL, `//comment\n${originalData}`);
+
+        await context.awaitNextBuild();
+
+        const reloaded = await pageReloadPromise;
+        asserts.assertEquals(reloaded, true);
+    });
+
+    if (originalData) {
+        await Deno.writeTextFile(page1ModuleURL, originalData);
+    }
+
+    await context.dispose();
+});
+
+Deno.test("watch: rebuild and browser reload on config change", async (t) => {
+    const helper = new BuildHelper(config);
+
+    const context = helper.context();
+    context.watch();
+
+    await context.awaitNextBuild();
+
+    const configURL = new URL("./frugal.config.ts", import.meta.url);
+    let originalData;
+
+    await withPage(async ({ page }) => {
+        await page.setJavaScriptEnabled(true);
+        await page.goto("http://localhost:8000/page1/1");
+
+        const pageReloadPromise = new Promise((res) => {
+            page.exposeFunction("markReloaded", () => res(true));
+        });
+        await page.evaluate(`
+            addEventListener("beforeunload", () => {
+                markReloaded();
+            });
+        `);
+
+        // add a comment at the top of frugal.config.ts
+        originalData = await Deno.readTextFile(configURL);
+        await Deno.writeTextFile(configURL, `//comment\n${originalData}`);
+
+        await context.awaitNextBuild();
+
+        const reloaded = await pageReloadPromise;
+        asserts.assertEquals(reloaded, true);
+    });
 
     await context.dispose();
 });

@@ -1,0 +1,30 @@
+export const snapshot = {};
+
+snapshot[`css: build page with css module dependencies 1`] = `
+"/* virtual:/home/whiteshoulders/perso/frugal/test/integration/plugin/cssModule/main.module.css-92ca48743c13d85a.frugal-compiled-module.css */
+" +
+  "._5TXYoG_foo {
+" +
+  "  color: red;
+" +
+  "}
+" +
+  "._5TXYoG_bar {
+" +
+  "  background: red;
+" +
+  "}
+" +
+  "
+" +
+  "/* virtual:/home/whiteshoulders/perso/frugal/test/integration/plugin/cssModule/dep.module.css-f6b3d0584c4c3682.frugal-compiled-module.css */
+" +
+  ".K3qUyq_bar {
+" +
+  "  margin: 10px;
+" +
+  "}
+"
+`;
+
+snapshot[`css: build page with css module dependencies 2`] = `'{"bar":["_5TXYoG_bar","K3qUyq_bar"],"foo":["_5TXYoG_foo","_5TXYoG_bar","K3qUyq_bar"]}'`;

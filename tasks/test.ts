@@ -1,18 +1,96 @@
+import { parse } from "../dep/std/flags.ts";
 import * as io from "../dep/std/io.ts";
 
 const covProfileDir = "cov_profile";
 const rawCovProfileFile = "raw_cov_profile.lcov";
 const covProfileFile = "cov_profile.lcov";
 
-async function test(path: string) {
+const ENCODER = new TextEncoder();
+
+type Test = {
+    file: string;
+    cleanup?: () => Promise<void>;
+};
+
+const TESTS: Test[] = [
+    { file: "test/unit/page/JSONValue.test.ts" },
+    { file: "test/unit/page/Page.test.ts" },
+    {
+        file: "test/integration/server/mod.test.ts",
+        cleanup: async () => {
+            await Deno.remove("test/integration/server/dist", { recursive: true });
+        },
+    },
+    {
+        file: "test/integration/incremental/mod.test.ts",
+        cleanup: async () => {
+            await Deno.remove("test/integration/incremental/dist", { recursive: true });
+        },
+    },
+    {
+        file: "test/integration/pages/mod.test.ts",
+        cleanup: async () => {
+            await Deno.remove("test/integration/pages/dist", { recursive: true });
+        },
+    },
+    {
+        file: "test/integration/watch/mod.test.ts",
+        cleanup: async () => {
+            await Deno.remove("test/integration/watch/dist", { recursive: true });
+        },
+    },
+    {
+        file: "test/integration/plugin/css/mod.test.ts",
+        cleanup: async () => {
+            await Deno.remove("test/integration/plugin/css/dist", { recursive: true });
+        },
+    },
+    {
+        file: "test/integration/plugin/cssModule/mod.test.ts",
+        cleanup: async () => {
+            await Deno.remove("test/integration/plugin/cssModule/dist", { recursive: true });
+        },
+    },
+];
+
+const args = parse(Deno.args, {
+    boolean: ["update"],
+    default: {
+        update: false,
+    },
+});
+
+const tests = args._.length === 0 ? TESTS : Array.from(Deno.args.reduce((tests, matcher) => {
+    const test = TESTS.find((test) => test.file.includes(matcher));
+    if (test) {
+        tests.add(test);
+    }
+    return tests;
+}, new Set<Test>()));
+
+for (const test of tests) {
+    await runTest(test.file, args.update);
+}
+
+await lcovReport();
+
+await Deno.remove(covProfileDir, { recursive: true });
+await Deno.remove(rawCovProfileFile);
+
+for (const test of tests) {
+    await test.cleanup?.();
+}
+
+async function runTest(path: string, update: boolean) {
     const command = new Deno.Command(Deno.execPath(), {
         args: [
             "test",
+            "--unstable",
             "-A",
             "--no-check",
             `--coverage=${covProfileDir}`,
-            "--trace-ops",
             path,
+            ...(update ? ["--", "--update"] : []),
         ],
     });
     const process = command.spawn();
@@ -22,8 +100,6 @@ async function test(path: string) {
         Deno.exit(status.code);
     }
 }
-
-const ENCODER = new TextEncoder();
 
 async function lcovReport() {
     const command = new Deno.Command(Deno.execPath(), {
@@ -42,19 +118,20 @@ async function lcovReport() {
     }
 
     const lcov = await Deno.open(rawCovProfileFile);
-    const filteredLcov = await Deno.open(covProfileFile, { create: true, write: true });
+    const filteredLcov = await Deno.open(covProfileFile, { create: true, truncate: true, write: true });
     let filter = false;
-    for await (const line of io.readLines(lcov)) {
-        if (line.match(/SF\:.*?\/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\/.*/)) {
+    for await (const _line of io.readLines(lcov)) {
+        let line = _line;
+        if (_line.startsWith("SF:")) {
+            line = line.replace(/SF:.*\/frugal\/(.*)/, "SF:$1");
+        }
+
+        if (line.match(/SF\:test\/.*\/dist\/.*/)) {
             filter = true;
         }
 
         if (!filter) {
-            let writeLine = line;
-            if (line.startsWith("SF:")) {
-                writeLine = writeLine.replace(/SF:.*\/frugal\/(.*)/, "SF:$1");
-            }
-            filteredLcov.write(ENCODER.encode(`${writeLine}\n`));
+            filteredLcov.write(ENCODER.encode(`${line}\n`));
         }
 
         if (line.match(/end_of_record/)) {
@@ -62,19 +139,3 @@ async function lcovReport() {
         }
     }
 }
-
-await test("test/unit/page/JSONValue.test.ts");
-await test("test/unit/page/Page.test.ts");
-
-await test("test/integration/server/mod.test.ts");
-await test("test/integration/incremental/mod.test.ts");
-await test("test/integration/pages/mod.test.ts");
-await test("test/integration/watch/mod.test.ts");
-
-await lcovReport();
-
-await Deno.remove(covProfileDir, { recursive: true });
-await Deno.remove(rawCovProfileFile);
-await Deno.remove("test/integration/server/dist", { recursive: true });
-await Deno.remove("test/integration/incremental/dist", { recursive: true });
-await Deno.remove("test/integration/pages/dist", { recursive: true });

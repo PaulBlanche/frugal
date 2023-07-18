@@ -460,6 +460,7 @@
     "https://deno.land/x/zod@v3.21.4/types.ts": "b5d061babea250de14fc63764df5b3afa24f2b088a1d797fc060ba49a0ddff28",
     "https://esm.sh/lightningcss-wasm@1.21.5": "23137cfa4593c55fa767a40680a708ee364fe5b2926442ee1c8b6f805d435e90",
     "https://esm.sh/path-to-regexp@6.2.1": "188e422b8b80c40b7bffa675d3013145a6e03d5921cd7ccf06013972d71284c5",
+    "https://esm.sh/path-to-regexp@6.2.1?pin=v128": "1278abc6df1ac9ad0c31a255c4b934d4814219be6632fb84e57015a54a4daf36",
     "https://esm.sh/v128/lightningcss-wasm@1.21.5/denonext/lightningcss-wasm.mjs": "354eb7f031cb930b6155f53c0e5b02b9d2619f6e7946ccbbcf5ab980c6399859",
     "https://esm.sh/v128/napi-wasm@1.0.1/denonext/napi-wasm.mjs": "6b575afbc42b0dfe8cea2ffe0653bf626bd2c1507f752079d13059042e96789a",
     "https://esm.sh/v128/path-to-regexp@6.2.1/denonext/path-to-regexp.mjs": "15a559bf5c42c36764fff3c0659d9312aeeef07c1186b09b94944ca63401638f"
