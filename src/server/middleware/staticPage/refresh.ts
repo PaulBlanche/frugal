@@ -19,6 +19,10 @@ export async function refresh(
         return next(context);
     }
 
+    if (context.request.method !== "GET") {
+        return next(context);
+    }
+
     const url = new URL(context.request.url);
     const timestamp = url.searchParams.get("timestamp");
     const signature = url.searchParams.get("sign");

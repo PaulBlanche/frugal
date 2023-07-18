@@ -8,6 +8,42 @@ import { WatchCache, WatchCacheData } from "../src/cache/WatchCache.ts";
 import { loadManifest } from "../src/loadManifest.ts";
 import { Router } from "../src/page/Router.ts";
 import { FrugalServer } from "../src/server/FrugalServer.ts";
+import puppeteer, { Browser, Page } from "../dep/puppeteer/mod.ts";
+type WithBrowserOptions = {
+    onClose?: () => Promise<void> | void;
+};
+
+export async function withBrowser(
+    callback: (browser: Browser) => Promise<void>,
+    options: WithBrowserOptions = {},
+) {
+    const browser = await puppeteer.launch();
+    try {
+        await callback(browser);
+    } finally {
+        await options?.onClose?.();
+        await browser.close();
+    }
+}
+
+type WithPageCallbackParams = {
+    browser: Browser;
+    page: Page;
+};
+
+export async function withPage(
+    callback: ({ browser, page }: WithPageCallbackParams) => Promise<void>,
+    options: WithBrowserOptions = {},
+) {
+    return withBrowser(async (browser) => {
+        const page = await browser.newPage();
+        try {
+            await callback({ browser, page });
+        } finally {
+            await page.close();
+        }
+    }, options);
+}
 
 export class WatchHelper {
     #context: WatchContext;
@@ -68,6 +104,16 @@ export class BuildHelper {
 
     async cacheExplorer() {
         return await BuildCacheExplorer.load(this.#frugalConfig);
+    }
+
+    async withServer(callback: () => Promise<void> | void) {
+        const controller = new AbortController();
+        try {
+            await this.serve(controller.signal);
+            await callback();
+        } finally {
+            controller.abort();
+        }
     }
 
     async serve(signal: AbortSignal): Promise<void> {

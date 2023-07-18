@@ -1,8 +1,6 @@
 import { DataResponse, RenderContext, StaticHandlerContext } from "../../../page.ts";
 import { store } from "./store.ts";
 
-export const self = import.meta.url;
-
 export const pattern = "/page2/:id";
 
 export function getPaths() {

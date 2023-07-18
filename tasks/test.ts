@@ -11,6 +11,7 @@ async function test(path: string) {
             "-A",
             "--no-check",
             `--coverage=${covProfileDir}`,
+            "--trace-ops",
             path,
         ],
     });

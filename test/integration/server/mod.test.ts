@@ -1,166 +1,166 @@
 import * as asserts from "../../../dep/std/testing/asserts.ts";
-import { Config } from "../../../mod.ts";
-import { MemorySessionStorage } from "../../../src/server/session/MemorySessionStorage.ts";
+import { config } from "./frugal.config.ts";
 
-import { BuildHelper } from "../../utils.ts";
+import { BuildHelper, withPage } from "../../utils.ts";
+import { importKey, sign } from "../../../src/server/crypto.ts";
 
-const config: Config = {
-    self: import.meta.url,
-    pages: ["./dynamicPage.ts", "./staticPage.ts"],
-    log: { level: "silent" },
-    server: {
-        session: {
-            storage: new MemorySessionStorage(),
-        },
-    },
-};
-
-Deno.test("server ", async (t) => {
-    const fetch = cookieFetch();
-
+Deno.test("server: serving basic static page", async (t) => {
     const helper = new BuildHelper(config);
 
     await helper.build();
 
-    await new Promise((res) => setTimeout(res, 0));
+    await t.step("without JIT", async () => {
+        await helper.withServer(async () => {
+            await withPage(async ({ page }) => {
+                const response = await page.goto("http://localhost:8000/static/1");
+                const body = await response!.json();
 
-    await t.step("serve basic dynamic page with session", async (t) => {
-        await t.step("simple GET", async () => {
-            const controller = new AbortController();
-            await helper.serve(controller.signal);
-
-            const response1 = await fetch("http://localhost:8000/dynamic/1");
-            const result1 = await response1.json();
-            asserts.assertEquals(result1, {
-                path: { slug: "1" },
-                count: 0,
-                searchParams: {},
+                asserts.assertEquals(response?.headers()["content-type"], "application/json");
+                asserts.assertEquals(body, {
+                    path: { slug: "1" },
+                    count: 0,
+                    store: "foo",
+                    searchParams: {},
+                });
             });
-            const headers1 = Object.fromEntries(response1.headers.entries());
-            asserts.assertEquals(headers1["content-type"], "application/json");
-
-            controller.abort();
-        });
-
-        await t.step("GET with query params", async () => {
-            const controller = new AbortController();
-            await helper.serve(controller.signal);
-
-            const response2 = await fetch("http://localhost:8000/dynamic/2?foo=bar");
-            const result2 = await response2.json();
-            asserts.assertEquals(result2, {
-                path: { slug: "2" },
-                count: 1,
-                searchParams: { foo: "bar" },
-            });
-
-            controller.abort();
         });
     });
 
-    await t.step("serve static page with post/redirect", async (t) => {
-        await t.step("simple GET", async () => {
-            const controller = new AbortController();
-            await helper.serve(controller.signal);
+    await t.step("with JIT", async () => {
+        await helper.withServer(async () => {
+            await withPage(async ({ page }) => {
+                const response = await page.goto("http://localhost:8000/static-jit/5");
+                const body = await response!.json();
 
-            const response = await fetch("http://localhost:8000/static/1");
-            const result = await response.json();
-            asserts.assertEquals(result, {
-                path: { slug: "1" },
-                count: 0,
-                searchParams: {},
+                asserts.assertEquals(response?.headers()["content-type"], "application/json");
+                asserts.assertEquals(body, {
+                    path: { slug: "5" },
+                    count: 0,
+                    searchParams: {},
+                });
             });
-            const headers1 = Object.fromEntries(response.headers.entries());
-            asserts.assertEquals(headers1["content-type"], "application/json");
+        });
+    });
 
-            controller.abort();
+    await t.step("with invalid JIT", async () => {
+        await helper.withServer(async () => {
+            await withPage(async ({ page }) => {
+                const response = await page.goto("http://localhost:8000/static/5");
+
+                asserts.assertEquals(response!.status(), 404);
+            });
+        });
+    });
+
+    await t.step("with force refresh", async () => {
+        const timestamp = Date.now();
+        const signature = await sign(
+            await importKey(
+                "eyJrdHkiOiJvY3QiLCJrIjoieENtNHc2TDNmZDBrTm8wN3FLckFnZUg4OWhYQldzWkhsalZJYjc2YkpkWjdja2ZPWXpub1gwbXE3aHZFMlZGbHlPOHlVNGhaS29FQUo4cmY3WmstMjF4SjNTRTZ3RDRURF8wdHVvQm9TM2VNZThuUy1pOFA4QVQxcnVFT05tNVJ3N01FaUtJX0xMOWZWaEkyN1BCRTJrbmUxcm80M19wZ2tZWXdSREZ6NFhNIiwiYWxnIjoiSFM1MTIiLCJrZXlfb3BzIjpbInNpZ24iLCJ2ZXJpZnkiXSwiZXh0Ijp0cnVlfQ==",
+            ),
+            String(timestamp),
+        );
+
+        // modify data.json but only data used by page1/1
+        const dataURL = new URL("./data.json", import.meta.url);
+        const originalData = await Deno.readTextFile(dataURL);
+        await Deno.writeTextFile(dataURL, '"bar"');
+
+        await helper.withServer(async () => {
+            await withPage(async ({ page }) => {
+                const response = await page.goto(
+                    `http://localhost:8000/static/5?timestamp=${timestamp}&sign=${signature}`,
+                );
+                const body = await response!.json();
+
+                asserts.assertEquals(response?.headers()["content-type"], "application/json");
+                asserts.assertEquals(body, {
+                    path: { slug: "5" },
+                    count: 0,
+                    store: "bar",
+                    searchParams: {},
+                });
+            });
         });
 
-        await t.step("GET with query params", async () => {
-            const controller = new AbortController();
-            await helper.serve(controller.signal);
+        await Deno.writeTextFile(dataURL, originalData);
+    });
 
-            const response = await fetch("http://localhost:8000/static/1?foo=bar");
-            const result = await response.json();
-            asserts.assertEquals(result, {
-                path: { slug: "1" },
-                count: 0,
-                searchParams: {},
+    await t.step("with invalid method", async () => {
+        await helper.withServer(async () => {
+            await withPage(async ({ page }) => {
+                await page.setRequestInterception(true);
+
+                page.on("request", (interceptedRequest) => {
+                    interceptedRequest.continue({
+                        "method": "PATCH",
+                    });
+                });
+
+                const response = await page.goto("http://localhost:8000/static-jit/5");
+
+                asserts.assertEquals(response!.status(), 404);
             });
-
-            controller.abort();
-        });
-
-        await t.step("POST static page", async () => {
-            const controller = new AbortController();
-            await helper.serve(controller.signal);
-
-            const response = await fetch("http://localhost:8000/static/1?foo=bar", {
-                method: "POST",
-            });
-            const result = await response.json();
-            asserts.assertEquals(result, {
-                path: { slug: "1" },
-                count: 3,
-                searchParams: { foo: "bar" },
-            });
-
-            controller.abort();
         });
     });
 });
 
-function cookieFetch(): typeof fetch {
-    const cookies: Record<string, string> = {};
+Deno.test("server: serving basic dynamic page", async (t) => {
+    const helper = new BuildHelper(config);
 
-    const rawFetch: typeof fetch = async (input, init) => {
-        const headers = new Headers(init?.headers);
-        const cookie = Object.entries(cookies).map(([name, value]) => `${name}=${value}`).join(";");
-        const currentCookie = headers.get("cookie");
-        headers.set(
-            "cookie",
-            currentCookie ? `${currentCookie};${cookie}` : cookie,
-        );
+    await helper.build();
 
-        const response = await fetch(input, {
-            ...init,
-            headers,
-            redirect: "manual",
+    await t.step("GET", async () => {
+        await helper.withServer(async () => {
+            await withPage(async ({ page }) => {
+                const response = await page.goto("http://localhost:8000/dynamic/6");
+                const body = await response!.json();
+
+                asserts.assertEquals(body, {
+                    path: { slug: "6" },
+                    count: 0,
+                    searchParams: {},
+                });
+
+                const responseWithParams = await page.goto("http://localhost:8000/dynamic/3?foo=bar");
+                const bodyWithParams = await responseWithParams!.json();
+
+                asserts.assertEquals(bodyWithParams, {
+                    path: { slug: "3" },
+                    count: 1,
+                    searchParams: { foo: "bar" },
+                });
+            });
         });
+    });
+});
 
-        for (const [name, value] of response.headers.entries()) {
-            if (name === "set-cookie") {
-                const [name, cookieValue] = value.split(";")[0].split("=");
-                cookies[name] = cookieValue;
-            }
-        }
+Deno.test("server: static page with post/redirect", async (t) => {
+    const helper = new BuildHelper(config);
 
-        return response;
-    };
+    await helper.build();
 
-    return async (input, init) => {
-        let response = await rawFetch(input, init);
+    await t.step("POST that redirects to GET with forceGenerate", async () => {
+        await helper.withServer(async () => {
+            await withPage(async ({ page }) => {
+                await page.setRequestInterception(true);
 
-        const location = response.headers.get("location");
+                page.on("request", (interceptedRequest) => {
+                    interceptedRequest.continue({
+                        "method": "POST",
+                    });
+                });
 
-        while (response.status >= 300 && response.status < 400 && location) {
-            await response.body?.cancel();
+                const response = await page.goto("http://localhost:8000/static/4?foo=bar");
+                const body = await response!.json();
 
-            const changeToGet = response.status === 303 ||
-                ((response.status === 301 || response.status === 302) &&
-                    init?.method === "POST");
-
-            const nextInit = changeToGet
-                ? {
-                    ...init,
-                    method: "GET",
-                    body: undefined,
-                }
-                : init;
-
-            response = await rawFetch(location, nextInit);
-        }
-
-        return response;
-    };
-}
+                asserts.assertEquals(body, {
+                    path: { slug: "4" },
+                    count: 1,
+                    store: "foo",
+                    searchParams: { foo: "bar" },
+                });
+            });
+        });
+    });
+});

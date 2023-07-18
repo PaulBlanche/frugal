@@ -11,6 +11,10 @@ export async function refreshJit(
         return next(context);
     }
 
+    if (context.request.method !== "GET") {
+        return next(context);
+    }
+
     context.log(`refresh page`, {
         level: "debug",
         scope: "refreshJit",

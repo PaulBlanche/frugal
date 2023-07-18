@@ -1,7 +1,5 @@
 import { DataResponse, RenderContext } from "../../../page.ts";
 
-export const self = import.meta.url;
-
 export const pattern = "/";
 
 type Data = { foo: string };

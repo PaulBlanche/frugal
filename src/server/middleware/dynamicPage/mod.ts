@@ -4,7 +4,7 @@ import { RouteContext } from "../RouteContext.ts";
 
 export async function dynamicPage(
     context: RouteContext<DynamicRoute>,
-    _next: Next<RouteContext<DynamicRoute>>,
+    next: Next<RouteContext<DynamicRoute>>,
 ) {
     context.log(`Generation of dynamic page`, { level: "debug", scope: "dynamicPage" });
 
@@ -13,6 +13,10 @@ export async function dynamicPage(
         context.state,
         context.session,
     );
+
+    if (generationResult === undefined) {
+        return next(context);
+    }
 
     return await generationResult.toResponse();
 }

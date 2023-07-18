@@ -3,6 +3,7 @@ import * as page from "./Page.ts";
 import { JSONValue } from "./JSONValue.ts";
 import { GenerationResult } from "./GenerationResult.ts";
 import { PageSession } from "./PageSession.ts";
+import { log } from "../log.ts";
 
 export type DynamicPageGeneratorConfig<PATH extends string = string, DATA extends JSONValue = JSONValue> = {
     page: page.Page<PATH, DATA>;
@@ -21,7 +22,7 @@ export class DynamicPageGenerator<PATH extends string = string, DATA extends JSO
         request: Request,
         state: Record<string, unknown>,
         session?: PageSession,
-    ): Promise<GenerationResult<PATH, DATA>> {
+    ): Promise<GenerationResult<PATH, DATA> | undefined> {
         const pathname = new URL(request.url).pathname;
         const match = this.#config.page.match(pathname);
 
@@ -47,24 +48,26 @@ export class DynamicPageGenerator<PATH extends string = string, DATA extends JSO
     async #getGenerationResult(
         pathname: string,
         context: descriptor.DynamicHandlerContext<PATH>,
-    ): Promise<GenerationResult<PATH, DATA>> {
+    ): Promise<GenerationResult<PATH, DATA> | undefined> {
         const method = context.request.method as descriptor.Method;
         const handler = this.#config.page[method];
-        if (handler !== undefined) {
-            return new GenerationResult(await handler(context), {
-                pathname,
-                moduleHash: this.#config.page.moduleHash,
-                configHash: this.#config.configHash,
-                phase: context.phase,
-                path: context.path,
-                descriptor: context.descriptor,
-                assets: context.assets,
-                render: (context) => this.#config.page.render(context),
+        if (handler === undefined) {
+            log(`Page ${this.#config.page.pattern} cannot handle ${context.request.method} requests`, {
+                scope: "DybamicPageGenerator",
+                level: "debug",
             });
+            return undefined;
         }
 
-        throw new Error(
-            `Page ${this.#config.page.pattern} cannot handle ${context.request.method} requests`,
-        );
+        return new GenerationResult(await handler(context), {
+            pathname,
+            moduleHash: this.#config.page.moduleHash,
+            configHash: this.#config.configHash,
+            phase: context.phase,
+            path: context.path,
+            descriptor: context.descriptor,
+            assets: context.assets,
+            render: (context) => this.#config.page.render(context),
+        });
     }
 }

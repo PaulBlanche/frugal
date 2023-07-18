@@ -1,7 +1,5 @@
 import { PathList } from "../../../page.ts";
 
-export const self = import.meta.url;
-
 export const pattern = "/:foo/:bar";
 
 export function getPaths(): PathList<typeof pattern> {

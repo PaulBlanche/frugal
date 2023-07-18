@@ -2,13 +2,7 @@ import * as asserts from "../../../dep/std/testing/asserts.ts";
 
 import { Config, context } from "../../../mod.ts";
 import { BuildHelper } from "../../utils.ts";
-
-const config: Config = {
-    self: import.meta.url,
-    outdir: "./dist/",
-    pages: ["./page1.ts", "./page2.ts"],
-    log: { level: "silent" },
-};
+import { config } from "./frugal.config.ts";
 
 if (import.meta.main) {
     await context(config).watch();

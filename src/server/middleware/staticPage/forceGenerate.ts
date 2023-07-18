@@ -28,6 +28,10 @@ export async function forceGenerate(
         context.session,
     );
 
+    if (generationResult === undefined) {
+        return next(context);
+    }
+
     const response = await generationResult.toResponse();
 
     if (forceGenerate) {

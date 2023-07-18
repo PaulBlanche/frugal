@@ -67,7 +67,7 @@ export class StaticPageGenerator<PATH extends string = string, DATA extends JSON
         request: Request,
         state: Record<string, unknown>,
         session?: PageSession,
-    ): Promise<GenerationResult<PATH, DATA>> {
+    ): Promise<GenerationResult<PATH, DATA> | undefined> {
         const pathname = new URL(request.url).pathname;
         const match = this.#config.page.match(pathname);
 
@@ -102,25 +102,28 @@ export class StaticPageGenerator<PATH extends string = string, DATA extends JSON
     async #getDynamicGenerationResult(
         pathname: string,
         context: descriptor.DynamicHandlerContext<PATH>,
-    ): Promise<GenerationResult<PATH, DATA>> {
+    ): Promise<GenerationResult<PATH, DATA> | undefined> {
         const method = context.request.method as descriptor.Method;
         const handler = this.#config.page[method];
-        if (handler !== undefined) {
-            return new GenerationResult(await handler(context), {
-                pathname,
-                moduleHash: this.#config.page.moduleHash,
-                configHash: this.#config.configHash,
-                phase: context.phase,
-                path: context.path,
-                descriptor: context.descriptor,
-                assets: context.assets,
-                render: (context) => this.#config.page.render(context),
+
+        if (handler === undefined) {
+            log(`Page ${this.#config.page.pattern} cannot handle ${context.request.method} requests`, {
+                scope: "DybamicPageGenerator",
+                level: "debug",
             });
+            return undefined;
         }
 
-        throw new Error(
-            `Page ${this.#config.page.pattern} cannot handle ${context.request.method} requests`,
-        );
+        return new GenerationResult(await handler(context), {
+            pathname,
+            moduleHash: this.#config.page.moduleHash,
+            configHash: this.#config.configHash,
+            phase: context.phase,
+            path: context.path,
+            descriptor: context.descriptor,
+            assets: context.assets,
+            render: (context) => this.#config.page.render(context),
+        });
     }
 
     async #getStaticGenerationResult(pathname: string, buildPath: PathObject<PATH>, phase: descriptor.Phase) {
