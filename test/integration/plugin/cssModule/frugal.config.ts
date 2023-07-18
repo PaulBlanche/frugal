@@ -7,5 +7,5 @@ export const config: Config = {
     outdir: "./dist/",
     pages: ["./page.ts"],
     plugins: [cssModule(), css()],
-    log: { level: "verbose" },
+    log: { level: "silent" },
 };
