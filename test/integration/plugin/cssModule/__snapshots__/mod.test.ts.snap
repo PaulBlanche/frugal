@@ -1,15 +1,15 @@
 export const snapshot = {};
 
 snapshot[`css: build page with css module dependencies 1`] = `
-"/* virtual:/main.module.css-92ca48743c13d85a.frugal-compiled-module.css */
+"/* virtual:/main.module.css-d4cbe8ede2554d6a.frugal-compiled-module.css */
 " +
-  "._5TXYoG_foo {
+  ".foo {
 " +
   "  color: red;
 " +
   "}
 " +
-  "._5TXYoG_bar {
+  ".bar {
 " +
   "  background: red;
 " +
@@ -17,9 +17,9 @@ snapshot[`css: build page with css module dependencies 1`] = `
 " +
   "
 " +
-  "/* virtual:/dep.module.css-f6b3d0584c4c3682.frugal-compiled-module.css */
+  "/* virtual:/dep.module.css-db09027996f7e6b0.frugal-compiled-module.css */
 " +
-  ".K3qUyq_bar {
+  ".baz {
 " +
   "  margin: 10px;
 " +
@@ -27,4 +27,4 @@ snapshot[`css: build page with css module dependencies 1`] = `
 "
 `;
 
-snapshot[`css: build page with css module dependencies 2`] = `'{"bar":["_5TXYoG_bar","K3qUyq_bar"],"foo":["_5TXYoG_foo","_5TXYoG_bar","K3qUyq_bar"]}'`;
+snapshot[`css: build page with css module dependencies 2`] = `'{"bar":["bar","baz"],"foo":["foo","bar","baz"]}'`;

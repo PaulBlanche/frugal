@@ -14,6 +14,8 @@ Deno.test("css: build page with css module dependencies", async (t) => {
 
     await helper.build();
 
+    await new Promise((res) => setTimeout(res, 200));
+
     snapshot.assertSnapshot(t, await Deno.readTextFile(new URL("css/page.css", helper.config.publicdir)));
 
     const cache = await helper.cacheExplorer();

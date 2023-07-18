@@ -7,11 +7,10 @@ import { log } from "../log.ts";
 
 type CssModuleOptions = {
     filter: RegExp;
-    cssFilter: RegExp;
-    getCssPath: (path: string) => string;
+    pattern?: string;
 };
 
-export function cssModule({ filter = /\.module.css$/ }: Partial<CssModuleOptions> = {}): Plugin {
+export function cssModule({ filter = /\.module.css$/, pattern }: Partial<CssModuleOptions> = {}): Plugin {
     return (frugal) => {
         return {
             name: "frugal:cssModule",
@@ -19,6 +18,7 @@ export function cssModule({ filter = /\.module.css$/ }: Partial<CssModuleOptions
                 const cssModuleBuilder = new CssModuleBuilder({
                     sourceMap: Boolean(build.initialOptions.sourcemap),
                     projectRoot: build.initialOptions.absWorkingDir,
+                    pattern,
                 });
 
                 const cssCache = new Map<string, Uint8Array>();
@@ -66,75 +66,6 @@ export function cssModule({ filter = /\.module.css$/ }: Partial<CssModuleOptions
 
                     return { loader: "js", contents: module.js };
                 });
-
-                /*const cssModuleBuilder = new CssModuleBuilder({
-                    sourceMap: Boolean(build.initialOptions.sourcemap),
-                    projectRoot: build.initialOptions.absWorkingDir,
-                });
-
-                // resolve css module and move them in the "facade" namespace :
-                // won't be considered as asset, but its dependencies will the
-                // .module.css will not be part of the css bundle (because it's
-                // a facade), but the compiled .css will be since it is its
-                // dependency
-                build.onResolve({ filter }, (args) => {
-                    if (!["file", "facade"].includes(args.namespace)) {
-                        throw Error(`Can't bundle remote css module ${frugal.url(args)}`);
-                    }
-
-                    return { path: args.path, namespace: "facade" };
-                });
-
-                // resolve compiled .css and move them ase "virtual" namespace :
-                // when computing the module hash, frugal won't try to read the
-                // file (since the compiled .css is stored in memory)
-                build.onResolve({ filter: /\.frugal-compiled-module.css/ }, (args) => {
-                    return { path: args.path, namespace: "virtual" };
-                });
-
-                // load compiled .css as empty file (not part of the "server" bundle)
-                build.onLoad({ filter: /\.frugal-compiled-module.css/, namespace: "virtual" }, () => {
-                    return { loader: "empty", contents: "" };
-                });
-
-                // load css module, compile it, return the compiled js code for
-                // the "server" bundle and set the compiled css as a virtual
-                // file (used later by the css loader that will bundle together
-                // all css assets)
-                build.onLoad({ filter, namespace: "facade" }, async (args) => {
-                    args.namespace = "file";
-                    const url = frugal.url(args);
-
-                    log(
-                        `found css module "${
-                            path.relative(
-                                path.fromFileUrl(
-                                    new URL(".", frugal.config.self),
-                                ),
-                                path.fromFileUrl(url),
-                            )
-                        }"`,
-                        {
-                            level: "debug",
-                            scope: "frugal:cssModule",
-                        },
-                    );
-
-                    const modulePath = path.fromFileUrl(url);
-                    const contents = await frugal.load(url);
-                    const contentHash = (await xxhash.create()).update(contents).digest("hex").toString();
-
-                    const cssPath = path.resolve(
-                        path.dirname(modulePath),
-                        `${path.basename(modulePath)}-${contentHash}.frugal-compiled-module.css`,
-                    );
-
-                    const module = await cssModuleBuilder.bundle(modulePath, cssPath, contents);
-
-                    frugal.setVirtualFile(path.toFileUrl(cssPath).href, module.css);
-
-                    return { loader: "js", contents: module.js, watchFiles: [modulePath] };
-                });*/
             },
         };
     };
@@ -145,6 +76,7 @@ type Module = { contents: Uint8Array; css: Uint8Array; js: string };
 type Config = {
     sourceMap?: boolean;
     projectRoot?: string;
+    pattern?: string;
 };
 
 class CssModuleBuilder {
@@ -188,7 +120,9 @@ class CssModuleBuilder {
         return lightningcss.transform({
             filename: path,
             code: contents,
-            cssModules: true,
+            cssModules: {
+                pattern: this.#config.pattern,
+            },
             sourceMap: this.#config.sourceMap,
             projectRoot: this.#config.projectRoot,
             targets: {

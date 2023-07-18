@@ -5,7 +5,7 @@
 }
 
 .bar {
-    composes: bar from './dep.module.css';
+    composes: baz from './dep.module.css';
 
     background: red;
 }
