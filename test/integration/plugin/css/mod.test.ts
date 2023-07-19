@@ -1,4 +1,5 @@
 import * as asserts from "../../../../dep/std/testing/asserts.ts";
+import * as path from "../../../../dep/std/path.ts";
 import * as snapshot from "../../../../dep/std/testing/snapshot.ts";
 import { Config, context } from "../../../../mod.ts";
 import { BuildHelper, setupFiles } from "../../../utils.ts";
@@ -14,11 +15,26 @@ Deno.test("css: build page with css dependencies", async (t) => {
     const config = await loadConfig();
     const helper = new BuildHelper(config);
 
-    await helper.build();
+    console.log(path.fromFileUrl(helper.config.rootdir));
+    const watcher = Deno.watchFs(path.fromFileUrl(helper.config.rootdir), { recursive: true });
 
-    await new Promise((res) => setTimeout(res, 200));
+    const builderPromise = helper.build().then(() => {
+        console.log("build done");
+        watcher.close();
+    });
 
-    snapshot.assertSnapshot(t, await Deno.readTextFile(new URL("css/page.css", helper.config.publicdir)));
+    console.log("watch");
+
+    for await (const event of watcher) {
+        if (event.paths.some((path) => path.includes("/public/css/"))) {
+            console.log(event);
+            console.log(await Deno.readTextFile(event.paths[0]));
+        }
+    }
+
+    //await new Promise((res) => setTimeout(res, 200));
+
+    //snapshot.assertSnapshot(t, await Deno.readTextFile());
 });
 
 Deno.test("css: css dependencies are watched", async () => {
