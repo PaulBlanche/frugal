@@ -15,22 +15,7 @@ Deno.test("css: build page with css dependencies", async (t) => {
     const config = await loadConfig();
     const helper = new BuildHelper(config);
 
-    console.log(path.fromFileUrl(helper.config.rootdir));
-    const watcher = Deno.watchFs(path.fromFileUrl(helper.config.rootdir), { recursive: true });
-
-    const builderPromise = helper.build().then(() => {
-        console.log("build done");
-        watcher.close();
-    });
-
-    console.log("watch");
-
-    for await (const event of watcher) {
-        if (event.paths.some((path) => path.includes("/public/css/"))) {
-            console.log(event);
-            console.log(await Deno.readTextFile(event.paths[0]));
-        }
-    }
+    await helper.build();
 
     snapshot.assertSnapshot(t, await Deno.readTextFile(new URL("css/page.css", helper.config.publicdir)));
 });
