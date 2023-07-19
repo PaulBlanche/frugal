@@ -1,4 +1,3 @@
-import { pathJoin } from "https://deno.land/x/puppeteer@16.2.0/vendor/puppeteer-core/vendor/std.ts";
 import { parse } from "../dep/std/flags.ts";
 import * as io from "../dep/std/io.ts";
 
@@ -107,5 +106,7 @@ async function lcovReport() {
 async function tryRemove(path: string | URL, options?: Deno.RemoveOptions | undefined) {
     try {
         await Deno.remove(path, options);
-    } catch {}
+    } catch {
+        // swallow error, yum yum
+    }
 }
