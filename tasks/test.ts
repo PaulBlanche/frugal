@@ -10,6 +10,7 @@ const ENCODER = new TextEncoder();
 const TESTS = [
     "test/unit/page/JSONValue.test.ts",
     "test/unit/page/Page.test.ts",
+    "test/unit/log.test.ts",
     "test/integration/server/mod.test.ts",
     "test/integration/incremental/mod.test.ts",
     "test/integration/pages/mod.test.ts",

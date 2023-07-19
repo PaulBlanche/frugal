@@ -1,0 +1,57 @@
+export const snapshot = {};
+
+snapshot[`log: default config 1`] = `
+"\\x1b[90m19/07/2023 09:50:50.274 GMT+2\\x1b[39m \\x1b[48;5;15m\\x1b[38;5;15m[\\x1b[39m\\x1b[30mINFO   \\x1b[39m\\x1b[38;5;15m]\\x1b[39m\\x1b[49m \\x1b[1m ??? >\\x1b[22m default
+" +
+  "\\x1b[90m19/07/2023 09:50:50.274 GMT+2\\x1b[39m \\x1b[48;5;9m\\x1b[38;5;9m[\\x1b[39m\\x1b[30mERROR  \\x1b[39m\\x1b[38;5;9m]\\x1b[39m\\x1b[49m \\x1b[31m\\x1b[1m test1 >\\x1b[22m\\x1b[39m \\x1b[91merror\\x1b[39m
+" +
+  "\\x1b[90m19/07/2023 09:50:50.275 GMT+2\\x1b[39m \\x1b[48;5;9m\\x1b[38;5;9m[\\x1b[39m\\x1b[30mERROR  \\x1b[39m\\x1b[38;5;9m]\\x1b[39m\\x1b[49m \\x1b[31m\\x1b[1m test1 >\\x1b[22m\\x1b[39m \\x1b[91mError : true error default
+" +
+  "
+" +
+  "Error: true error default
+" +
+  "    at file:///home/whiteshoulders/perso/frugal/test/unit/log.test.ts:10:9\\x1b[39m
+" +
+  "\\x1b[90m19/07/2023 09:50:50.275 GMT+2\\x1b[39m \\x1b[48;5;15m\\x1b[38;5;15m[\\x1b[39m\\x1b[30mINFO   \\x1b[39m\\x1b[38;5;15m]\\x1b[39m\\x1b[49m \\x1b[1m test1 >\\x1b[22m Error : true error
+" +
+  "
+" +
+  "Error: true error
+" +
+  "    at file:///home/whiteshoulders/perso/frugal/test/unit/log.test.ts:11:9
+" +
+  "\\x1b[90m19/07/2023 09:50:50.275 GMT+2\\x1b[39m \\x1b[48;5;11m\\x1b[38;5;11m[\\x1b[39m\\x1b[30mWARNING\\x1b[39m\\x1b[38;5;11m]\\x1b[39m\\x1b[49m \\x1b[33m\\x1b[1m test1 >\\x1b[22m\\x1b[39m \\x1b[33mwarning\\x1b[39m
+" +
+  "\\x1b[90m19/07/2023 09:50:50.275 GMT+2\\x1b[39m \\x1b[48;5;15m\\x1b[38;5;15m[\\x1b[39m\\x1b[30mINFO   \\x1b[39m\\x1b[38;5;15m]\\x1b[39m\\x1b[49m \\x1b[1m test1 >\\x1b[22m info
+" +
+  "\\x1b[90m19/07/2023 09:50:50.275 GMT+2\\x1b[39m \\x1b[48;5;9m\\x1b[38;5;9m[\\x1b[39m\\x1b[30mERROR  \\x1b[39m\\x1b[38;5;9m]\\x1b[39m\\x1b[49m \\x1b[31m\\x1b[1m test2 >\\x1b[22m\\x1b[39m \\x1b[91merror\\x1b[39m
+" +
+  "\\x1b[90m19/07/2023 09:50:50.275 GMT+2\\x1b[39m \\x1b[48;5;11m\\x1b[38;5;11m[\\x1b[39m\\x1b[30mWARNING\\x1b[39m\\x1b[38;5;11m]\\x1b[39m\\x1b[49m \\x1b[33m\\x1b[1m test2 >\\x1b[22m\\x1b[39m \\x1b[33mwarning\\x1b[39m
+" +
+  "\\x1b[90m19/07/2023 09:50:50.275 GMT+2\\x1b[39m \\x1b[48;5;15m\\x1b[38;5;15m[\\x1b[39m\\x1b[30mINFO   \\x1b[39m\\x1b[38;5;15m]\\x1b[39m\\x1b[49m \\x1b[1m test2 >\\x1b[22m info
+"
+`;
+
+snapshot[`log: custom config 1`] = `
+"\\x1b[90m19/07/2023 09:50:50.374 GMT+2\\x1b[39m \\x1b[48;5;9m\\x1b[38;5;9m[\\x1b[39m\\x1b[30mERROR  \\x1b[39m\\x1b[38;5;9m]\\x1b[39m\\x1b[49m \\x1b[31m\\x1b[1m test1 >\\x1b[22m\\x1b[39m \\x1b[91merror\\x1b[39m
+" +
+  "\\x1b[90m19/07/2023 09:50:50.375 GMT+2\\x1b[39m \\x1b[48;5;9m\\x1b[38;5;9m[\\x1b[39m\\x1b[30mERROR  \\x1b[39m\\x1b[38;5;9m]\\x1b[39m\\x1b[49m \\x1b[31m\\x1b[1m test1 >\\x1b[22m\\x1b[39m \\x1b[91mError : true error default
+" +
+  "
+" +
+  "Error: true error default
+" +
+  "    at file:///home/whiteshoulders/perso/frugal/test/unit/log.test.ts:10:9\\x1b[39m
+" +
+  "\\x1b[90m19/07/2023 09:50:50.376 GMT+2\\x1b[39m \\x1b[48;5;9m\\x1b[38;5;9m[\\x1b[39m\\x1b[30mERROR  \\x1b[39m\\x1b[38;5;9m]\\x1b[39m\\x1b[49m \\x1b[31m\\x1b[1m test2 >\\x1b[22m\\x1b[39m \\x1b[91merror\\x1b[39m
+" +
+  "\\x1b[90m19/07/2023 09:50:50.376 GMT+2\\x1b[39m \\x1b[48;5;11m\\x1b[38;5;11m[\\x1b[39m\\x1b[30mWARNING\\x1b[39m\\x1b[38;5;11m]\\x1b[39m\\x1b[49m \\x1b[33m\\x1b[1m test2 >\\x1b[22m\\x1b[39m \\x1b[33mwarning\\x1b[39m
+" +
+  "\\x1b[90m19/07/2023 09:50:50.376 GMT+2\\x1b[39m \\x1b[48;5;15m\\x1b[38;5;15m[\\x1b[39m\\x1b[30mINFO   \\x1b[39m\\x1b[38;5;15m]\\x1b[39m\\x1b[49m \\x1b[1m test2 >\\x1b[22m info
+" +
+  "\\x1b[90m19/07/2023 09:50:50.376 GMT+2\\x1b[39m \\x1b[48;5;8m\\x1b[38;5;8m[\\x1b[39m\\x1b[30mDEBUG  \\x1b[39m\\x1b[38;5;8m]\\x1b[39m\\x1b[49m \\x1b[90m\\x1b[1m test2 >\\x1b[22m\\x1b[39m \\x1b[90mdebug\\x1b[39m
+" +
+  "\\x1b[90m19/07/2023 09:50:50.376 GMT+2\\x1b[39m \\x1b[48;5;8m\\x1b[38;5;8m[\\x1b[39m\\x1b[30mVERBOSE\\x1b[39m\\x1b[38;5;8m]\\x1b[39m\\x1b[49m \\x1b[90m\\x1b[1m test2 >\\x1b[22m\\x1b[39m \\x1b[90mverbose\\x1b[39m
+"
+`;
