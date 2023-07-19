@@ -4,6 +4,8 @@ import { config } from "./frugal.config.ts";
 import { BuildHelper, withPage } from "../../utils.ts";
 import { importKey, sign } from "../../../src/server/crypto.ts";
 
+await setupTestFiles();
+
 Deno.test("server: serving basic static page", async (t) => {
     const helper = new BuildHelper(config);
 
@@ -164,3 +166,11 @@ Deno.test("server: static page with post/redirect", async (t) => {
         });
     });
 });
+
+async function setupTestFiles() {
+    // clean everything from previous tests
+    const base = new URL("./dist/", import.meta.url);
+    try {
+        await Deno.remove(base, { recursive: true });
+    } catch {}
+}

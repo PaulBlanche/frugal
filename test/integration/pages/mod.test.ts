@@ -1,8 +1,9 @@
 import * as asserts from "../../../dep/std/testing/asserts.ts";
-import { Config } from "../../../mod.ts";
 
 import { BuildHelper } from "../../utils.ts";
 import { config } from "./frugal.config.ts";
+
+await setupTestFiles();
 
 Deno.test("pages: build with no page ", async () => {
     const helper = new BuildHelper({
@@ -155,3 +156,11 @@ Deno.test("pages: build pages with empty responses", async () => {
         age: "new",
     }]]);
 });
+
+async function setupTestFiles() {
+    // clean everything from previous tests
+    const base = new URL("./dist/", import.meta.url);
+    try {
+        await Deno.remove(base, { recursive: true });
+    } catch {}
+}

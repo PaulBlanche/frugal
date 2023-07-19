@@ -1,6 +1,7 @@
 import * as asserts from "../dep/std/testing/asserts.ts";
+import * as fs from "../dep/std/fs.ts";
 
-import { build, Config, Frugal } from "../mod.ts";
+import { Config, Frugal } from "../mod.ts";
 import { FrugalConfig } from "../src/Config.ts";
 import { WatchContext } from "../src/WatchContext.ts";
 import { BuildCacheData, loadBuildCacheData } from "../src/cache/BuildCache.ts";
@@ -233,5 +234,13 @@ class BuildCacheExplorer {
             const body = await this.loadDocument(actualKey);
             asserts.assertObjectMatch({ ...actualValue, body }, expectedValue);
         }));
+    }
+}
+
+export async function setupFiles(base: URL, files: Record<string, string>) {
+    for (const [path, content] of Object.entries(files)) {
+        const url = new URL(path, base);
+        await fs.ensureFile(url);
+        await Deno.writeTextFile(url, content);
     }
 }

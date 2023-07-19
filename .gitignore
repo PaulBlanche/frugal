@@ -3,3 +3,4 @@ dist/
 cov_profile.lcov
 .env
 node_modules
+TODO.md

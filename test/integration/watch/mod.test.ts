@@ -1,14 +1,17 @@
 import * as asserts from "../../../dep/std/testing/asserts.ts";
 
 import { Config, context } from "../../../mod.ts";
-import { BuildHelper, withPage } from "../../utils.ts";
-import { config } from "./frugal.config.ts";
+import { BuildHelper, setupFiles, withPage } from "../../utils.ts";
 
 if (import.meta.main) {
+    const config = await loadConfig();
     await context(config).watch();
+} else {
+    await setupTestFiles();
 }
 
 Deno.test("watch: files are regenerated if page code changes", async (t) => {
+    const config = await loadConfig();
     const helper = new BuildHelper(config);
 
     const context = helper.context();
@@ -23,7 +26,7 @@ Deno.test("watch: files are regenerated if page code changes", async (t) => {
     const updatedAt22 = firstBuildCache.get("/page2/2").updatedAt;
 
     // add a comment at the top of page1.ts
-    const page1ModuleURL = new URL("./page1.ts", import.meta.url);
+    const page1ModuleURL = new URL("./project/page1.ts", import.meta.url);
     const originalData = await Deno.readTextFile(page1ModuleURL);
     await Deno.writeTextFile(page1ModuleURL, `//comment\n${originalData}`);
 
@@ -43,6 +46,7 @@ Deno.test("watch: files are regenerated if page code changes", async (t) => {
 });
 
 Deno.test("watch: files are regenerated if dependency code changes", async (t) => {
+    const config = await loadConfig();
     const helper = new BuildHelper(config);
 
     const context = helper.context();
@@ -57,7 +61,7 @@ Deno.test("watch: files are regenerated if dependency code changes", async (t) =
     const updatedAt22 = firstBuildCache.get("/page2/2").updatedAt;
 
     // add a comment at the top of store.ts
-    const storeModuleURL = new URL("./store.ts", import.meta.url);
+    const storeModuleURL = new URL("./project/store.ts", import.meta.url);
     const originalData = await Deno.readTextFile(storeModuleURL);
     await Deno.writeTextFile(storeModuleURL, `//comment\n${originalData}`);
 
@@ -77,6 +81,7 @@ Deno.test("watch: files are regenerated if dependency code changes", async (t) =
 });
 
 Deno.test("watch: files are regenerated on demand if data changes", async (t) => {
+    const config = await loadConfig();
     const helper = new BuildHelper(config);
 
     const context = helper.context();
@@ -91,7 +96,7 @@ Deno.test("watch: files are regenerated on demand if data changes", async (t) =>
     const updatedAt22 = firstBuildCache.get("/page2/2").updatedAt;
 
     // modify data.json but only data used by page1/1
-    const dataURL = new URL("./data.json", import.meta.url);
+    const dataURL = new URL("./project/data.json", import.meta.url);
     const originalData = await Deno.readTextFile(dataURL);
     const updatedData = JSON.parse(originalData);
     updatedData[0]["1"] = {
@@ -119,6 +124,7 @@ Deno.test("watch: files are regenerated on demand if data changes", async (t) =>
 });
 
 Deno.test("watch: browser reload on file change", async (t) => {
+    const config = await loadConfig();
     const helper = new BuildHelper(config);
 
     const context = helper.context();
@@ -126,7 +132,7 @@ Deno.test("watch: browser reload on file change", async (t) => {
 
     await context.awaitNextBuild();
 
-    const page1ModuleURL = new URL("./page1.ts", import.meta.url);
+    const page1ModuleURL = new URL("./project/page1.ts", import.meta.url);
     let originalData;
 
     await withPage(async ({ page }) => {
@@ -160,6 +166,7 @@ Deno.test("watch: browser reload on file change", async (t) => {
 });
 
 Deno.test("watch: rebuild and browser reload on config change", async (t) => {
+    const config = await loadConfig();
     const helper = new BuildHelper(config);
 
     const context = helper.context();
@@ -167,7 +174,7 @@ Deno.test("watch: rebuild and browser reload on config change", async (t) => {
 
     await context.awaitNextBuild();
 
-    const configURL = new URL("./frugal.config.ts", import.meta.url);
+    const configURL = new URL("./project/frugal.config.ts", import.meta.url);
     let originalData;
 
     await withPage(async ({ page }) => {
@@ -195,3 +202,126 @@ Deno.test("watch: rebuild and browser reload on config change", async (t) => {
 
     await context.dispose();
 });
+
+async function setupTestFiles() {
+    // clean everything from previous tests
+    const base = new URL("./project/", import.meta.url);
+    try {
+        await Deno.remove(base, { recursive: true });
+    } catch {}
+
+    // setup clean files for current tests
+    await setupFiles(base, {
+        //####
+        "./page1.ts": `import { DataResponse, RenderContext, StaticHandlerContext } from "../../../../page.ts";
+import { store } from "./store.ts";
+
+export const pattern = "/page1/:id";
+
+export function getPaths() {
+    return [{ id: "1" }, { id: "2" }];
+}
+
+export async function generate({ path }: StaticHandlerContext<typeof pattern>) {
+    const dataStore = await store();
+    const pageData = dataStore[0];
+    return new DataResponse({
+        data: pageData[path.id].data,
+        headers: pageData[path.id].headers,
+    });
+}
+
+export function render({ data, path }: RenderContext<typeof pattern, number>) {
+    return \`data : \${data}, path: \${JSON.stringify(path)}\`;
+}
+`,
+
+        //####
+        "./page2.ts": `import { DataResponse, RenderContext, StaticHandlerContext } from "../../../../page.ts";
+import { store } from "./store.ts";
+
+export const pattern = "/page2/:id";
+
+export function getPaths() {
+    return [{ id: "1" }, { id: "2" }];
+}
+
+export async function generate({ path }: StaticHandlerContext<typeof pattern>) {
+    const dataStore = await store();
+    const pageData = dataStore[1];
+    return new DataResponse({
+        data: pageData[path.id].data,
+        headers: pageData[path.id].headers,
+    });
+}
+
+export function render({ data, path }: RenderContext<typeof pattern, number>) {
+    return \`data : \${data}, path: \${JSON.stringify(path)}\`;
+}
+`,
+
+        //####
+        "./store.ts": `export const store = async () =>
+JSON.parse(
+    await Deno.readTextFile(new URL("../../../data.json", import.meta.url)),
+);
+`,
+
+        //####
+        "./data.json": `[
+    {
+        "1": {
+            "data": 11
+        },
+        "2": {
+            "data": 12,
+            "headers": [
+                [
+                    "12",
+                    "12"
+                ]
+            ]
+        }
+    },
+    {
+        "1": {
+            "data": 21,
+            "headers": [
+                [
+                    "21",
+                    "21"
+                ]
+            ]
+        },
+        "2": {
+            "data": 22,
+            "headers": [
+                [
+                    "22",
+                    "22"
+                ]
+            ]
+        }
+    }
+]
+`,
+
+        //####
+        "./frugal.config.ts": `import { Config } from "../../../../mod.ts";
+
+export const config: Config = {
+    self: import.meta.url,
+    outdir: "./dist/",
+    pages: ["./page1.ts", "./page2.ts"],
+    log: { level: "silent" },
+};
+`,
+    });
+}
+
+async function loadConfig(): Promise<Config> {
+    // load config busting deno cache
+    const hash = String(Date.now());
+    const { config } = await import(`./project/frugal.config.ts#${hash}`);
+    return config;
+}
