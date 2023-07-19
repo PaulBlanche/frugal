@@ -32,9 +32,7 @@ Deno.test("css: build page with css dependencies", async (t) => {
         }
     }
 
-    //await new Promise((res) => setTimeout(res, 200));
-
-    //snapshot.assertSnapshot(t, await Deno.readTextFile());
+    snapshot.assertSnapshot(t, await Deno.readTextFile(new URL("css/page.css", helper.config.publicdir)));
 });
 
 Deno.test("css: css dependencies are watched", async () => {
