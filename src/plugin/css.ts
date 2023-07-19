@@ -50,7 +50,7 @@ export function css(
                     },
                 });
 
-                build.onEnd((result) => {
+                build.onEnd(async (result) => {
                     const metafile = result.metafile;
                     const errors = result.errors;
 
@@ -58,15 +58,17 @@ export function css(
                         return;
                     }
 
-                    Object.keys(metafile.outputs).map((outputPath) => {
-                        if (outputPath.match(filter)) {
-                            const basename = path.basename(outputPath);
-                            const dest = new URL(`css/${basename}`, frugal.config.publicdir);
-                            fs.ensureFile(dest);
-                            fs.copy(new URL(outputPath, frugal.config.rootdir), dest, { overwrite: true });
-                            frugal.output("style", dest);
-                        }
-                    });
+                    await Promise.all(
+                        Object.keys(metafile.outputs).map(async (outputPath) => {
+                            if (outputPath.match(filter)) {
+                                const basename = path.basename(outputPath);
+                                const dest = new URL(`css/${basename}`, frugal.config.publicdir);
+                                await fs.ensureFile(dest);
+                                await fs.copy(new URL(outputPath, frugal.config.rootdir), dest, { overwrite: true });
+                                frugal.output("style", dest);
+                            }
+                        }),
+                    );
                 });
             },
         };
