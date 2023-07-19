@@ -1,10 +1,31 @@
 import { assertSnapshot } from "../../dep/std/testing/snapshot.ts";
 import { config, log } from "../../src/log.ts";
 
-if (import.meta.main) {
-    const logConfig = JSON.parse(Deno.env.get("LOG_CONFIG") ?? "{}");
-    config(logConfig);
+Deno.test("log: default config", async (t) => {
+    const logs: any[][] = [];
+    console.log = (...params) => logs.push(params);
 
+    logTest();
+
+    assertSnapshot(t, logs);
+});
+
+Deno.test("log: custom config", async (t) => {
+    const logs: any[][] = [];
+    console.log = (...params) => logs.push(params);
+
+    config({
+        level: "error",
+        scopes: {
+            test2: "verbose",
+        },
+    });
+    logTest();
+
+    assertSnapshot(t, logs);
+});
+
+function logTest() {
     log("default");
     log("error", { scope: "test1", level: "error" });
     log(new Error("true error default"), { scope: "test1" });
@@ -20,29 +41,3 @@ if (import.meta.main) {
     log("debug", { scope: "test2", level: "debug" });
     log("verbose", { scope: "test2", level: "verbose" });
 }
-
-Deno.test("log: default config", async (t) => {
-    const command = new Deno.Command(Deno.execPath(), {
-        args: ["run", "-A", Deno.mainModule],
-    });
-    const output = await command.output();
-
-    assertSnapshot(t, new TextDecoder().decode(output.stdout));
-});
-
-Deno.test("log: custom config", async (t) => {
-    const command = new Deno.Command(Deno.execPath(), {
-        args: ["run", "-A", Deno.mainModule],
-        env: {
-            LOG_CONFIG: JSON.stringify({
-                level: "error",
-                scopes: {
-                    test2: "verbose",
-                },
-            }),
-        },
-    });
-    const output = await command.output();
-
-    assertSnapshot(t, new TextDecoder().decode(output.stdout));
-});
