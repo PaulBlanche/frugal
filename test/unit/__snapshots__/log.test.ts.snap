@@ -13,42 +13,14 @@ snapshot[`log: default config 1`] = `
 " +
       "
 " +
-      "Error: true error default
-" +
-      "    at logTest (file:///home/whiteshoulders/perso/frugal/test/unit/log.test.ts:42:9)
-" +
-      "    at file:///home/whiteshoulders/perso/frugal/test/unit/log.test.ts:11:5
-" +
-      "    at innerWrapped (ext:cli/40_testing.js:482:11)
-" +
-      "    at asyncOpSanitizer (ext:cli/40_testing.js:148:33)
-" +
-      "    at resourceSanitizer (ext:cli/40_testing.js:364:31)
-" +
-      "    at exitSanitizer (ext:cli/40_testing.js:413:33)
-" +
-      "    at outerWrapped (ext:cli/40_testing.js:427:20)\\x1b[39m",
+      "[mocked error stack]\\x1b[39m",
   ],
   [
     "\\x1b[90m01/01/1970 24:00:06.000 UTC\\x1b[39m \\x1b[48;5;15m\\x1b[38;5;15m[\\x1b[39m\\x1b[30mINFO   \\x1b[39m\\x1b[38;5;15m]\\x1b[39m\\x1b[49m \\x1b[1m test1 >\\x1b[22m Error : true error
 " +
       "
 " +
-      "Error: true error
-" +
-      "    at logTest (file:///home/whiteshoulders/perso/frugal/test/unit/log.test.ts:44:9)
-" +
-      "    at file:///home/whiteshoulders/perso/frugal/test/unit/log.test.ts:11:5
-" +
-      "    at innerWrapped (ext:cli/40_testing.js:482:11)
-" +
-      "    at asyncOpSanitizer (ext:cli/40_testing.js:148:33)
-" +
-      "    at resourceSanitizer (ext:cli/40_testing.js:364:31)
-" +
-      "    at exitSanitizer (ext:cli/40_testing.js:413:33)
-" +
-      "    at outerWrapped (ext:cli/40_testing.js:427:20)",
+      "[mocked error stack]",
   ],
   [
     "\\x1b[90m01/01/1970 24:00:08.000 UTC\\x1b[39m \\x1b[48;5;11m\\x1b[38;5;11m[\\x1b[39m\\x1b[30mWARNING\\x1b[39m\\x1b[38;5;11m]\\x1b[39m\\x1b[49m \\x1b[33m\\x1b[1m test1 >\\x1b[22m\\x1b[39m \\x1b[33mwarning\\x1b[39m",
@@ -78,21 +50,7 @@ snapshot[`log: custom config 1`] = `
 " +
       "
 " +
-      "Error: true error default
-" +
-      "    at logTest (file:///home/whiteshoulders/perso/frugal/test/unit/log.test.ts:42:9)
-" +
-      "    at file:///home/whiteshoulders/perso/frugal/test/unit/log.test.ts:30:5
-" +
-      "    at innerWrapped (ext:cli/40_testing.js:482:11)
-" +
-      "    at asyncOpSanitizer (ext:cli/40_testing.js:148:33)
-" +
-      "    at resourceSanitizer (ext:cli/40_testing.js:364:31)
-" +
-      "    at exitSanitizer (ext:cli/40_testing.js:413:33)
-" +
-      "    at outerWrapped (ext:cli/40_testing.js:427:20)\\x1b[39m",
+      "[mocked error stack]\\x1b[39m",
   ],
   [
     "\\x1b[90m01/01/1970 24:00:16.000 UTC\\x1b[39m \\x1b[48;5;9m\\x1b[38;5;9m[\\x1b[39m\\x1b[30mERROR  \\x1b[39m\\x1b[38;5;9m]\\x1b[39m\\x1b[49m \\x1b[31m\\x1b[1m test2 >\\x1b[22m\\x1b[39m \\x1b[91merror\\x1b[39m",

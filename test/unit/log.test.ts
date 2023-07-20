@@ -39,9 +39,9 @@ function logTest(time: FakeTime) {
     time.tick(2000);
     log("error", { scope: "test1", level: "error" });
     time.tick(2000);
-    log(new Error("true error default"), { scope: "test1" });
+    log(mockStack(new Error("true error default")), { scope: "test1" });
     time.tick(2000);
-    log(new Error("true error"), { scope: "test1", level: "info" });
+    log(mockStack(new Error("true error")), { scope: "test1", level: "info" });
     time.tick(2000);
     log("warning", { scope: "test1", level: "warning" });
     time.tick(2000);
@@ -61,4 +61,9 @@ function logTest(time: FakeTime) {
     log("debug", { scope: "test2", level: "debug" });
     time.tick(2000);
     log("verbose", { scope: "test2", level: "verbose" });
+}
+
+function mockStack(error: Error) {
+    error.stack = "[mocked error stack]";
+    return error;
 }
