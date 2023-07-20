@@ -8,7 +8,6 @@ import { log } from "../log.ts";
 import { cleanOutdir } from "../build/plugins/cleanOutdir.ts";
 import { outputMetafile } from "../build/plugins/outputMetafile.ts";
 import { FrugalConfig } from "../Config.ts";
-import { build } from "../Frugal.ts";
 
 type ScriptOptions = {
     outdir: string;
