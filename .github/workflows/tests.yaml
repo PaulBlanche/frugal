@@ -38,8 +38,8 @@ jobs:
     - name: install binaries
       run: deno run -A test/install_binaries.ts
 
-    - name: run test
-      run: deno task test
+    - name: run test with coverage
+      run: deno task test --coverage
 
     - name: integration test code coverage
       if: matrix.coverage
