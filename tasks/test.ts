@@ -82,7 +82,7 @@ async function lcovReport() {
             line = line.replace(/SF:.*\/frugal\/(.*)/, "SF:$1");
         }
 
-        if (line.match(/SF\:test\/.*\/dist\/.*/)) {
+        if (line.match(/SF\:test\/.*/)) {
             filter = true;
         }
 
