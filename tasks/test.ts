@@ -35,7 +35,7 @@ try {
 
 async function runTest(path: string) {
     const commandArgs = ["test", "--unstable", "-A", "--no-check"];
-    if (args.coverages) {
+    if (args.coverage) {
         commandArgs.push(`--coverage=${covProfileDir}`);
     }
     if (args["trace-ops"]) {
