@@ -17,7 +17,7 @@ export type Manifest = {
 
 export function buildManifest(config: FrugalConfig, assets: Assets): esbuild.Plugin {
     return {
-        name: "frugal:buildManifest",
+        name: "__frugal_internal:buildManifest",
         setup: (build) => {
             build.onEnd(async (result) => {
                 try {

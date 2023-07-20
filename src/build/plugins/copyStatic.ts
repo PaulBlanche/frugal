@@ -5,7 +5,7 @@ import { FrugalConfig } from "../../Config.ts";
 
 export function copyStatic(config: FrugalConfig): esbuild.Plugin {
     return {
-        name: "esbuild:copyStatic",
+        name: "__frugal_internal:copyStatic",
         setup(build) {
             build.onEnd(async () => {
                 try {

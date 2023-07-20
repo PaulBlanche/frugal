@@ -6,7 +6,7 @@ import { log } from "../../log.ts";
 
 export function cleanOutdir(config: FrugalConfig): esbuild.Plugin {
     return {
-        name: "frugal:cleanOutdir",
+        name: "__frugal_internal:cleanOutdir",
         setup(build) {
             let isFirstBuild = true;
 

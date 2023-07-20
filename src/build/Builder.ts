@@ -46,7 +46,7 @@ export class Builder {
                 importMapURL: this.#config.importMapURL?.href,
             }),
             {
-                name: "frugal:loadConfig",
+                name: "__frugal_internal:loadConfig",
                 setup: (build) => {
                     build.onResolve({ filter: configRegExp }, (args) => {
                         const url = context.url(args);
@@ -73,6 +73,7 @@ export class Builder {
                 },
             },
             ...this.#config.plugins.map((plugin) => plugin(context)),
+            ...(this.#config.esbuildOptions?.plugins ?? []),
             denoLoaderPlugin({
                 importMapURL: this.#config.importMapURL?.href,
                 nodeModulesDir: true,
@@ -84,7 +85,7 @@ export class Builder {
             isInChildWatchProcess() && watchEmitter(),
             reporter(),
             {
-                name: "frugal:cleanAssetMap",
+                name: "__frugal_internal:cleanAssetMap",
                 setup(build) {
                     build.onEnd(() => {
                         context.reset();

@@ -10,22 +10,17 @@ if (import.meta.main) {
     await setupTestFiles();
 }
 
-Deno.test("css: build page with css module dependencies", async (t) => {
+Deno.test("script: build page with script and css module dependencies", async (t) => {
     const config = await loadConfig();
     const helper = new BuildHelper(config);
 
     await helper.build();
 
-    await new Promise((res) => setTimeout(res, 200));
-
     snapshot.assertSnapshot(t, await Deno.readTextFile(new URL("css/page.css", helper.config.publicdir)));
-
-    const cache = await helper.cacheExplorer();
-
-    snapshot.assertSnapshot(t, await cache.loadDocument("/page"));
+    snapshot.assertSnapshot(t, await Deno.readTextFile(new URL("js/page.js", helper.config.publicdir)));
 });
 
-Deno.test("css: css module dependencies are watched", async () => {
+Deno.test("css: script dependencies are watched", async () => {
     const config = await loadConfig();
     const helper = new BuildHelper(config);
 
@@ -38,9 +33,9 @@ Deno.test("css: css module dependencies are watched", async () => {
     const updatedAt = firstBuildCache.get("/page").updatedAt;
 
     // add a comment at the top of dep.css
-    const depModuleURL = new URL("./project/dep.module.css", import.meta.url);
+    const depModuleURL = new URL("./project/dep.ts", import.meta.url);
     const originalData = await Deno.readTextFile(depModuleURL);
-    await Deno.writeTextFile(depModuleURL, `/* comment */\n${originalData}`);
+    await Deno.writeTextFile(depModuleURL, `//comment\n${originalData}`);
 
     await context.awaitNextBuild();
 
@@ -62,48 +57,84 @@ async function setupTestFiles() {
     // setup clean files for current tests
     await setupFiles(base, {
         //####
-        "./dep.module.css": `.baz {
-    margin: 10px;
+        "./style.module.css": `.foo { color: red; }
+`,
+
+        //####
+        "./dep1.script.ts": `import "./shared.ts";
+
+if (import.meta.main) {
+    console.log("dep1.script.ts")
 }
 `,
 
         //####
-        "./main.module.css": `.foo {
-    composes: bar;
-    color: red;
-}
+        "./dep2.script.ts": `import "./shared.ts";
 
-.bar {
-    composes: baz from './dep.module.css';
-    background: red;
+if (import.meta.main) {
+    console.log("dep2.script.ts")
 }
 `,
 
         //####
-        "./page.ts": `import style from "./main.module.css";
+        "./dep.ts": `import "./dep1.script.ts";
+import "./dep2.script.ts";
+`,
+
+        //####
+        "./shared.ts": `import 'npm:pad-left@2.1.0';
+import 'https://esm.sh/fast-cartesian@8.0.0';
+import style from './style.module.css'
+
+// side effect to keep style import
+window.style = style
+`,
+
+        //####
+        "./before.script.ts": `import "./shared.ts";
+
+if (import.meta.main) {
+    console.log("before.script.ts")
+}
+`,
+
+        //####
+        "./after.script.ts": `import "./shared.ts";
+
+if (import.meta.main) {
+    console.log("after.script.ts")
+}
+`,
+
+        //####
+        "./page.ts": `import "./before.script.ts";
+import "./dep.ts";
+import "./after.script.ts";
 
 export const pattern = "/page";
 
 export function render() {
-    return JSON.stringify(style);
+    return "";
 }
 `,
 
         //####
         "./frugal.config.ts": `import { Config } from "../../../../../mod.ts";
-import { css } from "../../../../../plugins/css.ts";
+import { script } from "../../../../../plugins/script.ts";
 import { cssModule } from "../../../../../plugins/cssModule.ts";
+import { css } from "../../../../../plugins/css.ts";
 
 export const config: Config = {
     self: import.meta.url,
     outdir: "./dist/",
     pages: ["./page.ts"],
     plugins: [
+        script(), 
         cssModule({
             // to avoid hash beeing different on different machines runing the
             // tests
             pattern: "[local]",
-        }),
+        }), 
         css(),
     ],
     log: { level: "silent" },

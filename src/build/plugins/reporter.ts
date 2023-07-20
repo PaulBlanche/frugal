@@ -5,7 +5,7 @@ import { log } from "../../log.ts";
 export function reporter(): esbuild.Plugin {
     let firstBuild = true;
     return {
-        name: "frugal:reporter",
+        name: "__frugal_internal:reporter",
         setup(build) {
             build.onStart(() => {
                 if (!firstBuild) {

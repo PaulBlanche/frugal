@@ -4,7 +4,7 @@ import { WATCH_MESSAGE_SYMBOL } from "../../watch/ChildContext.ts";
 
 export function watchEmitter(): esbuild.Plugin {
     return {
-        name: "esbuild:watchEmitter",
+        name: "__frugal_internal:watchEmitter",
         setup(build) {
             build.onStart(() => {
                 console.log({

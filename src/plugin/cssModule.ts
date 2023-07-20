@@ -15,6 +15,8 @@ export function cssModule({ filter = /\.module.css$/, pattern }: Partial<CssModu
         return {
             name: "frugal:cssModule",
             setup(build) {
+                const cssLoader = build.initialOptions.loader?.[".css"] ?? "css";
+
                 const cssModuleBuilder = new CssModuleBuilder({
                     sourceMap: Boolean(build.initialOptions.sourcemap),
                     projectRoot: build.initialOptions.absWorkingDir,
@@ -40,7 +42,7 @@ export function cssModule({ filter = /\.module.css$/, pattern }: Partial<CssModu
 
                 build.onLoad({ filter: /\.frugal-compiled-module.css/, namespace: "virtual" }, (args) => {
                     const contents = cssCache.get(args.path);
-                    return { loader: "css", contents };
+                    return { loader: cssLoader, contents };
                 });
 
                 build.onLoad({ filter }, async (args) => {
@@ -51,7 +53,7 @@ export function cssModule({ filter = /\.module.css$/, pattern }: Partial<CssModu
 
                     log(
                         `found css module "${args.path}"`,
-                        { scope: "frugal:css", level: "debug" },
+                        { scope: "frugal:cssModule", level: "debug" },
                     );
 
                     const modulePath = path.fromFileUrl(url);

@@ -17,9 +17,12 @@ export function css(
             nodeModulesDir: true,
             loader: "portable",
         });
+
         return {
             name: "frugal:css",
             setup(build) {
+                const cssLoader = build.initialOptions.loader?.[".css"] ?? "css";
+
                 loader.setup({
                     ...build,
                     onResolve(options, onResolve) {
@@ -40,11 +43,11 @@ export function css(
                             // `frugal.load`
                             try {
                                 const loaded = await onLoad(args);
-                                return { ...loaded, loader: "css" };
+                                return { ...loaded, loader: cssLoader };
                             } catch {
                                 const url = frugal.url(args);
                                 const contents = await frugal.load(url);
-                                return { contents, loader: "css" };
+                                return { contents, loader: cssLoader };
                             }
                         });
                     },

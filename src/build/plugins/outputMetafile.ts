@@ -4,7 +4,7 @@ import * as esbuild from "../../../dep/esbuild.ts";
 
 export function outputMetafile(): esbuild.Plugin {
     return {
-        name: "frugal:outputMetafile",
+        name: "__frugal_internal:outputMetafile",
         setup(build) {
             const initialOptions = build.initialOptions;
             const cwd = path.toFileUrl(initialOptions.absWorkingDir ?? Deno.cwd());

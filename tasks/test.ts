@@ -1,5 +1,6 @@
 import { parse } from "../dep/std/flags.ts";
 import * as io from "../dep/std/io.ts";
+import * as fs from "../dep/std/fs.ts";
 
 const covProfileDir = "cov_profile";
 const rawCovProfileFile = "raw_cov_profile.lcov";
@@ -7,55 +8,46 @@ const covProfileFile = "cov_profile.lcov";
 
 const ENCODER = new TextEncoder();
 
-const TESTS = [
-    "test/unit/page/JSONValue.test.ts",
-    "test/unit/page/Page.test.ts",
-    "test/unit/log.test.ts",
-    "test/integration/server/mod.test.ts",
-    "test/integration/incremental/mod.test.ts",
-    "test/integration/pages/mod.test.ts",
-    "test/integration/watch/mod.test.ts",
-    "test/integration/plugin/css/mod.test.ts",
-    "test/integration/plugin/cssModule/mod.test.ts",
-];
-
 const args = parse(Deno.args, {
-    boolean: ["update"],
+    boolean: ["update", "coverage", "trace-ops"],
     default: {
         update: false,
     },
 });
 
-const tests = args._.length === 0 ? TESTS : Array.from(Deno.args.reduce((tests, matcher) => {
-    const test = TESTS.find((test) => test.includes(matcher));
-    if (test) {
-        tests.add(test);
-    }
-    return tests;
-}, new Set<string>()));
-
 try {
-    for (const test of tests) {
-        await runTest(test, args.update);
+    for await (const entry of fs.walk(new URL("../test/", import.meta.url))) {
+        if (entry.name.match(/\.test\.[tj]sx?$/)) {
+            const matchers = args._;
+            if (matchers.length === 0 || matchers.some((matcher) => entry.path.includes(String(matcher)))) {
+                await runTest(entry.path);
+            }
+        }
     }
 
-    await lcovReport();
+    if (args.coverage) {
+        await lcovReport();
+    }
 } finally {
     await tryRemove(covProfileDir, { recursive: true });
     await tryRemove(rawCovProfileFile);
 }
 
-async function runTest(path: string, update: boolean) {
+async function runTest(path: string) {
+    const commandArgs = ["test", "--unstable", "-A", "--no-check"];
+    if (args.coverages) {
+        commandArgs.push(`--coverage=${covProfileDir}`);
+    }
+    if (args["trace-ops"]) {
+        commandArgs.push(`--trace-ops`);
+    }
+    commandArgs.push(path);
+    if (args.update) {
+        commandArgs.push("--", "--update");
+    }
+
     const command = new Deno.Command(Deno.execPath(), {
-        args: [
-            "test",
-            "--unstable",
-            "-A",
-            "--no-check",
-            `--coverage=${covProfileDir}`,
-            path,
-            ...(update ? ["--", "--update"] : []),
-        ],
+        args: commandArgs,
     });
     const process = command.spawn();
 
