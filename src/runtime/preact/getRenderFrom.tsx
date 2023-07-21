@@ -5,6 +5,7 @@ import { HeadProvider } from "./Head.tsx";
 import * as descriptor from "../../page/PageDescriptor.ts";
 import { JSONValue } from "../../page/JSONValue.ts";
 import { DataProvider } from "./dataContext.tsx";
+import { ISLAND_END } from "./Island.tsx";
 
 export type PageProps = {
     descriptor: string;
@@ -72,7 +73,7 @@ export function getRenderFrom<PATH extends string, DATA extends JSONValue>(
             >
                 <DataProvider
                     embedData={embedData}
-                    context={{ data, pathname }}
+                    context={{ data: embedData ? data : undefined, embedData, pathname }}
                 >
                     <Page
                         descriptor={String(descriptor)}
@@ -90,7 +91,7 @@ export function getRenderFrom<PATH extends string, DATA extends JSONValue>(
                     head={head}
                     dangerouslySetInnerHTML={{ __html: html }}
                 />,
-            )
+            ).replace(`</!--${ISLAND_END}-->`, "")
         }`;
     };
 }
