@@ -1,4 +1,4 @@
-import { DataResponse, PathList, RenderContext, StaticHandlerContext } from "../../../page.ts";
+import { DataResponse, PathList, RenderContext, StaticHandlerContext } from "../../../../page.ts";
 
 export const pattern = "/:foo";
 

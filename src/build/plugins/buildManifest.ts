@@ -8,7 +8,7 @@ import { FrugalConfig } from "../../Config.ts";
 import { CompileError } from "../../page/Page.ts";
 import { Assets } from "../../page/PageDescriptor.ts";
 
-export type Manifest = {
+type Manifest = {
     config: string;
     id: string;
     assets: Assets;

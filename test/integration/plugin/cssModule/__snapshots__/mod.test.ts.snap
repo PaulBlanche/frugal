@@ -1,7 +1,7 @@
 export const snapshot = {};
 
 snapshot[`css: build page with css module dependencies 1`] = `
-"/* virtual:/main.module.css-e3341cf843b9ae39.frugal-compiled-module.css */
+"/* virtual:/main.module.css-d4cbe8ede2554d6a.frugal-compiled-module.css */
 " +
   ".foo {
 " +
@@ -17,7 +17,7 @@ snapshot[`css: build page with css module dependencies 1`] = `
 " +
   "
 " +
-  "/* virtual:/dep.module.css-1948f1c83929dcee.frugal-compiled-module.css */
+  "/* virtual:/dep.module.css-db09027996f7e6b0.frugal-compiled-module.css */
 " +
   ".baz {
 " +

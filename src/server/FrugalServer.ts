@@ -13,6 +13,7 @@ import { route } from "./middleware/route.ts";
 import { watchModeModifications } from "./middleware/watchModeModifications.ts";
 import { trailingSlashRedirect } from "./middleware/trailingSlashRedirect.ts";
 import * as session from "./session/mod.ts";
+import { isInChildWatchProcess } from "../WatchContext.ts";
 
 type FrugalServerInit = {
     cache: RuntimeCache;
@@ -97,19 +98,20 @@ export class FrugalServer implements Server {
         };
     }
 
-    serve({ onListen, signal }: ServeOptions = {}) {
+    serve(options: ServeOptions = {}) {
         const secure = this.#config.server.secure;
         const handler = this.handler(secure);
+
         return http.serve(handler, {
             port: this.#config.server.port,
-            signal,
+            signal: options.signal,
             onListen: (args) => {
                 const protocol = secure ? "https" : "http";
                 log(
                     `listening on ${protocol}://${args.hostname}:${args.port}`,
                     { scope: "FrugalServer" },
                 );
-                onListen?.(args);
+                options.onListen?.(args);
             },
         });
     }

@@ -55,6 +55,12 @@ export class VisitObserver {
             return;
         }
 
+        const beforeVisitEvent = new CustomEvent("frugal:beforevisit");
+        dispatchEvent(beforeVisitEvent);
+        if (beforeVisitEvent.defaultPrevented) {
+            return;
+        }
+
         const url = utils.getUrl(navigableAnchor.href);
 
         const navigator = new Navigator(url, this._config);

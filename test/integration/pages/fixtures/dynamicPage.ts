@@ -1,4 +1,4 @@
-import { DataResponse } from "../../../page.ts";
+import { DataResponse } from "../../../../page.ts";
 
 export const type = "dynamic";
 

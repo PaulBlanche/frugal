@@ -6,9 +6,10 @@ export function Island2() {
     hooks.useEffect(() => {
         setState("island 2 !");
     });
+    const random = hooks.useRef(Math.random());
     return (
         <>
-            <div>{state}</div>
+            <div>{state} {random.current}</div>
             <div>count: ${count}</div>
             <button onClick={() => count.value += 2}>increment</button>
         </>

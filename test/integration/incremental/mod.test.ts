@@ -1,13 +1,14 @@
 import * as asserts from "../../../dep/std/testing/asserts.ts";
-import { Config } from "../../../mod.ts";
+import * as fs from "../../../dep/std/fs.ts";
 
-import { BuildHelper, setupFiles } from "../../utils.ts";
+import { Config } from "../../../mod.ts";
+import { FrugalHelper } from "../../utils/FrugalHelper.ts";
 
 await setupTestFiles();
 const config = await loadConfig();
 
 Deno.test("incremental", async () => {
-    const helper = new BuildHelper(config);
+    const helper = new FrugalHelper(config);
 
     await helper.build();
     const firstBuildCache = await helper.cacheExplorer();
@@ -25,7 +26,7 @@ Deno.test("incremental", async () => {
 });
 
 Deno.test("incremental: files are regenerated if page code changes", async () => {
-    const helper = new BuildHelper(config);
+    const helper = new FrugalHelper(config);
 
     await helper.build();
 
@@ -44,7 +45,7 @@ Deno.test("incremental: files are regenerated if page code changes", async () =>
 });
 
 Deno.test("incremental: files are regenerated if dependency code changes", async () => {
-    const helper = new BuildHelper(config);
+    const helper = new FrugalHelper(config);
 
     await helper.build();
 
@@ -63,7 +64,7 @@ Deno.test("incremental: files are regenerated if dependency code changes", async
 });
 
 Deno.test("incremental: files are regenerated if data changes", async () => {
-    const helper = new BuildHelper(config);
+    const helper = new FrugalHelper(config);
 
     await helper.build();
 
@@ -92,113 +93,13 @@ async function setupTestFiles() {
         await Deno.remove(base, { recursive: true });
     } catch {}
 
-    // setup clean files for current tests
-    await setupFiles(base, {
-        //####
-        "./page1.ts": `import { DataResponse, RenderContext, StaticHandlerContext } from "../../../../page.ts";
-import { store } from "./store.ts";
+    await fs.ensureDir(base);
 
-export const pattern = "/page1/:id";
+    const fixtures = new URL("./fixtures/", import.meta.url);
 
-export function getPaths() {
-    return [{ id: "1" }, { id: "2" }];
-}
-
-export async function generate({ path }: StaticHandlerContext<typeof pattern>) {
-    const dataStore = await store();
-    const pageData = dataStore[0];
-    return new DataResponse({
-        data: pageData[path.id].data,
-        headers: pageData[path.id].headers,
-    });
-}
-
-export function render({ data, path }: RenderContext<typeof pattern, number>) {
-    return \`data : \${data}, path: \${JSON.stringify(path)}\`;
-}
-`,
-
-        //####
-        "./page2.ts": `import { DataResponse, RenderContext, StaticHandlerContext } from "../../../../page.ts";
-import { store } from "./store.ts";
-
-export const pattern = "/page2/:id";
-
-export function getPaths() {
-    return [{ id: "1" }, { id: "2" }];
-}
-
-export async function generate({ path }: StaticHandlerContext<typeof pattern>) {
-    const dataStore = await store();
-    const pageData = dataStore[1];
-    return new DataResponse({
-        data: pageData[path.id].data,
-        headers: pageData[path.id].headers,
-    });
-}
-
-export function render({ data, path }: RenderContext<typeof pattern, number>) {
-    return \`data : \${data}, path: \${JSON.stringify(path)}\`;
-}
-`,
-
-        //####
-        "./store.ts": `export const store = async () =>
-JSON.parse(
-    await Deno.readTextFile(new URL("../../../data.json", import.meta.url)),
-);
-`,
-
-        //####
-        "./data.json": `[
-    {
-        "1": {
-            "data": 11
-        },
-        "2": {
-            "data": 12,
-            "headers": [
-                [
-                    "12",
-                    "12"
-                ]
-            ]
-        }
-    },
-    {
-        "1": {
-            "data": 21,
-            "headers": [
-                [
-                    "21",
-                    "21"
-                ]
-            ]
-        },
-        "2": {
-            "data": 22,
-            "headers": [
-                [
-                    "22",
-                    "22"
-                ]
-            ]
-        }
+    for await (const entry of Deno.readDir(fixtures)) {
+        await fs.copy(new URL(entry.name, fixtures), new URL(entry.name, base));
     }
-]
-`,
-
-        //####
-        "./frugal.config.ts": `import { Config } from "../../../../mod.ts";
-
-export const config: Config = {
-    self: import.meta.url,
-    outdir: "./dist/",
-    pages: ["./page1.ts", "./page2.ts"],
-    log: { level: "silent" },
-};
-`,
-    });
 }
 
 async function loadConfig(): Promise<Config> {

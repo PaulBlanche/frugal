@@ -7,7 +7,7 @@ import { SubmitObserver } from "./SubmitObserver.ts";
 import { Submitter } from "./Submitter.ts";
 import { Form, Method } from "./Form.ts";
 
-type SessionConfig = {
+export type SessionConfig = {
     prefetch: PrefetcherConfig;
     navigate: NavigatorConfig;
 };

@@ -1,4 +1,4 @@
-import { DataResponse, RenderContext } from "../../../page.ts";
+import { DataResponse, RenderContext } from "../../../../page.ts";
 
 export const pattern = "/";
 

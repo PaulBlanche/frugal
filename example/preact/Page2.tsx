@@ -11,8 +11,8 @@ export function Page2(props: PageProps) {
                 {scriptSrc && <script type="module" src={scriptSrc} />}
             </Head>
             <span>Page 2</span>
-            <Island2Island />
             <Island1Island />
+            <Island2Island />
             <a href="/page1">page 1</a>
         </div>
     );

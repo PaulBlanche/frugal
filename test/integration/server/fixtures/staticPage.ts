@@ -1,14 +1,14 @@
-import * as page from "../../../page.ts";
+import * as page from "../../../../page.ts";
+import { store } from "./store.ts";
 
-export const strictPaths = false;
-
-export const pattern = "/static-jit/:slug";
+export const pattern = "/static/:slug";
 
 type Data = {
     count: number;
     path: {
         slug: string;
     };
+    store: string;
     searchParams: Record<string, string>;
 };
 
@@ -16,15 +16,16 @@ export function getPaths(): page.PathList<typeof pattern> {
     return [{ slug: "1" }];
 }
 
-export function generate(
+export async function generate(
     { path }: page.StaticHandlerContext<typeof pattern>,
-): page.DataResponse<Data> {
+): Promise<page.DataResponse<Data>> {
     const count = 0;
     return new page.DataResponse({
         data: {
             path,
             count,
             searchParams: {},
+            store: await store(),
         },
         headers: {
             "Content-Type": "application/json",
@@ -32,14 +33,15 @@ export function generate(
     });
 }
 
-export function GET(
+export async function GET(
     { path, session, request }: page.DynamicHandlerContext<typeof pattern>,
-): page.DataResponse<Data> {
+): Promise<page.DataResponse<Data>> {
     const count = session?.get<number>("counter") ?? 0;
     return new page.DataResponse({
         data: {
             path,
             count,
+            store: await store(),
             searchParams: Object.fromEntries(
                 new URL(request.url).searchParams.entries(),
             ),

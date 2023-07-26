@@ -1,7 +1,9 @@
 import * as asserts from "../../../../dep/std/testing/asserts.ts";
 import * as snapshot from "../../../../dep/std/testing/snapshot.ts";
+import * as fs from "../../../../dep/std/fs.ts";
+
 import { Config, context } from "../../../../mod.ts";
-import { BuildHelper, setupFiles } from "../../../utils.ts";
+import { FrugalHelper } from "../../../utils/FrugalHelper.ts";
 
 if (import.meta.main) {
     const config = await loadConfig();
@@ -12,7 +14,7 @@ if (import.meta.main) {
 
 Deno.test("css: build page with css module dependencies", async (t) => {
     const config = await loadConfig();
-    const helper = new BuildHelper(config);
+    const helper = new FrugalHelper(config);
 
     await helper.build();
 
@@ -27,7 +29,7 @@ Deno.test("css: build page with css module dependencies", async (t) => {
 
 Deno.test("css: css module dependencies are watched", async () => {
     const config = await loadConfig();
-    const helper = new BuildHelper(config);
+    const helper = new FrugalHelper(config);
 
     const context = helper.context();
     context.watch();
@@ -59,57 +61,13 @@ async function setupTestFiles() {
         await Deno.remove(base, { recursive: true });
     } catch {}
 
-    // setup clean files for current tests
-    await setupFiles(base, {
-        //####
-        "./dep.module.css": `.baz {
-    margin: 10px;
-}
-`,
+    await fs.ensureDir(base);
 
-        //####
-        "./main.module.css": `.foo {
-    composes: bar;
-    color: red;
-}
+    const fixtures = new URL("./fixtures/", import.meta.url);
 
-.bar {
-    composes: baz from './dep.module.css';
-    background: red;
-}
-`,
-
-        //####
-        "./page.ts": `import style from "./main.module.css";
-
-export const pattern = "/page";
-
-export function render() {
-    return JSON.stringify(style);
-}
-`,
-
-        //####
-        "./frugal.config.ts": `import { Config } from "../../../../../mod.ts";
-import { css } from "../../../../../plugins/css.ts";
-import { cssModule } from "../../../../../plugins/cssModule.ts";
-
-export const config: Config = {
-    self: import.meta.url,
-    outdir: "./dist/",
-    pages: ["./page.ts"],
-    plugins: [
-        cssModule({
-            // to avoid hash beeing different on different machines runing the
-            // tests
-            pattern: "[local]",
-        }),
-        css(),
-    ],
-    log: { level: "silent" },
-};
-`,
-    });
+    for await (const entry of Deno.readDir(fixtures)) {
+        await fs.copy(new URL(entry.name, fixtures), new URL(entry.name, base));
+    }
 }
 
 async function loadConfig(): Promise<Config> {

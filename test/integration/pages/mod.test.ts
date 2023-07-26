@@ -1,12 +1,14 @@
 import * as asserts from "../../../dep/std/testing/asserts.ts";
+import * as fs from "../../../dep/std/fs.ts";
 
-import { BuildHelper } from "../../utils.ts";
-import { config } from "./frugal.config.ts";
+import { FrugalHelper } from "../../utils/FrugalHelper.ts";
+import { Config } from "../../../mod.ts";
 
 await setupTestFiles();
+const config = await loadConfig();
 
 Deno.test("pages: build with no page ", async () => {
-    const helper = new BuildHelper({
+    const helper = new FrugalHelper({
         ...config,
         pages: [],
     });
@@ -18,7 +20,7 @@ Deno.test("pages: build with no page ", async () => {
 });
 
 Deno.test("pages: build with page that do not exists", async () => {
-    const helper = new BuildHelper({
+    const helper = new FrugalHelper({
         ...config,
         pages: ["./page-that-does-not-exists.ts"],
     });
@@ -30,7 +32,7 @@ Deno.test("pages: build with page that do not exists", async () => {
 });
 
 Deno.test("pages: build with trivial static page", async () => {
-    const helper = new BuildHelper({
+    const helper = new FrugalHelper({
         ...config,
         pages: ["./trivialPage.ts"],
     });
@@ -47,7 +49,7 @@ Deno.test("pages: build with trivial static page", async () => {
 });
 
 Deno.test("pages: build with trivial static page with getData", async () => {
-    const helper = new BuildHelper({
+    const helper = new FrugalHelper({
         ...config,
         pages: ["./trivialPageWithGetData.ts"],
     });
@@ -65,7 +67,7 @@ Deno.test("pages: build with trivial static page with getData", async () => {
 });
 
 Deno.test("pages: build with trivial static page with getPathList", async () => {
-    const helper = new BuildHelper({
+    const helper = new FrugalHelper({
         ...config,
         pages: ["./trivialPageWithGetPathList.ts"],
     });
@@ -87,7 +89,7 @@ Deno.test("pages: build with trivial static page with getPathList", async () => 
 });
 
 Deno.test("pages: build complete static page", async () => {
-    const helper = new BuildHelper({
+    const helper = new FrugalHelper({
         ...config,
         pages: ["./completePage.ts"],
     });
@@ -111,7 +113,7 @@ Deno.test("pages: build complete static page", async () => {
 });
 
 Deno.test("pages: build dynamic page", async () => {
-    const helper = new BuildHelper({
+    const helper = new FrugalHelper({
         ...config,
         pages: ["./dynamicPage.ts"],
     });
@@ -123,7 +125,7 @@ Deno.test("pages: build dynamic page", async () => {
 });
 
 Deno.test("pages: build pages with non ok responses", async () => {
-    const helper = new BuildHelper({
+    const helper = new FrugalHelper({
         ...config,
         pages: ["./pageWithNonOkResponse.ts"],
     });
@@ -141,7 +143,7 @@ Deno.test("pages: build pages with non ok responses", async () => {
 });
 
 Deno.test("pages: build pages with empty responses", async () => {
-    const helper = new BuildHelper({
+    const helper = new FrugalHelper({
         ...config,
         pages: ["./pageWithEmptyResponse.ts"],
     });
@@ -159,8 +161,23 @@ Deno.test("pages: build pages with empty responses", async () => {
 
 async function setupTestFiles() {
     // clean everything from previous tests
-    const base = new URL("./dist/", import.meta.url);
+    const base = new URL("./project/", import.meta.url);
     try {
         await Deno.remove(base, { recursive: true });
     } catch {}
+
+    await fs.ensureDir(base);
+
+    const fixtures = new URL("./fixtures/", import.meta.url);
+
+    for await (const entry of Deno.readDir(fixtures)) {
+        await fs.copy(new URL(entry.name, fixtures), new URL(entry.name, base));
+    }
+}
+
+async function loadConfig(): Promise<Config> {
+    // load config busting deno cache
+    const hash = String(Date.now());
+    const { config } = await import(`./project/frugal.config.ts#${hash}`);
+    return config;
 }

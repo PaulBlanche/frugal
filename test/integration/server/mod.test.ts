@@ -1,19 +1,22 @@
 import * as asserts from "../../../dep/std/testing/asserts.ts";
-import { config } from "./frugal.config.ts";
+import * as fs from "../../../dep/std/fs.ts";
 
-import { BuildHelper, withPage } from "../../utils.ts";
+import { FrugalHelper } from "../../utils/FrugalHelper.ts";
+import * as puppeteer from "../../utils/puppeteer.ts";
 import { importKey, sign } from "../../../src/server/crypto.ts";
+import { Config } from "../../../mod.ts";
 
 await setupTestFiles();
+const config = await loadConfig();
 
 Deno.test("server: serving basic static page", async (t) => {
-    const helper = new BuildHelper(config);
+    const helper = new FrugalHelper(config);
 
     await helper.build();
 
     await t.step("without JIT", async () => {
         await helper.withServer(async () => {
-            await withPage(async ({ page }) => {
+            await puppeteer.withPage(async ({ page }) => {
                 const response = await page.goto("http://localhost:8000/static/1");
                 const body = await response!.json();
 
@@ -30,7 +33,7 @@ Deno.test("server: serving basic static page", async (t) => {
 
     await t.step("with JIT", async () => {
         await helper.withServer(async () => {
-            await withPage(async ({ page }) => {
+            await puppeteer.withPage(async ({ page }) => {
                 const response = await page.goto("http://localhost:8000/static-jit/5");
                 const body = await response!.json();
 
@@ -46,7 +49,7 @@ Deno.test("server: serving basic static page", async (t) => {
 
     await t.step("with invalid JIT", async () => {
         await helper.withServer(async () => {
-            await withPage(async ({ page }) => {
+            await puppeteer.withPage(async ({ page }) => {
                 const response = await page.goto("http://localhost:8000/static/5");
 
                 asserts.assertEquals(response!.status(), 404);
@@ -64,12 +67,12 @@ Deno.test("server: serving basic static page", async (t) => {
         );
 
         // modify data.json but only data used by page1/1
-        const dataURL = new URL("./data.json", import.meta.url);
+        const dataURL = new URL("./project/data.json", import.meta.url);
         const originalData = await Deno.readTextFile(dataURL);
         await Deno.writeTextFile(dataURL, '"bar"');
 
         await helper.withServer(async () => {
-            await withPage(async ({ page }) => {
+            await puppeteer.withPage(async ({ page }) => {
                 const response = await page.goto(
                     `http://localhost:8000/static/5?timestamp=${timestamp}&sign=${signature}`,
                 );
@@ -90,7 +93,7 @@ Deno.test("server: serving basic static page", async (t) => {
 
     await t.step("with invalid method", async () => {
         await helper.withServer(async () => {
-            await withPage(async ({ page }) => {
+            await puppeteer.withPage(async ({ page }) => {
                 await page.setRequestInterception(true);
 
                 page.on("request", (interceptedRequest) => {
@@ -108,13 +111,13 @@ Deno.test("server: serving basic static page", async (t) => {
 });
 
 Deno.test("server: serving basic dynamic page", async (t) => {
-    const helper = new BuildHelper(config);
+    const helper = new FrugalHelper(config);
 
     await helper.build();
 
     await t.step("GET", async () => {
         await helper.withServer(async () => {
-            await withPage(async ({ page }) => {
+            await puppeteer.withPage(async ({ page }) => {
                 const response = await page.goto("http://localhost:8000/dynamic/6");
                 const body = await response!.json();
 
@@ -138,13 +141,13 @@ Deno.test("server: serving basic dynamic page", async (t) => {
 });
 
 Deno.test("server: static page with post/redirect", async (t) => {
-    const helper = new BuildHelper(config);
+    const helper = new FrugalHelper(config);
 
     await helper.build();
 
     await t.step("POST that redirects to GET with forceGenerate", async () => {
         await helper.withServer(async () => {
-            await withPage(async ({ page }) => {
+            await puppeteer.withPage(async ({ page }) => {
                 await page.setRequestInterception(true);
 
                 page.on("request", (interceptedRequest) => {
@@ -169,8 +172,23 @@ Deno.test("server: static page with post/redirect", async (t) => {
 
 async function setupTestFiles() {
     // clean everything from previous tests
-    const base = new URL("./dist/", import.meta.url);
+    const base = new URL("./project/", import.meta.url);
     try {
         await Deno.remove(base, { recursive: true });
     } catch {}
+
+    await fs.ensureDir(base);
+
+    const fixtures = new URL("./fixtures/", import.meta.url);
+
+    for await (const entry of Deno.readDir(fixtures)) {
+        await fs.copy(new URL(entry.name, fixtures), new URL(entry.name, base));
+    }
+}
+
+async function loadConfig(): Promise<Config> {
+    // load config busting deno cache
+    const hash = String(Date.now());
+    const { config } = await import(`./project/frugal.config.ts#${hash}`);
+    return config;
 }

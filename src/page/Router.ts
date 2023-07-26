@@ -4,7 +4,7 @@ import { StaticPageGenerator } from "./StaticPageGenerator.ts";
 import { FrugalConfig } from "../Config.ts";
 import { Cache } from "../cache/Cache.ts";
 import { log } from "../log.ts";
-import { LoadedManifest } from "../loadManifest.ts";
+import { Assets, PageDescriptor } from "./PageDescriptor.ts";
 
 export type StaticRoute = {
     type: "static";
@@ -22,9 +22,16 @@ export type DynamicRoute = {
 
 export type Route = StaticRoute | DynamicRoute;
 
+type Manifest = {
+    id: string;
+    config: string;
+    assets: Assets;
+    pages: { moduleHash: string; entrypoint: string; descriptor: PageDescriptor }[];
+};
+
 type RouterConfig = {
     config: FrugalConfig;
-    manifest: LoadedManifest;
+    manifest: Manifest;
     cache: Cache;
     watch?: boolean;
 };
@@ -32,6 +39,13 @@ type RouterConfig = {
 export class Router {
     #routes: Route[];
     #config: RouterConfig;
+
+    static async load(routerConfig: Omit<RouterConfig, "manifest">) {
+        return new Router({
+            ...routerConfig,
+            manifest: await loadManifest(routerConfig.config),
+        });
+    }
 
     constructor(config: RouterConfig) {
         this.#config = config;
@@ -70,8 +84,16 @@ export class Router {
         });
     }
 
-    get routes() {
-        return this.#routes;
+    get id() {
+        return this.#config.manifest.id;
+    }
+
+    buildAllStaticRoutes() {
+        return Promise.all(this.#routes.map(async (route) => {
+            if (route.type === "static") {
+                await route.generator.buildAll();
+            }
+        }));
     }
 
     getMatchingRoute(pathname: string): Route | undefined {
@@ -98,3 +120,16 @@ export class Router {
         return matchedRoute;
     }
 }
+
+async function loadManifest(config: FrugalConfig): Promise<Manifest> {
+    const manifestURL = new URL("manifest.mjs", config.cachedir);
+    manifestURL.hash = String(Date.now());
+
+    try {
+        return await import(manifestURL.href);
+    } catch (error) {
+        throw new ManifestExecutionError(`Error while loading manifest`, { cause: error });
+    }
+}
+
+class ManifestExecutionError extends Error {}

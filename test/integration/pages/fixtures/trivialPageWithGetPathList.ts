@@ -1,4 +1,4 @@
-import { PathList } from "../../../page.ts";
+import { PathList } from "../../../../page.ts";
 
 export const pattern = "/:foo/:bar";
 

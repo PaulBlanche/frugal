@@ -1,7 +1,9 @@
 import * as asserts from "../../../../dep/std/testing/asserts.ts";
 import * as snapshot from "../../../../dep/std/testing/snapshot.ts";
+import * as fs from "../../../../dep/std/fs.ts";
+
 import { Config, context } from "../../../../mod.ts";
-import { BuildHelper, setupFiles } from "../../../utils.ts";
+import { FrugalHelper } from "../../../utils/FrugalHelper.ts";
 
 if (import.meta.main) {
     const config = await loadConfig();
@@ -12,7 +14,7 @@ if (import.meta.main) {
 
 Deno.test("script: build page with script and css module dependencies", async (t) => {
     const config = await loadConfig();
-    const helper = new BuildHelper(config);
+    const helper = new FrugalHelper(config);
 
     await helper.build();
 
@@ -22,7 +24,7 @@ Deno.test("script: build page with script and css module dependencies", async (t
 
 Deno.test("css: script dependencies are watched", async () => {
     const config = await loadConfig();
-    const helper = new BuildHelper(config);
+    const helper = new FrugalHelper(config);
 
     const context = helper.context();
     context.watch();
@@ -54,93 +56,13 @@ async function setupTestFiles() {
         await Deno.remove(base, { recursive: true });
     } catch {}
 
-    // setup clean files for current tests
-    await setupFiles(base, {
-        //####
-        "./style.module.css": `.foo { color: red; }
-`,
+    await fs.ensureDir(base);
 
-        //####
-        "./dep1.script.ts": `import "./shared.ts";
+    const fixtures = new URL("./fixtures/", import.meta.url);
 
-if (import.meta.main) {
-    console.log("dep1.script.ts")
-}
-`,
-
-        //####
-        "./dep2.script.ts": `import "./shared.ts";
-
-if (import.meta.main) {
-    console.log("dep2.script.ts")
-}
-`,
-
-        //####
-        "./dep.ts": `import "./dep1.script.ts";
-import "./dep2.script.ts";
-`,
-
-        //####
-        "./shared.ts": `import 'npm:pad-left@2.1.0';
-import 'https://esm.sh/fast-cartesian@8.0.0';
-import style from './style.module.css'
-
-// side effect to keep style import
-window.style = style
-`,
-
-        //####
-        "./before.script.ts": `import "./shared.ts";
-
-if (import.meta.main) {
-    console.log("before.script.ts")
-}
-`,
-
-        //####
-        "./after.script.ts": `import "./shared.ts";
-
-if (import.meta.main) {
-    console.log("after.script.ts")
-}
-`,
-
-        //####
-        "./page.ts": `import "./before.script.ts";
-import "./dep.ts";
-import "./after.script.ts";
-
-export const pattern = "/page";
-
-export function render() {
-    return "";
-}
-`,
-
-        //####
-        "./frugal.config.ts": `import { Config } from "../../../../../mod.ts";
-import { script } from "../../../../../plugins/script.ts";
-import { cssModule } from "../../../../../plugins/cssModule.ts";
-import { css } from "../../../../../plugins/css.ts";
-
-export const config: Config = {
-    self: import.meta.url,
-    outdir: "./dist/",
-    pages: ["./page.ts"],
-    plugins: [
-        script(), 
-        cssModule({
-            // to avoid hash beeing different on different machines runing the
-            // tests
-            pattern: "[local]",
-        }), 
-        css(),
-    ],
-    log: { level: "silent" },
-};
-`,
-    });
+    for await (const entry of Deno.readDir(fixtures)) {
+        await fs.copy(new URL(entry.name, fixtures), new URL(entry.name, base));
+    }
 }
 
 async function loadConfig(): Promise<Config> {

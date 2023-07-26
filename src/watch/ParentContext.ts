@@ -4,7 +4,6 @@ import { Router } from "../page/Router.ts";
 import { FrugalServer } from "../server/FrugalServer.ts";
 import { WatchProcess } from "./WatchProcess.ts";
 import { LiveReloadServer } from "./livereload/LiveReloadServer.ts";
-import { loadManifest } from "../loadManifest.ts";
 
 type EventType = "ready";
 
@@ -79,19 +78,12 @@ export class ParentContext {
     }
 
     async #getWatchServer() {
-        const manifest = await loadManifest(this.#config);
-
-        const router = new Router({
+        const router = await Router.load({
             config: this.#config,
-            manifest,
             cache: this.#watchCache,
         });
 
-        for (const route of router.routes) {
-            if (route.type === "static") {
-                await route.generator.buildAll();
-            }
-        }
+        await router.buildAllStaticRoutes();
 
         return new FrugalServer({
             config: this.#config,

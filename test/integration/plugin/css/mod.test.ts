@@ -1,8 +1,9 @@
 import * as asserts from "../../../../dep/std/testing/asserts.ts";
-import * as path from "../../../../dep/std/path.ts";
 import * as snapshot from "../../../../dep/std/testing/snapshot.ts";
+import * as fs from "../../../../dep/std/fs.ts";
+
 import { Config, context } from "../../../../mod.ts";
-import { BuildHelper, setupFiles } from "../../../utils.ts";
+import { FrugalHelper } from "../../../utils/FrugalHelper.ts";
 
 if (import.meta.main) {
     const config = await loadConfig();
@@ -13,7 +14,7 @@ if (import.meta.main) {
 
 Deno.test("css: build page with css dependencies", async (t) => {
     const config = await loadConfig();
-    const helper = new BuildHelper(config);
+    const helper = new FrugalHelper(config);
 
     await helper.build();
 
@@ -22,7 +23,7 @@ Deno.test("css: build page with css dependencies", async (t) => {
 
 Deno.test("css: css dependencies are watched", async () => {
     const config = await loadConfig();
-    const helper = new BuildHelper(config);
+    const helper = new FrugalHelper(config);
 
     const context = helper.context();
     context.watch();
@@ -54,69 +55,13 @@ async function setupTestFiles() {
         await Deno.remove(base, { recursive: true });
     } catch {}
 
-    // setup clean files for current tests
-    await setupFiles(base, {
-        //####
-        "./after.css": `.after {
-            color: blue;
-        }
-`,
+    await fs.ensureDir(base);
 
-        //####
-        "./after.ts": `import "./after.css";
-`,
+    const fixtures = new URL("./fixtures/", import.meta.url);
 
-        //####
-        "./before.css": `.before {
-            color: blue;
-        }
-`,
-
-        //####
-        "./before.ts": `import "./before.css";
-`,
-
-        //####
-        "./dep.css": `.dep {
-            color: blue;
-        }
-`,
-
-        //####
-        "./main.css": `@import url(./dep.css);
-
-.main {
-    color: red;
-}
-`,
-
-        //####
-        "./page.ts": `import "./before.ts";
-import "./main.css";
-import "./after.ts";
-import "https://meyerweb.com/eric/tools/css/reset/reset.css";
-import "npm:prismjs@1.29.0/themes/prism.css";
-
-export const pattern = "/page";
-
-export function render() {
-    return "";
-}
-`,
-
-        //####
-        "./frugal.config.ts": `import { Config } from "../../../../../mod.ts";
-import { css } from "../../../../../plugins/css.ts";
-
-export const config: Config = {
-    self: import.meta.url,
-    outdir: "./dist/",
-    pages: ["./page.ts"],
-    plugins: [css()],
-    log: { level: "silent" },
-};
-`,
-    });
+    for await (const entry of Deno.readDir(fixtures)) {
+        await fs.copy(new URL(entry.name, fixtures), new URL(entry.name, base));
+    }
 }
 
 async function loadConfig(): Promise<Config> {

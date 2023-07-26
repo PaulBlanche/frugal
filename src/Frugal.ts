@@ -4,7 +4,6 @@ import { Builder } from "./build/Builder.ts";
 import { BuildCache } from "./cache/BuildCache.ts";
 import { BuildCacheSnapshot } from "./cache/BuildCacheSnapshot.ts";
 import { WatchCache } from "./cache/WatchCache.ts";
-import { loadManifest } from "./loadManifest.ts";
 import { Router } from "./page/Router.ts";
 
 export class Frugal {
@@ -21,17 +20,12 @@ export class Frugal {
 
         const cache = await BuildCache.load(this.#config);
 
-        const router = new Router({
+        const router = await Router.load({
             config: this.#config,
-            manifest: await loadManifest(this.#config),
             cache,
         });
 
-        for (const route of router.routes) {
-            if (route.type === "static") {
-                await route.generator.buildAll();
-            }
-        }
+        await router.buildAllStaticRoutes();
 
         await cache.save();
 

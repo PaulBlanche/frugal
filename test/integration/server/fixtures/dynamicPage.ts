@@ -1,4 +1,4 @@
-import * as page from "../../../page.ts";
+import * as page from "../../../../page.ts";
 
 export const type = "dynamic";
 

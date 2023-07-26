@@ -59,6 +59,8 @@ export class Navigator {
             return false;
         }
 
+        this._onBeforeUnload();
+
         render(nextDocument);
 
         this._setReadyState("interactive");
@@ -86,6 +88,10 @@ export class Navigator {
         }
 
         return false;
+    }
+
+    _onBeforeUnload() {
+        dispatchEvent(new CustomEvent("frugal:beforeunload"));
     }
 
     _setReadyState(readystate: DocumentReadyState) {

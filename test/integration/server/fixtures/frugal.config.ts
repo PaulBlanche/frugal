@@ -1,6 +1,6 @@
-import { Config } from "../../../mod.ts";
-import { importKey } from "../../../src/server/crypto.ts";
-import { MemorySessionStorage } from "../../../src/server/session/MemorySessionStorage.ts";
+import { Config } from "../../../../mod.ts";
+import { importKey } from "../../../../src/server/crypto.ts";
+import { MemorySessionStorage } from "../../../../src/server/session/MemorySessionStorage.ts";
 
 export const config: Config = {
     self: import.meta.url,

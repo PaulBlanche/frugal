@@ -1,7 +1,7 @@
 export const snapshot = {};
 
 snapshot[`script: build page with script and css module dependencies 1`] = `
-"/* virtual:/style.module.css-68ec91d547ef2ffa.frugal-compiled-module.css */
+"/* virtual:/style.module.css-789235bd7f9e5fbb.frugal-compiled-module.css */
 " +
   ".foo {
 " +

@@ -19,19 +19,3 @@ export function getClosestParentNavigableAnchor(
 export function getUrl(path: string) {
     return new URL(path, document.baseURI);
 }
-
-const readyStateOrder: Record<DocumentReadyState, number> = {
-    "loading": 0,
-    "interactive": 1,
-    "complete": 2,
-};
-
-declare global {
-    type FrugalReadyStateChangeEvent = CustomEvent<
-        { readystate: DocumentReadyState }
-    >;
-
-    interface WindowEventMap {
-        "frugal:readystatechange": FrugalReadyStateChangeEvent;
-    }
-}
