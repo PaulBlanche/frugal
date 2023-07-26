@@ -13,7 +13,6 @@ import { route } from "./middleware/route.ts";
 import { watchModeModifications } from "./middleware/watchModeModifications.ts";
 import { trailingSlashRedirect } from "./middleware/trailingSlashRedirect.ts";
 import * as session from "./session/mod.ts";
-import { isInChildWatchProcess } from "../WatchContext.ts";
 
 type FrugalServerInit = {
     cache: RuntimeCache;
