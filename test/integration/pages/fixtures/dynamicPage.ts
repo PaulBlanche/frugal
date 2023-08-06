@@ -1,11 +1,11 @@
-import { PageResponse } from "../../../../page.ts";
+import { DataResponse } from "../../../../page.ts";
 
 export const type = "dynamic";
 
 export const pattern = "/";
 
 export function GET() {
-    return new PageResponse({});
+    return new DataResponse({ data: {} });
 }
 
 export function render() {

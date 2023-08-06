@@ -22,7 +22,6 @@ export function css(frugal: Build): esbuild.Plugin {
                 ...build,
                 onResolve(options, onResolve) {
                     build.onResolve({ ...options, filter: FILTER }, async (args) => {
-                        console.log(args);
                         // delegate to denoLoaderPlugin
                         return await onResolve(args);
                     });

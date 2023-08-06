@@ -1,4 +1,4 @@
-import { PageResponse, PathList, RenderContext, StaticHandlerContext } from "../../../../page.ts";
+import { DataResponse, PathList, RenderContext, StaticHandlerContext } from "../../../../page.ts";
 
 export const pattern = "/:foo";
 
@@ -10,7 +10,7 @@ type Data = { foo: string };
 
 export function generate(context: StaticHandlerContext<typeof pattern>) {
     if (context.path.foo === "foo") {
-        return new PageResponse({
+        return new DataResponse({
             data: { foo: "Hello foo" },
             status: 201,
             headers: {
@@ -19,7 +19,7 @@ export function generate(context: StaticHandlerContext<typeof pattern>) {
         });
     }
     if (context.path.foo === "bar") {
-        return new PageResponse({
+        return new DataResponse({
             data: { foo: "Hello bar" },
             status: 202,
             headers: {

@@ -1,11 +1,11 @@
-import { PageResponse, RenderContext } from "../../../../page.ts";
+import { DataResponse, RenderContext } from "../../../../page.ts";
 
 export const pattern = "/";
 
 type Data = { foo: string };
 
 export function generate() {
-    return new PageResponse({
+    return new DataResponse({
         data: { foo: "bar" },
         status: 405,
         headers: {

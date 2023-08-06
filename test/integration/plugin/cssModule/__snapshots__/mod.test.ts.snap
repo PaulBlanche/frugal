@@ -1,7 +1,17 @@
 export const snapshot = {};
 
 snapshot[`css: build page with css module dependencies 1`] = `
-"/* virtual:/main.module.css-d4cbe8ede2554d6a.frugal-compiled-module.css */
+"/* virtual:/home/whiteshoulders/perso/frugal/test/integration/plugin/cssModule/project/dep.module.css-db09027996f7e6b0.frugal-compiled-css-module.css */
+" +
+  ".baz {
+" +
+  "  margin: 10px;
+" +
+  "}
+" +
+  "
+" +
+  "/* virtual:/home/whiteshoulders/perso/frugal/test/integration/plugin/cssModule/project/main.module.css-d4cbe8ede2554d6a.frugal-compiled-css-module.css */
 " +
   ".foo {
 " +
@@ -12,16 +22,6 @@ snapshot[`css: build page with css module dependencies 1`] = `
   ".bar {
 " +
   "  background: red;
-" +
-  "}
-" +
-  "
-" +
-  "/* virtual:/dep.module.css-db09027996f7e6b0.frugal-compiled-module.css */
-" +
-  ".baz {
-" +
-  "  margin: 10px;
 " +
   "}
 "

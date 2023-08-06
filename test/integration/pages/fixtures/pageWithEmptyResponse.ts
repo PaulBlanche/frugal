@@ -1,11 +1,11 @@
-import { PageResponse, RenderContext } from "../../../../page.ts";
+import { EmptyResponse, RenderContext } from "../../../../page.ts";
 
 export const pattern = "/";
 
 type Data = { foo: string };
 
 export function generate() {
-    return new PageResponse({
+    return new EmptyResponse({
         status: 200,
         headers: {
             "my-header": "quux",

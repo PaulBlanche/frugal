@@ -74,7 +74,6 @@ export class WatchProcess {
                 const data = JSON.parse(trimedLine);
                 switch (data.type) {
                     case "start-build": {
-                        console.log("start-build", this.#listeners);
                         this.#listeners.forEach((listener) => listener("suspend"));
                         break;
                     }

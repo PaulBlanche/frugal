@@ -1,4 +1,4 @@
-import { PageResponse, RenderContext, StaticHandlerContext } from "../../../../page.ts";
+import { DataResponse, RenderContext, StaticHandlerContext } from "../../../../page.ts";
 import { store } from "./store.ts";
 
 export const pattern = "/page2/:id";
@@ -10,7 +10,7 @@ export function getPaths() {
 export async function generate({ path }: StaticHandlerContext<typeof pattern>) {
     const dataStore = await store();
     const pageData = dataStore[1];
-    return new PageResponse({
+    return new DataResponse({
         data: pageData[path.id].data,
         headers: pageData[path.id].headers,
     });

@@ -12,10 +12,10 @@ type Data = {
     searchParams: Record<string, string>;
 };
 
-export function GET({ path, request, session }: page.DynamicHandlerContext<typeof pattern>): page.PageResponse<Data> {
+export function GET({ path, request, session }: page.DynamicHandlerContext<typeof pattern>): page.DataResponse<Data> {
     const count = session?.get<number>("counter") ?? 0;
     session?.set("counter", count + 1);
-    return new page.PageResponse({
+    return new page.DataResponse({
         data: {
             path,
             count,
