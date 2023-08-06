@@ -33,11 +33,17 @@ export function diff(actual: Document, target: Document): Diff {
     const patchList: NodePatch[] = [];
     const queue: DiffQueueItem[] = [[patchList, actual, target]];
 
+    const styles: string[] = [];
+
     let current: DiffQueueItem | undefined;
 
     let noDiff = false;
     while ((current = queue.shift()) !== undefined) {
-        const [patch, items, inhibit] = visit(current[1], current[2]);
+        const [patch, visitedStyles, items, inhibit] = visit(current[1], current[2]);
+        if (visitedStyles) {
+            styles.push(...visitedStyles);
+        }
+
         if (inhibit === true) {
             noDiff = true;
         }
@@ -58,13 +64,15 @@ export function diff(actual: Document, target: Document): Diff {
     }
 
     return {
+        styles,
         node: actual,
         patch: patchList[0],
     };
 }
 
-type VisitResult = [patch: NodePatch] | [
+type VisitResult = [patch: NodePatch, styles?: string[]] | [
     patch: NodePatch,
+    styles: string[],
     items: DiffQueueItem[],
     inhibit?: boolean,
 ];
@@ -111,10 +119,10 @@ function visitComment(actual: Comment, target: Comment): VisitResult {
     if (
         actual.data.match(/start-no-diff/) && target.data.match(/start-no-diff/)
     ) {
-        return [preserveNode(), [], true];
+        return [preserveNode(), [], [], true];
     }
     if (target.data.match(/end-no-diff/)) {
-        return [preserveNode(), [], false];
+        return [preserveNode(), [], [], false];
     }
     return [replaceNode(target)];
 }
@@ -146,13 +154,15 @@ function visitElement(actual: Element, target: Element): VisitResult {
         return [patch];
     }
 
+    const styles: string[] = [];
     const items = actual.tagName !== "HEAD" ? computeElementPatch(patch, actual, target) : computeHeadPatch(
         patch,
         actual as HTMLHeadElement,
         target as HTMLHeadElement,
+        styles,
     );
 
-    return [patch, items];
+    return [patch, styles, items];
 }
 
 function computeAttributePatch(
@@ -227,6 +237,7 @@ function computeHeadPatch(
     patch: UpdateElementPatch,
     actual: HTMLHeadElement,
     target: HTMLHeadElement,
+    styles: string[],
 ): DiffQueueItem[] {
     const removes = new Map<string, Element>();
     const inserts = new Map<string, Element>();
@@ -237,6 +248,13 @@ function computeHeadPatch(
     }
 
     for (const targetChild of target.children) {
+        if (targetChild.tagName === "LINK" && targetChild.getAttribute("rel") === "stylesheet") {
+            const href = targetChild.getAttribute("href");
+            if (href) {
+                styles.push(href);
+            }
+        }
+
         const headHash = headChildHash(targetChild);
         const actualChild = removes.get(headHash);
         if (actualChild !== undefined) {
@@ -269,7 +287,7 @@ function computeHeadPatch(
         // then node must be updated
         const update = updates.get(key);
         if (update !== undefined) {
-            const [elementPatch, elementItems] = visitElement(element, update);
+            const [elementPatch, _styles, elementItems] = visitElement(element, update);
             patch.children.push(elementPatch);
             elementItems && items.push(...elementItems);
             continue;

@@ -81,7 +81,6 @@ class SessionInternal {
     }
 
     async navigate(url: URL | string): Promise<boolean> {
-        console.log("navigate to", url);
         const navigator = new Navigator(
             new URL(url, location.href),
             this._config.navigate,

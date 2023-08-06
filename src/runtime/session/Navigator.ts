@@ -65,7 +65,7 @@ export class Navigator {
 
         this._onBeforeUnload();
 
-        render(nextDocument);
+        await render(nextDocument);
 
         this._setReadyState("interactive");
 
