@@ -43,9 +43,10 @@ class InternalExporter {
         await fs.ensureFile(this.#populateScriptURL);
         await Deno.writeTextFile(
             this.#populateScriptURL,
-            `export async function populate(cacheStorage, id) {
+            `import * as path from "https://deno.land/std@0.193.0/path/mod.ts"
+export async function populate(cacheStorage, id) {
     await Promise.all([
-        ${
+${
                 this.#snapshot.current.map((value) => {
                     return `        insert(cacheStorage, "${value.path}", ${JSON.stringify(value)})`;
                 }).join(",\n")
@@ -54,11 +55,11 @@ class InternalExporter {
     ]);
 }
 
-async function insert(cacheStorage, path, response) {
-    const body = await Deno.readTextFile(new URL(response.documentPath, "${
-                resolveFrugal(path.fromFileUrl(this.#config.buildCacheFile.href), this.#populateScriptURL)
-            }"))
-    cacheStorage.set(path, JSON.stringify({...response, body }));
+async function insert(cacheStorage, responsePath, response) {
+    const body = await Deno.readTextFile(path.resolve("${
+                resolveFrugal(path.fromFileUrl(this.#config.cachedir), this.#populateScriptURL)
+            }", response.documentPath))
+    cacheStorage.set(responsePath, JSON.stringify({...response, body }));
 }
         `,
         );
