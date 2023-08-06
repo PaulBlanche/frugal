@@ -46,8 +46,7 @@ class InternalExporter {
         await fs.ensureFile(this.#populateScriptURL);
         await Deno.writeTextFile(
             this.#populateScriptURL,
-            `import * as path from "https://deno.land/std@0.193.0/path/mod.ts"
-export async function populate(cacheStorage, id) {
+            `export async function populate(cacheStorage, id) {
     await Promise.all([
 ${
                 this.#snapshot.current.map((value) => {
@@ -97,7 +96,7 @@ const current = await cacheStorage.get("__frugal__current")
 if (current !== router.id) {
     console.log('populate')
     const { populate } = await import("./populate.mjs")
-    populate(cacheStorage, router.id)
+    await populate(cacheStorage, router.id)
 }
 
 const server = new FrugalServer({

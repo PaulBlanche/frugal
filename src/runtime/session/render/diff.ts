@@ -228,36 +228,24 @@ function computeHeadPatch(
     actual: HTMLHeadElement,
     target: HTMLHeadElement,
 ): DiffQueueItem[] {
-    const scripts = new Map<string, Element>();
     const removes = new Map<string, Element>();
     const inserts = new Map<string, Element>();
     const updates = new Map<string, Element>();
 
     for (const actualChild of actual.children) {
-        if (actualChild.tagName === "SCRIPT") {
-            scripts.set(headChildHash(actualChild), actualChild);
-        } else {
-            removes.set(headChildHash(actualChild), actualChild);
-        }
+        removes.set(headChildHash(actualChild), actualChild);
     }
 
     for (const targetChild of target.children) {
-        if (targetChild.tagName === "SCRIPT") {
-            const headHash = headChildHash(targetChild);
-            if (!scripts.has(headHash)) {
-                inserts.set(headHash, targetChild);
+        const headHash = headChildHash(targetChild);
+        const actualChild = removes.get(headHash);
+        if (actualChild !== undefined) {
+            if (hash(actualChild) !== hash(targetChild)) {
+                updates.set(headHash, targetChild);
             }
+            removes.delete(headHash);
         } else {
-            const headHash = headChildHash(targetChild);
-            const actualChild = removes.get(headHash);
-            if (actualChild !== undefined) {
-                if (hash(actualChild) !== hash(targetChild)) {
-                    updates.set(headHash, targetChild);
-                }
-                removes.delete(headHash);
-            } else {
-                inserts.set(headHash, targetChild);
-            }
+            inserts.set(headHash, targetChild);
         }
     }
 

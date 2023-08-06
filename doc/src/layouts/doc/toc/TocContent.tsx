@@ -5,16 +5,17 @@ import toccontent from "./TocContent.module.css";
 import { entryHref, entryMatchHref, TocHierarchy } from "../../../toc.ts";
 
 type TocContentProps = {
+    version: string;
     hierarchies: TocHierarchy[];
 };
 
-export function TocContent({ hierarchies }: TocContentProps) {
+export function TocContent({ hierarchies, version }: TocContentProps) {
     return (
         <ul class={toccontent["toc-list"]}>
             {hierarchies.map((child) => {
                 return (
                     <li class={toccontent["toc-item"]}>
-                        <TocNode hierarchy={child} />
+                        <TocNode hierarchy={child} version={version} />
                     </li>
                 );
             })}
@@ -23,17 +24,18 @@ export function TocContent({ hierarchies }: TocContentProps) {
 }
 
 type TocNodeProps = {
+    version: string;
     hierarchy: TocHierarchy;
 };
 
-function TocNode({ hierarchy }: TocNodeProps) {
+function TocNode({ hierarchy, version }: TocNodeProps) {
     const pathname = usePathname();
 
     const entry = hierarchy.entry;
     const children = Object.values(hierarchy.children);
 
-    const isActive = entryMatchHref(entry, pathname);
-    const href = entryHref(entry);
+    const isActive = entryMatchHref(entry, version, pathname);
+    const href = entryHref(entry, version);
     const isLinkable = entry.file || entry.link;
 
     return (
@@ -61,7 +63,7 @@ function TocNode({ hierarchy }: TocNodeProps) {
                     </span>
                 )}
 
-            {children.length > 0 && <TocContent hierarchies={children} />}
+            {children.length > 0 && <TocContent hierarchies={children} version={version} />}
         </>
     );
 }

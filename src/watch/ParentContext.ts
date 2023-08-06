@@ -26,6 +26,12 @@ export class ParentContext {
         this.#watchProcess = new WatchProcess(this.#config);
         this.#watchCache = watchCache;
         this.#listeners = [];
+
+        this.#watchProcess.addEventListener((type) => {
+            if (type === "suspend") {
+                this.#liveReloadServer.dispatch({ type });
+            }
+        });
     }
 
     addEventListener(listener: ParentContextListener) {
@@ -37,14 +43,6 @@ export class ParentContext {
         if (index !== -1) {
             this.#listeners.splice(index, 1);
         }
-    }
-
-    setup() {
-        this.#watchProcess.addEventListener((type) => {
-            if (type === "suspend") {
-                this.#liveReloadServer.dispatch({ type });
-            }
-        });
     }
 
     async watch() {

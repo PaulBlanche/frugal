@@ -1,0 +1,65 @@
+{
+    "0.1.0": {
+        "version": "0.1.0",
+        "variables": {},
+        "entries": [
+            {
+                "slug": "introduction",
+                "title": "introduction",
+                "file": "0.1.0/00-introduction.md"
+            },
+            {
+                "slug": "getting-started",
+                "title": "getting started",
+                "file": "0.9.0/01-getting-started.md"
+            },
+            {
+                "slug": "getting-started/create-a-project",
+                "title": "create a project",
+                "file": "0.9.0/01-getting-started/00-create-a-project.md"
+            }
+        ]
+    },
+    "0.9.0": {
+        "version": "0.9.0",
+        "variables": {
+            "FRUGAL_VERSION": "0.9.0",
+            "PREACT_VERSION": "10.13.1",
+            "PREACT_SIGNAL_VERSION": "1.1.5",
+            "PREACT_RENDER_VERSION": "5.2.6",
+            "DENO_STD_VERSION": "0.193.0"
+        },
+        "entries": [
+            {
+                "slug": "introduction",
+                "title": "introduction",
+                "file": "0.9.0/00-introduction.md"
+            },
+            {
+                "slug": "getting-started",
+                "title": "getting started",
+                "file": "0.9.0/01-getting-started.md"
+            },
+            {
+                "slug": "getting-started/create-a-project",
+                "title": "create a project",
+                "file": "0.9.0/01-getting-started/00-create-a-project.md"
+            },
+            {
+                "slug": "getting-started/blog-posts",
+                "title": "blog posts",
+                "file": "0.9.0/01-getting-started/01-blog-posts.md"
+            },
+            {
+                "slug": "getting-started/styles-and-scripts",
+                "title": "styles and scripts",
+                "file": "0.9.0/01-getting-started/02-styles-and-scripts.md"
+            },
+            {
+                "slug": "getting-started/use-preact",
+                "title": "use preact",
+                "file": "0.9.0/01-getting-started/03-use-preact.md"
+            }
+        ]
+    }
+}

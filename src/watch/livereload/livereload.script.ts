@@ -1,7 +1,10 @@
 import { LiveReloadClient } from "./LiveReloadClient.ts";
+import "./types.ts";
 
-if (import.meta.main) {
-    const a = new URL("/", location.href);
-    a.port = "4075";
-    new LiveReloadClient(a.href);
+console.log(window.__FRUGAL__DEV__LIVRERELOAD);
+
+if (window.__FRUGAL__DEV__LIVRERELOAD === undefined) {
+    const url = new URL("/", location.href);
+    url.port = "4075";
+    window.__FRUGAL__DEV__LIVRERELOAD = new LiveReloadClient(url.href);
 }

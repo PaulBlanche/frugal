@@ -4,35 +4,31 @@ import { Page } from "./Page.tsx";
 import { getToc } from "../../toc.ts";
 import { Data } from "./type.ts";
 
-import versions from "../../../../versions.json" assert { type: "json" };
-
 export const pattern = "/doc@:version/:slug(.*)?";
 
 export async function getPaths({ resolve }: GetPathsParams): Promise<PathList<typeof pattern>> {
-    const nestedPaths = await Promise.all(versions.map(async (version) => {
-        const toc = await getToc(version, resolve);
+    const toc = await getToc(resolve);
 
+    return Object.values(toc).flatMap((tocVersion) => {
         return [
-            ...toc.entries.filter((entry) => entry.file !== undefined).map((entry) => ({
+            ...tocVersion.entries.filter((entry) => entry.file !== undefined).map((entry) => ({
                 slug: entry.slug,
-                version,
+                version: tocVersion.version,
             })),
             {
                 slug: undefined,
-                version,
+                version: tocVersion.version,
             },
         ];
-    }));
-
-    return nestedPaths.flat();
+    });
 }
 
 export async function generate(
     { path: { slug = "introduction", version }, resolve }: StaticHandlerContext<typeof pattern>,
 ) {
-    const toc = await getToc(version, resolve);
+    const toc = await getToc(resolve);
 
-    const entry = toc.entries.find((entry) => entry.slug === slug);
+    const entry = toc[version].entries.find((entry) => entry.slug === slug);
 
     if (entry === undefined || entry.file === undefined) {
         return new EmptyResponse({ status: 404 });
@@ -43,6 +39,7 @@ export async function generate(
     return new DataResponse<Data>({
         data: {
             toc,
+            version,
             markdown,
         },
         headers: {

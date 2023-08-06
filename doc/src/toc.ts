@@ -1,8 +1,10 @@
 export type TocEntry =
-    & { slug: string; title: string; version: string }
+    & { slug: string; title: string }
     & ({ file: string; link?: undefined } | { file?: undefined; link: string });
 
-export type Toc = { variables: Record<string, string>; entries: TocEntry[] };
+export type TocVersion = { version: string; variables: Record<string, string>; entries: TocEntry[] };
+
+export type Toc = Record<string, TocVersion>;
 
 export type TocHierarchy = {
     segment: string;
@@ -10,10 +12,12 @@ export type TocHierarchy = {
     children: Record<string, TocHierarchy>;
 };
 
-export function getHierarchy(toc: Toc) {
+export function getHierarchy(toc: Toc, version: string) {
     const hierarchy = { segment: "", children: {} } as TocHierarchy;
 
-    for (const entry of toc.entries) {
+    const tocVersion = toc[version];
+
+    for (const entry of tocVersion.entries) {
         const segments = entry.slug.split("/");
         let current = hierarchy;
         for (const segment of segments) {
@@ -39,52 +43,53 @@ function validate(hierarchy: TocHierarchy, current: string[] = []) {
     Object.values(hierarchy.children).forEach((child) => validate(child, [hierarchy.segment]));
 }
 
-const TOC_PROMISE: { [version: string]: Promise<string> } = {};
+let TOC_PROMISE: Promise<string>;
 
-export async function getToc(version: string, resolve: (path: string) => string): Promise<Toc> {
-    if (!(version in TOC_PROMISE)) {
-        TOC_PROMISE[version] = Deno.readTextFile(resolve(`./src/contents/doc/${version}-toc.json`));
+export async function getToc(resolve: (path: string) => string): Promise<Toc> {
+    if (TOC_PROMISE === undefined) {
+        TOC_PROMISE = Deno.readTextFile(resolve(`./src/contents/doc/toc.json`));
     }
 
-    const tocContent = await TOC_PROMISE[version];
-    const { variables, entries }: Toc = JSON.parse(tocContent);
-    return { variables, entries: entries.map((entry) => ({ ...entry, version })) };
+    const tocContent = await TOC_PROMISE;
+    return JSON.parse(tocContent);
 }
 
-export function entryHref(entry: TocEntry) {
+export function entryHref(entry: TocEntry, version: string) {
     if (entry.link) {
         return entry.link;
     }
-    return `/doc@${entry.version}/${entry.slug}`;
+    return `/doc@${version}/${entry.slug}`;
 }
 
-export function entryMatchHref(entry: TocEntry, href: string) {
-    const ownHref = entryHref(entry);
-    if (ownHref === `/doc@${entry.version}/introduction` && href === `/doc@${entry.version}`) {
+export function entryMatchHref(entry: TocEntry, version: string, href: string) {
+    const ownHref = entryHref(entry, version);
+    if (ownHref === `/doc@${version}/introduction` && href === `/doc@${version}`) {
         return true;
     }
     return href === ownHref;
 }
 
-export function nextEntry(toc: Toc, href: string) {
-    const currentIndex = toc.entries.findIndex((entry) => entryMatchHref(entry, href));
+export function nextEntry(toc: Toc, version: string, href: string) {
+    const versionToc = toc[version];
+    const currentIndex = versionToc.entries.findIndex((entry) => entryMatchHref(entry, version, href));
 
     let nextIndex = currentIndex + 1;
-    while (nextIndex < toc.entries.length) {
-        if (toc.entries[nextIndex].file || toc.entries[nextIndex].link) {
-            return toc.entries[nextIndex];
+    while (nextIndex < versionToc.entries.length) {
+        if (versionToc.entries[nextIndex].file || versionToc.entries[nextIndex].link) {
+            return versionToc.entries[nextIndex];
         }
         nextIndex += 1;
     }
 }
 
-export function previousEntry(toc: Toc, href: string) {
-    const currentIndex = toc.entries.findIndex((entry) => entryMatchHref(entry, href));
+export function previousEntry(toc: Toc, version: string, href: string) {
+    const versionToc = toc[version];
+    const currentIndex = versionToc.entries.findIndex((entry) => entryMatchHref(entry, version, href));
 
     let previousIndex = currentIndex - 1;
     while (previousIndex > -1) {
-        if (toc.entries[previousIndex].file || toc.entries[previousIndex].link) {
-            return toc.entries[previousIndex];
+        if (versionToc.entries[previousIndex].file || versionToc.entries[previousIndex].link) {
+            return versionToc.entries[previousIndex];
         }
         previousIndex -= 1;
     }

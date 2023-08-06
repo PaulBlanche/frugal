@@ -22,6 +22,7 @@ export default {
         //minify: true,
         jsx: "automatic",
         jsxImportSource: "preact",
+        splitting: true,
     },
     budget: {
         speed: 6 * 1000 * 1000,

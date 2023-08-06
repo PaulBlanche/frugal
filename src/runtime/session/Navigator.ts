@@ -39,9 +39,33 @@ export class Navigator {
     }
 
     async visit(init?: RequestInit): Promise<boolean> {
+        const progress = document.createElement("div");
+        document.body.appendChild(progress);
+        progress.style.position = "fixed";
+        progress.style.top = "0";
+        progress.style.height = "5px";
+        progress.style.left = "0";
+        progress.style.width = "0";
+        progress.style.background = "blue";
+        progress.style.transition = "width linear 0.1s";
+        progress.style.zIndex = "10000";
+
+        console.log(progress);
+
+        let width = 0;
+        const interval = setInterval(() => {
+            width = width + (100 - width) / 10;
+            progress.style.width = `${width}%`;
+        }, 100);
+
         History.saveScroll();
+
+        await new Promise((res) => setTimeout(res, 1000));
         const result = await this.navigate(init);
-        History.push(this);
+        if (result) {
+            History.push(this);
+        }
+        clearInterval(interval);
 
         return result;
     }
