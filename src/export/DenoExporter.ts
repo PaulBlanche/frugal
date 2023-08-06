@@ -75,15 +75,15 @@ import { Router } from "${resolveFrugal("../page/Router.ts", serverScriptURL)}";
 import { FrugalServer } from "${resolveFrugal("../server/FrugalServer.ts", serverScriptURL)}";
 import { RuntimeStorageCache } from "${resolveFrugal("../cache/RuntimeStorageCache.ts", serverScriptURL)}";
 import { FrugalConfig } from "${resolveFrugal("../Config.ts", serverScriptURL)}";
-import { loadManifest } from "${resolveFrugal("../Manifest.ts", serverScriptURL)}";
 import { ${cacheStorageInstance.import.name} as CacheStorage } from "${
                 resolveFrugal(cacheStorageInstance.import.url, serverScriptURL)
             }";
 
+            
 import userConfig from "${resolveFrugal(path.fromFileUrl(this.#config.self), serverScriptURL)}"
+import * as manifest from "../manifest.mjs"
 
 const config = new FrugalConfig(userConfig)
-const manifest = await loadManifest(config, false)
 
 const cacheStorage = new CacheStorage(${cacheStorageInstance.instanceParams("config", "manifest").join(", ")})
 const cache = new RuntimeStorageCache(cacheStorage)
