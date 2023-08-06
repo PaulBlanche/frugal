@@ -38,7 +38,9 @@ class InternalExporter {
         await this.#populateScript();
         await this.#entrypointScript();
         if (this.#config.importMapURL) {
-            await fs.copy(this.#config.importMapURL, new URL("import_map.json", this.#config.outdir));
+            await fs.copy(this.#config.importMapURL, new URL("import_map.json", this.#config.outdir), {
+                overwrite: true,
+            });
         }
     }
 
@@ -74,12 +76,14 @@ async function insert(cacheStorage, path, response) {
         await Deno.writeTextFile(
             serverScriptURL,
             `
-import { Router } from "${new URL("../page/Router.ts", import.meta.url).href}";
-import { FrugalServer } from "${new URL("../server/FrugalServer.ts", import.meta.url).href}";
-import { RuntimeStorageCache } from "${new URL("../cache/RuntimeStorageCache.ts", import.meta.url).href}";
-import { FrugalConfig } from "${new URL("../Config.ts", import.meta.url).href}";
-import { loadManifest } from "${new URL("../Manifest.ts", import.meta.url).href}";
-import { ${cacheStorageInstance.import.name} as CacheStorage } from "${cacheStorageInstance.import.url}";
+import { Router } from "${resolveFrugal("../page/Router.ts", outDir)}";
+import { FrugalServer } from "${resolveFrugal("../server/FrugalServer.ts", outDir)}";
+import { RuntimeStorageCache } from "${resolveFrugal("../cache/RuntimeStorageCache.ts", outDir)}";
+import { FrugalConfig } from "${resolveFrugal("../Config.ts", outDir)}";
+import { loadManifest } from "${resolveFrugal("../Manifest.ts", outDir)}";
+import { ${cacheStorageInstance.import.name} as CacheStorage } from "${
+                resolveFrugal(cacheStorageInstance.import.url, outDir)
+            }";
 
 import userConfig from "./${path.relative(outDir, path.fromFileUrl(this.#config.self))}"
 
@@ -110,4 +114,12 @@ server.serve()
             `,
         );
     }
+}
+
+function resolveFrugal(_path: string, outDir: string) {
+    const url = new URL(_path, import.meta.url);
+    if (url.protocol === "file:") {
+        return path.relative(outDir, path.fromFileUrl(url));
+    }
+    return new URL("../page/Router.ts", import.meta.url).href;
 }
