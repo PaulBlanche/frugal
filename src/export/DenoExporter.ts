@@ -59,10 +59,10 @@ ${
 }
 
 async function insert(cacheStorage, responsePath, response) {
-    const body = await Deno.readTextFile(response.documentPath)
+    const body = await Deno.readTextFile(new URL(response.documentPath, import.meta.url))
     cacheStorage.set(responsePath, JSON.stringify({...response, body }));
 }
-        `,
+`,
         );
     }
 
@@ -82,7 +82,6 @@ import { FrugalConfig } from "${resolveFrugal("../Config.ts", serverScriptURL)}"
 import { ${cacheStorageInstance.import.name} as CacheStorage } from "${
                 resolveFrugal(cacheStorageInstance.import.url, serverScriptURL)
             }";
-
             
 import userConfig from "${resolveFrugal(path.fromFileUrl(this.#config.self), serverScriptURL)}"
 import * as manifest from "../manifest.mjs"
