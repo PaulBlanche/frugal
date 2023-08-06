@@ -55,7 +55,9 @@ class InternalExporter {
 }
 
 async function insert(cacheStorage, path, response) {
-    const body = await Deno.readTextFile(new URL(response.documentPath, "${this.#config.buildCacheFile.href}"))
+    const body = await Deno.readTextFile(new URL(response.documentPath, "${
+                resolveFrugal(path.fromFileUrl(this.#config.buildCacheFile.href), this.#populateScriptURL)
+            }"))
     cacheStorage.set(path, JSON.stringify({...response, body }));
 }
         `,
