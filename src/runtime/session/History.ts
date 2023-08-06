@@ -1,5 +1,6 @@
 import { Navigator } from "./Navigator.ts";
 import { NavigatorConfig } from "./Navigator.ts";
+import { isUrlForSameDocument } from "./utils.ts";
 
 declare global {
     interface WindowEventMap {
@@ -46,6 +47,7 @@ class HistoryInternal {
     _index: number;
     _observing: boolean;
     _config: NavigatorConfig;
+    _currentURL: URL | string;
 
     static instance?: HistoryInternal;
 
@@ -54,6 +56,7 @@ class HistoryInternal {
         this._stack = [new Navigator(new URL(location.href), this._config)];
         this._index = 0;
         this._observing = false;
+        this._currentURL = location.href;
     }
 
     observe() {
@@ -63,6 +66,14 @@ class HistoryInternal {
         this._observing = true;
 
         addEventListener("popstate", (event) => {
+            // if the url before the popstate event point inside the same
+            // document (with a hash for exemple) we skip it and let the browser
+            // do its thing
+            if (isUrlForSameDocument(this._currentURL, location.href)) {
+                return;
+            }
+            this._currentURL = location.href;
+
             event.preventDefault();
 
             const previous = this._stack[this._index];
@@ -90,5 +101,6 @@ class HistoryInternal {
         this._stack.push(navigator);
         this._index += 1;
         history.pushState(this._index, "", navigator.url);
+        this._currentURL = navigator.url;
     }
 }

@@ -1,70 +1,105 @@
 import * as path from "../../dep/std/path.ts";
+import * as fs from "../../dep/std/fs.ts";
 
 import { log } from "../log.ts";
-import { ExportContext } from "./Export.ts";
+import { ExportContext, Exporter } from "./Export.ts";
+import { CacheStorageCreator } from "../cache/CacheStorage.ts";
 import { FrugalConfig } from "../Config.ts";
 import { BuildCacheSnapshot } from "../cache/BuildCacheSnapshot.ts";
 
-export class DenoExporter {
-    #config: FrugalConfig;
-    #snapshot: BuildCacheSnapshot;
+export class DenoExporter implements Exporter {
+    #cacheStorageCreator: CacheStorageCreator;
 
-    static export(context: ExportContext) {
-        return new DenoExporter(context).export();
+    constructor(cacheStorageCreator: CacheStorageCreator) {
+        this.#cacheStorageCreator = cacheStorageCreator;
     }
 
-    constructor({ config, snapshot }: ExportContext) {
-        this.#config = config;
+    export(context: ExportContext) {
+        return new InternalExporter(context, this.#cacheStorageCreator).export();
+    }
+}
+
+class InternalExporter {
+    #snapshot: BuildCacheSnapshot;
+    #config: FrugalConfig;
+    #cacheStorageCreator: CacheStorageCreator;
+    #populateScriptURL: URL;
+
+    constructor({ snapshot, config }: ExportContext, cacheStorageCreator: CacheStorageCreator) {
         this.#snapshot = snapshot;
+        this.#config = config;
+        this.#cacheStorageCreator = cacheStorageCreator;
+        this.#populateScriptURL = new URL("populate.mjs", this.#config.cachedir);
     }
 
     async export() {
         log("Exporting website for Deno Deploy", { scope: "DenoDeployExporter", level: "info" });
 
-        const serverScriptURL = new URL("entrypoint.js", this.#config.cachedir);
-        const cacheDir = path.fromFileUrl(this.#config.cachedir);
-        const populateScriptURL = new URL("populate.js", this.#config.cachedir);
+        await this.#populateScript();
+        await this.#entrypointScript();
+        if (this.#config.importMapURL) {
+            await fs.copy(this.#config.importMapURL, new URL("import_map.json", this.#config.outdir));
+        }
+    }
 
+    async #populateScript() {
         await Deno.writeTextFile(
-            populateScriptURL,
-            `
-export function populate(cacheStorage: StorageCache, id:string) {
-${
+            this.#populateScriptURL,
+            `export async function populate(cacheStorage, id) {
+    await Promise.all([
+        ${
                 this.#snapshot.current.map((value) => {
-                    return `    await frugalConfig.cacheStorage.set("${value.path}", JSON.stringify(${
-                        JSON.stringify(value)
-                    }));`;
-                }).join("\n")
-            }
-    await frugalConfig.cacheStorage.set("__frugal__current", manifest.id)
+                    return `        insert(cacheStorage, "${value.path}", ${JSON.stringify(value)})`;
+                }).join(",\n")
+            },
+        cacheStorage.set("__frugal__current", id)
+    ]);
+}
+
+async function insert(cacheStorage, path, response) {
+    const body = await Deno.readTextFile(new URL(response.documentPath, "${this.#config.buildCacheFile.href}"))
+    cacheStorage.set(path, JSON.stringify({...response, body }));
 }
         `,
         );
+    }
+
+    async #entrypointScript() {
+        const outDir = path.fromFileUrl(this.#config.outdir);
+
+        const serverScriptURL = new URL("entrypoint.mjs", this.#config.outdir);
+
+        const cacheStorageInstance = this.#cacheStorageCreator.instance();
 
         await Deno.writeTextFile(
             serverScriptURL,
             `
 import { Router } from "${new URL("../page/Router.ts", import.meta.url).href}";
 import { FrugalServer } from "${new URL("../server/FrugalServer.ts", import.meta.url).href}";
-import { StorageCache } from "${new URL("../cache/StorageCache.ts", import.meta.url).href}";
+import { RuntimeStorageCache } from "${new URL("../cache/RuntimeStorageCache.ts", import.meta.url).href}";
 import { FrugalConfig } from "${new URL("../Config.ts", import.meta.url).href}";
-import userConfig from "./${path.relative(cacheDir, path.fromFileUrl(this.#config.self))}"
+import { loadManifest } from "${new URL("../Manifest.ts", import.meta.url).href}";
+import { ${cacheStorageInstance.import.name} as CacheStorage } from "${cacheStorageInstance.import.url}";
+
+import userConfig from "./${path.relative(outDir, path.fromFileUrl(this.#config.self))}"
 
 const config = new FrugalConfig(userConfig)
+const manifest = await loadManifest(config)
 
-const cache = new StorageCache(config)
+const cacheStorage = new CacheStorage(${cacheStorageInstance.instanceParams("config", "manifest").join(", ")})
+const cache = new RuntimeStorageCache(cacheStorage)
 
-const router = await Router.load({ config, cache })
+const router = new Router({ config, manifest, cache })
 
-const current = await frugalConfig.cacheStorage.get("__frugal__current")
+const current = await cacheStorage.get("__frugal__current")
 if (current !== router.id) {
     console.log('populate')
-    const { populate } = await import("./${path.relative(cacheDir, path.fromFileUrl(populateScriptURL))}")
-    populate(frugalConfig.cacheStorage, router.id)
+    const { populate } = await import("./${path.relative(outDir, path.fromFileUrl(this.#populateScriptURL))}")
+    populate(cacheStorage, router.id)
 }
 
 const server = new FrugalServer({
-    config: frugalConfig,
+    config,
     router,
     cache,
     watchMode: false,

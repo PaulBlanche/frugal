@@ -72,8 +72,7 @@ export function getRenderFrom<PATH extends string, DATA extends JSONValue>(
                 }}
             >
                 <DataProvider
-                    embedData={embedData}
-                    context={{ data: embedData ? data : undefined, embedData, pathname }}
+                    context={{ data, embedData, pathname }}
                 >
                     <Page
                         descriptor={String(descriptor)}

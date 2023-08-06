@@ -6,12 +6,14 @@ import { GenerationResult } from "./GenerationResult.ts";
 import { Cache } from "../cache/Cache.ts";
 import { log } from "../log.ts";
 import { PageSession } from "./PageSession.ts";
+import { FrugalConfig } from "../Config.ts";
 
 type StaticPageGeneratorConfig<PATH extends string = string, DATA extends JSONValue = JSONValue> = {
     page: page.StaticPage<PATH, DATA>;
     assets: descriptor.Assets;
     configHash: string;
     cache: Cache;
+    config: FrugalConfig;
 };
 
 export class StaticPageGenerator<PATH extends string = string, DATA extends JSONValue = JSONValue> {
@@ -22,7 +24,10 @@ export class StaticPageGenerator<PATH extends string = string, DATA extends JSON
     }
 
     async buildAll() {
-        const pathList = await this.#config.page.getPaths({ phase: "build" });
+        const pathList = await this.#config.page.getPaths({
+            phase: "build",
+            resolve: (path) => this.#config.config.resolve(path),
+        });
 
         await Promise.all(pathList.map(async (path) => {
             await this.build(path, "build");
@@ -93,6 +98,7 @@ export class StaticPageGenerator<PATH extends string = string, DATA extends JSON
                 assets: this.#config.assets,
                 descriptor: this.#config.page.entrypoint,
                 session,
+                resolve: (path) => this.#config.config.resolve(path),
             });
         } else {
             return await this.#getStaticGenerationResult(pathname, path, "generate");
@@ -133,6 +139,7 @@ export class StaticPageGenerator<PATH extends string = string, DATA extends JSON
                 path: buildPath,
                 assets: this.#config.assets,
                 descriptor: this.#config.page.entrypoint,
+                resolve: (path) => this.#config.config.resolve(path),
             }),
             {
                 phase,

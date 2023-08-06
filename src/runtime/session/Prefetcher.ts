@@ -78,7 +78,7 @@ export class Prefetcher {
         clearTimeout(this._timeoutHandle);
 
         this._garbageCollectHandle = setTimeout(() => {
-            if (this._link) {
+            if (this._link && document.head === this._link.parentNode) {
                 document.head.removeChild(this._link);
             }
             this._onGarbageCollectable();

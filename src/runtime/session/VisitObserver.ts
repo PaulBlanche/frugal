@@ -63,6 +63,12 @@ export class VisitObserver {
 
         const url = utils.getUrl(navigableAnchor.href);
 
+        // if the url point inside the same document (with a hash for exemple)
+        // we skip it and let the browser do its thing
+        if (utils.isUrlForSameDocument(url, location.href)) {
+            return;
+        }
+
         const navigator = new Navigator(url, this._config);
         const visitor = new Visitor(navigableAnchor, navigator);
 

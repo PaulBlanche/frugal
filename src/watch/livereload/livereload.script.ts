@@ -1,5 +1,7 @@
-import { LiveReloadClient } from './LiveReloadClient.ts';
+import { LiveReloadClient } from "./LiveReloadClient.ts";
 
 if (import.meta.main) {
-  new LiveReloadClient('http://0.0.0.0:4075');
+    const a = new URL("/", location.href);
+    a.port = "4075";
+    new LiveReloadClient(a.href);
 }

@@ -1,0 +1,127 @@
+.overlay {
+    display: block;
+    width: 100%;
+    height: 100%;
+    position: fixed;
+    z-index: 900;
+    top: 60px;
+    left: 0;
+    background-color: transparent;
+    pointer-events: none;
+    transition: background-color 0.2s;
+
+}
+
+.toggle {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 60px;
+    height: 60px;
+    z-index: 10001;
+    background: transparent;
+    border: none;
+    border-right: 2px solid #F0F0F0;
+    display: none;
+
+    .icon {
+        color: #111;
+        width: 32px;
+    }
+
+    &:hover,
+    &:focus {
+        background: rgba(0, 0, 0, 0.1);
+    }
+}
+
+.select {
+    display: grid;
+    grid-template-areas: "select";
+    align-items: center;
+
+    width: 100%;
+    min-width: 15ch;
+    max-width: 30ch;
+    border-radius: 4px;
+    border: 1px solid #CCC;
+    cursor: pointer;
+    line-height: 1.5;
+    background-color: #F0F0F0;
+    box-sizing: border-box;
+    margin-bottom: 2rem;
+    font-size: 0.9rem;
+    font-weight: 500;
+    overflow: hidden;
+
+    &:hover,
+    &:focus {
+        background-color: #DDD;
+    }
+
+    & select {
+        appearance: none;
+        background-color: transparent;
+        border: none;
+        margin: 0;
+        padding: 0.5em 1.5em 0.5em 1em;
+        width: 100%;
+        font-family: inherit;
+        font-size: inherit;
+        cursor: inherit;
+        line-height: inherit;
+        grid-area: select;
+        font-weight: inherit;
+    }
+
+    &::after {
+        content: "";
+        width: 0.6em;
+        height: 0.3em;
+        background-color: #888;
+        clip-path: polygon(100% 0%, 0 0%, 50% 100%);
+        grid-area: select;
+        justify-self: end;
+        align-self: end;
+        margin-bottom: 0.7em;
+        margin-right: 0.5em;
+    }
+
+    &::before {
+        content: "";
+        width: 0.6em;
+        height: 0.3em;
+        background-color: #888;
+        clip-path: polygon(100% 100%, 0 100%, 50% 0%);
+        grid-area: select;
+        justify-self: end;
+        align-self: start;
+        margin-top: 0.7em;
+        margin-right: 0.5em;
+    }
+
+}
+
+@media screen and (max-width: 968px) {
+    .drawer {
+        transform: translateX(-100%);
+        background: white;
+        overflow: hidden;
+        transition: transform 0.2s;
+        z-index: 901;
+
+        &[data-open] {
+            transform: translateX(0%);
+            overflow: auto;
+
+            &~.overlay {
+                background-color: rgba(0, 0, 0, 0.5);
+                pointer-events: initial;
+            }
+        }
+    }
+
+    .toggle {
+        display: block;
+    }
+}

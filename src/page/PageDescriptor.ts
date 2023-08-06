@@ -1,6 +1,6 @@
 import { JSONValue } from "./JSONValue.ts";
 import { PathObject } from "./PathObject.ts";
-import { DataResponse } from "./Response.ts";
+import { PageResponse } from "./Response.ts";
 import * as zod from "../../dep/zod.ts";
 import { PageSession } from "./PageSession.ts";
 
@@ -16,6 +16,7 @@ type BaseHandlerContext<PATH extends string> = {
     path: PathObject<PATH>;
     assets: Assets;
     descriptor: string;
+    resolve: (path: string) => string;
 };
 
 export type DynamicHandlerContext<PATH extends string> =
@@ -28,15 +29,15 @@ export type DynamicHandlerContext<PATH extends string> =
 
 export type DynamicHandler<PATH extends string, DATA extends JSONValue> = (
     context: DynamicHandlerContext<PATH>,
-) => Promise<DataResponse<DATA | void>> | DataResponse<DATA | void>;
+) => Promise<PageResponse<DATA>> | PageResponse<DATA>;
 
 export type StaticHandlerContext<PATH extends string> = BaseHandlerContext<PATH>;
 
 export type StaticHandler<PATH extends string, DATA extends JSONValue> = (
     context: StaticHandlerContext<PATH>,
-) => Promise<DataResponse<DATA | void>> | DataResponse<DATA | void>;
+) => Promise<PageResponse<DATA>> | PageResponse<DATA>;
 
-export type RenderContext<PATH extends string, DATA extends JSONValue> = {
+export type RenderContext<PATH extends string, DATA extends JSONValue = JSONValue> = {
     phase: Phase;
     path: PathObject<PATH>;
     data: DATA;
@@ -67,6 +68,7 @@ export interface DynamicPageDescriptor<PATH extends string = string, DATA extend
 
 export type GetPathsParams = {
     phase: Phase;
+    resolve: (path: string) => string;
 };
 
 export type PathList<PATH extends string = string> = PathObject<PATH>[];

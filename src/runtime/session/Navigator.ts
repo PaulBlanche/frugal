@@ -50,6 +50,7 @@ export class Navigator {
         this._setReadyState("loading");
 
         const html = await this._fetch(init);
+
         const nextDocument = new DOMParser().parseFromString(
             html,
             "text/html",

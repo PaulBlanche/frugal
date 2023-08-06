@@ -1,12 +1,12 @@
 import * as esbuild from "../dep/esbuild.ts";
 import * as importmap from "../dep/importmap.ts";
+import * as path from "../dep/std/path.ts";
 
 import * as log from "./log.ts";
 import { CacheStorage } from "./cache/CacheStorage.ts";
-import { FilesystemCacheStorage } from "./cache/FilesystemCacheStorage.ts";
 import { Plugin } from "./Plugin.ts";
 import { Budget, BudgetConfig } from "./Budget.ts";
-import { Export } from "./export/Export.ts";
+import { Exporter } from "./export/Export.ts";
 import { Middleware } from "./server/Middleware.ts";
 import { SessionStorage } from "./server/session/SessionStorage.ts";
 import { CookieConfig } from "./server/session/CookieConfig.ts";
@@ -70,7 +70,7 @@ export type Config = {
     server?: ServerConfig;
     plugins?: Plugin[];
     budget?: BudgetConfig;
-    exporter?: Export;
+    exporter?: Exporter;
 };
 
 type ServerConfig = {
@@ -195,10 +195,6 @@ export class FrugalConfig {
         return new URL(this.#config.staticdir ?? "static/", this.self);
     }
 
-    get cacheStorage() {
-        return this.#config.cacheStorage ?? new FilesystemCacheStorage(new URL("runtimecache/", this.cachedir));
-    }
-
     get exporter() {
         return this.#config.exporter;
     }
@@ -213,6 +209,10 @@ export class FrugalConfig {
 
     get importMapURL() {
         return this.#importMapURL;
+    }
+
+    resolve(specifier: string) {
+        return path.fromFileUrl(new URL(specifier, this.rootdir));
     }
 }
 

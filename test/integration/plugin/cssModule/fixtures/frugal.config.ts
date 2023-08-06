@@ -1,5 +1,4 @@
 import { Config } from "../../../../../mod.ts";
-import { css } from "../../../../../plugins/css.ts";
 import { cssModule } from "../../../../../plugins/cssModule.ts";
 
 export const config: Config = {
@@ -12,7 +11,6 @@ export const config: Config = {
             // tests
             pattern: "[local]",
         }),
-        css(),
     ],
     log: { level: "silent" },
 };

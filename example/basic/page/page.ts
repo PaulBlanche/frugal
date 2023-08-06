@@ -27,7 +27,7 @@ export async function getPaths(): Promise<page.PathList<typeof pattern>> {
 
 export async function generate(args: page.StaticHandlerContext<typeof pattern>) {
     const data = await getData();
-    return new page.DataResponse<Data>({
+    return new page.PageResponse<Data>({
         data: {
             id: args.path.id,
             content: data[args.path.id],

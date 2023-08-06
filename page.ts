@@ -12,4 +12,4 @@ export type {
     StaticHandlerContext,
     StaticPageDescriptor,
 } from "./src/page/PageDescriptor.ts";
-export { DataResponse } from "./src/page/Response.ts";
+export { DataResponse, EmptyResponse } from "./src/page/Response.ts";

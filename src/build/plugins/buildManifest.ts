@@ -1,5 +1,6 @@
 import * as path from "../../../dep/std/path.ts";
 import * as esbuild from "../../../dep/esbuild.ts";
+import * as xxhash from "../../../dep/xxhash.ts";
 
 import { log } from "../../log.ts";
 import { MetaFileAnalyser } from "../MetafileAnalyser.ts";
@@ -37,10 +38,12 @@ export function buildManifest(config: FrugalConfig, assets: Assets): esbuild.Plu
 
                     const manifest: Manifest = {
                         pages: [],
-                        id: String(Date.now()),
+                        id: "",
                         config: "",
                         assets,
                     };
+
+                    const idHash = await xxhash.create();
 
                     for (const analysis of analysisResults) {
                         if (analysis === undefined) {
@@ -51,6 +54,8 @@ export function buildManifest(config: FrugalConfig, assets: Assets): esbuild.Plu
                             manifest.config = isInChildWatchProcess()
                                 ? `${analysis.moduleHash}-watch`
                                 : analysis.moduleHash;
+
+                            idHash.hash(manifest.config);
                         }
 
                         if (analysis.type === "page") {
@@ -59,8 +64,12 @@ export function buildManifest(config: FrugalConfig, assets: Assets): esbuild.Plu
                                 entrypoint: analysis.entrypoint,
                                 outputPath: analysis.outputPath,
                             });
+
+                            idHash.hash(analysis.moduleHash);
                         }
                     }
+
+                    manifest.id = idHash.digest("hex").toString();
 
                     log("Manifest built", {
                         scope: "buildManifest",

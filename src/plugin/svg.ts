@@ -94,13 +94,15 @@ async function symbolUrl(svgPath: string) {
     const doc = new dom.DOMParser().parseFromString(svgString, "text/html")!;
     const svg = doc.querySelector("svg")!;
     const viewBox = svg.getAttribute("viewBox");
+    const width = svg.getAttribute("width");
+    const height = svg.getAttribute("height");
 
     const id = `${path.basename(svgPath, path.extname(svgPath))}-${svgHash}`;
     const spritesheet = path.basename(path.dirname(svgPath));
 
     return {
         id,
-        viewBox,
+        viewBox: viewBox ?? `0 0 ${width} ${height}`,
         basename: `${spritesheet}.svg`,
     };
 }

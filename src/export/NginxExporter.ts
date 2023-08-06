@@ -2,21 +2,26 @@ import * as fs from "../../dep/std/fs.ts";
 import * as path from "../../dep/std/path.ts";
 
 import { log } from "../log.ts";
-import { ExportContext } from "./Export.ts";
+import { ExportContext, Exporter } from "./Export.ts";
 import { FrugalConfig } from "../Config.ts";
 import { BuildCacheSnapshot } from "../cache/BuildCacheSnapshot.ts";
 
-export class NginxExporter {
-    #config: FrugalConfig;
-    #snapshot: BuildCacheSnapshot;
-
-    static export(context: ExportContext) {
-        return new NginxExporter(context).export();
+export class NginxExporter implements Exporter {
+    constructor() {
     }
 
-    constructor({ config, snapshot }: ExportContext) {
-        this.#config = config;
+    async export(context: ExportContext) {
+        return new InternalExporter(context).export();
+    }
+}
+
+class InternalExporter {
+    #snapshot: BuildCacheSnapshot;
+    #config: FrugalConfig;
+
+    constructor({ snapshot, config }: ExportContext) {
         this.#snapshot = snapshot;
+        this.#config = config;
     }
 
     async export() {

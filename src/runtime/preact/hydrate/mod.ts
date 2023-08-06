@@ -7,13 +7,11 @@ export function hydrate<PROPS>(name: string, getApp: GetApp<PROPS>) {
     function hydrateAll() {
         const hydratableOnLoad = queryHydratables(name, "load");
         if (hydratableOnLoad.length !== 0) {
-            console.log("hydrate on load");
             hydrateOnLoad(hydratableOnLoad, getApp);
         }
 
         const hydratableOnVisible = queryHydratables(name, "visible");
         if (hydratableOnVisible.length !== 0) {
-            console.log("hydrate on visible");
             hydrateOnVisible(hydratableOnVisible, getApp);
         }
 
@@ -44,7 +42,6 @@ function hydrateOnLoad<PROPS>(
     getApp: GetApp<PROPS>,
 ) {
     Array.from(hydratables).map(async (script) => {
-        console.log("do hydrate on load");
         hydrateIsland(script, await getApp());
     });
 }
@@ -72,7 +69,6 @@ function hydrateOnVisible<PROPS>(
                 entry.isIntersecting &&
                 entry.target.previousElementSibling instanceof HTMLScriptElement
             ) {
-                console.log("do hydrate on visible");
                 hydrateIsland(entry.target.previousElementSibling, await getApp());
                 observer.unobserve(entry.target);
             }

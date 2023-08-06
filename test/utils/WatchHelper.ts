@@ -1,13 +1,13 @@
 import * as asserts from "../../dep/std/testing/asserts.ts";
 
 import { WatchContext } from "../../src/WatchContext.ts";
-import { WatchCache, WatchCacheData } from "../../src/cache/WatchCache.ts";
+import { RuntimeWatchCache, WatchCacheData } from "../../src/cache/RuntimeWatchCache.ts";
 
 export class WatchHelper {
     #context: WatchContext;
-    #cache: WatchCache;
+    #cache: RuntimeWatchCache;
 
-    constructor(context: WatchContext, watchCache: WatchCache) {
+    constructor(context: WatchContext, watchCache: RuntimeWatchCache) {
         this.#cache = watchCache;
         this.#context = context;
     }

@@ -6,7 +6,7 @@ import "./types.ts";
 
 import { Head } from "./Head.tsx";
 
-type DataContext = { data?: unknown; embedData: boolean; pathname: string };
+type DataContext = { data?: unknown; embedData: boolean; pathname: string; server?: boolean };
 
 const dataContext = preact.createContext<DataContext | undefined | null>(
     undefined,
@@ -18,7 +18,7 @@ export function useData<DATA>(): DATA {
         throw Error("wrap in DataProvider");
     }
 
-    if (!context.embedData) {
+    if (!context.embedData && !context.server) {
         throw Error("data was not embeded in document");
     }
 
@@ -35,7 +35,6 @@ export function usePathname(): string {
 }
 
 type DataProviderProps = {
-    embedData?: boolean;
     context?: DataContext;
     children: preact.ComponentChildren;
 };
@@ -45,8 +44,10 @@ export function DataProvider(
 ) {
     // server side we inject the serialized context in a script and wrap
     // the tree in a `dataContext.Provider` to forward data.
-    if (typeof document === "undefined") {
-        const script = `window.__FRUGAL__ = ${JSON.stringify({ context })};`
+    if (typeof document === "undefined" && context) {
+        const script = `window.__FRUGAL__ = ${
+            JSON.stringify({ ...context, data: context.embedData ? context.data : undefined })
+        };`
             // needed because the context might contain html that could
             // accidentaly close the script early
             .replace(
@@ -58,7 +59,7 @@ export function DataProvider(
                 <Head>
                     {context && <script dangerouslySetInnerHTML={{ __html: script }} />}
                 </Head>
-                <dataContext.Provider value={context}>
+                <dataContext.Provider value={{ ...context, server: true }}>
                     {children}
                 </dataContext.Provider>
             </>

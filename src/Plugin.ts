@@ -9,26 +9,23 @@ import { Assets } from "./page/PageDescriptor.ts";
 // deno-lint-ignore no-explicit-any
 export type Output = (type: string, output: any) => void;
 
-type Build = {
+export type Build = {
     config: FrugalConfig;
     url: (args: { namespace: string; path: string }) => URL;
     load: (specifier: URL) => Promise<Uint8Array>;
     output: Output;
     collect: (filter: RegExp, metafile: esbuild.Metafile) => Asset[];
-    setVirtualFile: (url: string, contents: Uint8Array | string) => void;
 };
 
 export class PluginContext implements Build {
     #config: FrugalConfig;
     #loader: Loader;
     #assets: Assets;
-    #virtualFs: Map<string, Uint8Array | string>;
 
     constructor(config: FrugalConfig) {
         this.#config = config;
         this.#loader = new Loader();
         this.#assets = {};
-        this.#virtualFs = new Map();
     }
 
     get config() {
@@ -58,15 +55,6 @@ export class PluginContext implements Build {
 
     reset() {
         this.#assets = {};
-        this.#virtualFs.clear();
-    }
-
-    setVirtualFile(url: string, contents: Uint8Array | string) {
-        this.#virtualFs.set(url, contents);
-    }
-
-    getVirtualFile(url: string) {
-        return this.#virtualFs.get(url);
     }
 }
 

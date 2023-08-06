@@ -1,7 +1,7 @@
 import * as asserts from "../../../dep/std/testing/asserts.ts";
 import * as mock from "../../../dep/std/testing/mock.ts";
 
-import { DataResponse, RenderContext, StaticPageDescriptor } from "../../../page.ts";
+import { PageResponse, RenderContext, StaticPageDescriptor } from "../../../page.ts";
 import { JSONValue } from "../../../src/page/JSONValue.ts";
 import { compile, DynamicPage, StaticPage } from "../../../src/page/Page.ts";
 
@@ -144,7 +144,7 @@ Deno.test("page: compile type", () => {
             pattern: "/foo",
             render: () => "foo",
             type: "dynamic",
-            GET: () => new DataResponse({}),
+            GET: () => new PageResponse({}),
         }),
         DynamicPage,
         "descriptor with 'dynamic' type should be compiled as DynamicPage",
@@ -156,10 +156,10 @@ Deno.test("page: BasePage methods and properties", () => {
     const descriptor: StaticPageDescriptor<"/foo/:id", JSONValue> = {
         pattern: "/foo/:id",
         render: spyRender,
-        POST: () => new DataResponse({}),
-        PUT: () => new DataResponse({}),
-        PATCH: () => new DataResponse({}),
-        DELETE: () => new DataResponse({}),
+        POST: () => new PageResponse({}),
+        PUT: () => new PageResponse({}),
+        PATCH: () => new PageResponse({}),
+        DELETE: () => new PageResponse({}),
     };
     const entrypoint = "foo";
     const moduleHash = "bar";
@@ -209,7 +209,7 @@ Deno.test("page: StaticPage methods and properties", async () => {
         pattern: "/foo",
         render: () => "foo",
         strictPaths: false,
-        generate: () => new DataResponse({ data: "foobar" }),
+        generate: () => new PageResponse({ data: "foobar" }),
         getPaths: () => ["foo", "bar"],
     }) as StaticPage;
 
@@ -230,7 +230,7 @@ Deno.test("page: DynamicPage methods and properties", async () => {
     const page = compile("foo", "bar", {
         pattern: "/foo",
         render: () => "foo",
-        GET: () => new DataResponse({ data: "foobar" }),
+        GET: () => new PageResponse({ data: "foobar" }),
     }) as DynamicPage;
 
     asserts.assertEquals(

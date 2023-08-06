@@ -1,0 +1,30 @@
+.footer {
+    display: block;
+    background: #FFF;
+    border-top: 2px solid #F0F0F0;
+    color: #7B7070;
+}
+
+.footer-container {
+    composes: container from "../../styles/container.module.css";
+
+    height: 5rem;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+}
+
+/*body {
+    min-height: 100vh;
+    position: relative;
+    padding-bottom: 5.5rem;
+}
+
+
+body .footer {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+}*/

@@ -1,5 +1,6 @@
 import { FrugalConfig } from "../Config.ts";
-import { WatchCache } from "../cache/WatchCache.ts";
+import { loadManifest } from "../Manifest.ts";
+import { RuntimeWatchCache } from "../cache/RuntimeWatchCache.ts";
 import { Router } from "../page/Router.ts";
 import { FrugalServer } from "../server/FrugalServer.ts";
 import { WatchProcess } from "./WatchProcess.ts";
@@ -14,10 +15,10 @@ export class ParentContext {
     #liveReloadController: AbortController;
     #liveReloadServer: LiveReloadServer;
     #watchProcess: WatchProcess;
-    #watchCache: WatchCache;
+    #watchCache: RuntimeWatchCache;
     #listeners: ((event: EventType) => void)[];
 
-    constructor(config: FrugalConfig, watchCache: WatchCache) {
+    constructor(config: FrugalConfig, watchCache: RuntimeWatchCache) {
         this.#config = config;
         this.#serverController = new AbortController();
         this.#liveReloadController = new AbortController();
@@ -78,8 +79,9 @@ export class ParentContext {
     }
 
     async #getWatchServer() {
-        const router = await Router.load({
+        const router = new Router({
             config: this.#config,
+            manifest: await loadManifest(this.#config),
             cache: this.#watchCache,
         });
 

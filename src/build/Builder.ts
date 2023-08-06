@@ -12,6 +12,7 @@ import { watchEmitter } from "./plugins/watchEmitter.ts";
 import { log } from "../log.ts";
 import { copyStatic } from "./plugins/copyStatic.ts";
 import { PluginContext } from "../Plugin.ts";
+import { css } from "./plugins/css.ts";
 
 export class Builder {
     #config: FrugalConfig;
@@ -74,6 +75,7 @@ export class Builder {
             },
             ...this.#config.plugins.map((plugin) => plugin(context)),
             ...(this.#config.esbuildOptions?.plugins ?? []),
+            css(context),
             denoLoaderPlugin({
                 importMapURL: this.#config.importMapURL?.href,
                 nodeModulesDir: true,
@@ -107,7 +109,7 @@ export class Builder {
             bundle: true,
             metafile: true,
             write: true,
-            splitting: false,
+            splitting: true,
             sourcemap: false,
             define: {
                 ...this.#config.esbuildOptions?.define,
@@ -120,6 +122,7 @@ export class Builder {
             absWorkingDir: path.fromFileUrl(new URL(".", this.#config.self)),
             logLevel: "silent",
             outExtension: { ".js": ".mjs" },
+            platform: "node",
         };
 
         log(`esbuild config`, {

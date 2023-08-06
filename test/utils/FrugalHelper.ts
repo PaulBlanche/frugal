@@ -2,9 +2,10 @@ import * as asserts from "../../dep/std/testing/asserts.ts";
 
 import { Config, Frugal } from "../../mod.ts";
 import { FrugalConfig } from "../../src/Config.ts";
+import { loadManifest } from "../../src/Manifest.ts";
 import { WatchContext } from "../../src/WatchContext.ts";
 import { BuildCacheData, loadBuildCacheData } from "../../src/cache/BuildCache.ts";
-import { WatchCache } from "../../src/cache/WatchCache.ts";
+import { RuntimeWatchCache } from "../../src/cache/RuntimeWatchCache.ts";
 import { Router } from "../../src/page/Router.ts";
 import { FrugalServer } from "../../src/server/FrugalServer.ts";
 import { WatchHelper } from "./WatchHelper.ts";
@@ -29,7 +30,7 @@ export class FrugalHelper {
     }
 
     context() {
-        const cache = new WatchCache();
+        const cache = new RuntimeWatchCache();
         const context = WatchContext.create(this.#frugalConfig, cache);
         return new WatchHelper(context, cache);
     }
@@ -49,10 +50,11 @@ export class FrugalHelper {
     }
 
     async serve(signal: AbortSignal): Promise<void> {
-        const cache = new WatchCache();
+        const cache = new RuntimeWatchCache();
 
-        const router = await Router.load({
+        const router = new Router({
             config: this.#frugalConfig,
+            manifest: await loadManifest(this.#frugalConfig),
             cache,
         });
 

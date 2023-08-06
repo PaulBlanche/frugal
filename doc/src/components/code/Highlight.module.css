@@ -1,0 +1,54 @@
+@import "./highlight-theme.css";
+
+.wrapper {
+    margin: 0.5em 0;
+    font-size: 85%;
+    line-height: 1.45;
+    font-family: Consolas, Monaco, Andale Mono, monospace;
+    position: relative;
+}
+
+pre.highlight {
+    padding: 16px;
+    margin: 0;
+    height: 100%;
+    overflow: auto;
+
+}
+
+pre.highlight-line-numbers {
+    margin-left: 50px;
+    padding-left: 0;
+}
+
+pre.highlight>code {
+    position: relative;
+    z-index: 1;
+}
+
+pre.line-numbers {
+    position: absolute;
+    top: 0;
+    padding: 16px;
+    left: 0;
+    opacity: 0.5;
+    user-select: none;
+    text-align: right;
+
+    z-index: 1;
+    background: transparent;
+    margin: 0;
+
+}
+
+pre.line-highlights {
+    position: absolute;
+    inset: 0;
+    padding: 16px 0;
+    user-select: none;
+    margin: 0;
+}
+
+.line-highlights .highlight {
+    background: hsla(24, 20%, 50%, .2);
+}

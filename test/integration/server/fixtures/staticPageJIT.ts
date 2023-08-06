@@ -18,9 +18,9 @@ export function getPaths(): page.PathList<typeof pattern> {
 
 export function generate(
     { path }: page.StaticHandlerContext<typeof pattern>,
-): page.DataResponse<Data> {
+): page.PageResponse<Data> {
     const count = 0;
-    return new page.DataResponse({
+    return new page.PageResponse({
         data: {
             path,
             count,
@@ -34,9 +34,9 @@ export function generate(
 
 export function GET(
     { path, session, request }: page.DynamicHandlerContext<typeof pattern>,
-): page.DataResponse<Data> {
+): page.PageResponse<Data> {
     const count = session?.get<number>("counter") ?? 0;
-    return new page.DataResponse({
+    return new page.PageResponse({
         data: {
             path,
             count,
@@ -50,10 +50,10 @@ export function GET(
     });
 }
 
-export function POST({ request, session }: page.DynamicHandlerContext<typeof pattern>): page.DataResponse<void> {
+export function POST({ request, session }: page.DynamicHandlerContext<typeof pattern>): page.PageResponse<void> {
     const count = session?.get<number>("counter") ?? 0;
     session?.set("counter", count + 1);
-    return new page.DataResponse({
+    return new page.PageResponse({
         forceDynamic: true,
         status: 303,
         headers: {

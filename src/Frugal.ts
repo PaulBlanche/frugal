@@ -1,9 +1,10 @@
 import { Config, FrugalConfig } from "./Config.ts";
+import { loadManifest } from "./Manifest.ts";
 import { WatchContext } from "./WatchContext.ts";
 import { Builder } from "./build/Builder.ts";
 import { BuildCache } from "./cache/BuildCache.ts";
 import { BuildCacheSnapshot } from "./cache/BuildCacheSnapshot.ts";
-import { WatchCache } from "./cache/WatchCache.ts";
+import { RuntimeWatchCache } from "./cache/RuntimeWatchCache.ts";
 import { Router } from "./page/Router.ts";
 
 export class Frugal {
@@ -20,8 +21,9 @@ export class Frugal {
 
         const cache = await BuildCache.load(this.#config);
 
-        const router = await Router.load({
+        const router = new Router({
             config: this.#config,
+            manifest: await loadManifest(this.#config),
             cache,
         });
 
@@ -29,14 +31,14 @@ export class Frugal {
 
         await cache.save();
 
-        await this.#config.exporter?.({
+        await this.#config.exporter?.export({
             snapshot: await BuildCacheSnapshot.load(this.#config),
             config: this.#config,
         });
     }
 
     context() {
-        return WatchContext.create(this.#config, new WatchCache());
+        return WatchContext.create(this.#config, new RuntimeWatchCache());
     }
 }
 

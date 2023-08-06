@@ -1,0 +1,49 @@
+.icon {
+    width: 1em;
+    height: 0.5em;
+    color: #000;
+    opacity: 0.25;
+}
+
+
+.anchor:hover .icon {
+    opacity: 0.5;
+}
+
+h1.heading {
+    font-size: 3rem;
+    font-family: var(--heading-font-familly);
+}
+
+.heading:not(h1) {
+    margin-left: -1em;
+}
+
+h2.heading {
+    font-size: 1.5rem;
+    margin-top: 4rem;
+    margin-bottom: 1.5rem;
+}
+
+h3.heading {
+    font-size: 1.2rem;
+    margin-top: 2rem;
+    margin-bottom: 1rem;
+}
+
+.heading .target {
+    position: relative;
+    top: -80px;
+}
+
+.heading .anchor {
+    opacity: 0;
+}
+
+h1.heading .anchor {
+    display: none;
+}
+
+.heading:not(h1):hover .anchor {
+    opacity: 1
+}

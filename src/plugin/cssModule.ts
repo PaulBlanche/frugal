@@ -25,7 +25,7 @@ export function cssModule({ filter = /\.module.css$/, pattern }: Partial<CssModu
 
                 const cssCache = new Map<string, Uint8Array>();
 
-                build.onResolve({ filter: /\.frugal-compiled-module.css/ }, (args) => {
+                build.onResolve({ filter: /\.frugal-compiled-css-module\.css$/ }, (args) => {
                     if (cssCache.has(args.path)) {
                         return { path: args.path, namespace: "virtual" };
                     }
@@ -40,33 +40,41 @@ export function cssModule({ filter = /\.module.css$/, pattern }: Partial<CssModu
                     return { path: args.path, namespace: args.namespace };
                 });
 
-                build.onLoad({ filter: /\.frugal-compiled-module.css/, namespace: "virtual" }, (args) => {
+                build.onLoad({ filter: /\.frugal-compiled-css-module\.css$/, namespace: "virtual" }, (args) => {
                     const contents = cssCache.get(args.path);
-                    return { loader: cssLoader, contents };
+                    return { loader: cssLoader, contents, resolveDir: path.dirname(args.path) };
                 });
 
                 build.onLoad({ filter }, async (args) => {
-                    const url = frugal.url(args);
-                    if (url.protocol !== "file:") {
-                        throw Error(`Can't bundle remote css module ${url.href}`);
+                    try {
+                        const url = frugal.url(args);
+                        if (url.protocol !== "file:") {
+                            throw Error(`Can't bundle remote css module ${url.href}`);
+                        }
+
+                        log(
+                            `found css module "${args.path}"`,
+                            { scope: "frugal:cssModule", level: "debug" },
+                        );
+
+                        const modulePath = path.fromFileUrl(url);
+                        const contents = await frugal.load(url);
+                        const contentHash = (await xxhash.create()).update(contents).digest("hex").toString();
+
+                        const cssPath = path.resolve(
+                            path.dirname(modulePath),
+                            `${path.basename(modulePath)}-${contentHash}.frugal-compiled-css-module.css`,
+                        );
+
+                        const module = await cssModuleBuilder.bundle(modulePath, cssPath, contents);
+
+                        cssCache.set(cssPath, module.css);
+
+                        return { loader: "js", contents: module.js };
+                    } catch (e) {
+                        console.log(e);
+                        throw e;
                     }
-
-                    log(
-                        `found css module "${args.path}"`,
-                        { scope: "frugal:cssModule", level: "debug" },
-                    );
-
-                    const modulePath = path.fromFileUrl(url);
-                    const contents = await frugal.load(url);
-                    const contentHash = (await xxhash.create()).update(contents).digest("hex").toString();
-
-                    const cssPath = `/${path.basename(modulePath)}-${contentHash}.frugal-compiled-module.css`;
-
-                    const module = await cssModuleBuilder.bundle(modulePath, cssPath, contents);
-
-                    cssCache.set(cssPath, module.css);
-
-                    return { loader: "js", contents: module.js };
                 });
             },
         };
@@ -98,14 +106,9 @@ class CssModuleBuilder {
             return cached;
         }
 
-        const { code, exports } = await this.#transform(path, contents);
+        const { css, exports } = await this.#transform(path, contents);
 
         const js = new CssModuleCompiler(exports ?? {}).compile(cssPath);
-
-        // copy css Uint8Array, because the underlying buffer coming from
-        // lightningcss might become detached
-        const css = new Uint8Array(code.byteLength);
-        css.set(code);
 
         const module = { contents, css, js };
 
@@ -119,7 +122,7 @@ class CssModuleBuilder {
         }
 
         await CssModuleBuilder.INIT_PROMISE;
-        return lightningcss.transform({
+        const { code, exports } = lightningcss.transform({
             filename: path,
             code: contents,
             cssModules: {
@@ -134,6 +137,15 @@ class CssModuleBuilder {
                 nesting: true,
             },
         });
+
+        // copy css Uint8Array, because the underlying buffer coming from
+        // lightningcss might become detached. Copy needs to happen right after
+        // the transform so another call to `lightningcss.transform` can't
+        // happen in the meantime (that would detach the buffer)
+        const css = new Uint8Array(code.byteLength);
+        css.set(code);
+
+        return { css, exports };
     }
 }
 
@@ -162,8 +174,7 @@ class CssModuleCompiler {
     }
 
     compile(compiledCssPath: string) {
-        return `import "${compiledCssPath}";
-${
+        return `${
             Array.from(
                 new Set(
                     Object.values(this.#exports).flatMap((exportData) => {
@@ -180,6 +191,7 @@ ${
                 return `import ${this.#importIdentifier(specifier)} from "${specifier}";`;
             }).join("\n")
         }
+import "${compiledCssPath}";
 
 export default {
     ${

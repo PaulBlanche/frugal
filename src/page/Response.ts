@@ -3,20 +3,20 @@ import { hashableJsonValue, type JSONValue } from "./JSONValue.ts";
 
 export const FORCE_GENERATE_COOKIE = "__frugal_force_generate";
 
-type DataResponseInit<DATA> = {
+export type PageResponse<DATA extends JSONValue> = EmptyResponse | DataResponse<DATA>;
+
+type BaseResponseInit = {
     headers?: HeadersInit;
     status?: number;
     forceDynamic?: boolean;
-} & (DATA extends void ? { data?: DATA } : { data: DATA });
+};
 
-export class DataResponse<DATA extends JSONValue | void> {
+class BaseResponse {
     #headers: Headers;
-    #init: DataResponseInit<DATA>;
-    #type: "data" | "empty";
+    #init: BaseResponseInit;
 
-    constructor(init: DataResponseInit<DATA>) {
+    constructor(init: BaseResponseInit) {
         this.#init = init;
-        this.#type = "data" in init ? "data" : "empty";
         this.#headers = new Headers(this.#init.headers);
         if (this.#init?.forceDynamic) {
             http.setCookie(this.#headers, {
@@ -27,26 +27,47 @@ export class DataResponse<DATA extends JSONValue | void> {
         }
     }
 
-    get type() {
-        return this.#type;
-    }
-
-    get data() {
-        return this.#init.data as DATA;
-    }
-
-    get dataHash() {
-        if (this.data === undefined) {
-            return "";
-        }
-        return JSON.stringify(hashableJsonValue(this.data)) ?? "";
-    }
-
     get headers() {
         return this.#headers;
     }
 
     get status(): http.Status | undefined {
         return this.#init.status;
+    }
+}
+
+export class EmptyResponse extends BaseResponse {
+    type: "empty";
+
+    constructor(init: BaseResponseInit) {
+        super(init);
+        this.type = "empty";
+    }
+
+    get dataHash() {
+        return "";
+    }
+}
+
+type DataResponseInit<DATA extends JSONValue> = BaseResponseInit & {
+    data: DATA;
+};
+
+export class DataResponse<DATA extends JSONValue> extends BaseResponse {
+    #init: DataResponseInit<DATA>;
+    type: "data";
+
+    constructor(init: DataResponseInit<DATA>) {
+        super(init);
+        this.#init = init;
+        this.type = "data";
+    }
+
+    get data() {
+        return this.#init.data;
+    }
+
+    get dataHash() {
+        return JSON.stringify(hashableJsonValue(this.data)) ?? "";
     }
 }

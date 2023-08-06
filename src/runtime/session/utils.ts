@@ -3,6 +3,14 @@ export function isInternalUrl(url: URL) {
     return url.href.startsWith(rootURL.href);
 }
 
+export function isUrlForSameDocument(a: URL | string, b: URL | string) {
+    const na = new URL(a);
+    na.hash = "";
+    const nb = new URL(b);
+    nb.hash = "";
+    return na.href === nb.href;
+}
+
 export function getClosestParentNavigableAnchor(
     target: EventTarget,
 ): HTMLAnchorElement | undefined {

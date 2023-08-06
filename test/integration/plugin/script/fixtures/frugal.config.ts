@@ -1,7 +1,6 @@
 import { Config } from "../../../../../mod.ts";
 import { script } from "../../../../../plugins/script.ts";
 import { cssModule } from "../../../../../plugins/cssModule.ts";
-import { css } from "../../../../../plugins/css.ts";
 
 export const config: Config = {
     self: import.meta.url,
@@ -14,7 +13,6 @@ export const config: Config = {
             // tests
             pattern: "[local]",
         }),
-        css(),
     ],
     log: { level: "silent" },
 };

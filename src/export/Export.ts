@@ -6,4 +6,6 @@ export type ExportContext = {
     snapshot: BuildCacheSnapshot;
 };
 
-export type Export = (context: ExportContext) => Promise<void>;
+export interface Exporter {
+    export(context: ExportContext): Promise<void>;
+}

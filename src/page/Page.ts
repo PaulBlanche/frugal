@@ -3,8 +3,8 @@ import * as pathToRegexp from "../../dep/path-to-regexp.ts";
 import * as descriptor from "./PageDescriptor.ts";
 import { PathObject } from "./PathObject.ts";
 import { JSONValue } from "./JSONValue.ts";
-import { DataResponse } from "../../page.ts";
 import { log } from "../log.ts";
+import { DataResponse } from "./Response.ts";
 
 class BasePage<
     PATH extends string = string,

@@ -1,13 +1,13 @@
 import { FrugalConfig } from "./Config.ts";
 import { Builder } from "./build/Builder.ts";
-import { WatchCache } from "./cache/WatchCache.ts";
+import { RuntimeWatchCache } from "./cache/RuntimeWatchCache.ts";
 import { ChildContext } from "./watch/ChildContext.ts";
 import { ParentContext, ParentContextListener } from "./watch/ParentContext.ts";
 
 export class WatchContext {
     #context: ParentContext | ChildContext;
 
-    static create(config: FrugalConfig, watchCache: WatchCache) {
+    static create(config: FrugalConfig, watchCache: RuntimeWatchCache) {
         if (isInChildWatchProcess()) {
             return new WatchContext(new ChildContext(new Builder(config)));
         }

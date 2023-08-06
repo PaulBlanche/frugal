@@ -1,10 +1,10 @@
 import * as http from "../../dep/std/http.ts";
 import * as xxhash from "../../dep/xxhash.ts";
-import { Phase } from "../../page.ts";
+import { EmptyResponse, Phase } from "../../page.ts";
 import { JSONValue } from "./JSONValue.ts";
 import { Assets, Render } from "./PageDescriptor.ts";
 import { PathObject } from "./PathObject.ts";
-import { DataResponse } from "./Response.ts";
+import { DataResponse, PageResponse } from "./Response.ts";
 import * as etag from "../server/etag.ts";
 
 type GenerationResultInit<PATH extends string, DATA extends JSONValue> = {
@@ -27,14 +27,14 @@ export type SerializedGenerationResult = {
 };
 
 export class GenerationResult<PATH extends string, DATA extends JSONValue> {
-    #dataResponse: DataResponse<DATA | void>;
+    #pageResponse: PageResponse<DATA>;
     #init: GenerationResultInit<PATH, DATA>;
     #hash?: Promise<string>;
     #serialized?: SerializedGenerationResult;
     #body?: Promise<string | undefined>;
 
-    constructor(dataResponse: DataResponse<DATA | void>, init: GenerationResultInit<PATH, DATA>) {
-        this.#dataResponse = dataResponse;
+    constructor(pageResponse: PageResponse<DATA>, init: GenerationResultInit<PATH, DATA>) {
+        this.#pageResponse = pageResponse;
         this.#init = init;
     }
 
@@ -49,8 +49,8 @@ export class GenerationResult<PATH extends string, DATA extends JSONValue> {
                 path: this.#init.pathname,
                 hash,
                 body,
-                headers: Array.from(this.#dataResponse.headers.entries()),
-                status: this.#dataResponse.status,
+                headers: Array.from(this.#pageResponse.headers.entries()),
+                status: this.#pageResponse.status,
             };
         }
 
@@ -59,7 +59,7 @@ export class GenerationResult<PATH extends string, DATA extends JSONValue> {
 
     async toResponse(): Promise<Response> {
         const body = await this.body;
-        const headers = new Headers(this.#dataResponse.headers);
+        const headers = new Headers(this.#pageResponse.headers);
 
         if (!headers.has("content-type")) {
             headers.set("Content-Type", "text/html; charset=utf-8");
@@ -71,8 +71,8 @@ export class GenerationResult<PATH extends string, DATA extends JSONValue> {
 
         return new Response(body, {
             headers,
-            status: this.#dataResponse.status,
-            statusText: this.#dataResponse.status ? http.STATUS_TEXT[this.#dataResponse.status] : undefined,
+            status: this.#pageResponse.status,
+            statusText: this.#pageResponse.status ? http.STATUS_TEXT[this.#pageResponse.status] : undefined,
         });
     }
 
@@ -85,14 +85,17 @@ export class GenerationResult<PATH extends string, DATA extends JSONValue> {
 
     get body() {
         if (this.#body === undefined) {
-            this.#body = this.#dataResponse.type === "data"
+            // do not use instanceof because classes are bundled inside the page
+            // bundle, and have a different identity from the one from the
+            // frugal module. Use brand `type` instead.
+            this.#body = this.#pageResponse.type === "data"
                 ? Promise.resolve(this.#init.render({
                     phase: this.#init.phase,
                     path: this.#init.path,
                     pathname: this.#init.pathname,
                     descriptor: this.#init.descriptor,
                     assets: this.#init.assets,
-                    data: this.#dataResponse.data!,
+                    data: this.#pageResponse.data!,
                 }))
                 : Promise.resolve(undefined);
         }
@@ -106,7 +109,7 @@ export class GenerationResult<PATH extends string, DATA extends JSONValue> {
     async #computeHash() {
         const hash = await xxhash.create();
         return hash
-            .update(this.#dataResponse.dataHash ?? "")
+            .update(this.#pageResponse.dataHash ?? "")
             .update(this.#init.pathname)
             .update(this.#init.moduleHash)
             .update(this.#init.configHash)
