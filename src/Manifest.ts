@@ -15,7 +15,9 @@ export async function loadManifest(config: FrugalConfig): Promise<Manifest> {
     try {
         return await import(manifestURL.href);
     } catch (error) {
-        throw new ManifestExecutionError(`Error while loading manifest`, { cause: error });
+        throw new ManifestExecutionError(`Error while loading manifest ${manifestURL.href}: ${error.message}`, {
+            cause: error,
+        });
     }
 }
 
