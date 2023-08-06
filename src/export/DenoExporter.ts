@@ -37,11 +37,6 @@ class InternalExporter {
 
         await this.#populateScript();
         await this.#entrypointScript();
-        if (this.#config.importMapURL) {
-            await fs.copy(this.#config.importMapURL, new URL("import_map.json", this.#config.outdir), {
-                overwrite: true,
-            });
-        }
     }
 
     async #populateScript() {

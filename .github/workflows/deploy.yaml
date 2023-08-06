@@ -40,5 +40,5 @@ jobs:
         with:
           project: frugal
           entrypoint: doc/dist/entrypoint.mjs
-          import-map: doc/dist/import_map.json
+          import-map: doc/import_map.json
 
