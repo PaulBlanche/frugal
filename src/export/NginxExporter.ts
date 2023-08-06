@@ -10,7 +10,7 @@ export class NginxExporter implements Exporter {
     constructor() {
     }
 
-    async export(context: ExportContext) {
+    export(context: ExportContext) {
         return new InternalExporter(context).export();
     }
 }

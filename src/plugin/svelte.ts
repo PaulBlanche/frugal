@@ -124,6 +124,7 @@ type Module = {
     contents: Uint8Array;
     css?: { code: string; filename: string };
     js: { code: string; sourcemap: SourceMap };
+    // deno-lint-ignore no-explicit-any
     warnings: any[];
     dependencies: Map<string, Date>;
 };
@@ -144,7 +145,9 @@ class SvelteCompiler {
     async compile(
         contents: Uint8Array,
         filename: string,
+        // deno-lint-ignore no-explicit-any
         options: any,
+        // deno-lint-ignore no-explicit-any
     ): Promise<Module | { error: any; dependencies?: string[] }> {
         const key = `${filename}-${options.generate}`;
 
@@ -184,13 +187,14 @@ class SvelteCompiler {
     async #rawCompile(
         contents: Uint8Array,
         filename: string,
+        // deno-lint-ignore no-explicit-any
         options: any,
     ): Promise<Module> {
         const source = typeof contents === "string" ? contents : new TextDecoder().decode(contents);
 
         let preprocessedSource = source;
         let sourcemap;
-        let dependencies = [];
+        let dependencies: string[] = [];
         if (this.#config.preprocess) {
             const preprocessed = await svelteCompiler.preprocess(
                 source,
@@ -202,7 +206,7 @@ class SvelteCompiler {
 
             preprocessedSource = preprocessed.code;
             sourcemap = preprocessed.map;
-            dependencies = preprocessed.dependencies;
+            dependencies = preprocessed.dependencies ?? [];
         }
 
         const { js, css, warnings } = svelteCompiler.compile(preprocessedSource, {

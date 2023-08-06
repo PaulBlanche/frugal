@@ -123,6 +123,7 @@ type AskUntilConfig<VALUE> = {
 
 function askUntil<VALUE = string>(
     message: string,
+    // deno-lint-ignore no-explicit-any
     { head, default: _default, values, sanitize = (x) => (x as any) }: AskUntilConfig<VALUE>,
 ): VALUE {
     const askMessageParts = [colors.bold(message)];

@@ -19,7 +19,7 @@ export function googleFonts(): Plugin {
                     };
                 });
 
-                build.onResolve({ filter: /^\/fonts\/.*$/ }, (args) => {
+                build.onResolve({ filter: /^\/fonts\/.*$/ }, () => {
                     return { external: true };
                 });
 

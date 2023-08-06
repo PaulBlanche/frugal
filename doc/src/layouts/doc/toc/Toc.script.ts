@@ -22,7 +22,7 @@ if (import.meta.main) {
 
     const versionSelect = document.getElementById(VERSION_SELECT_ID)! as HTMLSelectElement;
 
-    versionSelect.addEventListener("change", (event) => {
+    versionSelect.addEventListener("change", () => {
         Session.navigate(location.href.replace(/\/doc@.*?\//, `/doc@${versionSelect.value}/`));
     });
 }

@@ -4,7 +4,6 @@ import { StaticPageGenerator } from "./StaticPageGenerator.ts";
 import { FrugalConfig } from "../Config.ts";
 import { Cache } from "../cache/Cache.ts";
 import { log } from "../log.ts";
-import { Assets, PageDescriptor } from "./PageDescriptor.ts";
 import { Manifest } from "../Manifest.ts";
 
 export type StaticRoute = {

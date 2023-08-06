@@ -21,7 +21,8 @@
         "exclude": [
             "example/",
             "test/",
-            "src/**/*.script.min.js"
+            "src/**/*.script.min.js",
+            "doc/dist"
         ]
     },
     "importMap": "./import_map.json",
