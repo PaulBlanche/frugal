@@ -37,6 +37,9 @@ class InternalExporter {
 
         await this.#populateScript();
         await this.#entrypointScript();
+        await fs.copy(new URL("buildcache", this.#config.cachedir), new URL("deno/buildcache/", this.#config.outdir), {
+            overwrite: true,
+        });
     }
 
     async #populateScript() {
@@ -56,9 +59,7 @@ ${
 }
 
 async function insert(cacheStorage, responsePath, response) {
-    const body = await Deno.readTextFile(path.resolve("${
-                resolveFrugal(path.fromFileUrl(this.#config.cachedir), this.#populateScriptURL)
-            }", response.documentPath))
+    const body = await Deno.readTextFile(response.documentPath)
     cacheStorage.set(responsePath, JSON.stringify({...response, body }));
 }
         `,
