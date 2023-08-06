@@ -1,5 +1,4 @@
 import * as path from "../../dep/std/path.ts";
-import * as fs from "../../dep/std/fs.ts";
 
 import { log } from "../log.ts";
 import { ExportContext, Exporter } from "./Export.ts";
@@ -83,7 +82,7 @@ import { ${cacheStorageInstance.import.name} as CacheStorage } from "${
 import userConfig from "./${path.relative(outDir, path.fromFileUrl(this.#config.self))}"
 
 const config = new FrugalConfig(userConfig)
-const manifest = await loadManifest(config)
+const manifest = await loadManifest(config, false)
 
 const cacheStorage = new CacheStorage(${cacheStorageInstance.instanceParams("config", "manifest").join(", ")})
 const cache = new RuntimeStorageCache(cacheStorage)

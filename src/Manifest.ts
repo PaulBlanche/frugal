@@ -8,9 +8,11 @@ export type Manifest = {
     pages: { moduleHash: string; entrypoint: string; descriptor: PageDescriptor }[];
 };
 
-export async function loadManifest(config: FrugalConfig): Promise<Manifest> {
+export async function loadManifest(config: FrugalConfig, cacheBust = true): Promise<Manifest> {
     const manifestURL = new URL("manifest.mjs", config.cachedir);
-    manifestURL.hash = String(Date.now());
+    if (cacheBust) {
+        manifestURL.hash = String(Date.now());
+    }
 
     try {
         return await import(manifestURL.href);
