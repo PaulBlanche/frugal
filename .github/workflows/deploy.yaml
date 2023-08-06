@@ -39,6 +39,6 @@ jobs:
         uses: denoland/deployctl@v1
         with:
           project: frugal
-          entrypoint: doc/dist/entrypoint.mjs
+          entrypoint: doc/dist/deno/entrypoint.mjs
           import-map: doc/import_map.json
 

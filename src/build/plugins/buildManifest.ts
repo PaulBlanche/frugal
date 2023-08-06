@@ -95,7 +95,7 @@ export function buildManifest(config: FrugalConfig, assets: Assets): esbuild.Plu
     };
 
     async function saveManifest(manifest: Manifest) {
-        const filePath = path.resolve(path.fromFileUrl(config.cachedir), `manifest.mjs`);
+        const filePath = path.resolve(path.fromFileUrl(config.outdir), `manifest.mjs`);
         await Deno.writeTextFile(
             filePath,
             `${

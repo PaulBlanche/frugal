@@ -9,7 +9,7 @@ export type Manifest = {
 };
 
 export async function loadManifest(config: FrugalConfig, cacheBust = true): Promise<Manifest> {
-    const manifestURL = new URL("manifest.mjs", config.cachedir);
+    const manifestURL = new URL("manifest.mjs", config.outdir);
     if (cacheBust) {
         manifestURL.hash = String(Date.now());
     }

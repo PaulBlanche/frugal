@@ -1,4 +1,5 @@
 import * as path from "../../dep/std/path.ts";
+import * as fs from "../../dep/std/fs.ts";
 
 import { log } from "../log.ts";
 import { ExportContext, Exporter } from "./Export.ts";
@@ -28,7 +29,7 @@ class InternalExporter {
         this.#snapshot = snapshot;
         this.#config = config;
         this.#cacheStorageCreator = cacheStorageCreator;
-        this.#populateScriptURL = new URL("populate.mjs", this.#config.cachedir);
+        this.#populateScriptURL = new URL("deno/populate.mjs", this.#config.outdir);
     }
 
     async export() {
@@ -39,6 +40,7 @@ class InternalExporter {
     }
 
     async #populateScript() {
+        await fs.ensureFile(this.#populateScriptURL);
         await Deno.writeTextFile(
             this.#populateScriptURL,
             `export async function populate(cacheStorage, id) {
@@ -61,25 +63,24 @@ async function insert(cacheStorage, path, response) {
     }
 
     async #entrypointScript() {
-        const outDir = path.fromFileUrl(this.#config.outdir);
-
-        const serverScriptURL = new URL("entrypoint.mjs", this.#config.outdir);
+        const serverScriptURL = new URL("deno/entrypoint.mjs", this.#config.outdir);
 
         const cacheStorageInstance = this.#cacheStorageCreator.instance();
 
+        await fs.ensureFile(serverScriptURL);
         await Deno.writeTextFile(
             serverScriptURL,
             `
-import { Router } from "${resolveFrugal("../page/Router.ts", outDir)}";
-import { FrugalServer } from "${resolveFrugal("../server/FrugalServer.ts", outDir)}";
-import { RuntimeStorageCache } from "${resolveFrugal("../cache/RuntimeStorageCache.ts", outDir)}";
-import { FrugalConfig } from "${resolveFrugal("../Config.ts", outDir)}";
-import { loadManifest } from "${resolveFrugal("../Manifest.ts", outDir)}";
+import { Router } from "${resolveFrugal("../page/Router.ts", serverScriptURL)}";
+import { FrugalServer } from "${resolveFrugal("../server/FrugalServer.ts", serverScriptURL)}";
+import { RuntimeStorageCache } from "${resolveFrugal("../cache/RuntimeStorageCache.ts", serverScriptURL)}";
+import { FrugalConfig } from "${resolveFrugal("../Config.ts", serverScriptURL)}";
+import { loadManifest } from "${resolveFrugal("../Manifest.ts", serverScriptURL)}";
 import { ${cacheStorageInstance.import.name} as CacheStorage } from "${
-                resolveFrugal(cacheStorageInstance.import.url, outDir)
+                resolveFrugal(cacheStorageInstance.import.url, serverScriptURL)
             }";
 
-import userConfig from "./${path.relative(outDir, path.fromFileUrl(this.#config.self))}"
+import userConfig from "${resolveFrugal(path.fromFileUrl(this.#config.self), serverScriptURL)}"
 
 const config = new FrugalConfig(userConfig)
 const manifest = await loadManifest(config, false)
@@ -92,7 +93,7 @@ const router = new Router({ config, manifest, cache })
 const current = await cacheStorage.get("__frugal__current")
 if (current !== router.id) {
     console.log('populate')
-    const { populate } = await import("./${path.relative(outDir, path.fromFileUrl(this.#populateScriptURL))}")
+    const { populate } = await import("./populate.mjs")
     populate(cacheStorage, router.id)
 }
 
@@ -110,10 +111,10 @@ server.serve()
     }
 }
 
-function resolveFrugal(_path: string, outDir: string) {
+function resolveFrugal(_path: string, scriptURL: string | URL) {
     const url = new URL(_path, import.meta.url);
     if (url.protocol === "file:") {
-        return path.relative(outDir, path.fromFileUrl(url));
+        return path.relative(path.dirname(path.fromFileUrl(scriptURL)), path.fromFileUrl(url));
     }
     return new URL("../page/Router.ts", import.meta.url).href;
 }
