@@ -9,9 +9,8 @@ Deno.test("diff: absolute minimal document", () => {
     const current = document("<html><head></head><body></body></html>");
     const target = document("<html><head></head><body></body></html>");
 
-    const { patch, node } = diff(current, target);
+    const patch = diff(current, target);
 
-    asserts.assertStrictEquals(current, node);
     asserts.assertEquals(patch, {
         type: PatchType.UPDATE_ELEMENT,
         children: [
@@ -30,7 +29,7 @@ Deno.test("diff: document with attributes changes", () => {
         '<html same="same" different="changed" added="added" readonly disabled><head></head><body></body></html>',
     );
 
-    const { patch } = diff(current, target);
+    const patch = diff(current, target);
 
     asserts.assertEquals(patch, {
         type: PatchType.UPDATE_ELEMENT,
@@ -68,7 +67,7 @@ Deno.test("diff: document with node type changes", () => {
         "<html><head></head><body><div></div></body></html>",
     );
 
-    const { patch } = diff(current, target);
+    const patch = diff(current, target);
 
     asserts.assertEquals(patch, {
         type: PatchType.UPDATE_ELEMENT,
@@ -95,7 +94,7 @@ Deno.test("diff: document with text changes", () => {
         "<html><head></head><body>bar</body></html>",
     );
 
-    const { patch } = diff(current, target);
+    const patch = diff(current, target);
 
     asserts.assertEquals(patch, {
         type: PatchType.UPDATE_ELEMENT,
@@ -122,7 +121,7 @@ Deno.test("diff: document with text changes only in start/end withespaces", () =
         "<html><head></head><body>  foo  </body></html>",
     );
 
-    const { patch } = diff(current, target);
+    const patch = diff(current, target);
 
     asserts.assertEquals(patch, {
         type: PatchType.UPDATE_ELEMENT,
@@ -148,7 +147,7 @@ Deno.test("diff: document with comment changes", () => {
         "<html><head></head><body><!--bar--></body></html>",
     );
 
-    const { patch } = diff(current, target);
+    const patch = diff(current, target);
 
     asserts.assertEquals(patch, {
         type: PatchType.UPDATE_ELEMENT,
@@ -175,7 +174,7 @@ Deno.test("diff: document with node tag change", () => {
         "<html><head></head><body><span>toto</span></body></html>",
     );
 
-    const { patch } = diff(current, target);
+    const patch = diff(current, target);
 
     asserts.assertEquals(patch, {
         type: PatchType.UPDATE_ELEMENT,
@@ -202,7 +201,7 @@ Deno.test("diff: document with node deletion", () => {
         "<html><head></head><body></body></html>",
     );
 
-    const { patch } = diff(current, target);
+    const patch = diff(current, target);
 
     asserts.assertEquals(patch, {
         type: PatchType.UPDATE_ELEMENT,
@@ -226,7 +225,7 @@ Deno.test("diff: document with node insertion", () => {
         "<html><head></head><body><div></div><span></span></body></html>",
     );
 
-    const { patch } = diff(current, target);
+    const patch = diff(current, target);
 
     asserts.assertEquals(patch, {
         type: PatchType.UPDATE_ELEMENT,
@@ -257,7 +256,7 @@ Deno.test("diff: head handling", () => {
         '<html><head><title>updated</title><base href="bar" /></head></html>',
     );
 
-    const { patch } = diff(current, target);
+    const patch = diff(current, target);
 
     asserts.assertEquals(patch, {
         type: PatchType.UPDATE_ELEMENT,
@@ -308,7 +307,7 @@ Deno.test("diff: head link", () => {
         </head></html>`,
     );
 
-    const { patch } = diff(current, target);
+    const patch = diff(current, target);
 
     asserts.assertEquals(patch, {
         type: PatchType.UPDATE_ELEMENT,
@@ -381,7 +380,7 @@ Deno.test("diff: head meta", () => {
         </head></html>`,
     );
 
-    const { patch } = diff(current, target);
+    const patch = diff(current, target);
 
     asserts.assertEquals(patch, {
         type: PatchType.UPDATE_ELEMENT,
@@ -486,9 +485,8 @@ Deno.test("diff: empty node to node with text", () => {
         "<html><head></head><body><div>content</div></body></html>",
     );
 
-    const { patch, node } = diff(current, target);
+    const patch = diff(current, target);
 
-    asserts.assertStrictEquals(current, node);
     asserts.assertEquals(patch, {
         type: PatchType.UPDATE_ELEMENT,
         children: [

@@ -236,7 +236,6 @@ function computeHeadPatch(
 
     for (const targetChild of target.children) {
         const headHash = headChildHash(targetChild);
-        console.log(headHash);
         const actualChild = removes.get(headHash);
         if (actualChild !== undefined) {
             if (hash(actualChild) !== hash(targetChild)) {
@@ -252,7 +251,6 @@ function computeHeadPatch(
 
     for (const node of childNodes(actual)) {
         if (node.nodeType !== NodeType.ELEMENT_NODE) {
-            console.log("preserve", node);
             patch.children.push(preserveNode());
             continue;
         }
@@ -262,7 +260,6 @@ function computeHeadPatch(
 
         // node must be removed
         if (removes.has(key)) {
-            console.log("remove", node);
             patch.children.push(removeNode());
             continue;
         }
@@ -270,7 +267,6 @@ function computeHeadPatch(
         // then node must be updated
         const update = updates.get(key);
         if (update !== undefined) {
-            console.log("update", node);
             const [elementPatch, elementItems] = visitElement(element, update);
             patch.children.push(elementPatch);
             elementItems && items.push(...elementItems);
@@ -278,12 +274,10 @@ function computeHeadPatch(
         }
 
         // then node must be preserved
-        console.log("preserve", node);
         patch.children.push(preserveNode());
     }
 
     for (const node of inserts.values()) {
-        console.log("insert", node);
         patch.children.push(appendNode(node));
     }
 
