@@ -31,6 +31,7 @@ export default {
     server: {
         port: 8000,
     },
+    globalCss: "./src/global.css",
     exporter: new DenoExporter(
         new UpstashCache(strictEnvGet("UPSTASH_URL"), strictEnvGet("UPSTASH_TOKEN")),
     ),

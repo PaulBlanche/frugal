@@ -1,8 +1,3 @@
-export type Diff = {
-    patch: NodePatch;
-    node: Node;
-};
-
 export type NodePatch =
     | { type: PatchType.PRESERVE_NODE }
     | { type: PatchType.REMOVE_NODE }

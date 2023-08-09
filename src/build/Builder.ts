@@ -96,7 +96,7 @@ export class Builder {
             },
         ];
 
-        const config: esbuild.BuildOptions = {
+        const config = {
             ...this.#config.esbuildOptions,
             target: [],
             entryPoints: [
@@ -123,7 +123,11 @@ export class Builder {
             logLevel: "silent",
             outExtension: { ".js": ".mjs" },
             platform: "node",
-        };
+        } satisfies esbuild.BuildOptions;
+
+        if (this.#config.globalCss) {
+            config.entryPoints.push(path.fromFileUrl(new URL(this.#config.globalCss, this.#config.rootdir)));
+        }
 
         log(`esbuild config`, {
             level: "verbose",

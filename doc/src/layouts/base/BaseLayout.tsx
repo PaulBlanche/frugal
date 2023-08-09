@@ -1,6 +1,5 @@
 import { Head, PageProps } from "$dep/frugal/runtime/preact.server.ts";
 
-import "./BaseLayout.css";
 import "./session.script.ts";
 
 export type BaseLayoutProps = PageProps & {
@@ -12,6 +11,7 @@ export function BaseLayout(
 ) {
     const scriptSrc = assets["script"]?.[descriptor];
     const styleHref = assets["style"]?.[descriptor];
+    const globalStyleHref = assets["style"]?.["global"];
 
     return (
         <>
@@ -30,6 +30,7 @@ export function BaseLayout(
                 />
                 <title>Frugal</title>
                 {styleHref && <link rel="stylesheet" href={styleHref} />}
+                {globalStyleHref && <link rel="stylesheet" href={globalStyleHref} />}
                 {scriptSrc && <script async type="module" src={scriptSrc}></script>}
             </Head>
             {children}

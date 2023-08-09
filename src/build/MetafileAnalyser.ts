@@ -39,6 +39,9 @@ export class MetaFileAnalyser {
             if (entryPointUrl.pathname === this.#config.self.pathname) {
                 return await this.#handleConfig(output.entryPoint);
             }
+            if (entryPointUrl.pathname.endsWith(".css")) {
+                return await this.#handleCss(output.entryPoint);
+            }
             throw Error(`Found esbuild entrypoint ${output.entryPoint} that is not a page`);
         }
 
@@ -50,6 +53,13 @@ export class MetaFileAnalyser {
             type: "page",
             entrypoint,
             outputPath,
+            moduleHash: await this.#moduleHash(entrypoint),
+        };
+    }
+
+    async #handleCss(entrypoint: string): Promise<Analysis> {
+        return {
+            type: "config",
             moduleHash: await this.#moduleHash(entrypoint),
         };
     }

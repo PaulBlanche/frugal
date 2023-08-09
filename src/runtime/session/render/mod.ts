@@ -2,21 +2,25 @@ import { diff } from "./diff.ts";
 import { patch } from "./patch.ts";
 
 export async function render(nextDocument: Document, options: { onBeforeRender?: () => void } = {}) {
+    const assetPromises: Promise<void>[] = [];
+    nextDocument.querySelectorAll<HTMLLinkElement>('link[rel="stylesheet"]').forEach((styleLink) => {
+        const styleRawHref = styleLink.getAttribute("href");
+        const matchingStyleLink = document.querySelector(`link[rel="stylesheet"][href="${styleRawHref}"]`);
+        if (!matchingStyleLink) {
+            const cloneLink = styleLink.cloneNode();
+            document.head.appendChild(cloneLink);
+            assetPromises.push(
+                new Promise<void>((res) => {
+                    cloneLink.addEventListener("load", () => {
+                        res();
+                    });
+                }),
+            );
+        }
+    });
+
     const bodyPatch = diff(document.body, nextDocument.body);
     const headPatch = diff(document.head, nextDocument.head);
-
-    const assetPromises: Promise<void>[] = [];
-    nextDocument.querySelectorAll<HTMLLinkElement>('link[rel="stylesheet"]').forEach((element) => {
-        document.head.appendChild(element);
-        assetPromises.push(
-            new Promise<void>((res) => {
-                element.addEventListener("load", () => {
-                    console.log("load", element.href);
-                    res();
-                });
-            }),
-        );
-    });
 
     await Promise.all(assetPromises);
 

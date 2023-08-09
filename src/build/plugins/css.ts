@@ -31,6 +31,7 @@ export function css(frugal: Build): esbuild.Plugin {
                         return await onResolve({ ...args, namespace: "file" });
                     });
                 },
+
                 onLoad(options, onLoad) {
                     build.onLoad({ ...options, filter: FILTER }, async (args) => {
                         // try denoLoaderPlugin first to load npm files.
@@ -62,8 +63,12 @@ export function css(frugal: Build): esbuild.Plugin {
                     const output = metafile.outputs[outputPath];
                     const cssBundle = output.cssBundle;
                     const entrypoint = output.entryPoint;
-                    if (entrypoint && cssBundle) {
-                        cssBundles.push({ cssBundle, entrypoint });
+                    if (entrypoint) {
+                        if (cssBundle) {
+                            cssBundles.push({ cssBundle, entrypoint });
+                        } else if (entrypoint.endsWith(".css")) {
+                            cssBundles.push({ cssBundle: outputPath, entrypoint: "global" });
+                        }
                     }
                 }
 

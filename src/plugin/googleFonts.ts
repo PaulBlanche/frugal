@@ -38,12 +38,12 @@ export function googleFonts({ type = "local" }: Config = {}): Plugin {
                             },
                         });
 
-                        let css = await response.text();
+                        const css = await response.text();
 
                         return { contents: css, loader: "css" };
                     });
 
-                    build.onResolve({ filter: /^\/\/fonts.gstatic.com\//, namespace: "https" }, (args) => {
+                    build.onResolve({ filter: /^\/\/fonts.gstatic.com\//, namespace: "https" }, () => {
                         return { external: true };
                     });
                 }

@@ -1,4 +1,4 @@
-import { AttributePatch, Diff, NodePatch, PatchType } from "./types.ts";
+import { AttributePatch, NodePatch, PatchType } from "./types.ts";
 import { isElement } from "./utils.ts";
 
 type PatchQueueItem = {

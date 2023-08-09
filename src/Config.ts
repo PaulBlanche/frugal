@@ -20,6 +20,7 @@ export type Config = {
     staticdir?: string;
     importMap?: string;
     log?: Partial<log.LogConfig>;
+    globalCss?: string;
     esbuild?: Pick<
         esbuild.BuildOptions,
         | "splitting"
@@ -145,6 +146,10 @@ export class FrugalConfig {
         }
 
         this.#serverConfig = new FrugalServerConfig(config.server ?? {});
+    }
+
+    get globalCss() {
+        return this.#config.globalCss;
     }
 
     get plugins() {

@@ -1,4 +1,4 @@
-import { AttributePatch, Diff, NodePatch, NodeType, PatchType, UpdateElementPatch } from "./types.ts";
+import { AttributePatch, NodePatch, NodeType, PatchType, UpdateElementPatch } from "./types.ts";
 import { clone, getAttributes, hash } from "./utils.ts";
 
 type DiffQueueItem = [
@@ -144,12 +144,10 @@ function visitElement(actual: Element, target: Element): VisitResult {
         return [patch];
     }
 
-    const styles: string[] = [];
     const items = actual.tagName !== "HEAD" ? computeElementPatch(patch, actual, target) : computeHeadPatch(
         patch,
         actual as HTMLHeadElement,
         target as HTMLHeadElement,
-        styles,
     );
 
     return [patch, items];
@@ -227,7 +225,6 @@ function computeHeadPatch(
     patch: UpdateElementPatch,
     actual: HTMLHeadElement,
     target: HTMLHeadElement,
-    styles: string[],
 ): DiffQueueItem[] {
     const removes = new Map<string, Element>();
     const inserts = new Map<string, Element>();
@@ -238,14 +235,8 @@ function computeHeadPatch(
     }
 
     for (const targetChild of target.children) {
-        if (targetChild.tagName === "LINK" && targetChild.getAttribute("rel") === "stylesheet") {
-            const href = targetChild.getAttribute("href");
-            if (href) {
-                styles.push(href);
-            }
-        }
-
         const headHash = headChildHash(targetChild);
+        console.log(headHash);
         const actualChild = removes.get(headHash);
         if (actualChild !== undefined) {
             if (hash(actualChild) !== hash(targetChild)) {
@@ -261,6 +252,7 @@ function computeHeadPatch(
 
     for (const node of childNodes(actual)) {
         if (node.nodeType !== NodeType.ELEMENT_NODE) {
+            console.log("preserve", node);
             patch.children.push(preserveNode());
             continue;
         }
@@ -270,6 +262,7 @@ function computeHeadPatch(
 
         // node must be removed
         if (removes.has(key)) {
+            console.log("remove", node);
             patch.children.push(removeNode());
             continue;
         }
@@ -277,6 +270,7 @@ function computeHeadPatch(
         // then node must be updated
         const update = updates.get(key);
         if (update !== undefined) {
+            console.log("update", node);
             const [elementPatch, elementItems] = visitElement(element, update);
             patch.children.push(elementPatch);
             elementItems && items.push(...elementItems);
@@ -284,10 +278,12 @@ function computeHeadPatch(
         }
 
         // then node must be preserved
+        console.log("preserve", node);
         patch.children.push(preserveNode());
     }
 
     for (const node of inserts.values()) {
+        console.log("insert", node);
         patch.children.push(appendNode(node));
     }
 
