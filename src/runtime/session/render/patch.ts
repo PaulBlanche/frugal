@@ -7,18 +7,11 @@ type PatchQueueItem = {
     child?: Node;
 };
 
-export async function patch(diff: Diff) {
-    await Promise.all(diff.styles.map(async (style) => await fetch(style)));
-
-    const parent = diff.node.documentElement;
-    if (parent === null || parent === undefined) {
-        return;
-    }
-
+export function patch(patch: NodePatch, target: Node) {
     const queue: PatchQueueItem[] = [];
     queue.push({
-        patch: diff.patch,
-        parent,
+        patch,
+        parent: target,
     });
 
     let current: PatchQueueItem | undefined;

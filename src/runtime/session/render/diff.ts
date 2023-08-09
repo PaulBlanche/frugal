@@ -29,20 +29,15 @@ function childNodes(node: Node) {
     return node.childNodes;
 }
 
-export function diff(actual: Document, target: Document): Diff {
+export function diff(actual: Node, target: Node): NodePatch {
     const patchList: NodePatch[] = [];
     const queue: DiffQueueItem[] = [[patchList, actual, target]];
-
-    const styles: string[] = [];
 
     let current: DiffQueueItem | undefined;
 
     let noDiff = false;
     while ((current = queue.shift()) !== undefined) {
-        const [patch, visitedStyles, items, inhibit] = visit(current[1], current[2]);
-        if (visitedStyles) {
-            styles.push(...visitedStyles);
-        }
+        const [patch, items, inhibit] = visit(current[1], current[2]);
 
         if (inhibit === true) {
             noDiff = true;
@@ -63,16 +58,11 @@ export function diff(actual: Document, target: Document): Diff {
         }
     }
 
-    return {
-        styles,
-        node: actual,
-        patch: patchList[0],
-    };
+    return patchList[0];
 }
 
-type VisitResult = [patch: NodePatch, styles?: string[]] | [
+type VisitResult = [patch: NodePatch] | [
     patch: NodePatch,
-    styles: string[],
     items: DiffQueueItem[],
     inhibit?: boolean,
 ];
@@ -119,10 +109,10 @@ function visitComment(actual: Comment, target: Comment): VisitResult {
     if (
         actual.data.match(/start-no-diff/) && target.data.match(/start-no-diff/)
     ) {
-        return [preserveNode(), [], [], true];
+        return [preserveNode(), [], true];
     }
     if (target.data.match(/end-no-diff/)) {
-        return [preserveNode(), [], [], false];
+        return [preserveNode(), [], false];
     }
     return [replaceNode(target)];
 }
@@ -162,7 +152,7 @@ function visitElement(actual: Element, target: Element): VisitResult {
         styles,
     );
 
-    return [patch, styles, items];
+    return [patch, items];
 }
 
 function computeAttributePatch(
@@ -287,7 +277,7 @@ function computeHeadPatch(
         // then node must be updated
         const update = updates.get(key);
         if (update !== undefined) {
-            const [elementPatch, _styles, elementItems] = visitElement(element, update);
+            const [elementPatch, elementItems] = visitElement(element, update);
             patch.children.push(elementPatch);
             elementItems && items.push(...elementItems);
             continue;

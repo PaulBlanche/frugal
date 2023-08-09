@@ -1,7 +1,6 @@
 export type Diff = {
-    styles: string[];
     patch: NodePatch;
-    node: Document;
+    node: Node;
 };
 
 export type NodePatch =
