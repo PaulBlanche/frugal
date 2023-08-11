@@ -54,6 +54,10 @@ export class Navigator {
 
         const html = await this._fetch(init);
 
+        if (html === undefined) {
+            return false;
+        }
+
         const nextDocument = new DOMParser().parseFromString(
             html,
             "text/html",
@@ -122,6 +126,10 @@ export class Navigator {
         }, this._config.timeout);
 
         const response = await fetch(this._url.href, init);
+
+        if (!response.ok) {
+            return;
+        }
 
         if (response.redirected) {
             const hash = this._url.hash;

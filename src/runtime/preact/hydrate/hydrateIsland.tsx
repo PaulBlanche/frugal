@@ -24,14 +24,6 @@ export function hydrateIsland<PROPS>(
     );
 
     start.dataset["hydrated"] = "";
-
-    // we can't wait for the component to unmount (since it will happen
-    // asynchronously after a state update), because we need the dom to be empty
-    // for the next component before the `frugal:readystatechange` event for
-    // completion (that triggers the hydration of the next islands).
-    addEventListener("frugal:beforeunload", () => {
-        getComponentRange(start).forEach((node) => node.parentNode?.removeChild(node));
-    });
 }
 
 function getComponentRange(start: HTMLScriptElement) {

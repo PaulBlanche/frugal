@@ -24,13 +24,13 @@ export async function render(nextDocument: Document, options: { onBeforeRender?:
 
     await Promise.all(assetPromises);
 
-    options.onBeforeRender?.();
-
     const clone = document.body.cloneNode(true);
     const bodyFragment = document.createDocumentFragment();
     bodyFragment.append(...clone.childNodes);
     patch(bodyPatch, bodyFragment);
     patch(headPatch, document.head);
+
+    options.onBeforeRender?.();
 
     await new Promise<void>((res) =>
         requestAnimationFrame(() => {

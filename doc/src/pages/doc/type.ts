@@ -1,4 +1,4 @@
-import { Toc } from "../../toc.ts";
+import { Toc } from "./toc.ts";
 
 export type Data = {
     toc: Toc;

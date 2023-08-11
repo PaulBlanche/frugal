@@ -1,4 +1,4 @@
-import { signal, useComputed } from "@preact/signals";
+import { computed, Signal, signal, useComputed } from "@preact/signals";
 
 import counter from "./Counter.module.css";
 import { clsx } from "$dep/frugal/doc/dep/clsx.ts";

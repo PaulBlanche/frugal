@@ -10,7 +10,7 @@
 .tabs {
     display: flex;
     flex-direction: row;
-    overflow: scroll;
+    overflow: auto;
     background: #020202;
 }
 

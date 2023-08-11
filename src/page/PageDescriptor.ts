@@ -17,6 +17,7 @@ type BaseHandlerContext<PATH extends string> = {
     assets: Assets;
     descriptor: string;
     resolve: (path: string) => string;
+    publicdir: string;
 };
 
 export type DynamicHandlerContext<PATH extends string> =

@@ -9,10 +9,8 @@ export async function watchModeModifications(context: Context, next: Next<Contex
     const response = await next(context);
     const headers = new Headers(response.headers);
 
-    // disable cache for every html response in watchMode
-    if (headers.get("Content-Type")?.startsWith("text/html")) {
-        headers.set("Cache-Control", "no-store");
-    }
+    // disable cache for every response in watchMode
+    headers.set("Cache-Control", "no-store");
 
     // bail on empty or non html response
     if (!response.body || !headers.get("Content-Type")?.startsWith("text/html")) {

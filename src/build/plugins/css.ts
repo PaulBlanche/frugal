@@ -78,6 +78,12 @@ export function css(frugal: Build): esbuild.Plugin {
 
                 await Promise.all(
                     cssBundles.map(async ({ cssBundle, entrypoint }) => {
+                        frugal.config.budget.metafileAdd({
+                            metafile,
+                            outputPath: cssBundle,
+                            type: "style",
+                        });
+
                         const cssBundlePath = `css/${path.relative(commonRoot, cssBundle)}`;
 
                         const cssBundleUrl = new URL(cssBundlePath, frugal.config.publicdir);

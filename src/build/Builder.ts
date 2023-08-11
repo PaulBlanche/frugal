@@ -76,6 +76,17 @@ export class Builder {
             ...this.#config.plugins.map((plugin) => plugin(context)),
             ...(this.#config.esbuildOptions?.plugins ?? []),
             css(context),
+            {
+                name: "__frugal_internal:externalRemote",
+                setup: (build) => {
+                    build.onResolve({ filter: /.*/, namespace: "http" }, (args) => {
+                        return { external: true, path: context.url(args).href, namespace: args.namespace };
+                    });
+                    build.onResolve({ filter: /.*/, namespace: "https" }, (args) => {
+                        return { external: true, path: context.url(args).href, namespace: args.namespace };
+                    });
+                },
+            },
             denoLoaderPlugin({
                 importMapURL: this.#config.importMapURL?.href,
                 nodeModulesDir: true,
@@ -85,7 +96,7 @@ export class Builder {
             buildManifest(this.#config, context.assets),
             cleanOutdir(this.#config),
             isInChildWatchProcess() && watchEmitter(),
-            reporter(),
+            reporter(this.#config),
             {
                 name: "__frugal_internal:cleanAssetMap",
                 setup(build) {

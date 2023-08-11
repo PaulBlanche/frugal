@@ -1,2 +1,1 @@
-export * from "npm:marked@5.1.2";
-export { default } from "npm:marked@5.1.2";
+export * from "https://esm.sh/marked@7.0.2";

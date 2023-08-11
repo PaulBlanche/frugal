@@ -21,11 +21,16 @@ export type BudgetConfig = {
     log?: "warning" | "error";
 };
 
-type BudgetCheckConfig = {
-    metafile: esbuild.Metafile;
+type AddConfig = {
     type: AssetType;
+    assetPath: string;
+    size: number;
+};
+
+type MetafileCheckConfig = {
+    type: AssetType;
+    metafile: esbuild.Metafile;
     outputPath: string;
-    scope: string;
 };
 
 export class Budget {
@@ -34,6 +39,7 @@ export class Budget {
     #budget: number;
     #shares: Record<AssetType, number>;
     #log: "warning" | "error";
+    #state: Record<AssetType, { total: number; assets: { path: string; size: number }[] }>;
 
     constructor(config: BudgetConfig = { speed: 20 * 1000 * 1000, delay: 1 }) {
         this.#speed = config.speed;
@@ -44,9 +50,28 @@ export class Budget {
             ...config.assets,
         };
         this.#log = config.log ?? "warning";
+        this.#state = {
+            script: { total: 0, assets: [] },
+            style: { total: 0, assets: [] },
+            markup: { total: 0, assets: [] },
+            images: { total: 0, assets: [] },
+            fonts: { total: 0, assets: [] },
+            video: { total: 0, assets: [] },
+        };
     }
 
-    check({ metafile, outputPath, type, scope }: BudgetCheckConfig) {
+    reset() {
+        this.#state = {
+            script: { total: 0, assets: [] },
+            style: { total: 0, assets: [] },
+            markup: { total: 0, assets: [] },
+            images: { total: 0, assets: [] },
+            fonts: { total: 0, assets: [] },
+            video: { total: 0, assets: [] },
+        };
+    }
+
+    metafileAdd({ metafile, outputPath, type }: MetafileCheckConfig) {
         const outputs = metafile.outputs;
         const queue = [outputPath];
         let current: string | undefined;
@@ -61,22 +86,36 @@ export class Budget {
             }
         }
 
-        const limit = this.#limit(type);
+        this.add({ size, type, assetPath: outputPath });
+    }
 
-        const message = `Output bundle "${outputPath}" (${bytes.format(size)})`;
+    add({ type, assetPath, size }: AddConfig) {
+        log(`Output ${type} asset "${assetPath}" (${bytes.format(size)})`, { scope: "Budget", level: "debug" });
 
-        if (size > limit) {
-            const extra = `Bundle size is over budget (${bytes.format(limit)})`;
+        this.#state[type].total += size;
+        this.#state[type].assets.push({ path: assetPath, size });
+    }
 
-            if (this.#log === "error") {
-                const error = new Error(extra);
-                log(message, { scope, extra: String(error) });
-                throw error;
+    check() {
+        for (const type of (Object.keys(this.#shares) as AssetType[])) {
+            const limit = this.#limit(type);
+
+            if (this.#state[type].total > limit) {
+                const message = `Total ${type} assets size (${this.#state[type].total}) is over budget (${
+                    bytes.format(limit)
+                })`;
+
+                const extra = this.#state[type].assets.map(({ path, size }) => `${path} (${bytes.format(size)})`).join(
+                    "\n",
+                );
+
+                if (this.#log === "error") {
+                    log(message, { scope: "Budget", extra, level: "error" });
+                    throw new Error("Assets over budget");
+                }
+
+                log(message, { scope: "Budget", extra, level: "warning" });
             }
-
-            log(message, { scope, extra, level: "warning" });
-        } else {
-            log(message, { scope, level: "debug" });
         }
     }
 

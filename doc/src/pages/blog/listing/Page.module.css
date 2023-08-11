@@ -1,0 +1,68 @@
+.container {
+    composes: container from '../../../styles/container.module.css';
+
+    max-width: 768;
+}
+
+.section {
+    composes: container;
+
+    display: flex;
+
+    margin-top: 2rem;
+    margin-bottom: 2rem;
+
+    .header {
+        flex: 1;
+    }
+
+    .content {
+        flex: 2;
+        margin-left: 2rem;
+        display: flex;
+        flex-direction: column;
+    }
+}
+
+.wrapper {
+    height: 100%;
+}
+
+.head {
+    composes: container;
+
+    .page-title {
+        font-weight: 900;
+        font-size: 4rem;
+        margin: 4rem 0 5rem;
+        font-family: var(--heading-font-familly);
+    }
+}
+
+.title {
+    font-size: 2rem;
+    font-weight: 900;
+    font-family: var(--heading-font-familly);
+    margin: 0;
+    line-height: 1.2;
+}
+
+.link {
+    color: black;
+    text-decoration: none;
+}
+
+.time {
+    color: #888;
+}
+
+.header {
+    display: flex;
+    flex-direction: column;
+    align-items: baseline;
+    aspect-ratio: 1.5;
+
+    background-size: cover;
+    background-position: center center;
+
+}

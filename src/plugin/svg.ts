@@ -72,11 +72,19 @@ export function svg(
                         const svg = renderSpritesheet(symbols, frugal.config);
                         const svgPath = path.join("svg", name);
                         const svgUrl = new URL(svgPath, frugal.config.publicdir);
+                        const assetPath = `/${svgPath}`;
 
-                        generated.push(`/${svgPath}`);
+                        generated.push(assetPath);
 
                         await fs.ensureFile(svgUrl);
                         await Deno.writeTextFile(svgUrl, svg);
+                        const stat = await Deno.stat(svgUrl);
+
+                        frugal.config.budget.add({
+                            size: stat.size,
+                            type: "images",
+                            assetPath,
+                        });
                     }
 
                     frugal.output("svg", generated);

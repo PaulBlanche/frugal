@@ -1,7 +1,7 @@
 import { DataResponse, EmptyResponse, GetPathsParams, PathList, StaticHandlerContext } from "$dep/frugal/page.ts";
 import { getRenderFrom } from "$dep/frugal/runtime/preact.server.ts";
 import { Page } from "./Page.tsx";
-import { getToc } from "../../toc.ts";
+import { getToc } from "./toc.ts";
 import { Data } from "./type.ts";
 
 export const pattern = "/doc@:version/:slug(.*)?";

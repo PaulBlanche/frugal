@@ -187,11 +187,10 @@ function getJsBundle(
             path.fromFileUrl(jsBundleUrl),
         );
 
-        config.budget.check({
+        config.budget.metafileAdd({
             metafile,
             outputPath,
             type: "script",
-            scope: "frugal:script",
         });
 
         generated[facade.entrypoint] = `/${bundleName}`;

@@ -4,7 +4,7 @@ import { clsx } from "$dep/frugal/doc/dep/clsx.ts";
 import page from "./Page.module.css";
 import link from "../../styles/link.module.css";
 import { Hero } from "./Hero.tsx";
-import { LandingLayout } from "../../layouts/landing/LandingLayout.tsx";
+import { LandingLayout } from "./_layout/LandingLayout.tsx";
 import { Code } from "../../components/code/Code.tsx";
 
 import versions from "../../../../versions.json" assert { type: "json" };

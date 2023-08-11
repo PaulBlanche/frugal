@@ -119,7 +119,7 @@ function visitComment(actual: Comment, target: Comment): VisitResult {
 
 function visitText(actual: Text, target: Text): VisitResult {
     // text nodes are guaranteed to have a value
-    if (actual.nodeValue!.trim() === target.nodeValue!.trim()) {
+    if (actual.nodeValue! === target.nodeValue) {
         return [preserveNode()];
     } else {
         return [{

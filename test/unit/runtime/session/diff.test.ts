@@ -130,7 +130,8 @@ Deno.test("diff: document with text changes only in start/end withespaces", () =
             {
                 type: PatchType.UPDATE_ELEMENT,
                 children: [{
-                    type: PatchType.PRESERVE_NODE,
+                    type: PatchType.UPDATE_TEXT,
+                    text: "  foo  ",
                 }],
                 attributes: [],
             },

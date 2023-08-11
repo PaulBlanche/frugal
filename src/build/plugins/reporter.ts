@@ -1,8 +1,9 @@
 import * as esbuild from "../../../dep/esbuild.ts";
+import { FrugalConfig } from "../../Config.ts";
 
 import { log } from "../../log.ts";
 
-export function reporter(): esbuild.Plugin {
+export function reporter(config: FrugalConfig): esbuild.Plugin {
     let firstBuild = true;
     return {
         name: "__frugal_internal:reporter",
@@ -12,6 +13,8 @@ export function reporter(): esbuild.Plugin {
                     log("Rebuild triggered", { level: "info", scope: "esbuild" });
                 }
                 firstBuild = false;
+
+                config.budget.reset();
             });
 
             build.onEnd(async (result) => {
@@ -49,6 +52,8 @@ export function reporter(): esbuild.Plugin {
                         extra: formatted,
                     });
                 }
+
+                config.budget.check();
             });
         },
     };

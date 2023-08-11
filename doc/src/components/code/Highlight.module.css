@@ -4,8 +4,8 @@
     margin: 0.5em 0;
     font-size: 85%;
     line-height: 1.45;
-    font-family: Consolas, Monaco, Andale Mono, monospace;
     position: relative;
+    font-family: Consolas, Monaco, Andale Mono, monospace;
 }
 
 pre.highlight {
@@ -13,7 +13,6 @@ pre.highlight {
     margin: 0;
     height: 100%;
     overflow: auto;
-
 }
 
 pre.highlight-line-numbers {
@@ -24,6 +23,7 @@ pre.highlight-line-numbers {
 pre.highlight>code {
     position: relative;
     z-index: 1;
+    font-family: inherit;
 }
 
 pre.line-numbers {

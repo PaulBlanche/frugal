@@ -3,7 +3,6 @@ import * as importmap from "../dep/importmap.ts";
 import * as path from "../dep/std/path.ts";
 
 import * as log from "./log.ts";
-import { CacheStorage } from "./cache/CacheStorage.ts";
 import { Plugin } from "./Plugin.ts";
 import { Budget, BudgetConfig } from "./Budget.ts";
 import { Exporter } from "./export/Export.ts";
@@ -15,7 +14,6 @@ import { Context } from "./server/Context.ts";
 export type Config = {
     self: string;
     pages: string[];
-    cacheStorage?: CacheStorage;
     outdir?: string;
     staticdir?: string;
     importMap?: string;
