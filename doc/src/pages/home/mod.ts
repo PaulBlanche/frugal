@@ -3,7 +3,7 @@ import { getRenderFrom } from "$dep/frugal/runtime/preact.server.ts";
 
 import { Page } from "./Page.tsx";
 
-export const pattern = "/";
+export const route = "/";
 
 export function generate() {
     return new DataResponse({

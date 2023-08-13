@@ -22,8 +22,8 @@ class BasePage<
 
     constructor(descriptor: DESCRIPTOR, moduleHash: string, entrypoint: string) {
         this.#descriptor = descriptor;
-        this.#urlCompiler = pathToRegexp.compile(this.#descriptor.pattern);
-        this.#urlMatcher = pathToRegexp.match(this.#descriptor.pattern);
+        this.#urlCompiler = pathToRegexp.compile(this.#descriptor.route);
+        this.#urlMatcher = pathToRegexp.match(this.#descriptor.route);
         this.#moduleHash = moduleHash;
         this.#entrypoint = entrypoint;
     }
@@ -44,8 +44,8 @@ class BasePage<
         return this.#entrypoint;
     }
 
-    get pattern() {
-        return this.#descriptor.pattern;
+    get route() {
+        return this.#descriptor.route;
     }
 
     get GET() {
@@ -73,7 +73,7 @@ class BasePage<
             return this.#urlCompiler(path);
         } catch (error: unknown) {
             throw new CompileError(
-                `Error while compiling pattern "${this.pattern}" with path "${JSON.stringify(path)}"`,
+                `Error while compiling route "${this.route}" with path "${JSON.stringify(path)}"`,
                 { cause: error },
             );
         }

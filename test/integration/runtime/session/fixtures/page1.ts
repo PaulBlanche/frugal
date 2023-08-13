@@ -1,7 +1,7 @@
 import { RenderContext } from "../../../../../page.ts";
 import "./session.script.ts";
 
-export const pattern = "/page1";
+export const route = "/page1";
 
 export function render({ assets, descriptor }: RenderContext<any, any>) {
     return `<html>

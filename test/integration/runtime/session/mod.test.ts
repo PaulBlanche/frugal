@@ -62,11 +62,15 @@ Deno.test("session: navigation should be intercepted by session", async (t) => {
 
         await t.step("backward navigation", async () => {
             await Promise.all([
+                puppeteer.pageEventPromise(
+                    "frugal:readystatechange",
+                    page,
+                    {
+                        filter: "(event) => event.detail.readystate === 'complete'",
+                    },
+                ),
                 page.goBack({
                     waitUntil: "networkidle0",
-                }),
-                puppeteer.pageEventPromise("frugal:readystatechange", page, {
-                    filter: "(event) => event.detail.readystate === 'complete'",
                 }),
             ]);
 

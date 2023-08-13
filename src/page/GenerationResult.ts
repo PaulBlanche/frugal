@@ -31,7 +31,7 @@ export class GenerationResult<PATH extends string, DATA extends JSONValue> {
     #init: GenerationResultInit<PATH, DATA>;
     #hash?: Promise<string>;
     #serialized?: SerializedGenerationResult;
-    #body?: Promise<string | undefined>;
+    #body?: string | ReadableStream<string>;
 
     constructor(pageResponse: PageResponse<DATA>, init: GenerationResultInit<PATH, DATA>) {
         this.#pageResponse = pageResponse;
@@ -42,7 +42,7 @@ export class GenerationResult<PATH extends string, DATA extends JSONValue> {
         if (this.#serialized === undefined) {
             const [hash, body] = await Promise.all([
                 this.hash,
-                this.body,
+                this.body instanceof ReadableStream ? readStream(this.body) : this.body,
             ]);
 
             this.#serialized = {
@@ -58,18 +58,17 @@ export class GenerationResult<PATH extends string, DATA extends JSONValue> {
     }
 
     async toResponse(): Promise<Response> {
-        const body = await this.body;
         const headers = new Headers(this.#pageResponse.headers);
 
         if (!headers.has("content-type")) {
             headers.set("Content-Type", "text/html; charset=utf-8");
         }
 
-        if (!headers.has("etag") && body !== undefined) {
-            headers.set("Etag", await etag.compute(body));
+        if (!headers.has("etag") && typeof this.body === "string") {
+            headers.set("Etag", await etag.compute(this.body));
         }
 
-        return new Response(body, {
+        return new Response(this.body, {
             headers,
             status: this.#pageResponse.status,
             statusText: this.#pageResponse.status ? http.STATUS_TEXT[this.#pageResponse.status] : undefined,
@@ -89,15 +88,15 @@ export class GenerationResult<PATH extends string, DATA extends JSONValue> {
             // bundle, and have a different identity from the one from the
             // frugal module. Use brand `type` instead.
             this.#body = this.#pageResponse.type === "data"
-                ? Promise.resolve(this.#init.render({
+                ? this.#init.render({
                     phase: this.#init.phase,
                     path: this.#init.path,
                     pathname: this.#init.pathname,
                     descriptor: this.#init.descriptor,
                     assets: this.#init.assets,
                     data: this.#pageResponse.data!,
-                }))
-                : Promise.resolve(undefined);
+                })
+                : undefined;
         }
         return this.#body;
     }
@@ -116,4 +115,12 @@ export class GenerationResult<PATH extends string, DATA extends JSONValue> {
             .digest("hex")
             .toString();
     }
+}
+
+async function readStream(stream: ReadableStream<string>): Promise<string> {
+    const chunks: string[] = [];
+    for await (const chunk of stream) {
+        chunks.push(chunk);
+    }
+    return chunks.join("");
 }

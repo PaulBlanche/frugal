@@ -88,7 +88,7 @@ Frugal is super close to what Astro proposes in terms of functionality, with som
 - Astro is capable of streaming SSR
 - Astro uses file-based routing
 
-Apart from the streaming SSR, the differences are mostly a matter of personal preferences. Streaming SSR is not strictly impossible in Frugal; it's a functionality that has yet to be implemented.
+Apart from the streaming SSR, the differences are mostly a matter of personal preferences.
 
 In summary, Frugal might be a tool for you if :
 
@@ -113,6 +113,16 @@ In summary, Frugal might be a tool for you if :
 - you want static pages
 
 ## Closing up
+
+In summary here is the context where Frugal might be interesting :
+
+- You don't want to be locked with a specific UI language (React, Preact, Astro ...), but sill want to use them
+- You want both server rendered page and static pages
+- Your markup is mostly static with some interactivity (AKA a website, in contrast to a web app).
+- You don't need streaming SSR
+- You don't mind having a build step
+
+If you can answer yes to all, Frugal might be a tool for you.
 
 I don't think of Frugal as a tool to end other tools but rather as an alternative for anyone seeking more simplicity in a sea of complexity. A tool focused on delivering less code but more value.
 

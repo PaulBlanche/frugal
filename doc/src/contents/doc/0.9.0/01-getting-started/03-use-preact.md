@@ -160,7 +160,7 @@ import "./post.css";
 import { TITLE_ID } from  "hello.script.ts";
 import { CounterIsland } from "./CounterIsland.tsx"
 
-export const pattern = '/'
+export const route = '/'
 
 export function Page({ assets, descriptor }: PageProps) {
     const styleHref = assets["style"][descriptor]}

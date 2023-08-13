@@ -13,6 +13,7 @@ const active = signal("");
 
 export function PageToc({ pageToc }: PageTocProps) {
     const ids = pageToc.map((entry) => entry.id);
+    const dropNextScroll = hooks.useRef(false);
 
     hooks.useEffect(() => {
         const sections = ids.map((id) => document.querySelector<HTMLElement>(`#${id}`)!);
@@ -25,13 +26,22 @@ export function PageToc({ pageToc }: PageTocProps) {
 
         updateActiveSection();
         addEventListener("scroll", throttledUpdateActiveSection);
+        let timeout: number;
 
         return () => {
             active.value = "";
             removeEventListener("scroll", throttledUpdateActiveSection);
+            timeout && clearTimeout(timeout);
         };
 
         function updateActiveSection() {
+            if (dropNextScroll.current) {
+                timeout && clearTimeout(timeout);
+                timeout = setTimeout(() => {
+                    dropNextScroll.current = false;
+                }, 100);
+                return;
+            }
             const progress = scrollProgress();
             let activeSection = sections[0];
             sections.forEach((element) => {
@@ -56,6 +66,10 @@ export function PageToc({ pageToc }: PageTocProps) {
                     return (
                         <a
                             href={`#${id}`}
+                            onClick={() => {
+                                active.value = id;
+                                dropNextScroll.current = true;
+                            }}
                             className={clsx(
                                 pagetoc["link"],
                                 id === active.value && pagetoc["active"],

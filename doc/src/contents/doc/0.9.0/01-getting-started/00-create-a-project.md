@@ -25,8 +25,8 @@ It is empty for now, but not for long.
 
 Create a file `pages/home.ts` with the following code :
 
-```ts filename=page/home.ts
-export const pattern = '/'
+```ts filename=pages/home.ts
+export const route = '/'
 
 export function render() {
     return `<html>
@@ -39,7 +39,7 @@ export function render() {
 
 You just wrote your first static page with Frugal!
 
-For now, we will not use any UI framework, so we output basic HTML with template strings in the `render` method. This method will be called at build time to generate the page's markup. The `pattern` contains the URL pattern of the generated page. Here the generated page will live at the root of the website.
+For now, we will not use any UI framework, so we output basic HTML with template strings in the `render` method. This method will be called at build time to generate the page's markup. The `route` contains the URL pattern of the generated page. Here the generated page will live at the root of the website.
 
 Add the relative path to the newly created page in the configuration module :
 
@@ -82,7 +82,7 @@ Simply calling the `watch` function on the `context` will set up a watch process
 You can now run this script to get a dev server with live reload :
 
 ```console no-line-numbers
-deno run -A watch.ts
+deno run -A dev.ts
 ```
 
 Visiting [http://0.0.0.0:8000/](http://0.0.0.0:8000/) should display your page.
@@ -90,6 +90,6 @@ Visiting [http://0.0.0.0:8000/](http://0.0.0.0:8000/) should display your page.
 > [!info]
 > The dev server has live-reload capacity. Changing the code of a page or any of its dependencies should trigger a page reload.
 >
-> However, this is limited to _staticaly analyzable imports_ (static imports or dynamic imports with paths known ahead of). Any change in external data sources (database, API, filesystem ...) won't trigger a reload: you'll have to refresh the page manually
+> However, this is limited to _staticaly analyzable imports_ (static imports or dynamic imports with paths known ahead of time). Any change in external data sources (database, API, filesystem ...) won't trigger a reload: you'll have to refresh the page manually
 
 Now that we have a working project, we will start coding our blog in the next section.

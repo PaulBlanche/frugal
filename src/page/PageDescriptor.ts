@@ -20,19 +20,23 @@ type BaseHandlerContext<PATH extends string> = {
     publicdir: string;
 };
 
+type DynamicExtra = {
+    state: Record<string, unknown>;
+    request: Request;
+    session?: PageSession;
+};
+
 export type DynamicHandlerContext<PATH extends string> =
     & BaseHandlerContext<PATH>
-    & {
-        state: Record<string, unknown>;
-        request: Request;
-        session?: PageSession;
-    };
+    & DynamicExtra;
 
 export type DynamicHandler<PATH extends string, DATA extends JSONValue> = (
     context: DynamicHandlerContext<PATH>,
 ) => Promise<PageResponse<DATA>> | PageResponse<DATA>;
 
 export type StaticHandlerContext<PATH extends string> = BaseHandlerContext<PATH>;
+
+export type HybridHandlerContext<PATH extends string> = BaseHandlerContext<PATH> & Partial<DynamicExtra>;
 
 export type StaticHandler<PATH extends string, DATA extends JSONValue> = (
     context: StaticHandlerContext<PATH>,
@@ -49,10 +53,10 @@ export type RenderContext<PATH extends string, DATA extends JSONValue = JSONValu
 
 export type Render<PATH extends string, DATA extends JSONValue> = (
     context: RenderContext<PATH, DATA>,
-) => Promise<string> | string;
+) => string | ReadableStream<string>;
 
 interface BasePageDescriptor<PATH extends string, DATA extends JSONValue> {
-    pattern: string;
+    route: string;
     render: Render<PATH, DATA>;
     GET?: DynamicHandler<PATH, DATA>;
     POST?: DynamicHandler<PATH, DATA>;
@@ -91,10 +95,10 @@ export type PageDescriptor<PATH extends string = string, DATA extends JSONValue 
     | DynamicPageDescriptor<PATH, DATA>;
 
 const baseDescriptorSchema = zod.object({
-    pattern: zod.string({
-        required_error: 'A page descriptor must have a string "pattern"',
-        invalid_type_error: 'Expected a page descriptor with "pattern" as a string',
-    }).startsWith("/", 'A page descriptor pattern should start with a "/"'),
+    route: zod.string({
+        required_error: 'A page descriptor must have a string "route"',
+        invalid_type_error: 'Expected a page descriptor with "route" as a string',
+    }).startsWith("/", 'A page descriptor route should start with a "/"'),
     render: zod.function(zod.tuple([zod.any()]), zod.any(), {
         required_error: 'A page descriptor must have a function "render"',
         invalid_type_error: 'Expected a page descriptor with "render" as a function',

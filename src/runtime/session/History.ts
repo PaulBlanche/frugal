@@ -47,6 +47,7 @@ class HistoryInternal {
     _index: number;
     _observing: boolean;
     _config: NavigatorConfig;
+    _id: string;
 
     static instance?: HistoryInternal;
 
@@ -55,6 +56,7 @@ class HistoryInternal {
         this._stack = [new Navigator(new URL(location.href), this._config)];
         this._index = 0;
         this._observing = false;
+        this._id = String(Math.random());
     }
 
     observe() {
@@ -65,6 +67,13 @@ class HistoryInternal {
 
         addEventListener("popstate", (event) => {
             const previous = this._stack[this._index];
+            this._index = event.state?.index ?? 0;
+            const current = this._stack[this._index];
+
+            if (previous === undefined || current === undefined) {
+                return;
+            }
+
             const previousUrl = previous.url;
 
             // if the url before the popstate event point inside the same
@@ -77,9 +86,6 @@ class HistoryInternal {
             event.preventDefault();
 
             previous.saveScroll();
-
-            this._index = event.state ?? 0;
-            const current = this._stack[this._index];
             current.shouldRestoreScroll();
 
             dispatchEvent(
@@ -100,6 +106,6 @@ class HistoryInternal {
         this._stack = this._stack.slice(0, stackIndex);
         this._stack.push(navigator);
         this._index = stackIndex;
-        history.pushState(stackIndex, "", navigator.url);
+        history.pushState({ index: stackIndex, id: this._id }, "", navigator.url);
     }
 }

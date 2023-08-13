@@ -4,9 +4,9 @@ import { Page } from "./Page.tsx";
 import { getToc } from "./toc.ts";
 import { Data } from "./type.ts";
 
-export const pattern = "/doc@:version/:slug(.*)?";
+export const route = "/doc@:version/:slug(.*)?";
 
-export async function getPaths({ resolve }: GetPathsParams): Promise<PathList<typeof pattern>> {
+export async function getPaths({ resolve }: GetPathsParams): Promise<PathList<typeof route>> {
     const toc = await getToc(resolve);
 
     return Object.values(toc).flatMap((tocVersion) => {
@@ -24,7 +24,7 @@ export async function getPaths({ resolve }: GetPathsParams): Promise<PathList<ty
 }
 
 export async function generate(
-    { path: { slug = "introduction", version }, resolve }: StaticHandlerContext<typeof pattern>,
+    { path: { slug = "introduction", version }, resolve }: StaticHandlerContext<typeof route>,
 ) {
     const toc = await getToc(resolve);
 

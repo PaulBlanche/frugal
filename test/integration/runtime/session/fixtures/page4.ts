@@ -1,6 +1,6 @@
 import "./session.script.ts";
 
-export const pattern = "/page4";
+export const route = "/page4";
 
 export function render() {
     return `<html>

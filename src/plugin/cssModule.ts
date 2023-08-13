@@ -8,9 +8,10 @@ import { log } from "../log.ts";
 type CssModuleOptions = {
     filter: RegExp;
     pattern?: string;
+    dashedIdents?: boolean;
 };
 
-export function cssModule({ filter = /\.module.css$/, pattern }: Partial<CssModuleOptions> = {}): Plugin {
+export function cssModule({ filter = /\.module.css$/, pattern, dashedIdents }: Partial<CssModuleOptions> = {}): Plugin {
     return (frugal) => {
         return {
             name: "frugal:cssModule",
@@ -20,7 +21,10 @@ export function cssModule({ filter = /\.module.css$/, pattern }: Partial<CssModu
                 const cssModuleBuilder = new CssModuleBuilder({
                     sourceMap: Boolean(build.initialOptions.sourcemap),
                     projectRoot: build.initialOptions.absWorkingDir,
-                    pattern,
+                    options: {
+                        pattern,
+                        dashedIdents,
+                    },
                 });
 
                 const cssCache = new Map<string, Uint8Array>();
@@ -86,7 +90,7 @@ type Module = { contents: Uint8Array; css: Uint8Array; js: string };
 type Config = {
     sourceMap?: boolean;
     projectRoot?: string;
-    pattern?: string;
+    options?: lightningcss.CSSModulesConfig;
 };
 
 class CssModuleBuilder {
@@ -125,9 +129,7 @@ class CssModuleBuilder {
         const { code, exports } = lightningcss.transform({
             filename: path,
             code: contents,
-            cssModules: {
-                pattern: this.#config.pattern,
-            },
+            cssModules: this.#config.options,
             sourceMap: this.#config.sourceMap,
             projectRoot: this.#config.projectRoot,
             targets: {
@@ -192,15 +194,16 @@ class CssModuleCompiler {
             }).join("\n")
         }
 import "${compiledCssPath}";
+import { clsx } from "npm:clsx@2.0.0";
 
 export default {
     ${
             Object.entries(this.#exports).map(([exportName, exportData]) => {
-                return `"${exportName}": Array.from(new Set(["${exportData.name}", ${
+                return `"${exportName}": clsx("${exportData.name}", ${
                     this.#getClassNames(exportName).map((className) => {
                         return this.#toJsCode(className);
                     })
-                }])),`;
+                }),`;
             }).join("\n    ")
         }
 }`;
@@ -209,7 +212,7 @@ export default {
     #toJsCode(className: ClassName): string {
         switch (className.type) {
             case "dependency": {
-                return `...${className.importIdentifier}["${className.name}"]`;
+                return `${className.importIdentifier}["${className.name}"]`;
             }
             case "global": {
                 return className.name;

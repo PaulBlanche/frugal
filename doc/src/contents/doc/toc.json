@@ -1,25 +1,4 @@
 {
-    "0.1.0": {
-        "version": "0.1.0",
-        "variables": {},
-        "entries": [
-            {
-                "slug": "introduction",
-                "title": "introduction",
-                "file": "0.1.0/00-introduction.md"
-            },
-            {
-                "slug": "getting-started",
-                "title": "getting started",
-                "file": "0.9.0/01-getting-started.md"
-            },
-            {
-                "slug": "getting-started/create-a-project",
-                "title": "create a project",
-                "file": "0.9.0/01-getting-started/00-create-a-project.md"
-            }
-        ]
-    },
     "0.9.0": {
         "version": "0.9.0",
         "variables": {
@@ -27,7 +6,8 @@
             "PREACT_VERSION": "10.13.1",
             "PREACT_SIGNAL_VERSION": "1.1.5",
             "PREACT_RENDER_VERSION": "5.2.6",
-            "DENO_STD_VERSION": "0.193.0"
+            "DENO_STD_VERSION": "0.193.0",
+            "SVELTE_VERSION": "3.58.9"
         },
         "entries": [
             {
@@ -68,6 +48,41 @@
                 "slug": "reference/configuration",
                 "title": "configuration",
                 "file": "0.9.0/02-reference/00-config.md"
+            },
+            {
+                "slug": "reference/page-descriptor",
+                "title": "page descriptor",
+                "file": "0.9.0/02-reference/01-page-descriptor.md"
+            },
+            {
+                "slug": "reference/server",
+                "title": "server",
+                "file": "0.9.0/02-reference/02-server.md"
+            },
+            {
+                "slug": "reference/plugins",
+                "title": "plugins",
+                "file": "0.9.0/02-reference/03-plugins.md"
+            },
+            {
+                "slug": "reference/exporters",
+                "title": "exporters",
+                "file": "0.9.0/02-reference/04-exporters.md"
+            },
+            {
+                "slug": "reference/preact-runtime",
+                "title": "preact runtime",
+                "file": "0.9.0/02-reference/05-preact-runtime.md"
+            },
+            {
+                "slug": "reference/svelte-runtime",
+                "title": "svelte runtime",
+                "file": "0.9.0/02-reference/06-svelte-runtime.md"
+            },
+            {
+                "slug": "reference/browser-session",
+                "title": "browser session",
+                "file": "0.9.0/02-reference/07-browser-session.md"
             }
         ]
     }

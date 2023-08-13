@@ -43,7 +43,7 @@ export function Page(props: PageProps) {
                         language: "ts",
                         code: `import { DataResponse } from "http://deno.land/x/frugal@${versions[0]}/page.ts"
                         
-export const pattern = '/';
+export const route = '/';
 
 export function generate() {
     return new DataResponse({
@@ -83,7 +83,7 @@ export function render({ data }) {
                         language: "ts",
                         code: `import { DataResponse } from "http://deno.land/x/frugal@${versions[0]}/page.ts"
                         
-export const pattern = '/:id';
+export const route = '/:id';
     
 export const type = 'dynamic'
 
@@ -137,7 +137,7 @@ export function render({ data }) {
                         code: `import { DataResponse } from "http://deno.land/x/frugal@${versions[0]}/page.ts"
 import './log.script.ts'
                         
-export const pattern = '/';
+export const route = '/';
 
 export function generate() {
     return new DataResponse({
@@ -194,7 +194,7 @@ export function render({ data }) {
 import { getRenderFrom } from "http://deno.land/x/frugal@${versions[0]}/runtime/preact.server.ts"
 import { Page } from "./Page.tsx";
 
-export const pattern = '/';
+export const route = '/';
 
 export function generate() {
     return new DataResponse({

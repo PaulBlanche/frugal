@@ -10,7 +10,7 @@ export default {
 } satisfies Config;
 ```
 
-## Top level options
+## Top-level options
 
 ### self
 
@@ -18,7 +18,7 @@ export default {
 >
 > **required**
 
-This parameter should contain the absolute path of the current module, using `import.meta.url` :
+This parameter should contain the absolute path of the current module using `import.meta.url` :
 
 ```ts
 export default {
@@ -29,7 +29,7 @@ export default {
 ```
 
 > [!warn]
-> You can use another value than `import.meta.url`, but Frugal might fail to resolve some paths.
+> You have to give this specific value because Frugal can't infere it for you. You can use another value than `import.meta.url`, but Frugal might fail to resolve some paths.
 
 ### pages
 
@@ -89,7 +89,7 @@ export default {
 >
 > **optional**
 
-This parameter should contain the path to an [import map](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/script/type/importmap). The import map would be where you would set the version for peer dependencies like preact.
+This parameter should contain the path to an [import map](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/script/type/importmap). The import map would be where you would set the version for peer dependencies like Preact.
 
 ```ts
 export default {
@@ -117,6 +117,8 @@ export default {
 
 ### esbuild
 
+> **type:** `esbuild.BuildOptions`
+>
 > **optional**
 
 With this parameter, you can pass a subset of options to esbuild. See [esbuild doc](https://esbuild.github.io/api/) for more information.
@@ -142,7 +144,7 @@ export default {
 >
 > **default value:** `[]`
 
-Frugal capabilities can be augmented with plugins passed via this parameter.
+Plugins can extend Frugal capabilities via this parameter. See the [Plugin](@@@) section for more information.
 
 ```ts
 import { cssModule } from "https://deno.land/x/frugal@{{FRUGAL_VERSION}}/plugins/cssModule.ts";
@@ -161,7 +163,7 @@ export default {
 >
 > **optional**
 
-Deploy to your favorite platform with exporters. This parameter allows you to export your project, such as a static site for Apache or a bundle ready for Deno Deploy.
+Deploy to your favorite platform with [Exporters](@@@). This parameter allows you to export your project, for example as a static site for Apache or Nginx or a bundle ready for Deno Deploy.
 
 ```ts
 import {  DenoExporter, UpstashCache } from "https://deno.land/x/frugal@{{FRUGAL_VERSION}}/mod.ts";
@@ -177,3 +179,96 @@ export default {
     ...
 }
 ```
+
+## Server options
+
+### secure
+
+> **type:** `boolean`
+>
+> **optional**
+>
+> **default value:** `false`
+
+Set this boolean to true if the server is accessible over HTTPS.
+
+### port
+
+> **type:** `number`
+>
+> **optional**
+>
+> **default value:** `8000`
+
+Set the port the server listens on.
+
+### cryptoKey
+
+> **type:** `CryptoKey`
+>
+> **optional**
+
+Set a key that will be used for any functionality that needs HMAC. Frugal exposes two function `exportKey` and `importKey` to help you create the kind of key needed :
+
+- The function `exportKey` will generate a new key and encode it in base64.
+- The function `importKey` will take the base64 generated and decode the generated key.
+
+```ts
+import { importKey } from "https://deno.land/x/frugal@{{FRUGAL_VERSION}}/mod.ts";
+
+export default {
+    ...
+    cryptoKey: await importKey("base64-of-your-key-you-got-from-exportKey")
+    ...
+}
+```
+
+> [!warn]
+> Do not write the base64 version of your key directly in your config. Always use secrets and environment variables to avoid leaking it.
+
+### session
+
+> **type:** `{ cookie?: CookieConfig, storage: SessionStorage }`
+>
+> **optional**
+
+If you want Frugal to handle [server sessions](@@@), you'll have to configure them here. The `cookie` value allows you to customize the cookie used to store the session id. The `storage` value defines how and where Frugal should store session data.
+
+```ts
+import { CookieSessionStorage } from "https://deno.land/x/frugal@{{FRUGAL_VERSION}}/mod.ts";
+
+export default {
+    ...
+    session: {
+        cookie: {
+            name: 'MY-SESSION-ID-COOKIE',
+            httpOnly: true,
+            maxAge: 60,
+        },
+        storage: new CookieSessionStorage({
+            name: 'MY-SESSION-STORAGE-COOKIE',
+            httpOnly: true,
+            maxAge: 60,
+        })
+    }
+    ...
+}
+```
+
+### csrf
+
+> **type:** `{ cookieName?: string, fieldName?: string, headerName?: string, isProtected: (url: URL) => boolean }`
+>
+> **optional**
+
+Configuration object for CSRF protection. The `ìsProtected` function allows you to define if an URL should be CSRF protected. The `fieldName` and `headerName` will customize the name of the form field or header where Frugal should find the CSRF token. The `cookieName` will customize the name of the cookie containing the CSRF token.
+
+### middlewares
+
+> **type:** `Middleware<Context>[]`
+>
+> **optional**
+>
+> **default value:** `[]`
+
+Add some [middleware](@@@) to the server stack.

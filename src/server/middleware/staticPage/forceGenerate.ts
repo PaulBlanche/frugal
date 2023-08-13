@@ -31,7 +31,6 @@ export async function forceGenerate(
     if (generationResult === undefined) {
         return next(context);
     }
-
     const response = await generationResult.toResponse();
 
     if (forceGenerate) {
@@ -40,6 +39,7 @@ export async function forceGenerate(
             name: FORCE_GENERATE_COOKIE,
             value: "false",
             expires: new Date(0),
+            maxAge: 0,
         });
     }
 

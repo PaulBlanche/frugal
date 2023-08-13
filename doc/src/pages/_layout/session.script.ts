@@ -1,5 +1,5 @@
-import { Session } from "$dep/frugal/runtime/session.ts";
+import { BrowserSession } from "$dep/frugal/runtime/session.ts";
 
 if (import.meta.main) {
-    Session.init();
+    BrowserSession.init();
 }

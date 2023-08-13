@@ -49,6 +49,7 @@ export class CookieSessionStorage implements SessionStorage {
             ...this.#cookie,
             value: "",
             expires: new Date(0),
+            maxAge: 0,
         });
     }
 }

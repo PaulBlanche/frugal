@@ -17,40 +17,40 @@ type PartialSessionConfig = {
     navigate?: Partial<NavigatorConfig>;
 };
 
-export class Session {
+export class BrowserSession {
     static init(config: PartialSessionConfig = {}) {
-        if (SessionInternal.instance !== undefined) {
+        if (BrowserSessionInternal.instance !== undefined) {
             throw new Error("Session was already initialised");
         }
 
-        SessionInternal.instance = new SessionInternal(config);
-        SessionInternal.instance.start();
+        BrowserSessionInternal.instance = new BrowserSessionInternal(config);
+        BrowserSessionInternal.instance.start();
     }
 
     static navigate(url: URL | string): Promise<boolean> {
-        if (SessionInternal.instance === undefined) {
+        if (BrowserSessionInternal.instance === undefined) {
             throw new Error("Session must be initialised first");
         }
 
-        return SessionInternal.instance.navigate(url);
+        return BrowserSessionInternal.instance.navigate(url);
     }
 
     static submit(formElement: HTMLFormElement): Promise<boolean> {
-        if (SessionInternal.instance === undefined) {
+        if (BrowserSessionInternal.instance === undefined) {
             throw new Error("Session must be initialised first");
         }
 
-        return SessionInternal.instance.submit(formElement);
+        return BrowserSessionInternal.instance.submit(formElement);
     }
 }
 
-class SessionInternal {
+class BrowserSessionInternal {
     _config: SessionConfig;
     _visitObserver: VisitObserver;
     _submitObserver: SubmitObserver;
     _prefetchObserver: PrefetchObserver;
 
-    static instance?: SessionInternal;
+    static instance?: BrowserSessionInternal;
 
     constructor(config: PartialSessionConfig = {}) {
         this._config = {

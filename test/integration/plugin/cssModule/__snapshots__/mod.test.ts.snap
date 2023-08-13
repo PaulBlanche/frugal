@@ -27,4 +27,4 @@ snapshot[`css: build page with css module dependencies 1`] = `
 "
 `;
 
-snapshot[`css: build page with css module dependencies 2`] = `'{"bar":["bar","baz"],"foo":["foo","bar","baz"]}'`;
+snapshot[`css: build page with css module dependencies 2`] = `'{"bar":"bar baz","foo":"foo bar baz"}'`;

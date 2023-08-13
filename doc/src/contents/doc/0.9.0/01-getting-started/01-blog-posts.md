@@ -27,7 +27,7 @@ const POSTS: Data[] = [
 ]
 ```
 
-Now we need to define the pattern of URLs generated from the page. We would like URLs like `/post/hello-world` and `/post/second-post` for our posts. To do so, we will use the pattern `/post/:slug` :
+Now we need to define the pattern of URLs generated from the page. We would like URLs like `/post/hello-world` and `/post/second-post` for our posts. To do so, we will use the route `/post/:slug` :
 
 ```ts filename=pages/posts.ts lines=[7]
 ...
@@ -36,25 +36,25 @@ const POSTS: Data[] = [
     ...
 ]
 
-export const pattern = '/post/:slug';
+export const route = '/post/:slug';
 ```
 
-To generate an html page for each post, Frugal needs you to define a `getPaths` method (called at build time) that will return the list of all possible "path objects": with a pattern `/post/:slug`, the path object will have the shape `{ slug: string }`. The `getPaths` method has to return the list of each slug:
+To generate an html page for each post, Frugal needs you to define a `getPaths` method (called at build time) that will return the list of all possible "path objects": with a route `/post/:slug`, the path object will have the shape `{ slug: string }`. The `getPaths` method has to return the list of each slug:
 
 ```ts filename=pages/posts.ts lines=[1,7-9]
-import { PathList } from "frugal/page.ts"
+import { PathList } from "https://deno.land/std@{{DENO_STD_VERSION}}/page.ts"
 
 ...
 
-export const pattern = '/post/:slug';
+export const route = '/post/:slug';
 
-export function getPaths(): PathList<typeof pattern> {
+export function getPaths(): PathList<typeof route> {
     return POSTS.map((post) => ({ slug: post.slug }))
 }
 ```
 
 > [!tip]
-> The `PathList` type will infer the shape of the path objects from the `pattern` for you. That's why you need the `PathList<typeof pattern>` type.
+> The `PathList` type will infer the shape of the path objects from the `route` for you. That's why you need the `PathList<typeof route>` type.
 
 We simply have to map over an array, but any asynchronous operations can happen here: reading from a file or a database, calling an API, etc...
 
@@ -65,15 +65,15 @@ import {
     DataResponse, 
     PathList, 
     StaticHandlerContext 
-} from "frugal/page.ts"
+} from "https://deno.land/std@{{DENO_STD_VERSION}}/page.ts"
 
 ...
 
-export function getPaths(): PathList<typeof pattern> {
+export function getPaths(): PathList<typeof route> {
     return POSTS.map((post) => ({ slug: post.slug }))
 }
 
-export function generate({ path: { slug } }: StaticHandlerContext<typeof pattern>) {
+export function generate({ path: { slug } }: StaticHandlerContext<typeof route>) {
     return new DataResponse<Data>({ data: POSTS.find(post => post.slug === slug) })
 }
 ```
@@ -90,15 +90,15 @@ import {
     PathList, 
     StaticHandlerContext,
     RenderContext 
-} from "frugal/page.ts"
+} from "https://deno.land/x/frugal@{{FRUGAL_VERSION}}/page.ts"
 
 ...
 
-export function generate({ path: { slug } }: StaticHandlerContext<typeof pattern>) {
+export function generate({ path: { slug } }: StaticHandlerContext<typeof route>) {
     return new DataResponse<Data>({ data: POSTS.find(post => post.slug === slug) })
 }
 
-export function render({ data }: RenderContext<typeof pattern, Data> ) {
+export function render({ data }: RenderContext<typeof route, Data> ) {
     return `<html>
     <body>
         <h1>${data.title}</h1>
@@ -127,9 +127,9 @@ import {
     PathList, 
     StaticHandlerContext, 
     RenderContext 
-} from "frugal/page.ts"
+} from "https://deno.land/std@{{DENO_STD_VERSION}}/page.ts"
 
-export const pattern = '/post/:slug'
+export const route = '/post/:slug'
 
 type Data = { 
     slug:string; 
@@ -150,15 +150,15 @@ const POSTS = [
     },
 ]
 
-export function getPaths(): PathList<typeof pattern> {
+export function getPaths(): PathList<typeof route> {
     return POSTS.map((post) => ({ slug: post.slug }))
 }
 
-export function generate({ path: { slug } }: StaticHandlerContext<typeof pattern>) {
+export function generate({ path: { slug } }: StaticHandlerContext<typeof route>) {
     return new DataResponse<Data>({ data: POSTS[slug] })
 }
 
-export function render({ data }: RenderContext<typeof pattern, Data> ) {
+export function render({ data }: RenderContext<typeof route, Data> ) {
     return `<html>
     <body>
         <h1>${data.title}</h1>
@@ -169,14 +169,14 @@ export function render({ data }: RenderContext<typeof pattern, Data> ) {
 ```
 
 > [!info]
-> The is the general shape of a static page: a `pattern` string and three methods `getPaths`, `generate`, and `render`.
+> The is the general shape of a static page: a `route` string and three methods `getPaths`, `generate`, and `render`.
 >
 > But as you saw earlier with the `pages/home.ts` page, `getPaths` and `generate` are optional if you don't need them :
 >
 > - You don't need `getPaths` for a page with a single path, .
 > - You don't need `generate` for a page without any data fetching.
 >
-> However, you must always define a `pattern` and a `render` method.
+> However, you must always define a `route` and a `render` method.
 
 ## External data
 
@@ -184,9 +184,9 @@ Having the `POSTS` array keeps everything simple, but mixing code and data's not
 
 Instead, having a list of markdown files and a `toc.json` file containing any metadata (like the title) would be better. To add a post, we write a new markdown file and add it to the `toc.json` file.
 
-To do so, we create a `post` directory where we write a `toc.json` file :
+To do so, we create a `posts` directory where we write a `toc.json` file :
 
-```ts filename=post/toc.json
+```ts filename=posts/toc.json
 [
     {
         slug: "hello-world",
@@ -201,7 +201,7 @@ To do so, we create a `post` directory where we write a `toc.json` file :
 ]
 ```
 
-And we create the corresponding markdown files in the `post` directory.
+And we create the corresponding markdown files in the `posts` directory.
 
 Now we have to rewrite the `getPaths` and `generate` methods. Let's start with `getPaths`. We have to load the `toc.json` file and iterate over each post:
 
@@ -212,12 +212,11 @@ import {
     PathList, 
     StaticHandlerContext, 
     RenderContext
-} from "frugal/page.ts"
-import * as path from "https://deno.land/std@{{DENO_STD_VERSION}}/path/mod.ts"
+} from "https://deno.land/std@{{DENO_STD_VERSION}}/page.ts"
 
 ...
 
-export async function getPaths({ resolve }: GetPathsParams): PathList<typeof pattern> {
+export async function getPaths({ resolve }: GetPathsParams): PathList<typeof route> {
     const tocText = await Deno.readTextFile(resolve('posts/toc.json'))
     const toc = JSON.parse(tocText)
 
@@ -240,13 +239,12 @@ import {
     PathList, 
     StaticHandlerContext, 
     RenderContext
-} from "frugal/page.ts"
-import * as path from "https://deno.land/std@{{DENO_STD_VERSION}}/path/mod.ts"
+} from "https://deno.land/std@{{DENO_STD_VERSION}}/page.ts"
 import { marked } from "https://esm.sh/marked"
 
 ...
 
-export function async generate({ path: { slug }, resolve }: StaticHandlerContext<typeof pattern>) {
+export async function generate({ path: { slug }, resolve }: StaticHandlerContext<typeof route>) {
     const tocText = await Deno.readTextFile(resolve('posts/toc.json'))
     const toc = JSON.parse(tocText)
 
@@ -277,11 +275,10 @@ import {
     PathList, 
     StaticHandlerContext, 
     RenderContext
-} from "frugal/page.ts"
-import * as path from "https://deno.land/std@{{DENO_STD_VERSION}}/path/mod.ts"
+} from "https://deno.land/std@{{DENO_STD_VERSION}}/page.ts"
 import { marked } from "https://esm.sh/marked"
 
-export const pattern = '/post/:slug'
+export const route = '/post/:slug'
 
 type Data = { 
     slug:string; 
@@ -302,14 +299,14 @@ const POSTS = [
     },
 ]
 
-export async function getPaths({ resolve }: GetPathsParams): PathList<typeof pattern> {
+export async function getPaths({ resolve }: GetPathsParams): PathList<typeof route> {
     const tocText = await Deno.readTextFile(resolve('posts/toc.json'))
     const toc = JSON.parse(tocText)
 
     return toc.map(entry => ({ slug: entry.slug }));
 }
 
-export function async generate({ path: { slug }, resolve }: StaticHandlerContext<typeof pattern>) {
+export function async generate({ path: { slug }, resolve }: StaticHandlerContext<typeof route>) {
     const tocText = await Deno.readTextFile(resolve('posts/toc.json'))
     const toc = JSON.parse(tocText)
 
@@ -326,7 +323,7 @@ export function async generate({ path: { slug }, resolve }: StaticHandlerContext
     return new DataResponse<Data>({ data: { title: entry.title, content} })
 }
 
-export function render({ data }: RenderContext<typeof pattern, Data> ) {
+export function render({ data }: RenderContext<typeof route, Data> ) {
     return `<html>
     <body>
         <h1>${data.title}</h1>

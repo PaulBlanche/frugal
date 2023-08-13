@@ -2,7 +2,7 @@ import * as page from "../../../../page.ts";
 
 export const type = "dynamic";
 
-export const pattern = "/dynamic/:slug";
+export const route = "/dynamic/:slug";
 
 type Data = {
     count: number;
@@ -12,7 +12,7 @@ type Data = {
     searchParams: Record<string, string>;
 };
 
-export function GET({ path, request, session }: page.DynamicHandlerContext<typeof pattern>): page.DataResponse<Data> {
+export function GET({ path, request, session }: page.DynamicHandlerContext<typeof route>): page.DataResponse<Data> {
     const count = session?.get<number>("counter") ?? 0;
     session?.set("counter", count + 1);
     return new page.DataResponse({
@@ -29,6 +29,6 @@ export function GET({ path, request, session }: page.DynamicHandlerContext<typeo
     });
 }
 
-export function render({ data }: page.RenderContext<typeof pattern, Data>) {
+export function render({ data }: page.RenderContext<typeof route, Data>) {
     return JSON.stringify(data);
 }

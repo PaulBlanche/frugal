@@ -64,6 +64,7 @@ export class SessionManager {
             ...this.#cookie,
             value: "",
             expires: new Date(0),
+            maxAge: 0,
         });
     }
 }

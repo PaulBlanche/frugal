@@ -32,7 +32,7 @@ export class DynamicPageGenerator<PATH extends string = string, DATA extends JSO
 
         if (match === false) {
             throw new Error(
-                `pathname "${pathname} did not match pattern "${this.#config.page.pattern}"`,
+                `pathname "${pathname} did not match pattern "${this.#config.page.route}"`,
             );
         }
 
@@ -58,7 +58,7 @@ export class DynamicPageGenerator<PATH extends string = string, DATA extends JSO
         const method = context.request.method as descriptor.Method;
         const handler = this.#config.page[method];
         if (handler === undefined) {
-            log(`Page ${this.#config.page.pattern} cannot handle ${context.request.method} requests`, {
+            log(`Page ${this.#config.page.route} cannot handle ${context.request.method} requests`, {
                 scope: "DybamicPageGenerator",
                 level: "debug",
             });

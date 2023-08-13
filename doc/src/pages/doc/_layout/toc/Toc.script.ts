@@ -1,5 +1,3 @@
-import { Session } from "$dep/frugal/runtime/session.ts";
-
 export const TOGGLE_ID = "site-nav-toggle";
 export const DRAWER_ID = "site-nav-drawer";
 export const OVERLAY_ID = "site-nav-overlay";

@@ -1,9 +1,4 @@
 <script>
-    import {
-        START_NO_DIFF_COMMENT,
-        END_NO_DIFF_COMMENT,
-    } from "../session/render/constant.ts";
-
     export let name;
     export let component;
     export let props;

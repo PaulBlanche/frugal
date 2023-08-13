@@ -5,9 +5,9 @@ import { Page } from "./Page.tsx";
 import { getToc } from "../toc.ts";
 import { Data } from "./type.ts";
 
-export const pattern = "/blog";
+export const route = "/blog";
 
-export async function generate({ resolve, publicdir }: StaticHandlerContext<typeof pattern>) {
+export async function generate({ resolve, publicdir }: StaticHandlerContext<typeof route>) {
     const toc = await getToc(resolve);
 
     return new DataResponse<Data>({

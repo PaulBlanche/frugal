@@ -11,7 +11,7 @@
 }
 
 h1.heading {
-    font-size: 3rem;
+    font-size: 3.5rem;
     font-family: var(--heading-font-familly);
 }
 
@@ -20,16 +20,30 @@ h1.heading {
 }
 
 h2.heading {
-    font-size: 1.5rem;
+    font-size: 2rem;
     margin-top: 4rem;
     margin-bottom: 1.5rem;
 }
 
 h3.heading {
-    font-size: 1.2rem;
+    font-size: 1.5rem;
     margin-top: 2rem;
     margin-bottom: 1rem;
 }
+
+h4.heading {
+    font-size: 1.3rem;
+    margin-top: 2rem;
+    margin-bottom: 1rem;
+}
+
+h5.heading {
+    font-size: 1.1rem;
+    margin-top: 2rem;
+    margin-bottom: 1rem;
+}
+
+
 
 .heading .target {
     position: relative;

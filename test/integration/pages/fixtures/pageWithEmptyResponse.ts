@@ -1,6 +1,6 @@
 import { EmptyResponse, RenderContext } from "../../../../page.ts";
 
-export const pattern = "/";
+export const route = "/";
 
 type Data = { foo: string };
 
@@ -13,6 +13,6 @@ export function generate() {
     });
 }
 
-export function render({ data }: RenderContext<typeof pattern, Data>) {
+export function render({ data }: RenderContext<typeof route, Data>) {
     return `${data.foo}`;
 }

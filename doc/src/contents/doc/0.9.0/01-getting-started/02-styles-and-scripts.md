@@ -22,7 +22,7 @@ import "./post.css";
 
 ...
 
-export function render({ data, assets, descriptor }: RenderContext<typeof pattern, Data> ) {
+export function render({ data, assets, descriptor }: RenderContext<typeof route, Data> ) {
     return `<html>
     <head>
         <link rel="stylesheet" href="${assets["style"][descriptor]}" />
@@ -50,12 +50,12 @@ h1 {
 We also edit the `pages/home.ts` module to import the style and link the generated stylesheet in the markup :
 
 ```ts filename=page/home.ts lines=[1-2,6,8-10]
-import { RenderContext } from "frugal/page.ts"
+import { RenderContext } from "https://deno.land/std@{{DENO_STD_VERSION}}/page.ts"
 import "./home.css";
 
-export const pattern = '/'
+export const route = '/'
 
-export function render({ assets, descriptor }: RenderContext<typeof pattern>) {
+export function render({ assets, descriptor }: RenderContext<typeof route>) {
     return `<html>
     <head>
         <link rel="stylesheet" href="${assets["style"][descriptor]}" />
@@ -110,13 +110,13 @@ if (import.meta.main) {
 We can import it from our homepage `pages/home.ts`, and link to the generated script in the markup :
 
 ```ts filename=page/home.ts lines=[3,11,14]
-import { RenderContext } from "frugal/page.ts"
+import { RenderContext } from "https://deno.land/std@{{DENO_STD_VERSION}}/page.ts"
 import "./post.css";
 import { TITLE_ID } from  "hello.script.ts";
 
-export const pattern = '/'
+export const route = '/'
 
-export function render({ assets, descriptor }: RenderContext<typeof pattern>) {
+export function render({ assets, descriptor }: RenderContext<typeof route>) {
     return `<html>
     <head>
         <link rel="stylesheet" href="${assets["style"][descriptor]}" />

@@ -55,9 +55,9 @@ export class VisitObserver {
             return;
         }
 
-        const beforeVisitEvent = new CustomEvent("frugal:beforevisit");
-        dispatchEvent(beforeVisitEvent);
-        if (beforeVisitEvent.defaultPrevented) {
+        const beforeNavigateEvent = new CustomEvent("frugal:beforenavigate");
+        dispatchEvent(beforeNavigateEvent);
+        if (beforeNavigateEvent.defaultPrevented) {
             return;
         }
 

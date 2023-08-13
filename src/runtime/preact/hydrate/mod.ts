@@ -51,11 +51,19 @@ function hydrateOnIdle<PROPS>(
     hydratables: NodeListOf<HTMLScriptElement>,
     getApp: GetApp<PROPS>,
 ) {
-    setTimeout(() => {
-        Array.from(hydratables).map(async (script) => {
-            hydrateIsland(script, await getApp());
+    if (typeof requestIdleCallback === "undefined") {
+        setTimeout(() => {
+            Array.from(hydratables).map(async (script) => {
+                hydrateIsland(script, await getApp());
+            });
+        }, 1);
+    } else {
+        requestIdleCallback(() => {
+            Array.from(hydratables).map(async (script) => {
+                hydrateIsland(script, await getApp());
+            });
         });
-    }, 10);
+    }
 }
 
 // hydrate when the island enters the screen

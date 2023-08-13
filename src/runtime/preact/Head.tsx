@@ -33,16 +33,25 @@ export function HeadProvider(props: HeadProviderProps) {
 
 function updateClient(state: preact.VNode[]) {
     const htmls = state.filter((node) => node.type === "html");
+    const bodys = state.filter((node) => node.type === "body");
     const head = state.filter((node) => node.type !== "html");
 
     const htmlProps = {};
-
     for (const html of htmls) {
         Object.assign(htmlProps, html.props);
     }
 
     for (const [key, value] of Object.entries(htmlProps)) {
         document.querySelector("html")?.setAttribute(key, String(value));
+    }
+
+    const bodyProps = {};
+    for (const body of bodys) {
+        Object.assign(htmlProps, body.props);
+    }
+
+    for (const [key, value] of Object.entries(htmlProps)) {
+        document.querySelector("body")?.setAttribute(key, String(value));
     }
 
     preact.render(head, document.head);

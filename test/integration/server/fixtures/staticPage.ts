@@ -1,7 +1,7 @@
 import * as page from "../../../../page.ts";
 import { store } from "./store.ts";
 
-export const pattern = "/static/:slug";
+export const route = "/static/:slug";
 
 type Data = {
     count: number;
@@ -12,29 +12,12 @@ type Data = {
     searchParams: Record<string, string>;
 };
 
-export function getPaths(): page.PathList<typeof pattern> {
+export function getPaths(): page.PathList<typeof route> {
     return [{ slug: "1" }];
 }
 
 export async function generate(
-    { path }: page.StaticHandlerContext<typeof pattern>,
-): Promise<page.DataResponse<Data>> {
-    const count = 0;
-    return new page.DataResponse({
-        data: {
-            path,
-            count,
-            searchParams: {},
-            store: await store(),
-        },
-        headers: {
-            "Content-Type": "application/json",
-        },
-    });
-}
-
-export async function GET(
-    { path, session, request }: page.DynamicHandlerContext<typeof pattern>,
+    { path, session, request }: page.HybridHandlerContext<typeof route>,
 ): Promise<page.DataResponse<Data>> {
     const count = session?.get<number>("counter") ?? 0;
     return new page.DataResponse({
@@ -42,9 +25,11 @@ export async function GET(
             path,
             count,
             store: await store(),
-            searchParams: Object.fromEntries(
-                new URL(request.url).searchParams.entries(),
-            ),
+            searchParams: request
+                ? Object.fromEntries(
+                    new URL(request.url).searchParams.entries(),
+                )
+                : {},
         },
         headers: {
             "Content-Type": "application/json",
@@ -52,7 +37,7 @@ export async function GET(
     });
 }
 
-export function POST({ request, session }: page.DynamicHandlerContext<typeof pattern>): page.EmptyResponse {
+export function POST({ request, session }: page.DynamicHandlerContext<typeof route>): page.EmptyResponse {
     const count = session?.get<number>("counter") ?? 0;
     session?.set("counter", count + 1);
     return new page.EmptyResponse({
@@ -64,6 +49,6 @@ export function POST({ request, session }: page.DynamicHandlerContext<typeof pat
     });
 }
 
-export function render({ data }: page.RenderContext<typeof pattern, Data>) {
+export function render({ data }: page.RenderContext<typeof route, Data>) {
     return JSON.stringify(data);
 }

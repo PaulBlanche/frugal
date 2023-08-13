@@ -5,16 +5,16 @@ import { Page } from "./Page.tsx";
 import { getToc } from "../toc.ts";
 import { Data } from "./type.ts";
 
-export const pattern = "/blog/:slug";
+export const route = "/blog/:slug";
 
-export async function getPaths({ resolve }: GetPathsParams): Promise<PathList<typeof pattern>> {
+export async function getPaths({ resolve }: GetPathsParams): Promise<PathList<typeof route>> {
     const toc = await getToc(resolve);
 
     return toc.map((entry) => ({ slug: entry.slug }));
 }
 
 export async function generate(
-    { path: { slug }, resolve, publicdir }: StaticHandlerContext<typeof pattern>,
+    { path: { slug }, resolve, publicdir }: StaticHandlerContext<typeof route>,
 ) {
     const toc = await getToc(resolve);
 

@@ -23,21 +23,26 @@ export type DocumentProps = {
 
 export type Document = preact.ComponentType<DocumentProps>;
 
-type ContentConfig = {
-    Document: Document;
-    embedData: boolean;
+type RenderConfig = {
+    Document?: Document;
+    embedData?: boolean;
 };
 
 const DEFAULT_DOCUMENT: Document = (
-    { head, dangerouslySetInnerHTML }: DocumentProps,
+    { head: state, dangerouslySetInnerHTML }: DocumentProps,
 ) => {
-    const htmlIndex = head.findIndex((node) => node.type === "html");
+    const htmls = state.filter((node) => node.type === "html");
+    const bodys = state.filter((node) => node.type === "body");
+    const head = state.filter((node) => node.type !== "html");
 
     const htmlProps = {};
-
-    if (htmlIndex !== -1) {
-        const [html] = head.splice(htmlIndex, 1);
+    for (const html of htmls) {
         Object.assign(htmlProps, html.props);
+    }
+
+    const bodyProps = {};
+    for (const body of bodys) {
+        Object.assign(bodyProps, body.props);
     }
 
     return (
@@ -45,7 +50,7 @@ const DEFAULT_DOCUMENT: Document = (
             <head>
                 {head}
             </head>
-            <body dangerouslySetInnerHTML={dangerouslySetInnerHTML} />
+            <body {...bodyProps} dangerouslySetInnerHTML={dangerouslySetInnerHTML} />
         </html>
     );
 };
@@ -55,7 +60,7 @@ export function getRenderFrom<PATH extends string, DATA extends JSONValue>(
     {
         Document = DEFAULT_DOCUMENT,
         embedData = false,
-    }: Partial<ContentConfig> = {},
+    }: RenderConfig = {},
 ): descriptor.Render<PATH, DATA> {
     return ({
         data,

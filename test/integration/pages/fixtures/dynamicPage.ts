@@ -2,7 +2,7 @@ import { DataResponse } from "../../../../page.ts";
 
 export const type = "dynamic";
 
-export const pattern = "/";
+export const route = "/";
 
 export function GET() {
     return new DataResponse({ data: {} });

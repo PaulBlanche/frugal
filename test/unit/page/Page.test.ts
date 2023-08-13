@@ -16,116 +16,116 @@ Deno.test("page: compile error", () => {
         } as any), "empty descriptor should not compile");
     asserts.assertThrows(() =>
         compile("foo", "bar", {
-            pattern: "/foo",
-        } as any), "descriptor with just pattern should not compile");
+            route: "/foo",
+        } as any), "descriptor with just route should not compile");
     assertNotThrows(() =>
         compile("foo", "bar", {
-            pattern: "/foo",
+            route: "/foo",
             render: () => {},
-        } as any), "descriptor with pattern and render should compile");
+        } as any), "descriptor with route and render should compile");
     asserts.assertThrows(() =>
         compile("foo", "bar", {
-            pattern: "foo",
+            route: "foo",
             render: () => {},
-        } as any), "descriptor with pattern not starting with / should not compile");
+        } as any), "descriptor with route not starting with / should not compile");
     asserts.assertThrows(() =>
         compile("foo", "bar", {
-            pattern: true,
+            route: true,
             render: () => {},
-        } as any), "descriptor with nont string pattern should not compile");
+        } as any), "descriptor with nont string route should not compile");
     asserts.assertThrows(() =>
         compile("foo", "bar", {
-            pattern: "/foo",
+            route: "/foo",
             render: "foo",
         } as any), "descriptor with non function render should not compile");
     assertNotThrows(() =>
         compile("foo", "bar", {
-            pattern: "/foo",
+            route: "/foo",
             generate: () => {},
             render: () => {},
-        } as any), "descriptor with pattern, generate and render should compile");
+        } as any), "descriptor with route, generate and render should compile");
     asserts.assertThrows(() =>
         compile("foo", "bar", {
-            pattern: "/foo",
+            route: "/foo",
             generate: "foo",
             render: () => {},
         } as any), "descriptor with non function generate should not compile");
     assertNotThrows(() =>
         compile("foo", "bar", {
-            pattern: "/foo",
+            route: "/foo",
             getPaths: () => {},
             render: () => {},
-        } as any), "descriptor with pattern, getPaths and render should compile");
+        } as any), "descriptor with route, getPaths and render should compile");
     asserts.assertThrows(() =>
         compile("foo", "bar", {
-            pattern: "/foo",
+            route: "/foo",
             getPaths: "foo",
             render: () => {},
         } as any), "descriptor with non function getPaths should not compile");
     assertNotThrows(() =>
         compile("foo", "bar", {
-            pattern: "/foo",
+            route: "/foo",
             strictPaths: true,
             render: () => {},
-        } as any), "descriptor with pattern, strictPaths and render should compile");
+        } as any), "descriptor with route, strictPaths and render should compile");
     asserts.assertThrows(() =>
         compile("foo", "bar", {
-            pattern: "/foo",
+            route: "/foo",
             strictPaths: "foo",
             render: () => {},
         } as any), "descriptor with non boolean strictPaths should not compile");
     assertNotThrows(() =>
         compile("foo", "bar", {
-            pattern: "/foo",
+            route: "/foo",
             render: () => {},
             extra: "foo",
         } as any), "descriptor with extra property should compile");
 
     assertNotThrows(() =>
         compile("foo", "bar", {
-            pattern: "/foo",
+            route: "/foo",
             render: () => {},
             GET: () => {},
-        } as any), "descriptor with pattern, render, GET should compile");
+        } as any), "descriptor with route, render, GET should compile");
     asserts.assertThrows(() =>
         compile("foo", "bar", {
-            pattern: "/foo",
+            route: "/foo",
             render: () => {},
             GET: "foo",
         } as any), "descriptor with non function GET should not compile");
     assertNotThrows(() =>
         compile("foo", "bar", {
-            pattern: "/foo",
+            route: "/foo",
             render: () => {},
             POST: () => {},
-        } as any), "descriptor with pattern, render, POST should compile");
+        } as any), "descriptor with route, render, POST should compile");
     asserts.assertThrows(() =>
         compile("foo", "bar", {
-            pattern: "/foo",
+            route: "/foo",
             render: () => {},
             POST: "foo",
         } as any), "descriptor with non function POST should not compile");
     assertNotThrows(() =>
         compile("foo", "bar", {
-            pattern: "/foo",
+            route: "/foo",
             render: () => {},
             PUT: () => {},
-        } as any), "descriptor with pattern, render, PUT should compile");
+        } as any), "descriptor with route, render, PUT should compile");
     asserts.assertThrows(() =>
         compile("foo", "bar", {
-            pattern: "/foo",
+            route: "/foo",
             render: () => {},
             PUT: "foo",
         } as any), "descriptor with non function PUT should not compile");
     assertNotThrows(() =>
         compile("foo", "bar", {
-            pattern: "/foo",
+            route: "/foo",
             render: () => {},
             DELETE: () => {},
-        } as any), "descriptor with pattern, render, DELETE should compile");
+        } as any), "descriptor with route, render, DELETE should compile");
     asserts.assertThrows(() =>
         compile("foo", "bar", {
-            pattern: "/foo",
+            route: "/foo",
             render: () => {},
             DELETE: "foo",
         } as any), "descriptor with non function DELETE should not compile");
@@ -134,7 +134,7 @@ Deno.test("page: compile error", () => {
 Deno.test("page: compile type", () => {
     asserts.assertInstanceOf(
         compile("foo", "bar", {
-            pattern: "/foo",
+            route: "/foo",
             render: () => "foo",
         }),
         StaticPage,
@@ -142,7 +142,7 @@ Deno.test("page: compile type", () => {
     );
     asserts.assertInstanceOf(
         compile("foo", "bar", {
-            pattern: "/foo",
+            route: "/foo",
             render: () => "foo",
             type: "dynamic",
             GET: () => new EmptyResponse({}),
@@ -155,7 +155,7 @@ Deno.test("page: compile type", () => {
 Deno.test("page: BasePage methods and properties", () => {
     const spyRender = mock.spy(() => "foo");
     const descriptor: StaticPageDescriptor<"/foo/:id", JSONValue> = {
-        pattern: "/foo/:id",
+        route: "/foo/:id",
         render: spyRender,
         POST: () => new EmptyResponse({}),
         PUT: () => new EmptyResponse({}),
@@ -168,7 +168,7 @@ Deno.test("page: BasePage methods and properties", () => {
 
     asserts.assertEquals(page.moduleHash, moduleHash, "Page should hold its moduleHash");
     asserts.assertEquals(page.entrypoint, entrypoint, "Page should hold its entrypoint");
-    asserts.assertEquals(page.pattern, descriptor.pattern, "Page should hold its pattern");
+    asserts.assertEquals(page.route, descriptor.route, "Page should hold its route");
     asserts.assertEquals(page.POST, descriptor.POST, "Page should hold its POST method");
     asserts.assertEquals(page.PUT, descriptor.PUT, "Page should hold its PUT method");
     asserts.assertEquals(page.PATCH, descriptor.PATCH, "Page should hold its PATCH method");
@@ -190,7 +190,7 @@ Deno.test("page: BasePage methods and properties", () => {
 
 Deno.test("page: StaticPage methods and properties", async () => {
     const emptyPage = compile("foo", "bar", {
-        pattern: "/foo",
+        route: "/foo",
         render: () => "foo",
     }) as StaticPage;
 
@@ -207,7 +207,7 @@ Deno.test("page: StaticPage methods and properties", async () => {
     );
 
     const page = compile("foo", "bar", {
-        pattern: "/foo",
+        route: "/foo",
         render: () => "foo",
         strictPaths: false,
         generate: () => new DataResponse({ data: "foobar" }),
@@ -229,7 +229,7 @@ Deno.test("page: StaticPage methods and properties", async () => {
 
 Deno.test("page: DynamicPage methods and properties", async () => {
     const page = compile("foo", "bar", {
-        pattern: "/foo",
+        route: "/foo",
         render: () => "foo",
         GET: () => new DataResponse({ data: "foobar" }),
     }) as DynamicPage;

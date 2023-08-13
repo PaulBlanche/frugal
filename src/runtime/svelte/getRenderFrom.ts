@@ -7,14 +7,14 @@ export type Document = (head: string, html: string) => string;
 
 const DEFAULT_DOCUMENT: Document = (head, html) => `<!DOCTYPE html><html><head>${head}</head></body>${html}</body>`;
 
-type GetContentConfig = {
+type RenderConfig = {
     document?: Document;
     embedData?: boolean;
 };
 
 export function getRenderFrom<PATH extends string, DATA extends JSONValue>(
     component: ServerComponent,
-    { document = DEFAULT_DOCUMENT, embedData = true }: GetContentConfig = {},
+    { document = DEFAULT_DOCUMENT, embedData = true }: RenderConfig = {},
 ): descriptor.Render<PATH, DATA> {
     return ({ descriptor, assets, data, pathname }) => {
         const context = { data, pathname };

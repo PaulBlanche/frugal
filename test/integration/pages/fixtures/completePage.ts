@@ -1,14 +1,14 @@
 import { DataResponse, PathList, RenderContext, StaticHandlerContext } from "../../../../page.ts";
 
-export const pattern = "/:foo";
+export const route = "/:foo";
 
-export function getPaths(): PathList<typeof pattern> {
+export function getPaths(): PathList<typeof route> {
     return [{ foo: "foo" }, { foo: "bar" }];
 }
 
 type Data = { foo: string };
 
-export function generate(context: StaticHandlerContext<typeof pattern>) {
+export function generate(context: StaticHandlerContext<typeof route>) {
     if (context.path.foo === "foo") {
         return new DataResponse({
             data: { foo: "Hello foo" },
@@ -29,6 +29,6 @@ export function generate(context: StaticHandlerContext<typeof pattern>) {
     }
 }
 
-export function render({ data }: RenderContext<typeof pattern, Data>) {
+export function render({ data }: RenderContext<typeof route, Data>) {
     return `data: ${data.foo}`;
 }

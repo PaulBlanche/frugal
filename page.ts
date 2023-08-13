@@ -4,6 +4,7 @@ export type {
     DynamicPageDescriptor,
     GetPaths,
     GetPathsParams,
+    HybridHandlerContext,
     PathList,
     Phase,
     Render,

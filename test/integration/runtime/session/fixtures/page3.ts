@@ -1,7 +1,7 @@
 import { RenderContext } from "../../../../../page.ts";
 import "./session.script.ts";
 
-export const pattern = "/page3";
+export const route = "/page3";
 
 export function render({ assets, descriptor }: RenderContext<any, any>) {
     return `<script type="module" src="${assets["script"][descriptor]}"></script>

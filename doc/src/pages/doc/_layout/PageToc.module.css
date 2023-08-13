@@ -17,11 +17,17 @@
 
     background: transparent;
     color: #666;
+    margin-bottom: 0.5em;
+
+    &:not(.sub) {
+        margin-top: 0.5rem;
+    }
 }
 
 .sub {
     padding-left: 1rem;
 }
+
 
 .link.active {
     position: relative;

@@ -8,6 +8,6 @@ declare global {
     interface WindowEventMap {
         "frugal:readystatechange": FrugalReadyStateChangeEvent;
         "frugal:beforeunload": FrugalBeforeUnloadEvent;
-        "frugal:beforevisit": FrugalBeforeVisit;
+        "frugal:beforenavigate": FrugalBeforeVisit;
     }
 }

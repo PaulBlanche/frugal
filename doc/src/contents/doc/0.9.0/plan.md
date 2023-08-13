@@ -14,9 +14,8 @@ reference
     config
     page descriptor
     server
-    scripts
-    exporter
     plugins
+    exporter
     preact runtime
     svelte runtime
 
