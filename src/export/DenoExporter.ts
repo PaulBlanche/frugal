@@ -96,7 +96,7 @@ const current = await cacheStorage.get("__frugal__current")
 if (current !== router.id) {
     console.log('populate')
     const { populate } = await import("./populate.mjs")
-    await populate(cacheStorage, router.id)
+    await populate(cacheStorage, \`\${router.id}_${Date.now()}\`)
 }
 
 const server = new FrugalServer({
