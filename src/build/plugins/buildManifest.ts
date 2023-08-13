@@ -69,7 +69,7 @@ export function buildManifest(config: FrugalConfig, assets: Assets): esbuild.Plu
                         }
                     }
 
-                    manifest.id = idHash.digest("hex").toString();
+                    manifest.id = `${idHash.digest("hex").toString()}_${Date.now()}`;
 
                     log("Manifest built", {
                         scope: "buildManifest",
