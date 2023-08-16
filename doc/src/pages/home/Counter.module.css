@@ -1,0 +1,45 @@
+.wrapper {
+    background: var(--color-yellow);
+    padding: 1rem 2rem;
+    border-radius: 4px;
+}
+
+.title {
+    margin: 0 0 1rem;
+    text-align: center;
+}
+
+.description {
+    display: block;
+    text-align: center;
+    margin: 0 0 1rem;
+}
+
+.count {
+    font-size: 2rem;
+    font-weight: bold;
+}
+
+.button {
+    font-size: 1rem;
+    background: #000A;
+    border: none;
+    color: white;
+    border-radius: 5px;
+    padding: 0.5rem 1rem;
+    cursor: pointer;
+
+    &:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+
+    &:hover {
+        background: black;
+    }
+}
+
+.counter {
+    display: flex;
+    justify-content: space-between;
+}

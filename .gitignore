@@ -1,6 +1,7 @@
 dist/
 .vscode
-.deno_dir/
-cov_profile/
-TODO
+cov_profile.lcov
 .env
+node_modules
+TODO.md
+test/**/project

@@ -1,0 +1,27 @@
+.base-link {
+    color: #000;
+    text-underline-offset: 0.2rem;
+    text-decoration-line: underline;
+    text-decoration-thickness: 2px;
+    text-decoration-style: solid;
+}
+
+.link {
+    composes: base-link;
+
+    background: left 0.8rem no-repeat linear-gradient(0deg, transparent 0.2rem, var(--color-yellow) 0.2rem, var(--color-yellow) 1rem, transparent 1rem);
+    text-decoration-style: dotted;
+    text-decoration-color: #888;
+    transition: background-position 0.1s;
+}
+
+.active-link,
+.link:active,
+.link:hover {
+    text-decoration-style: solid;
+    text-decoration-color: black;
+}
+
+.link:focus {
+    background-position-y: 0;
+}

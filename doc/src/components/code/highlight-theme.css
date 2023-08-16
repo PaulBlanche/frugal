@@ -1,0 +1,10 @@
+@import "https://raw.githubusercontent.com/PrismJS/prism-themes/master/themes/prism-gruvbox-dark.css";
+
+/* fix color highlight for all caps function names*/
+.token.constant {
+    color: #fabd2f;
+}
+
+.token.property {
+    color: #8ec07c;
+}

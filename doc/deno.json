@@ -1,0 +1,25 @@
+{
+    "lock": false,
+    "compilerOptions": {
+        "lib": [
+            "dom",
+            "esnext",
+            "deno.ns",
+            "deno.unstable",
+            "dom.iterable",
+            "dom.asynciterable"
+        ],
+        "jsxImportSource": "preact",
+        "jsx": "react-jsx"
+    },
+    "fmt": {
+        "lineWidth": 120,
+        "indentWidth": 4,
+        "proseWrap": "preserve"
+    },
+    "importMap": "./import_map.json",
+    "tasks": {
+        "dev": "deno run -A dev.ts",
+        "build": "deno run -A build.ts"
+    }
+}

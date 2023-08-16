@@ -1,0 +1,11 @@
+.foo {
+    composes: bar;
+
+    color: red;
+}
+
+.bar {
+    composes: baz from './dep.module.css';
+
+    background: red;
+}

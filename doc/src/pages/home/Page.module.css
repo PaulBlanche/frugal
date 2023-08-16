@@ -1,0 +1,30 @@
+.nav {
+    background: #fff;
+    height: 50px;
+    width: 100%;
+}
+
+.entry {
+    composes: container from "../../styles/container.module.css";
+
+    display: grid;
+    grid-template: "title code" min-content "description code" 1fr/1fr 1.5fr;
+    margin-top: 3rem;
+    margin-bottom: 3rem;
+
+    .description {
+        grid-area: description;
+    }
+
+    .title {
+        grid-area: title;
+        font-family: var(--heading-font-familly);
+        font-size: 2rem;
+        margin: 1rem 0 0 0;
+    }
+
+    .code {
+        grid-area: code;
+        margin-left: 4rem;
+    }
+}

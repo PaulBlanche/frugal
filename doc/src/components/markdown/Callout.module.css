@@ -1,0 +1,84 @@
+.callout {
+    padding: 1rem 1rem;
+    position: relative;
+    margin: 1rem 0;
+    display: grid;
+    grid-template: "icon title" min-content "icon content" 1fr / min-content 1fr;
+    align-items: start;
+    border-left: 5px solid #888;
+    background: #F0F0F0;
+
+    &>.icon,
+    &>.title {
+        color: #888;
+    }
+
+
+    .title {
+        grid-area: title;
+    }
+
+    .icon {
+        grid-area: icon;
+    }
+
+    .content {
+        grid-area: content;
+    }
+
+
+    &.warn {
+        border-left: 5px solid #e0ac00;
+        background: #fff6dd;
+
+        &>.icon,
+        &>.title {
+            color: #e0ac00;
+        }
+    }
+
+    &.error {
+        border-left: 5px solid #cc3300;
+        background: #ffe4db;
+
+        &>.icon,
+        &>.title {
+            color: #cc3300;
+        }
+    }
+
+    &.info {
+        border-left: 5px solid #0096FF;
+        background: #e1f1ff;
+
+        &>.icon,
+        &>.title {
+            color: #0096FF;
+        }
+    }
+
+    &.tip {
+        border-left: 5px solid #339900;
+        background: #e6f6df;
+
+        &>.icon,
+        &>.title {
+            color: #339900;
+        }
+    }
+
+
+
+    &.default {}
+
+
+}
+
+.title {
+    font-weight: bold;
+}
+
+.icon {
+    width: 24px;
+    margin-right: 16px;
+}

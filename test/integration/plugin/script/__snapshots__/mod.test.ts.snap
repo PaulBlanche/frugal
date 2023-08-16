@@ -1,0 +1,319 @@
+export const snapshot = {};
+
+snapshot[`script: build page with script and css module dependencies 1`] = `
+"/* virtual:/home/whiteshoulders/perso/frugal/test/integration/plugin/script/project/style.module.css-789235bd7f9e5fbb.frugal-compiled-css-module.css */
+" +
+  ".foo {
+" +
+  "  color: red;
+" +
+  "}
+"
+`;
+
+snapshot[`script: build page with script and css module dependencies 2`] = `
+"var __create = Object.create;
+" +
+  "var __defProp = Object.defineProperty;
+" +
+  "var __getOwnPropDesc = Object.getOwnPropertyDescriptor;
+" +
+  "var __getOwnPropNames = Object.getOwnPropertyNames;
+" +
+  "var __getProtoOf = Object.getPrototypeOf;
+" +
+  "var __hasOwnProp = Object.prototype.hasOwnProperty;
+" +
+  "var __commonJS = (cb, mod) => function __require() {
+" +
+  "  return mod || (0, cb[__getOwnPropNames(cb)[0]])((mod = { exports: {} }).exports, mod), mod.exports;
+" +
+  "};
+" +
+  "var __copyProps = (to, from, except, desc) => {
+" +
+  '  if (from && typeof from === "object" || typeof from === "function") {
+' +
+  "    for (let key of __getOwnPropNames(from))
+" +
+  "      if (!__hasOwnProp.call(to, key) && key !== except)
+" +
+  "        __defProp(to, key, { get: () => from[key], enumerable: !(desc = __getOwnPropDesc(from, key)) || desc.enumerable });
+" +
+  "  }
+" +
+  "  return to;
+" +
+  "};
+" +
+  "var __toESM = (mod, isNodeMode, target) => (target = mod != null ? __create(__getProtoOf(mod)) : {}, __copyProps(
+" +
+  "  // If the importer is in node compatibility mode or this is not an ESM
+" +
+  "  // file that has been converted to a CommonJS file using a Babel-
+" +
+  '  // compatible transform (i.e. "__esModule" has not been set), then set
+' +
+  '  // "default" to the CommonJS "module.exports" for node compatibility.
+' +
+  '  isNodeMode || !mod || !mod.__esModule ? __defProp(target, "default", { value: mod, enumerable: true }) : target,
+' +
+  "  mod
+" +
+  "));
+" +
+  "
+" +
+  "// node_modules/.deno/repeat-string@1.6.1/node_modules/repeat-string/index.js
+" +
+  "var require_repeat_string = __commonJS({
+" +
+  '  "node_modules/.deno/repeat-string@1.6.1/node_modules/repeat-string/index.js"(exports, module) {
+' +
+  '    "use strict";
+' +
+  '    var res = "";
+' +
+  "    var cache;
+" +
+  "    module.exports = repeat;
+" +
+  "    function repeat(str, num) {
+" +
+  '      if (typeof str !== "string") {
+' +
+  '        throw new TypeError("expected a string");
+' +
+  "      }
+" +
+  "      if (num === 1)
+" +
+  "        return str;
+" +
+  "      if (num === 2)
+" +
+  "        return str + str;
+" +
+  "      var max = str.length * num;
+" +
+  '      if (cache !== str || typeof cache === "undefined") {
+' +
+  "        cache = str;
+" +
+  '        res = "";
+' +
+  "      } else if (res.length >= max) {
+" +
+  "        return res.substr(0, max);
+" +
+  "      }
+" +
+  "      while (max > res.length && num > 1) {
+" +
+  "        if (num & 1) {
+" +
+  "          res += str;
+" +
+  "        }
+" +
+  "        num >>= 1;
+" +
+  "        str += str;
+" +
+  "      }
+" +
+  "      res += str;
+" +
+  "      res = res.substr(0, max);
+" +
+  "      return res;
+" +
+  "    }
+" +
+  "  }
+" +
+  "});
+" +
+  "
+" +
+  "// node_modules/.deno/pad-left@2.1.0/node_modules/pad-left/index.js
+" +
+  "var require_pad_left = __commonJS({
+" +
+  '  "node_modules/.deno/pad-left@2.1.0/node_modules/pad-left/index.js"(exports, module) {
+' +
+  '    "use strict";
+' +
+  "    var repeat = require_repeat_string();
+" +
+  "    module.exports = function padLeft(str, num, ch) {
+" +
+  "      str = str.toString();
+" +
+  '      if (typeof num === "undefined") {
+' +
+  "        return str;
+" +
+  "      }
+" +
+  "      if (ch === 0) {
+" +
+  '        ch = "0";
+' +
+  "      } else if (ch) {
+" +
+  "        ch = ch.toString();
+" +
+  "      } else {
+" +
+  '        ch = " ";
+' +
+  "      }
+" +
+  "      return repeat(ch, num - str.length) + str;
+" +
+  "    };
+" +
+  "  }
+" +
+  "});
+" +
+  "
+" +
+  "// shared.ts
+" +
+  "var import_npm_pad_left_2_1 = __toESM(require_pad_left());
+" +
+  "
+" +
+  "// node_modules/.deno/clsx@2.0.0/node_modules/clsx/dist/clsx.mjs
+" +
+  "function r(e) {
+" +
+  '  var t, f, n = "";
+' +
+  '  if ("string" == typeof e || "number" == typeof e)
+' +
+  "    n += e;
+" +
+  '  else if ("object" == typeof e)
+' +
+  "    if (Array.isArray(e))
+" +
+  "      for (t = 0; t < e.length; t++)
+" +
+  '        e[t] && (f = r(e[t])) && (n && (n += " "), n += f);
+' +
+  "    else
+" +
+  "      for (t in e)
+" +
+  '        e[t] && (n && (n += " "), n += t);
+' +
+  "  return n;
+" +
+  "}
+" +
+  "function clsx() {
+" +
+  '  for (var e, t, f = 0, n = ""; f < arguments.length; )
+' +
+  '    (e = arguments[f++]) && (t = r(e)) && (n && (n += " "), n += t);
+' +
+  "  return n;
+" +
+  "}
+" +
+  "
+" +
+  "// style.module.css
+" +
+  "var style_module_default = {
+" +
+  '  "foo": clsx("foo")
+' +
+  "};
+" +
+  "
+" +
+  "// shared.ts
+" +
+  "window.style = style_module_default;
+" +
+  "
+" +
+  "// before.script.ts
+" +
+  "if (true) {
+" +
+  '  console.log("before.script.ts");
+' +
+  "}
+" +
+  "
+" +
+  "// dep1.script.ts
+" +
+  "if (true) {
+" +
+  '  console.log("dep1.script.ts");
+' +
+  "}
+" +
+  "
+" +
+  "// dep2.script.ts
+" +
+  "if (true) {
+" +
+  '  console.log("dep2.script.ts");
+' +
+  "}
+" +
+  "
+" +
+  "// after.script.ts
+" +
+  "if (true) {
+" +
+  '  console.log("after.script.ts");
+' +
+  "}
+" +
+  "/*! Bundled license information:
+" +
+  "
+" +
+  "repeat-string/index.js:
+" +
+  "  (*!
+" +
+  "   * repeat-string <https://github.com/jonschlinkert/repeat-string>
+" +
+  "   *
+" +
+  "   * Copyright (c) 2014-2015, Jon Schlinkert.
+" +
+  "   * Licensed under the MIT License.
+" +
+  "   *)
+" +
+  "
+" +
+  "pad-left/index.js:
+" +
+  "  (*!
+" +
+  "   * pad-left <https://github.com/jonschlinkert/pad-left>
+" +
+  "   *
+" +
+  "   * Copyright (c) 2014-2015, Jon Schlinkert.
+" +
+  "   * Licensed under the MIT license.
+" +
+  "   *)
+" +
+  "*/
+"
+`;

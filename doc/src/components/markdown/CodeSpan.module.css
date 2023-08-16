@@ -1,0 +1,7 @@
+.code-span {
+    font-size: 0.8em;
+    background: rgba(0, 0, 0, 0.09);
+    color: currentColor;
+    padding: 2px 6px;
+    border-radius: 6px;
+}

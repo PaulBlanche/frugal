@@ -1,0 +1,50 @@
+.container {
+    composes: container from '../../../styles/container.module.css';
+
+    max-width: 700px;
+}
+
+.title {
+    font-size: 5rem;
+    font-weight: 900;
+    font-family: var(--heading-font-familly);
+    margin: 0;
+    line-height: 1.2;
+    background: white;
+    padding: 0 2rem;
+    margin-bottom: 1rem;
+    margin-left: 1rem;
+}
+
+.time {
+    color: #888;
+    margin: 2rem 0 0;
+    margin-top: auto;
+    background: white;
+    padding: 0 1rem;
+    margin-left: 1rem;
+
+}
+
+.header {
+    composes: container;
+
+    max-width: 900px;
+
+
+    margin-bottom: 5rem;
+    height: 512px;
+
+    display: flex;
+    flex-direction: column;
+    align-items: baseline;
+
+    background-size: cover;
+    background-position: center center;
+}
+
+.content {
+    composes: container;
+
+    margin-bottom: 8rem;
+}

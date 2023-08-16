@@ -1,0 +1,197 @@
+.overlay {
+    display: block;
+    width: 100%;
+    height: 100%;
+    position: fixed;
+    z-index: 900;
+    top: 60px;
+    left: 0;
+    background-color: transparent;
+    pointer-events: none;
+    transition: background-color 0.2s;
+
+}
+
+.toggle {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 60px;
+    height: 60px;
+    z-index: 10001;
+    background: transparent;
+    border: none;
+    border-right: 2px solid #F0F0F0;
+    border-bottom: 2px solid #F0F0F0;
+    margin-bottom: -2px;
+    display: none;
+    cursor: pointer;
+
+    .icon {
+        color: #111;
+        width: 32px;
+
+        &.close {
+            width: 24px;
+            display: none;
+        }
+    }
+
+    &:hover {
+        background: rgba(0, 0, 0, 0.02);
+        border-color: #CCC;
+    }
+
+    &:focus {
+        background: rgba(0, 0, 0, 0.05);
+        border-color: #CCC;
+    }
+}
+
+.select {
+    display: grid;
+    grid-template-areas: "select";
+    align-items: center;
+
+    width: auto;
+    min-width: 15ch;
+    max-width: 30ch;
+    border-radius: 4px;
+    border: 1px solid #CCC;
+    cursor: pointer;
+    line-height: 1.5;
+    background-color: #F3F3F3;
+    box-sizing: border-box;
+    margin-bottom: 2rem;
+    font-size: 0.9rem;
+    font-weight: 500;
+    overflow: hidden;
+    margin-left: 1rem;
+
+    &:hover {
+        border-color: #AAA;
+    }
+
+    &:focus-within {
+        outline: 2px solid var(--color-yellow);
+    }
+
+    & select {
+        appearance: none;
+        background-color: transparent;
+        border: none;
+        margin: 0;
+        padding: 0.5em 1.5em 0.5em 1em;
+        width: 100%;
+        font-family: inherit;
+        font-size: inherit;
+        cursor: inherit;
+        line-height: inherit;
+        grid-area: select;
+        font-weight: inherit;
+    }
+
+    &::after {
+        content: "";
+        width: 0.6em;
+        height: 0.3em;
+        background-color: #888;
+        clip-path: polygon(100% 0%, 0 0%, 50% 100%);
+        grid-area: select;
+        justify-self: end;
+        align-self: end;
+        margin-bottom: 0.7em;
+        margin-right: 0.5em;
+    }
+
+    &::before {
+        content: "";
+        width: 0.6em;
+        height: 0.3em;
+        background-color: #888;
+        clip-path: polygon(100% 100%, 0 100%, 50% 0%);
+        grid-area: select;
+        justify-self: end;
+        align-self: start;
+        margin-top: 0.7em;
+        margin-right: 0.5em;
+    }
+
+}
+
+.nav {
+    position: fixed;
+    top: 60px;
+    overflow: auto;
+    width: 256px;
+    bottom: 0px;
+    padding: 2rem 2rem 5rem 0rem;
+    box-sizing: border-box;
+}
+
+@media screen and (max-width: 968px) {
+    .nav {
+        position: static;
+        margin-left: 2rem;
+        padding-bottom: 2rem;
+    }
+
+
+    .site {
+        padding-left: 0;
+    }
+
+    .select {
+        margin-right: 1rem;
+    }
+
+
+    [data-drawer] {
+        .toggle {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .nav {
+            position: fixed;
+            transform: translateX(-100%);
+            background: white;
+            overflow: hidden;
+            transition: transform 0.2s;
+            z-index: 901;
+            padding-right: 0rem;
+            margin-left: 0rem;
+            display: none;
+        }
+
+        &[data-open] {
+            .nav {
+                transform: translateX(0%);
+                overflow: auto;
+                display: block;
+            }
+
+            .icon.toc {
+                display: none;
+            }
+
+            .icon.close {
+                display: block;
+            }
+
+            &~.overlay {
+                background-color: rgba(0, 0, 0, 0.5);
+                pointer-events: initial;
+            }
+
+        }
+    }
+}
+
+@media screen and (max-width: 600px) {
+    .nav {
+        margin-left: 1rem;
+    }
+
+}

@@ -1,0 +1,48 @@
+.toc-list {
+    margin: 0;
+    padding-left: 1rem;
+    list-style: none;
+    font-weight: bold;
+
+    & .toc-list {
+        font-weight: normal;
+    }
+}
+
+.toc-item {
+    position: relative;
+}
+
+.toc-item:not(:first-of-type) {
+    margin-top: 1rem;
+}
+
+.toc-item .toc-item {
+    margin-top: 0.4rem;
+}
+
+.toc-item::before {
+    font-weight: bold;
+}
+
+.toc-link {
+    composes: link from '../../../../styles/link.module.css';
+}
+
+.toc-link-active {
+    composes: active-link from '../../../../styles/link.module.css';
+
+    background: none;
+}
+
+.toc-link-active::after {
+    content: "";
+    display: block;
+    position: absolute;
+    background: var(--color-yellow);
+    width: 256px;
+    right: 0;
+    height: 1.5rem;
+    top: 0;
+    z-index: -1;
+}

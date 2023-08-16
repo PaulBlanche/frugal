@@ -1,0 +1,10 @@
+[
+    {
+        "slug": "why-i-made-frugal",
+        "title": "Why I made frugal",
+        "headline": "With Next.js, Remix, Astro, Eleventy Fresh, why propose yet another framework ? What's the value proposition of Frugal ?",
+        "date": "09-08-2023",
+        "splash": "src/contents/img/markus-winkler-qSYRsN1x6Ts-unsplash.jpg",
+        "file": "01-why-i-made-frugal.md"
+    }
+]

@@ -1,9 +1,10 @@
 {
     "imports": {
-        "preact": "https://esm.sh/preact@10.11.2",
-        "preact/signals": "https://esm.sh/@preact/signals@1.1.2",
-        "preact/jsx-runtime": "https://esm.sh/preact@10.11.2/jsx-runtime",
-        "preact/hooks": "https://esm.sh/preact@10.11.2/hooks",
-        "preact-render-to-string": "https://esm.sh/preact-render-to-string@5.2.5?deps=preact@10.11.2"
+        "svelte/": "npm:/svelte@3.58.0/",
+        "svelte": "npm:/svelte@3.58.0",
+
+        "preact": "https://esm.sh/preact@10.13.1",
+        "preact/": "https://esm.sh/preact@10.13.1/",
+        "preact-render-to-string": "https://esm.sh/preact-render-to-string@5.2.6?deps=preact@10.13.1"
     }
 }
