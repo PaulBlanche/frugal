@@ -106,9 +106,9 @@ Deno.test("watch: files are regenerated on demand if data changes", async (t) =>
     };
     await Deno.writeTextFile(dataURL, JSON.stringify(updatedData, null, 4));
 
-    const response11 = await fetch("http://localhost:8000/page1/1");
+    const response11 = await fetch("http://localhost:3000/page1/1");
     await response11.text();
-    const response22 = await fetch("http://localhost:8000/page2/2");
+    const response22 = await fetch("http://localhost:3000/page2/2");
     await response22.text();
 
     const secondBuildChache = await context.cacheExplorer();
@@ -139,7 +139,7 @@ Deno.test("watch: browser reload on file change", async (t) => {
 
     await puppeteer.withPage(async ({ page }) => {
         await page.setJavaScriptEnabled(true);
-        await page.goto("http://localhost:8000/page1/1");
+        await page.goto("http://localhost:3000/page1/1");
 
         const pageReloadPromise = new Promise((res) => {
             page.exposeFunction("markReloaded", () => res(true));
@@ -181,7 +181,7 @@ Deno.test("watch: rebuild and browser reload on config change", async (t) => {
 
     await puppeteer.withPage(async ({ page }) => {
         await page.setJavaScriptEnabled(true);
-        await page.goto("http://localhost:8000/page1/1");
+        await page.goto("http://localhost:3000/page1/1");
 
         const pageReloadPromise = new Promise((res) => {
             page.exposeFunction("markReloaded", () => res(true));

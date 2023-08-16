@@ -133,9 +133,11 @@ Deno.test("session: external navigation element", async (t) => {
         await page.goto("http://localhost:8000/page3", {
             waitUntil: "networkidle0",
         });
+
         await withTimeout(sessionStartPromise, "session should start");
 
         const link = await page.waitForSelector(".external");
+
         await link?.click();
         await page.waitForNavigation();
 

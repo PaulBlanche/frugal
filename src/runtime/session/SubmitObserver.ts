@@ -45,7 +45,7 @@ export class SubmitObserver {
         event.preventDefault();
         try {
             const result = await submitter.submit();
-            if (!result) {
+            if (!result.success) {
                 form.submit();
             }
         } catch (error) {

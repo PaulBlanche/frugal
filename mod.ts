@@ -1,6 +1,7 @@
 export * from "./src/Frugal.ts";
 export { type Config } from "./src/Config.ts";
 export { exportKey, importKey } from "./src/server/crypto.ts";
+export { type Plugin } from "./src/Plugin.ts";
 
 export { DenoKvCache } from "./src/cache/DenoKvCacheStorage.ts";
 export { UpstashCache } from "./src/cache/UpstashCacheStorage.ts";

@@ -75,7 +75,7 @@ export class VisitObserver {
         event.preventDefault();
         try {
             const result = await visitor.visit();
-            if (!result) {
+            if (!result.success) {
                 window.location.href = url.href;
             }
         } catch (error) {

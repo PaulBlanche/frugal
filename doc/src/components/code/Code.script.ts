@@ -40,7 +40,7 @@ function setup() {
 
             const copy = editor.querySelector("[data-copy]");
             if (copy) {
-                copy.addEventListener("click", async (event) => {
+                copy.addEventListener("click", async () => {
                     let code: string | undefined;
                     for (const togglee of togglees) {
                         if (togglee.matches("[data-active]")) {

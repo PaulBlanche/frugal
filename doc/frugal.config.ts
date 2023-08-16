@@ -3,8 +3,6 @@ import { script } from "$dep/frugal/plugins/script.ts";
 import { svg } from "$dep/frugal/plugins/svg.ts";
 import { googleFonts } from "$dep/frugal/plugins/googleFonts.ts";
 import { Config, DenoExporter, UpstashCache } from "$dep/frugal/mod.ts";
-import { Toc } from "./src/pages/doc/toc.ts";
-import { SearchIndex } from "$dep/frugal/doc/src/search.ts";
 
 export default {
     self: import.meta.url,
@@ -24,37 +22,6 @@ export default {
         cssModule(),
         svg({}),
         script(),
-        (frugal) => ({
-            name: "index",
-            setup(build) {
-                build.onStart(async () => {
-                    const toc: Toc = JSON.parse(
-                        await Deno.readTextFile(new URL("./src/contents/doc/toc.json", import.meta.url)),
-                    );
-
-                    const searchIndex = new SearchIndex();
-
-                    for (const [version, tocVersion] of Object.entries(toc)) {
-                        await Promise.all(
-                            tocVersion.entries
-                                .filter((entry) => entry.file !== undefined)
-                                .map(async (entry) => {
-                                    const content = await Deno.readTextFile(
-                                        new URL(`./src/contents/doc/${entry.file}`, import.meta.url),
-                                    );
-
-                                    searchIndex.add({ content, title: entry.title, slug: entry.slug, version });
-                                }),
-                        );
-                    }
-
-                    await Deno.writeTextFile(
-                        new URL("search-index.json", frugal.config.publicdir),
-                        JSON.stringify(searchIndex.serialize()),
-                    );
-                });
-            },
-        }),
     ],
     esbuild: {
         minify: true,

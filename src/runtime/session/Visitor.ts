@@ -29,6 +29,7 @@ export class Visitor {
 
     async visit(): Promise<NavigationResult> {
         const reason = this._shouldVisit();
+
         if (reason !== undefined) {
             return { success: false, reason };
         }
