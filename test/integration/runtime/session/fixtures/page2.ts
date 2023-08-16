@@ -1,4 +1,4 @@
-import { RenderContext } from "../../../../../page.ts";
+import { RenderContext } from "../../../../../mod.ts";
 import "./session.script.ts";
 
 export const route = "/page2";

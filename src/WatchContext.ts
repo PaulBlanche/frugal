@@ -2,7 +2,7 @@ import { FrugalConfig } from "./Config.ts";
 import { Builder } from "./build/Builder.ts";
 import { RuntimeWatchCache } from "./cache/RuntimeWatchCache.ts";
 import { ChildContext } from "./watch/ChildContext.ts";
-import { ParentContext, ParentContextListener } from "./watch/ParentContext.ts";
+import { ParentContext, ParentContextListener, WatchOptions } from "./watch/ParentContext.ts";
 
 export class WatchContext {
     #context: ParentContext | ChildContext;
@@ -30,8 +30,8 @@ export class WatchContext {
         }
     }
 
-    watch() {
-        return this.#context.watch();
+    watch(options?: WatchOptions) {
+        return this.#context.watch(options);
     }
 
     dispose() {

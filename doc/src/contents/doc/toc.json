@@ -6,83 +6,103 @@
             "PREACT_VERSION": "10.13.1",
             "PREACT_SIGNAL_VERSION": "1.1.5",
             "PREACT_RENDER_VERSION": "5.2.6",
+            "DENO_VERSION": "1.35.0",
             "DENO_STD_VERSION": "0.193.0",
             "SVELTE_VERSION": "3.58.9"
         },
         "entries": [
             {
                 "slug": "introduction",
-                "title": "introduction",
+                "title": "Introduction",
                 "file": "0.9.0/00-introduction.md"
             },
             {
                 "slug": "getting-started",
-                "title": "getting started",
+                "title": "Getting started",
                 "file": "0.9.0/01-getting-started.md"
             },
             {
                 "slug": "getting-started/create-a-project",
-                "title": "create a project",
+                "title": "Create a project",
                 "file": "0.9.0/01-getting-started/00-create-a-project.md"
             },
             {
                 "slug": "getting-started/blog-posts",
-                "title": "blog posts",
+                "title": "Blog posts",
                 "file": "0.9.0/01-getting-started/01-blog-posts.md"
             },
             {
                 "slug": "getting-started/styles-and-scripts",
-                "title": "styles and scripts",
+                "title": "Styles and scripts",
                 "file": "0.9.0/01-getting-started/02-styles-and-scripts.md"
             },
             {
-                "slug": "getting-started/use-preact",
-                "title": "use preact",
+                "slug": "getting-started/using-preact",
+                "title": "Using Preact",
                 "file": "0.9.0/01-getting-started/03-use-preact.md"
             },
             {
                 "slug": "reference",
-                "title": "reference"
+                "title": "Reference"
             },
             {
                 "slug": "reference/configuration",
-                "title": "configuration",
+                "title": "Configuration",
                 "file": "0.9.0/02-reference/00-config.md"
             },
             {
+                "slug": "reference/running-frugal",
+                "title": "Running frugal",
+                "file": "0.9.0/02-reference/01-running-frugal.md"
+            },
+            {
                 "slug": "reference/page-descriptor",
-                "title": "page descriptor",
-                "file": "0.9.0/02-reference/01-page-descriptor.md"
+                "title": "Page descriptor",
+                "file": "0.9.0/02-reference/02-page-descriptor.md"
             },
             {
                 "slug": "reference/server",
-                "title": "server",
-                "file": "0.9.0/02-reference/02-server.md"
+                "title": "Server",
+                "file": "0.9.0/02-reference/03-server.md"
             },
             {
                 "slug": "reference/plugins",
-                "title": "plugins",
-                "file": "0.9.0/02-reference/03-plugins.md"
+                "title": "Plugins",
+                "file": "0.9.0/02-reference/04-plugins.md"
             },
             {
                 "slug": "reference/exporters",
-                "title": "exporters",
-                "file": "0.9.0/02-reference/04-exporters.md"
+                "title": "Exporters",
+                "file": "0.9.0/02-reference/05-exporters.md"
             },
             {
                 "slug": "reference/preact-runtime",
-                "title": "preact runtime",
-                "file": "0.9.0/02-reference/05-preact-runtime.md"
+                "title": "Preact runtime",
+                "file": "0.9.0/02-reference/06-preact-runtime.md"
             },
             {
                 "slug": "reference/svelte-runtime",
-                "title": "svelte runtime",
-                "file": "0.9.0/02-reference/06-svelte-runtime.md"
+                "title": "Svelte runtime",
+                "file": "0.9.0/02-reference/07-svelte-runtime.md"
             },
             {
                 "slug": "reference/browser-session",
-                "title": "browser session",
-                "file": "0.9.0/02-reference/07-browser-session.md"
+                "title": "Browser session",
+                "file": "0.9.0/02-reference/08-browser-session.md"
+            },
+            {
+                "slug": "guides",
+                "title": "Guides"
+            },
+            {
+                "slug": "guides/form-submission",
+                "title": "Form submission",
+                "file": "0.9.0/03-guides/00-form-submission.md"
+            },
+            {
+                "slug": "guides/authentication",
+                "title": "Authentication",
+                "file": "0.9.0/03-guides/01-authentication.md"
             }
         ]
     }

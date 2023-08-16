@@ -4,3 +4,7 @@
 .token.constant {
     color: #fabd2f;
 }
+
+.token.property {
+    color: #8ec07c;
+}

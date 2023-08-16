@@ -1,12 +1,11 @@
 .navigation {
     display: flex;
-    background: #FFFD;
+    background: #FFF;
     height: 60px;
     position: sticky;
     top: 0;
     border-bottom: #F0F0F0 2px solid;
     z-index: 1000;
-    backdrop-filter: blur(10px);
     align-items: center;
 }
 

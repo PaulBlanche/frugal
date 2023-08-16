@@ -1,11 +1,11 @@
-import { DataResponse } from "../../../../page.ts";
+import { DataResponse } from "../../../../mod.ts";
 
 export const type = "dynamic";
 
 export const route = "/";
 
 export function GET() {
-    return new DataResponse({ data: {} });
+    return new DataResponse({});
 }
 
 export function render() {

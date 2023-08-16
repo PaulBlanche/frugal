@@ -24,15 +24,7 @@
     }
 }
 
-.site-nav {
-    position: fixed;
-    top: 60px;
-    overflow: auto;
-    width: 256px;
-    bottom: 0px;
-    padding: 2rem 0 5rem 1rem;
-    box-sizing: content-box;
-}
+.site-nav {}
 
 .main {
     padding: 0 2rem;
@@ -95,8 +87,8 @@
         margin-left: 0;
     }
 
-    .site-nav {
-        padding-left: 0;
+    .wrapper {
+        flex-direction: column;
     }
 }
 

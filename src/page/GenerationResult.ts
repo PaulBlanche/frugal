@@ -1,6 +1,6 @@
 import * as http from "../../dep/std/http.ts";
 import * as xxhash from "../../dep/xxhash.ts";
-import { Phase } from "../../page.ts";
+import { Phase } from "./PageDescriptor.ts";
 import { JSONValue } from "./JSONValue.ts";
 import { Assets, Render } from "./PageDescriptor.ts";
 import { PathObject } from "./PathObject.ts";

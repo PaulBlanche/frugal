@@ -25,13 +25,8 @@
     font-weight: bold;
 }
 
-.toc-inactive-link {
-    text-transform: capitalize;
-}
-
 .toc-link {
     composes: link from '../../../../styles/link.module.css';
-    composes: toc-inactive-link;
 }
 
 .toc-link-active {

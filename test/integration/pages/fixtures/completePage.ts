@@ -1,4 +1,4 @@
-import { DataResponse, PathList, RenderContext, StaticHandlerContext } from "../../../../page.ts";
+import { DataResponse, PathList, RenderContext, StaticHandlerContext } from "../../../../mod.ts";
 
 export const route = "/:foo";
 
@@ -10,8 +10,7 @@ type Data = { foo: string };
 
 export function generate(context: StaticHandlerContext<typeof route>) {
     if (context.path.foo === "foo") {
-        return new DataResponse({
-            data: { foo: "Hello foo" },
+        return new DataResponse({ foo: "Hello foo" }, {
             status: 201,
             headers: {
                 "x-foo": "foo",
@@ -19,8 +18,7 @@ export function generate(context: StaticHandlerContext<typeof route>) {
         });
     }
     if (context.path.foo === "bar") {
-        return new DataResponse({
-            data: { foo: "Hello bar" },
+        return new DataResponse({ foo: "Hello bar" }, {
             status: 202,
             headers: {
                 "x-foo": "bar",

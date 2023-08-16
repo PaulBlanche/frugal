@@ -42,7 +42,7 @@ export const route = '/post/:slug';
 To generate an html page for each post, Frugal needs you to define a `getPaths` method (called at build time) that will return the list of all possible "path objects": with a route `/post/:slug`, the path object will have the shape `{ slug: string }`. The `getPaths` method has to return the list of each slug:
 
 ```ts filename=pages/posts.ts lines=[1,7-9]
-import { PathList } from "https://deno.land/std@{{DENO_STD_VERSION}}/page.ts"
+import { PathList } from "https://deno.land/x/frugal@{{FRUGAL_VERSION}}/mod.ts"
 
 ...
 
@@ -65,7 +65,7 @@ import {
     DataResponse, 
     PathList, 
     StaticHandlerContext 
-} from "https://deno.land/std@{{DENO_STD_VERSION}}/page.ts"
+} from "https://deno.land/x/frugal@{{FRUGAL_VERSION}}/mod.ts"
 
 ...
 
@@ -74,7 +74,7 @@ export function getPaths(): PathList<typeof route> {
 }
 
 export function generate({ path: { slug } }: StaticHandlerContext<typeof route>) {
-    return new DataResponse<Data>({ data: POSTS.find(post => post.slug === slug) })
+    return new DataResponse(POSTS.find(post => post.slug === slug))
 }
 ```
 
@@ -90,16 +90,17 @@ import {
     PathList, 
     StaticHandlerContext,
     RenderContext 
-} from "https://deno.land/x/frugal@{{FRUGAL_VERSION}}/page.ts"
+} from "https://deno.land/x/frugal@{{FRUGAL_VERSION}}/mod.ts"
 
 ...
 
 export function generate({ path: { slug } }: StaticHandlerContext<typeof route>) {
-    return new DataResponse<Data>({ data: POSTS.find(post => post.slug === slug) })
+    return new DataResponse(POSTS.find(post => post.slug === slug))
 }
 
 export function render({ data }: RenderContext<typeof route, Data> ) {
-    return `<html>
+    return `<!DOCTYPE html>
+<html>
     <body>
         <h1>${data.title}</h1>
         ${data.content}
@@ -127,7 +128,7 @@ import {
     PathList, 
     StaticHandlerContext, 
     RenderContext 
-} from "https://deno.land/std@{{DENO_STD_VERSION}}/page.ts"
+} from "https://deno.land/x/frugal@{{FRUGAL_VERSION}}/mod.ts"
 
 export const route = '/post/:slug'
 
@@ -155,11 +156,12 @@ export function getPaths(): PathList<typeof route> {
 }
 
 export function generate({ path: { slug } }: StaticHandlerContext<typeof route>) {
-    return new DataResponse<Data>({ data: POSTS[slug] })
+    return new DataResponse(POSTS[slug])
 }
 
 export function render({ data }: RenderContext<typeof route, Data> ) {
-    return `<html>
+    return `<!DOCTYPE html>
+<html>
     <body>
         <h1>${data.title}</h1>
         ${data.content}
@@ -212,7 +214,7 @@ import {
     PathList, 
     StaticHandlerContext, 
     RenderContext
-} from "https://deno.land/std@{{DENO_STD_VERSION}}/page.ts"
+} from "https://deno.land/x/frugal@{{FRUGAL_VERSION}}/mod.ts"
 
 ...
 
@@ -239,7 +241,7 @@ import {
     PathList, 
     StaticHandlerContext, 
     RenderContext
-} from "https://deno.land/std@{{DENO_STD_VERSION}}/page.ts"
+} from "https://deno.land/x/frugal@{{FRUGAL_VERSION}}/mod.ts"
 import { marked } from "https://esm.sh/marked"
 
 ...
@@ -256,7 +258,7 @@ export async function generate({ path: { slug }, resolve }: StaticHandlerContext
 
     const markdown = await Deno.readTextFile(resolve(`posts/${entry.file}`))
     const content = marked.parse(markdown)
-    return new DataResponse<Data>({ data: { title: entry.title, content} })
+    return new DataResponse({ title: entry.title, content})
 }
 
 ...
@@ -275,7 +277,7 @@ import {
     PathList, 
     StaticHandlerContext, 
     RenderContext
-} from "https://deno.land/std@{{DENO_STD_VERSION}}/page.ts"
+} from "https://deno.land/x/frugal@{{FRUGAL_VERSION}}/mod.ts"
 import { marked } from "https://esm.sh/marked"
 
 export const route = '/post/:slug'
@@ -320,11 +322,12 @@ export function async generate({ path: { slug }, resolve }: StaticHandlerContext
 
     const content = marked.parse(markdown)
 
-    return new DataResponse<Data>({ data: { title: entry.title, content} })
+    return new DataResponse({ title: entry.title, content})
 }
 
 export function render({ data }: RenderContext<typeof route, Data> ) {
-    return `<html>
+    return `<!DOCTYPE html>
+<html>
     <body>
         <h1>${data.title}</h1>
         ${data.content}

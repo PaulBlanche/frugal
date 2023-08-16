@@ -1,4 +1,4 @@
-import { PathList } from "../../../../page.ts";
+import { PathList } from "../../../../mod.ts";
 
 export const route = "/:foo/:bar";
 

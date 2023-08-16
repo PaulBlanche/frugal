@@ -97,20 +97,20 @@ export class FrugalServer implements Server {
         };
     }
 
-    serve(options: ServeOptions = {}) {
+    serve({ signal, onListen, port }: ServeOptions = {}) {
         const secure = this.#config.server.secure;
         const handler = this.handler(secure);
 
         return http.serve(handler, {
-            port: this.#config.server.port,
-            signal: options.signal,
+            port: port ?? this.#config.server.port,
+            signal,
             onListen: (args) => {
                 const protocol = secure ? "https" : "http";
                 log(
                     `listening on ${protocol}://${args.hostname}:${args.port}`,
                     { scope: "FrugalServer" },
                 );
-                options.onListen?.(args);
+                onListen?.(args);
             },
         });
     }

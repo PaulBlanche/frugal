@@ -1,5 +1,5 @@
 import { Navigator } from "./Navigator.ts";
-import * as utils from "./utils.ts";
+import { NavigationResult, Reason } from "./Reason.ts";
 
 export class Visitor {
     anchor: HTMLAnchorElement;
@@ -13,18 +13,24 @@ export class Visitor {
         this.anchor = anchor;
     }
 
-    _shouldVisit() {
+    _shouldVisit(): Reason | undefined {
         const rel = this.anchor.rel ?? "";
         const isExternal = rel.split(" ").includes("external");
         const directive = this.anchor.dataset["frugalNavigate"];
 
-        return this._navigator.shouldVisit(directive) && !isExternal &&
-            utils.isInternalUrl(this._navigator.url);
+        if (!this._navigator.shouldVisit(directive)) {
+            return Reason.NAVIGATION_DISABLED_ON_ELEMENT;
+        }
+
+        if (isExternal) {
+            return Reason.EXTERNAL_TARGET;
+        }
     }
 
-    async visit(): Promise<boolean> {
-        if (!this._shouldVisit()) {
-            return false;
+    async visit(): Promise<NavigationResult> {
+        const reason = this._shouldVisit();
+        if (reason !== undefined) {
+            return { success: false, reason };
         }
 
         return await this._navigator.visit();

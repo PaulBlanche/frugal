@@ -33,7 +33,7 @@ export class StaticFileServer implements Server {
         };
     }
 
-    serve({ onListen, signal }: ServeOptions = {}) {
+    serve({ onListen, signal, port = 8000 }: ServeOptions = {}) {
         const secure = this.#config.server.secure;
         const handler = this.handler(secure);
         return http.serve(async (request, connInfo) => {
@@ -50,7 +50,7 @@ export class StaticFileServer implements Server {
 
             return response;
         }, {
-            port: 8000,
+            port,
             signal,
             onListen: (args) => {
                 const protocol = secure ? "https" : "http";

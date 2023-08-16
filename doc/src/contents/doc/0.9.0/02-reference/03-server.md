@@ -1,6 +1,6 @@
 # Server
 
-Frugal comes with a server, depending on the kind of [Exporter](@@@) you use: Exporters that produces static website will not use the server.
+Frugal comes with a server, depending on the kind of [Exporter](/doc@{{FRUGAL_VERSION}}/reference/exporters) you use: Exporters that produces static website will not use the server.
 
 ## Dynamic pages
 
@@ -23,17 +23,19 @@ To do so, you'll have to send a `GET` request to the static page you want to ref
 - a `timestamp` parameter containing a UNIX timestamp in milliseconds of the time you made the request
 - a `sign` parameter containing a SHA-512 HMAC signature of the `timestamp` with the `cryptoKey` of the server
 
-The page will be refreshed if the signature in `sign` is valid and if the `timestamp` is not older than 2 seconds.
+The cached page will be refreshed if the signature in `sign` is valid and the `timestamp` is not older than 2 seconds.
 
 ### Just in time build
 
-By default, Frugal [enforces the list of path](/doc@{{FRUGAL_VERSION}}/reference/page-descriptor#heading-with-getpaths-for-static-pages) returned by `getPaths`. But you can disable this behavior with `export const strictPaths = false;` on your page.
+By default, Frugal [enforces the list of path](/doc@{{FRUGAL_VERSION}}/reference/page-descriptor#heading-with-getpaths-for-static-pages) returned by `getPaths`. But you can change this behavior with `export const strictPaths = false;` on your page.
 
-By doing so, Frugal will accept paths outside those returned by `getPaths`, and will build the pages when requested for the first time. Frugal will still cache them after build for subsequent requests.
+By doing so, Frugal will accept paths outside those returned by `getPaths` and build the pages when requested for the first time. Frugal will still cache them after build for subsequent requests.
 
-With `strictPaths` you can build only a subset of the possible paths, like the most visited, and let the less visited pages be generated just in time to optimize build time.
+With `strictPaths`, you can build only a subset of the possible paths, like the most visited, and let the less visited pages be generated just in time to optimize build time.
 
 ```ts
+import { PathList } from "https://deno.land/x/frugal@{{FRUGAL_VERSION}}/mod.ts";
+
 export const route = "/post/:slug";
 
 export const strictPaths = false;
@@ -49,12 +51,18 @@ export async function getPaths(): Promise<PathList<typeof route>> {
 You can redirect to a static page with an `EmptyResponse` using the `forceDynamic` option to get a [Hybrid Page](/doc@{{FRUGAL_VERSION}}/reference/page-descriptor#heading-hybrid-page) :
 
 ```ts
+import { DynamicHandlerContext, HybridHandlerContext } from "https://deno.land/x/frugal@{{FRUGAL_VERSION}}/mod.ts";
+
+type Data = {
+    date: number;
+};
+
 export async function generate({ path: { slug }, session }: HybridHandlerContext<typeof route>) {
-    return new DataResponse<Data>({ data: Date.now() });
+    return new DataResponse({ date: Date.now() });
 }
 
 export async function POST({ request, session }: DynamicHandlerContext<typeof route>) {
-    return new EmptyResponse<Data>({
+    return new EmptyResponse({
         status: 303,
         forceDynamic: true,
         headers: {
@@ -62,9 +70,18 @@ export async function POST({ request, session }: DynamicHandlerContext<typeof ro
         },
     });
 }
+
+export function render({ data }: RenderContext<typeof route>) {
+    return `<!DOCTYPE html>
+<html>
+    <body>${data.date}</body>
+</html>`;
+}
 ```
 
-Calling the page with a `POST` method will redirect to the same URL with a `GET` method. But instead of serving the static page from cache, Frugal will dynamically generate the page this one time (not caching it): you get a freshly generated page from the server. Hitting refresh in the browser will take you back to the cached version (issuing a `GET` request without `forceDynamic`).
+When accessing the page, you get the page from cache, with a timestamp computed at build time.
+
+Calling the page with a `POST` method will redirect to the same URL with a `GET` method. But instead of serving the static page from cache, Frugal will dynamically generate the page this one time (not caching it): you get a freshly generated page from the server (with a newer timestamp). Hitting refresh in the browser will take you back to the cached version with the older timestamp (issuing a `GET` request without `forceDynamic`).
 
 In the context of a `forceDynamic` generation, the `generate` method behaves like a dynamic `GET` method.
 
@@ -80,6 +97,8 @@ Frugal comes with an optional CSRF middleware. When [correctly configured](/doc@
 - Frugal will compare what it found to the token in the cookie and reject the request if they don't match with a [403 Forbidden](https://developer.mozilla.org/fr/docs/Web/HTTP/Status/403).
 
 ```ts
+import { DynamicHandlerContext, RenderContext } from "https://deno.land/x/frugal@{{FRUGAL_VERSION}}/mod.ts";
+
 type Data = {
     comments: { name: string; body: string }[];
     csrf: string;
@@ -88,7 +107,7 @@ type Data = {
 function GET({ state }: DynamicHandlerContext<typeof route>) {
     const comments = await queryLastComments();
 
-    return new DataResponse({ data: { csrf: state.csrf, comments } });
+    return new DataResponse({ csrf: state.csrf, comments });
 }
 
 function POST({ request }: DynamicHandlerContext<typeof route>) {
@@ -105,7 +124,8 @@ function POST({ request }: DynamicHandlerContext<typeof route>) {
 }
 
 function render({ data }: RenderContext<typeof route, Data>) {
-    return `<html>
+    return `<!DOCTYPE html>
+<html>
     <body>
         ${
         data.comments.map((comment) => {
@@ -126,13 +146,13 @@ function render({ data }: RenderContext<typeof route, Data>) {
 }
 ```
 
-If your page is dynamic, you can access the `state` property and therefore can embed the CSRF token in your form in a hidden field. You'll have CSRF protection without needing any client-side javascript.
+If your page is dynamic, you can access the `state` property and embed the CSRF token in your form in a hidden field. You'll have CSRF protection without needing any client-side javascript.
 
 If your page is static, you cannot access the `state`. You will need some javascript to read the CSRF cookie and inject the field in the form or the header in the request. It means that clients with non-functioning javascript will be systematically rejected.
 
 ## Session
 
-Frugal will create a session for each client. Each client gets a cookie with a unique id. The Frugal will use this id to get back the data stored in the [session storage](/doc@{{FRUGAL_VERSION}}/reference/configuration#heading-session).
+Frugal will create a session for each client. Each client gets a cookie with a unique id. The Frugal will use this id to get the data stored in the [session storage](/doc@{{FRUGAL_VERSION}}/reference/configuration#heading-session).
 
 Frugal comes only with two types of session storage :
 
@@ -144,6 +164,35 @@ Frugal comes only with two types of session storage :
 
 > [!error]
 > Use `MemorySessionStorage` only in development. Use `CookieSessionStorage` or your own `SessionStorage` in production.
+
+### Session object
+
+If you [configured Frugal to use session](/doc@{{FRUGAL_VERSION}}/reference/configuration#heading-session), each dynamic handler should have access to a Session object.
+
+```ts
+type Session = {
+    delete(key: string): void;
+    get<T = unknown>(key: string): T | undefined;
+    has(key: string): boolean;
+    set<T = unknown>(key: string, value: T): void;
+};
+```
+
+##### `set`
+
+Store a value in the session with the given `key`.
+
+##### `get`
+
+Get the value stored in the session with the given `key`.
+
+##### `delete`
+
+Delete the value stored in the session with the given `key`.
+
+##### `has`
+
+Check if a value is stored in the session with the given `key`.
 
 ### Custom session storage
 
@@ -213,7 +262,7 @@ It should return nothing.
 
 ## Middlewares
 
-The server is composed of middlewares inspired by [koa](https://koajs.com/). A middleware is a sync or async function that takes a `context` and a `next` async function and returns a `Response`.
+The server is composed of middlewares inspired by [koa](https://koajs.com/). A middleware is a sync or async function that takes a `context` and a `next` async function and returns a standard [`Response`](https://developer.mozilla.org/en-US/docs/Web/API/Response) object.
 
 ```ts
 type Middleware<CONTEXT = unknown> = (
@@ -226,7 +275,7 @@ The `next` function will delegate to the next middleware in the stack. The curre
 
 ```ts
 function middleware(context: Context, next: Next<Context>) {
-    // do something before next middleware in the stack
+    // do something before the next middleware in the stack
 
     // call the next middleware with a modified context, and get the response
     const response = await next({ ...context, myAdditionalValue: "foo" });
@@ -236,6 +285,8 @@ function middleware(context: Context, next: Next<Context>) {
     return response;
 }
 ```
+
+When you register a middleware, it will be pushed at the top of the middleware stack. It means you have acces to the request before any Frugal internal middleware, and to the object response after each Frugal internal middleware.
 
 The base middleware for Frugal will receive the following context :
 

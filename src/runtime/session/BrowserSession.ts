@@ -6,6 +6,7 @@ import { History } from "./History.ts";
 import { SubmitObserver } from "./SubmitObserver.ts";
 import { Submitter } from "./Submitter.ts";
 import { Form, Method } from "./Form.ts";
+import { NavigationResult, Reason } from "./Reason.ts";
 
 export type SessionConfig = {
     prefetch: PrefetcherConfig;
@@ -27,7 +28,7 @@ export class BrowserSession {
         BrowserSessionInternal.instance.start();
     }
 
-    static navigate(url: URL | string): Promise<boolean> {
+    static navigate(url: URL | string): Promise<NavigationResult> {
         if (BrowserSessionInternal.instance === undefined) {
             throw new Error("Session must be initialised first");
         }
@@ -35,7 +36,7 @@ export class BrowserSession {
         return BrowserSessionInternal.instance.navigate(url);
     }
 
-    static submit(formElement: HTMLFormElement): Promise<boolean> {
+    static submit(formElement: HTMLFormElement): Promise<NavigationResult> {
         if (BrowserSessionInternal.instance === undefined) {
             throw new Error("Session must be initialised first");
         }
@@ -80,7 +81,7 @@ class BrowserSessionInternal {
         this._prefetchObserver.observe();
     }
 
-    async navigate(url: URL | string): Promise<boolean> {
+    async navigate(url: URL | string): Promise<NavigationResult> {
         const navigator = new Navigator(
             new URL(url, location.href),
             this._config.navigate,
@@ -89,11 +90,11 @@ class BrowserSessionInternal {
         return await navigator.visit();
     }
 
-    async submit(formElement: HTMLFormElement): Promise<boolean> {
+    async submit(formElement: HTMLFormElement): Promise<NavigationResult> {
         const form = new Form(formElement);
 
         if (form.method === Method.DIALOG) {
-            return false;
+            return { success: false, reason: Reason.DIALOG_FORM };
         }
 
         const navigator = new Navigator(form.url, this._config.navigate);

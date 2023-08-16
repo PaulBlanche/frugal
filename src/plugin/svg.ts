@@ -1,10 +1,12 @@
 import * as xxhash from "../../dep/xxhash.ts";
 import * as path from "../../dep/std/path.ts";
 import * as fs from "../../dep/std/fs.ts";
+import * as dom from "../../dep/deno_dom.ts";
 
 import { Plugin } from "../Plugin.ts";
 import { log } from "../log.ts";
 import { Asset } from "../AssetCollector.ts";
+import { FrugalConfig } from "../Config.ts";
 
 type SvgOptions = {
     outdir: string;
@@ -115,9 +117,6 @@ async function symbolUrl(svgPath: string) {
     };
 }
 
-import * as dom from "../../dep/deno_dom.ts";
-import { FrugalConfig } from "../Config.ts";
-
 type Symbol = {
     attributes: Record<string, string>;
     gatheredIds: string[];
@@ -217,5 +216,5 @@ function renderSpritesheet(symbols: Symbol[], config: FrugalConfig) {
 }
 
 function isElement(node: dom.Node): node is dom.Element {
-    return node.nodeType === Node.ELEMENT_NODE;
+    return node.nodeType === dom.Node.ELEMENT_NODE;
 }

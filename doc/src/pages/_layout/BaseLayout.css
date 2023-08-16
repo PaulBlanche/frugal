@@ -19,6 +19,7 @@ body.no-scroll {
 
 html {
     box-sizing: border-box;
+    scroll-padding-top: 60px;
 }
 
 *,

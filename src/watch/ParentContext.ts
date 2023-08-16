@@ -8,6 +8,10 @@ import { LiveReloadServer } from "./livereload/LiveReloadServer.ts";
 
 type EventType = "ready";
 
+export type WatchOptions = {
+    port?: number;
+};
+
 export type ParentContextListener = (type: EventType) => void;
 export class ParentContext {
     #config: FrugalConfig;
@@ -45,7 +49,7 @@ export class ParentContext {
         }
     }
 
-    async watch() {
+    async watch({ port = 3000 }: WatchOptions = {}) {
         this.#watchProcess.addEventListener(async (type) => {
             switch (type) {
                 case "reload":
@@ -53,6 +57,7 @@ export class ParentContext {
                     const server = await this.#getWatchServer();
                     this.#serverController = new AbortController();
                     server.serve({
+                        port,
                         signal: this.#serverController.signal,
                         onListen: () => {
                             this.#liveReloadServer.dispatch({ type: "reload" });

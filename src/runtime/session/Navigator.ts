@@ -1,5 +1,7 @@
 import { render } from "./render/mod.ts";
 import { History } from "./History.ts";
+import { NavigationResult, Reason } from "./Reason.ts";
+import * as utils from "./utils.ts";
 
 export const LOADING_CLASSNAME = "frugal-navigate-loading";
 
@@ -38,8 +40,12 @@ export class Navigator {
         return this._config.defaultNavigate ? directive !== "false" : directive === "true";
     }
 
-    async visit(init?: RequestInit): Promise<boolean> {
+    async visit(init?: RequestInit): Promise<NavigationResult> {
         History.saveScroll();
+
+        if (!utils.isInternalUrl(this._url)) {
+            return { success: false, reason: Reason.EXTERNAL_TARGET };
+        }
 
         const result = await this.navigate(init);
         if (result) {
@@ -49,13 +55,13 @@ export class Navigator {
         return result;
     }
 
-    async navigate(init?: RequestInit): Promise<boolean> {
+    async navigate(init?: RequestInit): Promise<NavigationResult> {
         this._setReadyState("loading");
 
         const html = await this._fetch(init);
 
         if (html === undefined) {
-            return false;
+            return { success: false, reason: Reason.NON_OK_RESPONSE };
         }
 
         const nextDocument = new DOMParser().parseFromString(
@@ -64,7 +70,7 @@ export class Navigator {
         );
 
         if (!this._shouldProcessNavigate(nextDocument)) {
-            return false;
+            return { success: false, reason: Reason.NAVIGATION_DISABLED_ON_TARGET };
         }
 
         await render(nextDocument, { onBeforeRender: () => this._onBeforeUnload() });
@@ -81,7 +87,7 @@ export class Navigator {
 
         this._setReadyState("complete");
 
-        return true;
+        return { success: true };
     }
 
     _tryToScrollToHash() {

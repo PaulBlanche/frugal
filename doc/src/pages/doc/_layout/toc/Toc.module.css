@@ -22,16 +22,29 @@
     background: transparent;
     border: none;
     border-right: 2px solid #F0F0F0;
+    border-bottom: 2px solid #F0F0F0;
+    margin-bottom: -2px;
     display: none;
+    cursor: pointer;
 
     .icon {
         color: #111;
         width: 32px;
+
+        &.close {
+            width: 24px;
+            display: none;
+        }
     }
 
-    &:hover,
+    &:hover {
+        background: rgba(0, 0, 0, 0.02);
+        border-color: #CCC;
+    }
+
     &:focus {
-        background: rgba(0, 0, 0, 0.1);
+        background: rgba(0, 0, 0, 0.05);
+        border-color: #CCC;
     }
 }
 
@@ -40,23 +53,27 @@
     grid-template-areas: "select";
     align-items: center;
 
-    width: 100%;
+    width: auto;
     min-width: 15ch;
     max-width: 30ch;
     border-radius: 4px;
     border: 1px solid #CCC;
     cursor: pointer;
     line-height: 1.5;
-    background-color: #F0F0F0;
+    background-color: #F3F3F3;
     box-sizing: border-box;
     margin-bottom: 2rem;
     font-size: 0.9rem;
     font-weight: 500;
     overflow: hidden;
+    margin-left: 1rem;
 
-    &:hover,
-    &:focus {
-        background-color: #DDD;
+    &:hover {
+        border-color: #AAA;
+    }
+
+    &:focus-within {
+        outline: 2px solid var(--color-yellow);
     }
 
     & select {
@@ -102,26 +119,79 @@
 
 }
 
+.nav {
+    position: fixed;
+    top: 60px;
+    overflow: auto;
+    width: 256px;
+    bottom: 0px;
+    padding: 2rem 2rem 5rem 0rem;
+    box-sizing: border-box;
+}
+
 @media screen and (max-width: 968px) {
-    .drawer {
-        transform: translateX(-100%);
-        background: white;
-        overflow: hidden;
-        transition: transform 0.2s;
-        z-index: 901;
+    .nav {
+        position: static;
+        margin-left: 2rem;
+        padding-bottom: 2rem;
+    }
+
+
+    .site {
+        padding-left: 0;
+    }
+
+    .select {
+        margin-right: 1rem;
+    }
+
+
+    [data-drawer] {
+        .toggle {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .nav {
+            position: fixed;
+            transform: translateX(-100%);
+            background: white;
+            overflow: hidden;
+            transition: transform 0.2s;
+            z-index: 901;
+            padding-right: 0rem;
+            margin-left: 0rem;
+            display: none;
+        }
 
         &[data-open] {
-            transform: translateX(0%);
-            overflow: auto;
+            .nav {
+                transform: translateX(0%);
+                overflow: auto;
+                display: block;
+            }
+
+            .icon.toc {
+                display: none;
+            }
+
+            .icon.close {
+                display: block;
+            }
 
             &~.overlay {
                 background-color: rgba(0, 0, 0, 0.5);
                 pointer-events: initial;
             }
+
         }
     }
+}
 
-    .toggle {
-        display: block;
+@media screen and (max-width: 600px) {
+    .nav {
+        margin-left: 1rem;
     }
+
 }

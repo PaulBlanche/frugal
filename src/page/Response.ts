@@ -5,17 +5,24 @@ export const FORCE_GENERATE_COOKIE = "__frugal_force_generate";
 
 export type PageResponse<DATA extends JSONValue> = EmptyResponse | DataResponse<DATA>;
 
-type BaseResponseInit = {
+type ResponseInit = {
     headers?: HeadersInit;
     status?: number;
     forceDynamic?: boolean;
 };
 
+interface Response<DATA> {
+    headers: Headers;
+    status: http.Status | undefined;
+    data: DATA;
+    dataHash: string;
+}
+
 class BaseResponse {
     #headers: Headers;
-    #init: BaseResponseInit;
+    #init: ResponseInit;
 
-    constructor(init: BaseResponseInit) {
+    constructor(init: ResponseInit = {}) {
         this.#init = init;
         this.#headers = new Headers(this.#init.headers);
         if (this.#init?.forceDynamic) {
@@ -36,35 +43,35 @@ class BaseResponse {
     }
 }
 
-export class EmptyResponse extends BaseResponse {
+export class EmptyResponse extends BaseResponse implements Response<void> {
     type: "empty";
 
-    constructor(init: BaseResponseInit) {
+    constructor(init?: ResponseInit) {
         super(init);
         this.type = "empty";
     }
 
+    get data(): void {
+        return undefined;
+    }
+
     get dataHash() {
-        return "";
+        return "__void__";
     }
 }
 
-type DataResponseInit<DATA extends JSONValue> = BaseResponseInit & {
-    data: DATA;
-};
-
-export class DataResponse<DATA extends JSONValue> extends BaseResponse {
-    #init: DataResponseInit<DATA>;
+export class DataResponse<DATA extends JSONValue> extends BaseResponse implements Response<DATA> {
+    #data: DATA;
     type: "data";
 
-    constructor(init: DataResponseInit<DATA>) {
+    constructor(data: DATA, init?: ResponseInit) {
         super(init);
-        this.#init = init;
+        this.#data = data;
         this.type = "data";
     }
 
     get data() {
-        return this.#init.data;
+        return this.#data;
     }
 
     get dataHash() {

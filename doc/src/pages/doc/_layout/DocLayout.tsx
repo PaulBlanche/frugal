@@ -29,7 +29,7 @@ export function DocLayout(
             <Navigation />
             <div class={clsx(doclayout["wrapper"])}>
                 <div>
-                    <Toc toc={siteToc} version={version} class={clsx(doclayout["site-nav"])} />
+                    <Toc toc={siteToc} version={version} />
                 </div>
                 <main class={clsx(doclayout["main-wrapper"])}>
                     <div class={clsx(doclayout["main"])}>

@@ -20,10 +20,8 @@ reference
     svelte runtime
 
 guides
-    client session
-    preact
-    svelte
-    data fetching
-    islands
-    routes
+    form submission
     authentication
+    deno deploy
+    CORS
+    dotenv

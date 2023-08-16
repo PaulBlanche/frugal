@@ -58,7 +58,7 @@ function TocNode({ hierarchy, version }: TocNodeProps) {
                     </span>
                 )
                 : (
-                    <span class={clsx(toccontent["toc-inactive-link"])}>
+                    <span>
                         {entry.title}
                     </span>
                 )}

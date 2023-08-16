@@ -1,4 +1,4 @@
-import { DataResponse, EmptyResponse, GetPathsParams, PathList, StaticHandlerContext } from "$dep/frugal/page.ts";
+import { DataResponse, EmptyResponse, GetPathsParams, PathList, StaticHandlerContext } from "$dep/frugal/mod.ts";
 import { getRenderFrom } from "$dep/frugal/runtime/preact.server.ts";
 import { Page } from "./Page.tsx";
 import { getToc } from "./toc.ts";
@@ -37,11 +37,10 @@ export async function generate(
     const markdown = await Deno.readTextFile(resolve(`./src/contents/doc/${entry.file}`));
 
     return new DataResponse<Data>({
-        data: {
-            toc,
-            version,
-            markdown,
-        },
+        toc,
+        version,
+        markdown,
+    }, {
         headers: {
             "Cache-Control": "public, max-age=300, must-revalidate", // cached for 5min
         },

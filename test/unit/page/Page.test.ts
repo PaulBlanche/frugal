@@ -1,7 +1,7 @@
 import * as asserts from "../../../dep/std/testing/asserts.ts";
 import * as mock from "../../../dep/std/testing/mock.ts";
 
-import { DataResponse, RenderContext, StaticPageDescriptor } from "../../../page.ts";
+import { DataResponse, RenderContext, StaticPageDescriptor } from "../../../mod.ts";
 import { JSONValue } from "../../../src/page/JSONValue.ts";
 import { compile, DynamicPage, StaticPage } from "../../../src/page/Page.ts";
 import { EmptyResponse } from "../../../src/page/Response.ts";
@@ -210,7 +210,7 @@ Deno.test("page: StaticPage methods and properties", async () => {
         route: "/foo",
         render: () => "foo",
         strictPaths: false,
-        generate: () => new DataResponse({ data: "foobar" }),
+        generate: () => new DataResponse("foobar"),
         getPaths: () => ["foo", "bar"],
     }) as StaticPage;
 
@@ -231,7 +231,7 @@ Deno.test("page: DynamicPage methods and properties", async () => {
     const page = compile("foo", "bar", {
         route: "/foo",
         render: () => "foo",
-        GET: () => new DataResponse({ data: "foobar" }),
+        GET: () => new DataResponse("foobar"),
     }) as DynamicPage;
 
     asserts.assertEquals(

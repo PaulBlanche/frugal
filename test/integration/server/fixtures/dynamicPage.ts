@@ -1,4 +1,4 @@
-import * as page from "../../../../page.ts";
+import * as page from "../../../../mod.ts";
 
 export const type = "dynamic";
 
@@ -16,13 +16,12 @@ export function GET({ path, request, session }: page.DynamicHandlerContext<typeo
     const count = session?.get<number>("counter") ?? 0;
     session?.set("counter", count + 1);
     return new page.DataResponse({
-        data: {
-            path,
-            count,
-            searchParams: Object.fromEntries(
-                new URL(request.url).searchParams.entries(),
-            ),
-        },
+        path,
+        count,
+        searchParams: Object.fromEntries(
+            new URL(request.url).searchParams.entries(),
+        ),
+    }, {
         headers: {
             "Content-Type": "application/json",
         },

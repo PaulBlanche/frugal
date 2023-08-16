@@ -82,10 +82,10 @@ export class LiveReloadServer implements Server {
         };
     }
 
-    serve({ onListen, signal }: ServeOptions = {}) {
+    serve({ onListen, signal, port = 4075 }: ServeOptions = {}) {
         const handler = this.handler();
         return http.serve(handler, {
-            port: 4075,
+            port,
             signal,
             onListen(args) {
                 onListen?.(args);

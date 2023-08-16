@@ -1,6 +1,6 @@
 # Preact runtime
 
-Frugal comes with an optionnal integration with preact. You can write your static markup with JSX and declare _island_ for stateful components that need to be hydrated client-side.
+Frugal comes with an optional integration with Preact. You can write your static markup with JSX and declare _island_ for stateful components that need to be hydrated client-side.
 
 ## Configuration
 
@@ -16,7 +16,7 @@ First, you'll need an [Import Map](https://developer.mozilla.org/en-US/docs/Web/
 }
 ```
 
-You'll also need a `deno.json` [config file](https://deno.land/manual@v1.35.3/getting_started/configuration_file) to configure the JSX and the Import Map :
+You'll also need a `deno.json` [config file](https://deno.land/manual@v{{DENO_VERSION}}/getting_started/configuration_file) to configure the JSX and the Import Map :
 
 ```json filename=deno.json
 {
@@ -28,7 +28,7 @@ You'll also need a `deno.json` [config file](https://deno.land/manual@v1.35.3/ge
 }
 ```
 
-Now that deno is configured to understand `jsx` correctly, we need to configure Frugal :
+Now that Deno is configured to understand `jsx` correctly, we need to configure Frugal :
 
 ```ts filename=frugal.config.ts
 import { Config } from "https://deno.land/x/frugal@{{FRUGAL_VERSION}}/mod.ts"
@@ -48,14 +48,14 @@ Now frugal is ready to process JSX using Preact.
 
 ## Server-only runtime
 
-Those method can only be used in server side components. They can't be used inside an _island_.
+Those functions can only be used in server-side components. They can't be used inside an _island_.
 
 ### `getRenderFrom`
 
-The only thing that changes in page descriptor is the render function. Instead of defining it ourselves, the preact runtime compute a render function for us from a JSX component :
+The only thing that changes in page descriptors is the render function. Instead of defining it ourselves, the preact runtime computes a render function for us from a JSX component :
 
 ```tsx filename=page.tsx
-import { getRenderFrom } from "https://deno.land/x/frugal@{{FRUGAL_VERSION}}/runtime/preact.server.ts"
+import { getRenderFrom } from "https://deno.land/x/frugal@{{FRUGAL_VERSION}}/runtime/preact.server.ts"
 
 export const render = getRenderFrom(App)
 
@@ -84,21 +84,21 @@ export type DocumentProps = {
 
 ##### `Document`
 
-The root JSX component only discribe markup inside the body. To modify the rest of the document, you can pass a JSX Component that takes `DocumentProps`.
+The root JSX component only describes markup inside the body. To modify the rest of the document, you can pass a JSX Component that takes `DocumentProps`.
 
 > [!tip]
-> If you want to modify the `<head>` of the document, use the [`<Head>`](@@@) component instead.
+> If you want to modify the `<head>` of the document, use the [`<Head>`](/doc@{{FRUGAL_VERSION}}/reference/preact-runtime#heading-head) component instead.
 
 ##### `embedData`
 
-By default Frugal outputs static pages without any client-side script. But if you have client-side _island_ you might need access to the data object that was used to render the page in the server. The `embedData` parameter instruct Frugal to embed the data object in an inline script for you to access via [`useData`](@@@)
+By default, Frugal outputs static pages without any client-side script. But if you have client-side _island_, you might need access to the data object used to render the page server-side. The `embedData` parameter instructs Frugal to embed the data object in an inline script for you to access via [`useData`](/doc@{{FRUGAL_VERSION}}/reference/preact-runtime#heading-usedata)
 
 > [!warn]
-> If you call the hook `useData` inside an _island_ with `embedData: false`, you will get an error. You need `embedData: true` for the hook to work client-side.
+> You will get an error if you call the hook `useData` inside an _island_ with `embedData: false`. You must have `embedData: true` for the hook to work client-side.
 
 ## Client-safe runtime
 
-Every components, hooks or method described here are usable inside server components or _island_. You can use them everywhere.
+Every components, hooks, or method described here are usable inside server components or _island_. You can use them everywhere.
 
 ### `<Island>`
 
@@ -106,7 +106,7 @@ Wrapping your stateful client-side component in the `<Island>` component will cr
 
 ```tsx filename=MyComponentIsland.tsx
 import { Island } from "https://deno.land/x/frugal@{{FRUGAL_VERSION}}/runtime/preact.client.ts"
-import { MyComponent, MyComponentProps } from './MyComponent.tsx'
+import { MyComponent, MyComponentProps } from './MyComponent.tsx'
 import { NAME } from "./MyComponentIsland.script.ts"
 
 function MyComponentIsland(props: MyComponentProps) {
@@ -115,9 +115,9 @@ function MyComponentIsland(props: MyComponentProps) {
 ```
 
 > [!warn]
-> The `<Island>` component do not perform any hydration, it only generates the markup necessary for hydration. The hydration is done via a client-side call to the [`hydrate`](@@@) function.
+> The `<Island>` component does not perform any hydration; it only generates the markup necessary for hydration. The hydration is done via a client-side call to the [`hydrate`](/doc@{{FRUGAL_VERSION}}/reference/preact-runtime#heading-hydrate) function.
 
-The component accept the following props :
+The component accepts the following props :
 
 ```ts
 export type IslandProps<PROPS> = {
@@ -134,17 +134,17 @@ export type HydrationStrategy = "load" | "idle" | "visible" | "media-query" | "n
 
 #### `strategy`
 
-This prop select the hydration strategy for the island :
+This prop selects the hydration strategy for the island :
 
-- `"load"` will hydrate the island on page load (default behaviour)
+- `"load"` will hydrate the island on page load (default behavior)
 - `"idle"` will defer hydration until the browser is idle (via `requestIdleCallback` or `setTimeout` for browsers not supporting it)
-- `"visible"` will defer hydration until the island enter the viewport (via `InsersectionObserver`)
+- `"visible"` will defer hydration until the island enters the viewport (via `InsersectionObserver`)
 - `"media-query"` will hydrate the island if the viewport matches a given media query on load
-- `"never"` will disable hydration for this island
+- `"never"` will turn off hydration for this island
 
 #### `clientOnly`
 
-This prop will disable SSR for the _island_. No markup will be generated in the HTML, and the component will only render client-side (for browser able to process the javascript)
+This prop will disable SSR for the _island_. No markup will be generated in the HTML, and the component will only render client-side (for browsers able to process the javascript)
 
 #### `query`
 
@@ -152,7 +152,7 @@ The media query to match if you chose the `"media-query"` strategy.
 
 #### `name`
 
-A unique name for your island. This name will be used as a selector to find the DOM node to hydrate
+A unique name for your island. This name will be used as a selector to find the DOM node to hydrate.
 
 #### `Component`
 
@@ -163,9 +163,9 @@ Your stateful client-side component inside the island.
 The props passed to your component.
 
 > [!warn]
-> The props of your component will be serialized and embeded in the HTML markup, so the props must be serializable
+> The props of your component will be serialized and embedded in the HTML markup, so the props must be serializable
 >
-> Moreover if you have multiple istance of the same island on the page and the props are derived from the page data object it might be more efficient to have an island without props and to use `useData` with `embedData:true` to compute the props from the data object. Instead of having a JSON of the props embeded for each instance of your island, you'll have a single JSON of the data object embedded. You'll have to decide what option is the best fit for your case.
+> Moreover, if you have multiple instances of the same island on the page and the props are derived from the page data object, it might be more efficient to have an island without props and to use `useData` with `embedData:true` to compute the props from the data object. Instead of having a JSON of the props embedded for each instance of your island, you'll have a single JSON of the data object embedded. You'll have to decide what option is the best fit for your case.
 
 ### `hydrate`
 
@@ -182,7 +182,7 @@ if (import.meta.main) {
 }
 ```
 
-This function will find every _island_ with a matching name, and hydrate them with the component `MyComponent`.
+This function will find every _island_ with a matching name and hydrate them with the component `MyComponent`.
 
 #### Parameters
 
@@ -190,7 +190,7 @@ The `hydrate` function takes two parameters. The name of the island to hydrate a
 
 #### Dynamic import and deferred hydration
 
-The second parameter of the `hydrate` function can be an async callback to enable dynamic loading of components with code-splitting. Since the `hydrate` function calls the callback parameter only during actual hydration, for island with defered hydration (`"idle"`, `"visible"`, `"media-query"`) you can use this pattern with code splitting enabled (via [esbuild config](/doc@{{FRUGAL_CONFIG}}/reference/configuration#heading-esbuild)):
+The second parameter of the `hydrate` function can be an async callback to enable dynamic loading of components with code-splitting. Since the `hydrate` function calls the callback parameter only during actual hydration, for Islands with deferred hydration (`"idle"`, `"visible"`, `"media-query"`) you can use this pattern with code splitting enabled (via [esbuild config](/doc@{{FRUGAL_CONFIG}}/reference/configuration#heading-esbuild)):
 
 ```ts filename=MyComponentIsland.script.ts
 import { hydrate } from "https://deno.land/x/frugal@{{FRUGAL_VERSION}}/runtime/preact.client.ts"
@@ -202,7 +202,7 @@ if (import.meta.main) {
 }
 ```
 
-The JS chunk containing your component will not be loaded immediatly. Instead, it will be defered until the island is hydrated.
+The JS chunk containing your component will not be loaded immediately. Instead, it will be deferred until the island is hydrated.
 
 ### `<Head>`
 
@@ -230,7 +230,7 @@ function Component() {
 This hook gives you access to the data object of the page.
 
 > [!warn]
-> For this hook to work client-side, you need `embedData:true` in the [`getRenderFrom`](@@@) function.
+> For this hook to work client-side, you need `embedData:true` in the [`getRenderFrom`](/doc@{{FRUGAL_VERSION}}/reference/preact-runtime#heading-getrenderfrom) function.
 
 ### `usePathname`
 

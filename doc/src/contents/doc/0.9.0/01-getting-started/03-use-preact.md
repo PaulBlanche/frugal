@@ -1,4 +1,4 @@
-# Use Preact
+# Using Preact
 
 ## Update the configuration
 
@@ -14,7 +14,7 @@ First, you'll need an [Import Map](https://developer.mozilla.org/en-US/docs/Web/
 }
 ```
 
-You'll also need a `deno.json` [config file](https://deno.land/manual@v1.35.3/getting_started/configuration_file) to configure `jsx` :
+You'll also need a `deno.json` [config file](https://deno.land/manual@v{{DENO_VERSION}}/getting_started/configuration_file) to configure `jsx` :
 
 ```json filename=deno.json
 {

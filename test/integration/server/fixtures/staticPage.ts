@@ -1,4 +1,4 @@
-import * as page from "../../../../page.ts";
+import * as page from "../../../../mod.ts";
 import { store } from "./store.ts";
 
 export const route = "/static/:slug";
@@ -21,16 +21,15 @@ export async function generate(
 ): Promise<page.DataResponse<Data>> {
     const count = session?.get<number>("counter") ?? 0;
     return new page.DataResponse({
-        data: {
-            path,
-            count,
-            store: await store(),
-            searchParams: request
-                ? Object.fromEntries(
-                    new URL(request.url).searchParams.entries(),
-                )
-                : {},
-        },
+        path,
+        count,
+        store: await store(),
+        searchParams: request
+            ? Object.fromEntries(
+                new URL(request.url).searchParams.entries(),
+            )
+            : {},
+    }, {
         headers: {
             "Content-Type": "application/json",
         },

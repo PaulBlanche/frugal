@@ -119,8 +119,7 @@ export class StaticPage<
 
     generate(context: descriptor.StaticHandlerContext<PATH>) {
         if (this.#descriptor.generate === undefined) {
-            // deno-lint-ignore no-explicit-any
-            return new DataResponse<DATA>({ data: {} } as any);
+            return new DataResponse<DATA>({} as DATA);
         }
 
         return this.#descriptor.generate(context);

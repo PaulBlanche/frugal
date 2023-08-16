@@ -4,7 +4,7 @@ import { TocContent } from "./TocContent.tsx";
 import tocCss from "./Toc.module.css";
 import { clsx } from "$dep/clsx.ts";
 import * as icon from "../../../../glyphs/icons/mod.ts";
-import { DRAWER_ID, OVERLAY_ID, TOGGLE_ID, VERSION_SELECT_ID } from "./Toc.script.ts";
+import { DRAWER_ID, NAV_ID, OVERLAY_ID, TOGGLE_ID, VERSION_SELECT_ID } from "./Toc.script.ts";
 
 export type TocProps = {
     version: string;
@@ -26,23 +26,28 @@ export function Toc({ toc, class: className, version }: TocProps) {
 
     return (
         <>
-            <button id={TOGGLE_ID} class={clsx(tocCss["toggle"])}>
-                <icon.Toc class={clsx(tocCss["icon"])} />
-            </button>
-            <nav id={DRAWER_ID} class={clsx(className, tocCss["drawer"])}>
-                <div class={clsx(tocCss["select"])}>
-                    <select id={VERSION_SELECT_ID}>
-                        {options.map((versionOption) => {
-                            return (
-                                <option value={versionOption} selected={version === versionOption}>
-                                    frugal@{versionOption}
-                                </option>
-                            );
-                        })}
-                    </select>
-                </div>
-                <TocContent hierarchies={Object.values(hierarchy.children)} version={version} />
-            </nav>
+            <div id={DRAWER_ID}>
+                <button id={TOGGLE_ID} class={clsx(tocCss["toggle"])}>
+                    <icon.Toc class={clsx(tocCss["icon"], tocCss["toc"])} />
+                    <icon.Close class={clsx(tocCss["icon"], tocCss["close"])} />
+                </button>
+                <nav id={NAV_ID} class={clsx(className, tocCss["nav"])}>
+                    {options.length > 1 && (
+                        <div class={clsx(tocCss["select"])}>
+                            <select id={VERSION_SELECT_ID}>
+                                {options.map((versionOption) => {
+                                    return (
+                                        <option value={versionOption} selected={version === versionOption}>
+                                            frugal@{versionOption}
+                                        </option>
+                                    );
+                                })}
+                            </select>
+                        </div>
+                    )}
+                    <TocContent hierarchies={Object.values(hierarchy.children)} version={version} />
+                </nav>
+            </div>
             <div id={OVERLAY_ID} class={clsx(tocCss["overlay"])}></div>
         </>
     );

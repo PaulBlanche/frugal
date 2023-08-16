@@ -6,3 +6,6 @@ export * from "./Warning.tsx";
 export * from "./Error.tsx";
 export * from "./Info.tsx";
 export * from "./Bulb.tsx";
+export * from "./Clipboard.tsx";
+export * from "./Check.tsx";
+export * from "./Close.tsx";

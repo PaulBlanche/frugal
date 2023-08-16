@@ -1,10 +1,69 @@
 .wrapper {
-    display: flex;
+    display: grid;
+    grid-template: "tabs copy" min-content "code code" 1fr / 1fr min-content;
     flex-direction: column;
     background: #1d2021;
     border-radius: 6px;
     overflow: hidden;
+
+    &:focus-within {
+        outline: auto;
+    }
+
+    .tabs {
+        grid-area: tabs;
+    }
+
+    .copy {
+        grid-area: copy
+    }
+
+    .codes {
+        grid-area: code;
+    }
 }
+
+.copy {
+    background: none;
+    background-color: #1d2021;
+    border: 1px solid transparent;
+    padding: 0 10px;
+    color: #a89984;
+
+    &:focus {
+        border-color: #9c9482
+    }
+
+    &:hover {
+        color: #fbf1c7;
+        cursor: pointer;
+    }
+
+    .cta {
+        display: block;
+    }
+
+    .success {
+        display: none;
+    }
+
+    &[data-success] {
+        .cta {
+            display: none;
+        }
+
+        .success {
+            display: block;
+        }
+    }
+
+}
+
+.icon {
+    width: 20px;
+
+}
+
 
 
 .tabs {
@@ -21,14 +80,25 @@
     padding: 0.6rem 1.5rem;
     margin: 0;
     border-right: #2a3134 1px solid;
+    border-left: transparent 1px solid;
+    border-bottom: transparent 1px solid;
     font-family: var(--body-font-familly);
     font-size: 0.9rem;
     background: transparent;
-    cursor: pointer;
+
+    &button {
+        cursor: pointer;
+    }
 
     &:not([data-active]):hover {
         background: #FFFFFF12;
     }
+
+    &:focus {
+        border-color: #9c9482;
+    }
+
+
 
     &[data-active] {
         background: #1d2021;

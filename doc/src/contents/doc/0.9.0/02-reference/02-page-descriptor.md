@@ -30,7 +30,7 @@ For static pages, you can export a function `getPaths`. Frugal will call this me
 This function is not required if the route has no parameters, and if you do not provide one, Frugal will use a function that returns only one empty path object.
 
 ```ts
-import { PathList } from "https://deno.land/x/frugal@{{FRUGAL_VERSION}}/page.ts";
+import { PathList } from "https://deno.land/x/frugal@{{FRUGAL_VERSION}}/mod.ts";
 
 export const route = "/post/:tag/:page";
 
@@ -75,7 +75,7 @@ export type Phase = "build" | "refresh" | "generate";
 
 ##### `resolve`
 
-This is a helper function to resolve any path relative to the root of the project. Since Frugal bundle your pages and output them somewhere else, relative path in your page won't be preserved unless you resolve them first with the `resolve` method.
+This helper function resolves paths relative to the project's root. Since Frugal bundle your pages and output them somewhere else, relative path in your page won't be preserved unless you resolve them first with the `resolve` method.
 
 ### With `generate`
 
@@ -87,10 +87,10 @@ For static pages, you can export a function `generate`. Frugal will call this me
 
 This function is not required, and if you do not provide one, Frugal use a function that returns an empty data object.
 
-This is where you define all the data fetching logic to build the data object that will be passed to the `render` method. For example, you might query a database, call an API, or read a file.
+This is where you define all the data fetching logic to build the data object that will be passed to the `render` method, for example, with a query to a database, a call to an API, or reading a file.
 
 ```ts
-import { StaticHandlerContext } from "https://deno.land/x/frugal@{{FRUGAL_VERSION}}/page.ts";
+import { StaticHandlerContext } from "https://deno.land/x/frugal@{{FRUGAL_VERSION}}/mod.ts";
 
 export const route = "/post/:slug";
 
@@ -106,7 +106,7 @@ export async function generate({ path: { slug } }: StaticHandlerContext<typeof r
         throw new Error(`No post found with slug ${slug}`);
     }
 
-    return new DataResponse<Data>({ data: post });
+    return new DataResponse<Data>(post);
 }
 ```
 
@@ -164,16 +164,16 @@ This is the path to the public directory where frugal output static assets. You 
 
 ##### `resolve`
 
-This is a helper function to resolve path relative to the root of the project. Since Frugal bundle your pages and output them somewhere else, relative path in your page won't be preserved unless you resolve them first with the `resolve` method.
+This helper function resolves paths relative to the project's root. Since Frugal bundle your pages and output them somewhere else, relative path in your page won't be preserved unless you resolve them first with the `resolve` method.
 
 ### With a dynamic handler
 
-For dynamic pages, you can export a dynamic handler `GET`, `POST`, `PUT`, `PATCH` and/or `DELETE` that will be called on request with the corresponding HTTP method.
+For dynamic pages, you can export a dynamic handler `GET`, `POST`, `PUT`, `PATCH` or `DELETE` that will be called on request with the corresponding HTTP method.
 
 This is where you define all the data fetching logic to build the data object that will be passed to the `render` method. For example, you might query a database, call an API, or read a file,.
 
 ```ts
-import { DynamicHandlerContext } from "https://deno.land/x/frugal@{{FRUGAL_VERSION}}/page.ts";
+import { DynamicHandlerContext } from "https://deno.land/x/frugal@{{FRUGAL_VERSION}}/mod.ts";
 
 export const type = "dynamic";
 
@@ -191,7 +191,7 @@ export async function GET({ path: { slug } }: DynamicHandlerContext<typeof route
         return new EmptyResponse({ status: 404 });
     }
 
-    return new DataResponse<Data>({ data: post });
+    return new DataResponse<Data>(post);
 }
 ```
 
@@ -202,7 +202,7 @@ This method should return either :
 - a `DataResponse` object if you want to pass a data object to the `render` method
 - an `EmptyResponse` object if you don't have any data to render
 
-Both of those objects accept custom `headers` and a `status` that will be set on the response returned by the server.
+Both objects accept custom `headers` and a `status` that will be set on the response returned by the server.
 
 > [!warn]
 > Dynamic pages will be ignored by some exporters that generate static websites. Frugal needs a server to handle them.
@@ -219,7 +219,7 @@ type DynamicHandlerContext<PATH extends string> = StaticHandlerContext<PATH exte
 };
 ```
 
-It contains the same values as the `StaticHandlerContext` with extra values.
+It contains the same values as the [`StaticHandlerContext`](/doc@{{FRUGAL_VERSION}}/reference/page-descriptor#heading-parameters-1) with extra parameters.
 
 ##### `request`
 
@@ -227,11 +227,11 @@ The current [Request object](https://developer.mozilla.org/fr/docs/Web/API/Reque
 
 ##### `session`
 
-This parameter contains a [Session object](@@@) (if you configured Frugal to use sessions).
+This parameter contains a [Session object](/doc@{{FRUGAL_VERSION}}/reference/server#heading-session-object) (if you configured Frugal to use sessions).
 
 ##### `state`
 
-This object can be modified by any [middleware](@@@). If a middleware has to send some data to the page, it will be sent via the `state`. For exemple, the [CSRF middleware](@@@) will set a CSRF token in the `state` for pages that need to be protected.
+This object can be modified by any [middleware](/doc@{{FRUGAL_VERSION}}/reference/server#heading-middlewares). If a middleware has to send some data to the page, it will be sent via the `state`. For example, the [CSRF middleware](/doc@{{FRUGAL_VERSION}}/reference/server#heading-csrf-protection) will set a CSRF token in the `state` for pages that need to be protected.
 
 ## Markup generation with `render`
 
@@ -240,20 +240,23 @@ A page descriptor must export a function `render` that returns the page's markup
 This function will receive the data object you returned from the data fetching methods like `generate` or any handler `GET`, `POST`, etc ...
 
 ```ts
-import { RenderContext } from "https://deno.land/x/frugal@{{FRUGAL_VERSION}}/page.ts";
+import { RenderContext } from "https://deno.land/x/frugal@{{FRUGAL_VERSION}}/mod.ts";
+
+export const route = "/post/:slug";
 
 type Data = {
     title: string;
     content: string;
 };
 
-export function render({ data }: RenderContext<"/blog/:slug", Data>) {
-    return `<html>
-        <body>
-            <h1>${data.title}</h1>
-            ${data.content}
-        </body>
-    </html>`;
+export function render({ data }: RenderContext<typeof route, Data>) {
+    return `<!DOCTYPE html>
+<html>
+    <body>
+        <h1>${data.title}</h1>
+        ${data.content}
+    </body>
+</html>`;
 }
 ```
 
@@ -313,10 +316,10 @@ You can define a hybrid page descriptor that will be both static and dynamic :
 - For GET request, you'll get the cached static page
 - For other HTTP methods, you'll get a dynamic response
 
-To do so, you write your page as a static page and export a `POST`, `PATCH`, `PUT` and/or `DELETE` handler :
+To do so, you write your page as a static page and export a `POST`, `PATCH`, `PUT` or `DELETE` handler :
 
 ```ts
-import { DynamicHandlerContext, HybridHandlerContext } from "https://deno.land/x/frugal@{{FRUGAL_VERSION}}/page.ts";
+import { DynamicHandlerContext, HybridHandlerContext } from "https://deno.land/x/frugal@{{FRUGAL_VERSION}}/mod.ts";
 
 export const route = "/post/:slug";
 
@@ -335,7 +338,7 @@ export async function generate({ path: { slug }, session }: HybridHandlerContext
         throw new Error(`No post found with slug ${slug}`);
     }
 
-    return new DataResponse<Data>({ data: post, message: session?.get("message") });
+    return new DataResponse({ post, message: session?.get("message") });
 }
 
 export async function POST({ path: { slug }, request, session }: DynamicHandlerContext<typeof route>) {
@@ -349,7 +352,7 @@ export async function POST({ path: { slug }, request, session }: DynamicHandlerC
         session.set("message", { type: "failure", content: error.message });
     }
 
-    return new EmptyResponse<Data>({
+    return new EmptyResponse({
         status: 303,
         forceDynamic: true,
         headers: {
@@ -359,8 +362,9 @@ export async function POST({ path: { slug }, request, session }: DynamicHandlerC
 }
 ```
 
-We have a hybrid page :
+We have a hybrid page. Suppose it contains a form submitted via POST method :
 
-- a GET request will return the page from the cache. The page was built by calling the `generate` method with a `StaticHandlerContext` without any `session`. Therefore `message` will be `undefined`. Suppose the page contains a form submitted with a POST method.
-- a POST request will call the `POST` handler and redirect to the same URL with a GET method when done (via a [303 See Other](https://developer.mozilla.org/fr/docs/Web/HTTP/Status/303)) while forcing Frugal to handle this GET method dynamically (via `forceDynamic: true`).
+- a GET request will return the page from the cache. The page was built by calling the `generate` method with a `StaticHandlerContext` without any `session`. Therefore `message` will be `undefined`.
+- a POST request (form submission) will call the `POST` handler and redirect to the same URL with a GET method when done (via a [303 See Other](https://developer.mozilla.org/fr/docs/Web/HTTP/Status/303)) while forcing Frugal to handle this GET method dynamically (via `forceDynamic: true`).
 - The user is redirected to the same URL with a GET request that forces a dynamic page generation. The `generate` method is called dynamically with the `session` of the user. The `generate` method can get the message that was set during the `POST` and display it to the user.
+- If the user refresh the page, he gets the static page in cache without any `message`.

@@ -1,4 +1,4 @@
-import * as page from "../../../../page.ts";
+import * as page from "../../../../mod.ts";
 
 export const strictPaths = false;
 
@@ -21,11 +21,10 @@ export function generate(
 ): page.DataResponse<Data> {
     const count = 0;
     return new page.DataResponse({
-        data: {
-            path,
-            count,
-            searchParams: {},
-        },
+        path,
+        count,
+        searchParams: {},
+    }, {
         headers: {
             "Content-Type": "application/json",
         },
@@ -37,13 +36,12 @@ export function GET(
 ): page.DataResponse<Data> {
     const count = session?.get<number>("counter") ?? 0;
     return new page.DataResponse({
-        data: {
-            path,
-            count,
-            searchParams: Object.fromEntries(
-                new URL(request.url).searchParams.entries(),
-            ),
-        },
+        path,
+        count,
+        searchParams: Object.fromEntries(
+            new URL(request.url).searchParams.entries(),
+        ),
+    }, {
         headers: {
             "Content-Type": "application/json",
         },

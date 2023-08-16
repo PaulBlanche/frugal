@@ -16,9 +16,12 @@
 }
 
 .active-link,
-.link:hover,
-.link:focus {
-    background-position-y: 0;
+.link:active,
+.link:hover {
     text-decoration-style: solid;
     text-decoration-color: black;
+}
+
+.link:focus {
+    background-position-y: 0;
 }

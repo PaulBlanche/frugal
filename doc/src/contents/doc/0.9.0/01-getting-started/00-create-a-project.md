@@ -29,7 +29,8 @@ Create a file `pages/home.ts` with the following code :
 export const route = '/'
 
 export function render() {
-    return `<html>
+    return `<!DOCTYPE html>
+<html>
     <body>
         <h1>My blog</h1>
     </body>
@@ -68,16 +69,7 @@ await context(config).watch()
 Simply calling the `watch` function on the `context` will set up a watch process and a dev server with live-reload.
 
 > [!tip]
-> This script is the ideal place to load a [.dotenv file](https://deno.land/manual@v1.35.3/basics/env_variables#env--file). If you do, you'll have to _dynamically load_ your config file _after_ the `.dotenv` file :
->
-> ```ts filename=dev.ts
-> import { context } from "https://deno.land/x/frugal@{{FRUGAL_VERSION}}/mod.ts"
->
-> // load your .dotenv file here
->
-> const { default: config } =  await import("./frugal.config.ts")
-> await context(config).watch()
-> ```
+> This script is the ideal place to load a [.dotenv file](@@@).
 
 You can now run this script to get a dev server with live reload :
 
@@ -85,7 +77,7 @@ You can now run this script to get a dev server with live reload :
 deno run -A dev.ts
 ```
 
-Visiting [http://0.0.0.0:8000/](http://0.0.0.0:8000/) should display your page.
+Visiting [http://0.0.0.0:3000/](http://0.0.0.0:3000/) should display your page.
 
 > [!info]
 > The dev server has live-reload capacity. Changing the code of a page or any of its dependencies should trigger a page reload.

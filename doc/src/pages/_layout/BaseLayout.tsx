@@ -1,6 +1,7 @@
 import { Head, PageProps } from "$dep/frugal/runtime/preact.server.ts";
 
 import "./session.script.ts";
+//import "./search.script.ts";
 
 export type BaseLayoutProps = PageProps & {
     children?: preact.ComponentChildren;

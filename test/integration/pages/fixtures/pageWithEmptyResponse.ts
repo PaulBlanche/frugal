@@ -1,4 +1,4 @@
-import { EmptyResponse, RenderContext } from "../../../../page.ts";
+import { EmptyResponse, RenderContext } from "../../../../mod.ts";
 
 export const route = "/";
 

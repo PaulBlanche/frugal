@@ -29,7 +29,7 @@ export default {
 ```
 
 > [!warn]
-> You have to give this specific value because Frugal can't infere it for you. You can use another value than `import.meta.url`, but Frugal might fail to resolve some paths.
+> You have to give this specific value because Frugal can't infer it for you. You can use another value than `import.meta.url` if you know what you are doing, but Frugal might fail to resolve some paths.
 
 ### pages
 
@@ -89,7 +89,7 @@ export default {
 >
 > **optional**
 
-This parameter should contain the path to an [import map](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/script/type/importmap). The import map would be where you would set the version for peer dependencies like Preact.
+This parameter should contain the path to an [import map](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/script/type/importmap). The import map is where you would set the version of peer dependencies.
 
 ```ts
 export default {
@@ -144,7 +144,7 @@ export default {
 >
 > **default value:** `[]`
 
-Plugins can extend Frugal capabilities via this parameter. See the [Plugin](@@@) section for more information.
+Plugins can extend Frugal capabilities via this parameter. See the [Plugin](/doc@{{FRUGAL_VERSION}}/reference/plugins) section for more information.
 
 ```ts
 import { cssModule } from "https://deno.land/x/frugal@{{FRUGAL_VERSION}}/plugins/cssModule.ts";
@@ -163,7 +163,7 @@ export default {
 >
 > **optional**
 
-Deploy to your favorite platform with [Exporters](@@@). This parameter allows you to export your project, for example as a static site for Apache or Nginx or a bundle ready for Deno Deploy.
+Deploy to your favorite platform with [Exporters](/doc@{{FRUGAL_VERSION}}/reference/exporters). This parameter allows you to export your project, for example as a static site for Apache or Nginx or a bundle ready for Deno Deploy.
 
 ```ts
 import {  DenoExporter, UpstashCache } from "https://deno.land/x/frugal@{{FRUGAL_VERSION}}/mod.ts";
@@ -232,7 +232,7 @@ export default {
 >
 > **optional**
 
-If you want Frugal to handle [server sessions](@@@), you'll have to configure them here. The `cookie` value allows you to customize the cookie used to store the session id. The `storage` value defines how and where Frugal should store session data.
+If you want Frugal to handle [server sessions](/doc@{{FRUGAL_VERSION}}/reference/server#heading-session), you'll have to configure them here. The `cookie` value allows you to customize the cookie used to store the session id. The `storage` value defines how and where Frugal should store session data.
 
 ```ts
 import { CookieSessionStorage } from "https://deno.land/x/frugal@{{FRUGAL_VERSION}}/mod.ts";
@@ -261,7 +261,7 @@ export default {
 >
 > **optional**
 
-Configuration object for CSRF protection. The `ìsProtected` function allows you to define if an URL should be CSRF protected. The `fieldName` and `headerName` will customize the name of the form field or header where Frugal should find the CSRF token. The `cookieName` will customize the name of the cookie containing the CSRF token.
+Configuration object for CSRF protection. The `ìsProtected` function lets you define whether an URL should be CSRF protected. The `fieldName` and `headerName` will customize the name of the form field or header where Frugal should find the CSRF token. The `cookieName` parameter lets you customize the cookie's name containing the CSRF token.
 
 ### middlewares
 
@@ -271,4 +271,4 @@ Configuration object for CSRF protection. The `ìsProtected` function allows you
 >
 > **default value:** `[]`
 
-Add some [middleware](@@@) to the server stack.
+Add some [middleware](/doc@{{FRUGAL_VERSION}}/reference/server#heading-middlewares) to the server stack.
