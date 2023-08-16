@@ -16,11 +16,11 @@ Frugal is a hybrid, dynamic and static site generator that aims to minimize the 
 
 ## Getting Started
 
-Visit https://frugal.deno.dev/docs/getting-started to get started with Frugal.
+Visit the [Getting started pages](https://frugal.deno.dev/doc@0.9.0/getting-started) to get started with Frugal.
 
 ## Documentation
 
-The docs are live at https://frugal.deno.dev/docs.
+The docs are live at https://frugal.deno.dev.
 
 ## Why?
 
