@@ -4,8 +4,6 @@ import { clsx } from "$dep/clsx.ts";
 import navigation from "./Navigation.module.css";
 import { Github } from "../../glyphs/icons/Github.tsx";
 
-import versions from "../../../../versions.json" assert { type: "json" };
-
 export function Navigation() {
     const pathname = usePathname();
 
