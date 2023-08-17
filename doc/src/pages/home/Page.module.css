@@ -28,3 +28,23 @@
         margin-left: 4rem;
     }
 }
+
+@media screen and (max-width: 1268px) {
+    .entry {
+        display: flex;
+        flex-direction: column;
+        max-width: 768px;
+        padding: 0 2rem;
+
+        .code {
+            margin-top: 2rem;
+            margin-left: 0;
+        }
+    }
+}
+
+@media screen and (max-width: 600px) {
+    .entry {
+        padding: 0 1rem;
+    }
+}
