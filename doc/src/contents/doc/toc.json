@@ -1,8 +1,8 @@
 {
-    "0.9.0": {
-        "version": "0.9.0",
+    "0.9": {
+        "version": "0.9",
         "variables": {
-            "FRUGAL_VERSION": "0.9.0",
+            "FRUGAL_VERSION": "0.9.2",
             "PREACT_VERSION": "10.13.1",
             "PREACT_SIGNAL_VERSION": "1.1.5",
             "PREACT_RENDER_VERSION": "5.2.6",
@@ -14,32 +14,32 @@
             {
                 "slug": "introduction",
                 "title": "Introduction",
-                "file": "0.9.0/00-introduction.md"
+                "file": "0.9/00-introduction.md"
             },
             {
                 "slug": "getting-started",
                 "title": "Getting started",
-                "file": "0.9.0/01-getting-started.md"
+                "file": "0.9/01-getting-started.md"
             },
             {
                 "slug": "getting-started/create-a-project",
                 "title": "Create a project",
-                "file": "0.9.0/01-getting-started/00-create-a-project.md"
+                "file": "0.9/01-getting-started/00-create-a-project.md"
             },
             {
                 "slug": "getting-started/blog-posts",
                 "title": "Blog posts",
-                "file": "0.9.0/01-getting-started/01-blog-posts.md"
+                "file": "0.9/01-getting-started/01-blog-posts.md"
             },
             {
                 "slug": "getting-started/styles-and-scripts",
                 "title": "Styles and scripts",
-                "file": "0.9.0/01-getting-started/02-styles-and-scripts.md"
+                "file": "0.9/01-getting-started/02-styles-and-scripts.md"
             },
             {
                 "slug": "getting-started/using-preact",
                 "title": "Using Preact",
-                "file": "0.9.0/01-getting-started/03-use-preact.md"
+                "file": "0.9/01-getting-started/03-use-preact.md"
             },
             {
                 "slug": "reference",
@@ -48,47 +48,47 @@
             {
                 "slug": "reference/configuration",
                 "title": "Configuration",
-                "file": "0.9.0/02-reference/00-config.md"
+                "file": "0.9/02-reference/00-config.md"
             },
             {
                 "slug": "reference/running-frugal",
                 "title": "Running frugal",
-                "file": "0.9.0/02-reference/01-running-frugal.md"
+                "file": "0.9/02-reference/01-running-frugal.md"
             },
             {
                 "slug": "reference/page-descriptor",
                 "title": "Page descriptor",
-                "file": "0.9.0/02-reference/02-page-descriptor.md"
+                "file": "0.9/02-reference/02-page-descriptor.md"
             },
             {
                 "slug": "reference/server",
                 "title": "Server",
-                "file": "0.9.0/02-reference/03-server.md"
+                "file": "0.9/02-reference/03-server.md"
             },
             {
                 "slug": "reference/plugins",
                 "title": "Plugins",
-                "file": "0.9.0/02-reference/04-plugins.md"
+                "file": "0.9/02-reference/04-plugins.md"
             },
             {
                 "slug": "reference/exporters",
                 "title": "Exporters",
-                "file": "0.9.0/02-reference/05-exporters.md"
+                "file": "0.9/02-reference/05-exporters.md"
             },
             {
                 "slug": "reference/preact-runtime",
                 "title": "Preact runtime",
-                "file": "0.9.0/02-reference/06-preact-runtime.md"
+                "file": "0.9/02-reference/06-preact-runtime.md"
             },
             {
                 "slug": "reference/svelte-runtime",
                 "title": "Svelte runtime",
-                "file": "0.9.0/02-reference/07-svelte-runtime.md"
+                "file": "0.9/02-reference/07-svelte-runtime.md"
             },
             {
                 "slug": "reference/browser-session",
                 "title": "Browser session",
-                "file": "0.9.0/02-reference/08-browser-session.md"
+                "file": "0.9/02-reference/08-browser-session.md"
             },
             {
                 "slug": "guides",
@@ -97,12 +97,12 @@
             {
                 "slug": "guides/form-submission",
                 "title": "Form submission",
-                "file": "0.9.0/03-guides/00-form-submission.md"
+                "file": "0.9/03-guides/00-form-submission.md"
             },
             {
                 "slug": "guides/authentication",
                 "title": "Authentication",
-                "file": "0.9.0/03-guides/01-authentication.md"
+                "file": "0.9/03-guides/01-authentication.md"
             }
         ]
     }

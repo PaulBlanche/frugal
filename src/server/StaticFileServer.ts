@@ -23,7 +23,7 @@ export class StaticFileServer implements Server {
             });
 
             const headers = new Headers(response.headers);
-            headers.set("Cache-Control", `max-age=${ONE_YEAR_IN_SECONDS} immutable`);
+            headers.set("Cache-Control", `max-age=${ONE_YEAR_IN_SECONDS}, immutable`);
 
             return new Response(response.body, {
                 headers,

@@ -3,6 +3,7 @@ import { script } from "$dep/frugal/plugins/script.ts";
 import { svg } from "$dep/frugal/plugins/svg.ts";
 import { googleFonts } from "$dep/frugal/plugins/googleFonts.ts";
 import { Config, DenoExporter, UpstashCache } from "$dep/frugal/mod.ts";
+import { docLatestRewrite } from "$dep/frugal/doc/src/middlewares/docLatestRewrite.ts";
 
 export default {
     self: import.meta.url,
@@ -24,7 +25,7 @@ export default {
         script(),
     ],
     esbuild: {
-        minify: true,
+        //minify: true,
         jsx: "automatic",
         jsxImportSource: "preact",
         splitting: true,
@@ -35,6 +36,7 @@ export default {
     },
     server: {
         port: 8000,
+        middlewares: [docLatestRewrite],
     },
     globalCss: "./src/global.css",
     exporter: new DenoExporter(

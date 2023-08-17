@@ -7,7 +7,7 @@ import { DocLayout } from "./_layout/DocLayout.tsx";
 
 export function Page(props: PageProps) {
     const { markdown, toc: siteToc, version } = useData<Data>();
-    const { html, toc: pageToc } = parse(markdown, siteToc[version].variables);
+    const { html, toc: pageToc } = parse(markdown, { ...siteToc[version].variables, version });
 
     return (
         <DocLayout {...props} pageToc={pageToc} siteToc={siteToc} version={version}>

@@ -54,6 +54,29 @@ export async function getToc(resolve: (path: string) => string): Promise<Toc> {
     return JSON.parse(tocContent);
 }
 
+export function latest(toc: Toc) {
+    let latest = "0.0.0";
+    Object.keys(toc).forEach((version) => {
+        const v = version.split(".");
+        const l = latest.split(".");
+        if (Number(v[0]) > Number(l[0])) {
+            latest = version;
+        }
+        if (Number(v[0]) === Number(l[0])) {
+            if (Number(v[1]) > Number(l[1])) {
+                latest = version;
+            }
+            if (Number(v[1]) === Number(l[1])) {
+                if (Number(v[2]) > Number(l[2])) {
+                    latest = version;
+                }
+            }
+        }
+    });
+
+    return latest;
+}
+
 export function entryHref(entry: TocEntry, version: string) {
     if (entry.link) {
         return entry.link;

@@ -8,6 +8,7 @@ import { Session } from "./session/Session.ts";
 
 export type Context = {
     request: Request;
+    resolve: (path: string) => string;
     connInfo: http.ConnInfo;
     secure: boolean;
     state: Record<string, unknown>;

@@ -5,6 +5,7 @@ import * as fs from "../../../../dep/std/fs.ts";
 import { Config, context } from "../../../../mod.ts";
 import { FrugalHelper } from "../../../utils/FrugalHelper.ts";
 import * as puppeteer from "../../../utils/puppeteer.ts";
+import { assert } from "https://deno.land/std@0.193.0/testing/asserts.ts";
 
 if (import.meta.main) {
     const config = await loadConfig();
@@ -181,7 +182,7 @@ Deno.test("session: remote-disabled navigation element", async (t) => {
         const beforeUnloadSpy = mock.spy();
         const frugalReadyStateChangeSpy = mock.spy();
 
-        await puppeteer.addPageEventListener("beforeunload", beforeUnloadSpy, page, { onNewDocument: true });
+        //await puppeteer.addPageEventListener("beforeunload", beforeUnloadSpy, page, { onNewDocument: true });
         await puppeteer.addPageEventListener("frugal:readystatechange", frugalReadyStateChangeSpy, page, {
             onNewDocument: true,
             selector: "(event) => event.detail.readystate",
@@ -199,8 +200,9 @@ Deno.test("session: remote-disabled navigation element", async (t) => {
         await link?.click();
         await page.waitForNavigation();
 
-        mock.assertSpyCalls(beforeUnloadSpy, 1);
         mock.assertSpyCall(frugalReadyStateChangeSpy, 0, { args: ["loading"] });
+        mock.assertSpyCalls(frugalReadyStateChangeSpy, 1);
+        asserts.assertEquals(page.url(), "http://localhost:8000/page4");
     });
 });
 

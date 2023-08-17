@@ -219,7 +219,7 @@ type DynamicHandlerContext<PATH extends string> = StaticHandlerContext<PATH exte
 };
 ```
 
-It contains the same values as the [`StaticHandlerContext`](/doc@{{FRUGAL_VERSION}}/reference/page-descriptor#heading-parameters-1) with extra parameters.
+It contains the same values as the [`StaticHandlerContext`](/doc@{{version}}/reference/page-descriptor#heading-parameters-1) with extra parameters.
 
 ##### `request`
 
@@ -227,11 +227,11 @@ The current [Request object](https://developer.mozilla.org/fr/docs/Web/API/Reque
 
 ##### `session`
 
-This parameter contains a [Session object](/doc@{{FRUGAL_VERSION}}/reference/server#heading-session-object) (if you configured Frugal to use sessions).
+This parameter contains a [Session object](/doc@{{version}}/reference/server#heading-session-object) (if you configured Frugal to use sessions).
 
 ##### `state`
 
-This object can be modified by any [middleware](/doc@{{FRUGAL_VERSION}}/reference/server#heading-middlewares). If a middleware has to send some data to the page, it will be sent via the `state`. For example, the [CSRF middleware](/doc@{{FRUGAL_VERSION}}/reference/server#heading-csrf-protection) will set a CSRF token in the `state` for pages that need to be protected.
+This object can be modified by any [middleware](/doc@{{version}}/reference/server#heading-middlewares). If a middleware has to send some data to the page, it will be sent via the `state`. For example, the [CSRF middleware](/doc@{{version}}/reference/server#heading-csrf-protection) will set a CSRF token in the `state` for pages that need to be protected.
 
 ## Markup generation with `render`
 

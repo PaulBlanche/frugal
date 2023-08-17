@@ -15,7 +15,7 @@ export function Heading({ level, text, id, ...props }: HeadingProps) {
     const Heading: "h1" | "h2" | "h3" | "h4" | "h5" | "h6" = `h${level}`;
     return (
         <Heading {...props} class={clsx(props.class, heading["heading"])}>
-            <span class={clsx(heading["target"])} id={id}></span>
+            <span id={id}></span>
             {id && (
                 <>
                     {" "}

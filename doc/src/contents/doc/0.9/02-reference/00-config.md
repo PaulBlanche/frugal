@@ -144,7 +144,7 @@ export default {
 >
 > **default value:** `[]`
 
-Plugins can extend Frugal capabilities via this parameter. See the [Plugin](/doc@{{FRUGAL_VERSION}}/reference/plugins) section for more information.
+Plugins can extend Frugal capabilities via this parameter. See the [Plugin](/doc@{{version}}/reference/plugins) section for more information.
 
 ```ts
 import { cssModule } from "https://deno.land/x/frugal@{{FRUGAL_VERSION}}/plugins/cssModule.ts";
@@ -163,7 +163,7 @@ export default {
 >
 > **optional**
 
-Deploy to your favorite platform with [Exporters](/doc@{{FRUGAL_VERSION}}/reference/exporters). This parameter allows you to export your project, for example as a static site for Apache or Nginx or a bundle ready for Deno Deploy.
+Deploy to your favorite platform with [Exporters](/doc@{{version}}/reference/exporters). This parameter allows you to export your project, for example as a static site for Apache or Nginx or a bundle ready for Deno Deploy.
 
 ```ts
 import {  DenoExporter, UpstashCache } from "https://deno.land/x/frugal@{{FRUGAL_VERSION}}/mod.ts";
@@ -232,7 +232,7 @@ export default {
 >
 > **optional**
 
-If you want Frugal to handle [server sessions](/doc@{{FRUGAL_VERSION}}/reference/server#heading-session), you'll have to configure them here. The `cookie` value allows you to customize the cookie used to store the session id. The `storage` value defines how and where Frugal should store session data.
+If you want Frugal to handle [server sessions](/doc@{{version}}/reference/server#heading-session), you'll have to configure them here. The `cookie` value allows you to customize the cookie used to store the session id. The `storage` value defines how and where Frugal should store session data.
 
 ```ts
 import { CookieSessionStorage } from "https://deno.land/x/frugal@{{FRUGAL_VERSION}}/mod.ts";
@@ -271,4 +271,4 @@ Configuration object for CSRF protection. The `ìsProtected` function lets you d
 >
 > **default value:** `[]`
 
-Add some [middleware](/doc@{{FRUGAL_VERSION}}/reference/server#heading-middlewares) to the server stack.
+Add some [middleware](/doc@{{version}}/reference/server#heading-middlewares) to the server stack.
