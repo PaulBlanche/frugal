@@ -43,7 +43,7 @@ export class Router {
                 moduleHash,
                 descriptor,
             );
-            if (compiledPage instanceof page.StaticPage) {
+            if (compiledPage.type === "static") {
                 return {
                     type: "static",
                     moduleHash,

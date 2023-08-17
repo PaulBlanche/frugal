@@ -71,6 +71,7 @@ export class FrugalServer implements Server {
 
                 const response = await this.#middleware({
                     request,
+                    resolve: (path: string) => this.#config.resolve(path),
                     connInfo,
                     config: this.#config,
                     state: {},

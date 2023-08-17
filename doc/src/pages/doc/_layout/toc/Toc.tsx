@@ -37,7 +37,10 @@ export function Toc({ toc, class: className, version }: TocProps) {
                             <select id={VERSION_SELECT_ID}>
                                 {options.map((versionOption) => {
                                     return (
-                                        <option value={versionOption} selected={version === versionOption}>
+                                        <option
+                                            value={versionOption}
+                                            selected={version === versionOption}
+                                        >
                                             frugal@{versionOption}
                                         </option>
                                     );

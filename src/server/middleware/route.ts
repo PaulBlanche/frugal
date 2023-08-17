@@ -23,7 +23,7 @@ export function route(context: Context, next: Next<Context>) {
     const method = context.request.method;
     if (!(method in route.page) && method !== "GET" && route.type !== "static") {
         context.log(
-            `Page ${route.page.pattern} can\'t handle ${method}. Yield.`,
+            `Page ${route.page.route} can\'t handle ${method}. Yield.`,
             {
                 level: "debug",
                 scope: "route",
@@ -42,6 +42,7 @@ export function route(context: Context, next: Next<Context>) {
 }
 
 function staticOrDynamic(context: RouteContext, next: Next<RouteContext>) {
+    console.log(context.route.type);
     switch (context.route.type) {
         case "dynamic": {
             return dynamicPage(context as RouteContext<DynamicRoute>, next);

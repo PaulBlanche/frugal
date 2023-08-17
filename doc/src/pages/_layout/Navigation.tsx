@@ -19,7 +19,7 @@ export function Navigation() {
                 <NavigationEntry active={isHome} href="/">
                     Home
                 </NavigationEntry>
-                <NavigationEntry active={isDocs} href={`/doc@${versions[0]}`}>
+                <NavigationEntry active={isDocs} href={`/doc@latest`}>
                     Docs
                 </NavigationEntry>
                 <NavigationEntry active={isBlog} href={"/blog"}>

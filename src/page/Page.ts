@@ -99,6 +99,10 @@ export class DynamicPage<
     get GET() {
         return this.#descriptor.GET;
     }
+
+    get type(): "dynamic" {
+        return "dynamic";
+    }
 }
 
 export class StaticPage<
@@ -115,6 +119,10 @@ export class StaticPage<
 
     get strictPaths() {
         return this.#descriptor.strictPaths ?? true;
+    }
+
+    get type(): "static" {
+        return "static";
     }
 
     generate(context: descriptor.StaticHandlerContext<PATH>) {
