@@ -3,7 +3,6 @@ import { script } from "$dep/frugal/plugins/script.ts";
 import { svg } from "$dep/frugal/plugins/svg.ts";
 import { googleFonts } from "$dep/frugal/plugins/googleFonts.ts";
 import { Config, DenoExporter, UpstashCache } from "$dep/frugal/mod.ts";
-import { context } from "$dep/frugal/dep/esbuild.ts";
 import { docLatestRewrite } from "$dep/frugal/doc/src/middlewares/docLatestRewrite.ts";
 
 export default {
