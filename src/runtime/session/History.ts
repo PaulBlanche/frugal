@@ -67,8 +67,8 @@ class HistoryInternal {
 
         addEventListener("popstate", (event) => {
             const previous = this._stack[this._index];
-            this._index = event.state?.index ?? 0;
-            const current = this._stack[this._index];
+            const nextIndex = event.state?.index ?? 0;
+            const current = this._stack[nextIndex];
 
             if (previous === undefined || current === undefined) {
                 return;
@@ -82,6 +82,8 @@ class HistoryInternal {
             if (isUrlForSameDocument(previousUrl, location.href)) {
                 return;
             }
+
+            this._index = nextIndex;
 
             event.preventDefault();
 
