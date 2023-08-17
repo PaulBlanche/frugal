@@ -65,6 +65,7 @@ class BrowserSessionInternal {
                 timeout: config.navigate?.timeout ?? 150,
                 resetScroll: config.navigate?.resetScroll ?? true,
                 restoreScroll: config.navigate?.restoreScroll ?? true,
+                viewTransition: config.navigate?.viewTransition ?? false,
             },
         };
         this._visitObserver = new VisitObserver(this._config.navigate);

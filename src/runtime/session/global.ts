@@ -10,4 +10,10 @@ declare global {
         "frugal:beforeunload": FrugalBeforeUnloadEvent;
         "frugal:beforenavigate": FrugalBeforeVisit;
     }
+
+    interface Document {
+        startViewTransition?(fn: () => void): {
+            finished: Promise<boolean>;
+        };
+    }
 }

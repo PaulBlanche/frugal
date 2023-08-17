@@ -1,7 +1,23 @@
 import { diff } from "./diff.ts";
 import { patch } from "./patch.ts";
 
-export async function render(nextDocument: Document, options: { onBeforeRender?: () => void } = {}) {
+type RenderOptions = {
+    onBeforeRender?: () => void;
+    viewTransition?: boolean;
+};
+
+export async function render(nextDocument: Document, options: RenderOptions = {}) {
+    if (document.startViewTransition && options.viewTransition) {
+        const transition = document.startViewTransition(() => {
+            return rawRender(nextDocument, options);
+        });
+        await transition.finished;
+    } else {
+        await rawRender(nextDocument, options);
+    }
+}
+
+async function rawRender(nextDocument: Document, options: RenderOptions) {
     const assetPromises: Promise<void>[] = [];
     nextDocument.querySelectorAll<HTMLLinkElement>('link[rel="stylesheet"]').forEach((styleLink) => {
         const styleRawHref = styleLink.getAttribute("href");
@@ -32,12 +48,17 @@ export async function render(nextDocument: Document, options: { onBeforeRender?:
 
     options.onBeforeRender?.();
 
-    await new Promise<void>((res) =>
-        requestAnimationFrame(() => {
-            document.body.replaceChildren(bodyFragment);
-            res();
-        })
-    );
+    const updated = new Set();
+    for (const attribute of nextDocument.body.attributes) {
+        document.body.setAttribute(attribute.name, attribute.value);
+        updated.add(attribute.name);
+    }
+    for (const attribute of document.body.attributes) {
+        if (!updated.has(attribute.name)) {
+            document.body.removeAttribute(attribute.name);
+        }
+    }
+    document.body.replaceChildren(bodyFragment);
 
     // special case for buttons and anchors. If one was active before diffing, blur it after patching
     if (

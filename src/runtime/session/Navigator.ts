@@ -10,6 +10,7 @@ export type NavigatorConfig = {
     timeout: number;
     resetScroll: boolean;
     restoreScroll: boolean;
+    viewTransition?: boolean;
 };
 
 export class Navigator {
@@ -73,7 +74,10 @@ export class Navigator {
             return { success: false, reason: Reason.NAVIGATION_DISABLED_ON_TARGET };
         }
 
-        await render(nextDocument, { onBeforeRender: () => this._onBeforeUnload() });
+        await render(nextDocument, {
+            onBeforeRender: () => this._onBeforeUnload(),
+            viewTransition: this._config.viewTransition,
+        });
 
         this._setReadyState("interactive");
 
