@@ -294,6 +294,8 @@ The base middleware for Frugal will receive the following context :
 type Context = {
     // the current request
     request: Request;
+    // a utility function to resolve a path relative to the root of the project
+    resolve: (path:string) => string
     // the connection info returned by the server
     connInfo: http.ConnInfo;
     // whether the server is exposed over HTTPS
