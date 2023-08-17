@@ -57,6 +57,7 @@ type SessionConfig {
         timeout?: number;
         resetScroll?: boolean;
         restoreScroll?: boolean;
+        viewTransition?: boolean
     }
 }
 ```
@@ -94,6 +95,10 @@ When using the back button on the browser, _Browser Session_ will restore the pr
 ##### `navigate.resetScroll`
 
 With this parameter, you can instruct _Browser Session_ to reset the scroll on navigation if the scroll is not already modified for other reasons (scrolling to an anchor or scroll restoration). Default to `true`
+
+##### `navigate.viewTransition`
+
+Enable Frugal to use [View Transition](https://developer.mozilla.org/en-US/docs/Web/API/View_Transitions_API) on navigation.
 
 ### `BrowserSession.navigate`
 

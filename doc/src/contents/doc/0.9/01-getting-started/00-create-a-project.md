@@ -69,7 +69,7 @@ await context(config).watch()
 Simply calling the `watch` function on the `context` will set up a watch process and a dev server with live-reload.
 
 > [!tip]
-> This script is the ideal place to load a [.dotenv file](@@@).
+> This script is the ideal place to load a [.dotenv file](/doc@{{version}}/guides/dotenv).
 
 You can now run this script to get a dev server with live reload :
 

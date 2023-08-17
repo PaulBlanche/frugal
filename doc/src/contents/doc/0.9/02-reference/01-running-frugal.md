@@ -17,7 +17,7 @@ await context(config).watch()
 > After the call to `watch`, since we used await, the script will await on the server to terminate. Since the server should never terminate, any code you write after the awaited `watch` won't run.
 
 > [!tip]
-> This script is the ideal place to load a [.dotenv file](@@@).
+> This script is the ideal place to load a [.dotenv file](/doc@{{version}}/guides/dotenv).
 
 The dev server should listen on port `3000`, but you can change it by passing a port number to the `watch` function.
 
