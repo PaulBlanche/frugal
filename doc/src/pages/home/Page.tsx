@@ -7,7 +7,6 @@ import { Hero } from "./Hero.tsx";
 import { LandingLayout } from "./_layout/LandingLayout.tsx";
 import { Code } from "../../components/code/Code.tsx";
 
-import versions from "../../../../versions.json" assert { type: "json" };
 import { CounterIsland } from "$dep/frugal/doc/src/pages/home/CounterIsland.tsx";
 
 export function Page(props: PageProps) {
@@ -41,7 +40,7 @@ export function Page(props: PageProps) {
                     files={[{
                         filename: "static-page.ts",
                         language: "ts",
-                        code: `import { DataResponse } from "http://deno.land/x/frugal@${versions[0]}/page.ts"
+                        code: `import { DataResponse } from "http://deno.land/x/frugal/mod.ts"
                         
 export const route = '/';
 
@@ -81,7 +80,7 @@ export function render({ data }) {
                     files={[{
                         filename: "dynamic-page.ts",
                         language: "ts",
-                        code: `import { DataResponse } from "http://deno.land/x/frugal@${versions[0]}/page.ts"
+                        code: `import { DataResponse } from "http://deno.land/x/frugal/mod.ts"
                         
 export const route = '/:id';
     
@@ -134,7 +133,7 @@ export function render({ data }) {
                     files={[{
                         filename: "page.ts",
                         language: "ts",
-                        code: `import { DataResponse } from "http://deno.land/x/frugal@${versions[0]}/page.ts"
+                        code: `import { DataResponse } from "http://deno.land/x/frugal/mod.ts"
 import './log.script.ts'
                         
 export const route = '/';
@@ -190,8 +189,8 @@ export function render({ data }) {
                         {
                             filename: "page.ts",
                             language: "ts",
-                            code: `import { DataResponse } from "http://deno.land/x/frugal@${versions[0]}/page.ts"
-import { getRenderFrom } from "http://deno.land/x/frugal@${versions[0]}/runtime/preact.server.ts"
+                            code: `import { DataResponse, } from "http://deno.land/x/frugal/page.ts"
+import { getRenderFrom } from "http://deno.land/x/frugal/runtime/preact.server.ts"
 import { Page } from "./Page.tsx";
 
 export const route = '/';
@@ -210,9 +209,8 @@ export const render = getRenderFrom(Page)
                         {
                             filename: "Page.tsx",
                             language: "tsx",
-                            code: `import { PageProps, Head, useData } from "http://deno.land/x/frugal@${
-                                versions[0]
-                            }/runtime/preact.server.ts";
+                            code:
+                                `import { PageProps, Head, useData } from "http://deno.land/x/frugal/runtime/preact.server.ts";
 import { CounterIsland } from './CounterIsland.tsx'
 
 function Page(pageProps: PageProps) {
@@ -231,9 +229,7 @@ function Page(pageProps: PageProps) {
                         {
                             filename: "CounterIsland.tsx",
                             language: "tsx",
-                            code: `import { Island } from "http://deno.land/x/frugal@${
-                                versions[0]
-                            }/runtime/preact.client.ts";
+                            code: `import { Island } from "http://deno.land/x/frugal/runtime/preact.client.ts";
 
 import { NAME } from "./CounterIsland.script.ts";
 import { Counter } from "./Counter.tsx";
@@ -270,9 +266,7 @@ export function Counter() {
                         {
                             filename: "CounterIsland.script.ts",
                             language: "ts",
-                            code: `import { hydrate } from "http://deno.land/x/frugal@${
-                                versions[0]
-                            }/runtime/preact.client.ts";
+                            code: `import { hydrate } from "http://deno.land/x/frugal/runtime/preact.client.ts";
 import { Counter } from "./Counter.tsx";
 
 export const NAME = "Counter";

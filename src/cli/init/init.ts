@@ -2,11 +2,10 @@ import * as colors from "../../../dep/std/fmt/colors.ts";
 import * as fs from "../../../dep/std/fs.ts";
 import * as path from "../../../dep/std/path.ts";
 
-import versions from "../../../versions.json" assert { type: "json" };
 import { getConfig } from "./config.ts";
 import * as files from "./files.ts";
 
-console.log(colors.gray(`frugal version ${versions[0]}`));
+//console.log(colors.gray(`frugal version ${versions[0]}`));
 
 const config = getConfig(Deno.args);
 
