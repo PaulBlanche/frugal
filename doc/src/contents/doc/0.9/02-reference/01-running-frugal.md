@@ -4,7 +4,7 @@ Frugal does not come with any CLI to run your projet. Instead, it lets you write
 
 ## Development mode
 
-When running in development mode, Frugal will ignore the [`exporter`](/doc@{{FRUGAL_VERSION}}/reference/configuration#heading-exporter) configuration. Instead, Frugal will setup a dev server with livereload :
+When running in development mode, Frugal will ignore the [`exporter`](/doc@{{version}}/reference/configuration#heading-exporter) configuration. Instead, Frugal will setup a dev server with livereload :
 
 ```ts filename=dev.ts
 import { context } from "https://deno.land/x/frugal@{{FRUGAL_VERSION}}/mod.ts"

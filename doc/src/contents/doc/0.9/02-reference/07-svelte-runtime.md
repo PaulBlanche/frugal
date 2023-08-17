@@ -26,7 +26,7 @@ You'll also need a `deno.json` [config file](https://deno.land/manual@v{{DENO_VE
 }
 ```
 
-Now that deno is configured, we need to configure Frugal with the [svelte plugin](/doc@{{FRUGAL_VERSION}}/reference/plugins#heading-svelte-experimental) :
+Now that deno is configured, we need to configure Frugal with the [svelte plugin](/doc@{{version}}/reference/plugins#heading-svelte-experimental) :
 
 ```ts filename=frugal.config.ts
 import { Config } from "https://deno.land/x/frugal@{{FRUGAL_VERSION}}/mod.ts"
@@ -76,7 +76,7 @@ The root Svelte Component only describes markup inside the body. To modify the r
 
 ##### `embedData`
 
-By default, Frugal outputs static pages without any client-side script. But if you have client-side _island_, you might need access to the data object that was used to render the page in the server. The `embedData` parameter instructs Frugal to embed the data object in an inline script for you to access via [`getData`](/doc@{{FRUGAL_VERSION}}/reference/svelte-runtime#heading-getdata)
+By default, Frugal outputs static pages without any client-side script. But if you have client-side _island_, you might need access to the data object that was used to render the page in the server. The `embedData` parameter instructs Frugal to embed the data object in an inline script for you to access via [`getData`](/doc@{{version}}/reference/svelte-runtime#heading-getdata)
 
 > [!warn]
 > You will get an error if you call the function `getData` inside an _island_ with `embedData: false`. You must have `embedData: true` for the function to work client-side.
@@ -102,7 +102,7 @@ Wrapping your stateful client-side component in the `<Island>` component will cr
 ```
 
 > [!warn]
-> The `<Island>` component does not perform any hydration; it only generates the markup necessary for hydration. The hydration is done via a client-side call to the [`hydrate`](/doc@{{FRUGAL_VERSION}}/reference/svelte-runtime#heading-hydrate) function.
+> The `<Island>` component does not perform any hydration; it only generates the markup necessary for hydration. The hydration is done via a client-side call to the [`hydrate`](/doc@{{version}}/reference/svelte-runtime#heading-hydrate) function.
 
 The component accepts the following props :
 
@@ -179,7 +179,7 @@ The JS chunk containing your component will not be loaded immediately. Instead, 
 This function gives you access to the data object of the page within any Svelte component.
 
 > [!warn]
-> For this function to work client-side, you need `embedData:true` in the [`getRenderFrom`](/doc@{{FRUGAL_VERSION}}/reference/svelte-runtime#heading-getrenderfrom) function.
+> For this function to work client-side, you need `embedData:true` in the [`getRenderFrom`](/doc@{{version}}/reference/svelte-runtime#heading-getrenderfrom) function.
 
 ### `getPathname`
 

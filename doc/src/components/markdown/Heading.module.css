@@ -43,13 +43,6 @@ h5.heading {
     margin-bottom: 1rem;
 }
 
-
-
-.heading .target {
-    position: relative;
-    top: -80px;
-}
-
 .heading .anchor {
     opacity: 0;
 }

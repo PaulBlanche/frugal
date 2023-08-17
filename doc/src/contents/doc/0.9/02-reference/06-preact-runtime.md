@@ -87,11 +87,11 @@ export type DocumentProps = {
 The root JSX component only describes markup inside the body. To modify the rest of the document, you can pass a JSX Component that takes `DocumentProps`.
 
 > [!tip]
-> If you want to modify the `<head>` of the document, use the [`<Head>`](/doc@{{FRUGAL_VERSION}}/reference/preact-runtime#heading-head) component instead.
+> If you want to modify the `<head>` of the document, use the [`<Head>`](/doc@{{version}}/reference/preact-runtime#heading-head) component instead.
 
 ##### `embedData`
 
-By default, Frugal outputs static pages without any client-side script. But if you have client-side _island_, you might need access to the data object used to render the page server-side. The `embedData` parameter instructs Frugal to embed the data object in an inline script for you to access via [`useData`](/doc@{{FRUGAL_VERSION}}/reference/preact-runtime#heading-usedata)
+By default, Frugal outputs static pages without any client-side script. But if you have client-side _island_, you might need access to the data object used to render the page server-side. The `embedData` parameter instructs Frugal to embed the data object in an inline script for you to access via [`useData`](/doc@{{version}}/reference/preact-runtime#heading-usedata)
 
 > [!warn]
 > You will get an error if you call the hook `useData` inside an _island_ with `embedData: false`. You must have `embedData: true` for the hook to work client-side.
@@ -115,7 +115,7 @@ function MyComponentIsland(props: MyComponentProps) {
 ```
 
 > [!warn]
-> The `<Island>` component does not perform any hydration; it only generates the markup necessary for hydration. The hydration is done via a client-side call to the [`hydrate`](/doc@{{FRUGAL_VERSION}}/reference/preact-runtime#heading-hydrate) function.
+> The `<Island>` component does not perform any hydration; it only generates the markup necessary for hydration. The hydration is done via a client-side call to the [`hydrate`](/doc@{{version}}/reference/preact-runtime#heading-hydrate) function.
 
 The component accepts the following props :
 
@@ -230,7 +230,7 @@ function Component() {
 This hook gives you access to the data object of the page.
 
 > [!warn]
-> For this hook to work client-side, you need `embedData:true` in the [`getRenderFrom`](/doc@{{FRUGAL_VERSION}}/reference/preact-runtime#heading-getrenderfrom) function.
+> For this hook to work client-side, you need `embedData:true` in the [`getRenderFrom`](/doc@{{version}}/reference/preact-runtime#heading-getrenderfrom) function.
 
 ### `usePathname`
 

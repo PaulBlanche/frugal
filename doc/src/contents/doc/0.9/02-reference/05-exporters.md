@@ -51,7 +51,7 @@ export default {
 
 ### Export result
 
-You'll get a directory `deno/` in your [`outdir`](/doc@{{FRUGAL_VERSION}}/reference/configuration#heading-outdir) with a file `entrypoint.mjs`. This is the file that you should run to start the server.
+You'll get a directory `deno/` in your [`outdir`](/doc@{{version}}/reference/configuration#heading-outdir) with a file `entrypoint.mjs`. This is the file that you should run to start the server.
 
 In this directory, there is also a directory `buildcache/` containing the initial content of the build cache and a script `populate.mjs` that will populate the static page cache with the content of `buildcache`.
 

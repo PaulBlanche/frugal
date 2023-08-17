@@ -61,7 +61,7 @@ export function render() {
 
 #### Loading scripts
 
-Frugal will bundle all your script using esbuild, and output them in a `public` directory in the [`outdir`](/doc@{{FRUGAL_VERSION}}/reference/configuration#heading-outdir) directory. But you still have to insert a `<script>` in your markup :
+Frugal will bundle all your script using esbuild, and output them in a `public` directory in the [`outdir`](/doc@{{version}}/reference/configuration#heading-outdir) directory. But you still have to insert a `<script>` in your markup :
 
 ```ts filename=page.ts lines=[3,6-8]
 ...

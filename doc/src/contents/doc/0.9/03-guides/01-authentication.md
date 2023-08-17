@@ -1,6 +1,6 @@
 # Authentication
 
-For authentication, you'll need to use [Server Session](/doc@{{FRUGAL_VERSION}}/reference/server#heading-session) and [Server Middlewares](/doc@{{FRUGAL_VERSION}}/reference/server#heading-middlewares).
+For authentication, you'll need to use [Server Session](/doc@{{version}}/reference/server#heading-session) and [Server Middlewares](/doc@{{version}}/reference/server#heading-middlewares).
 
 ## Login page
 

@@ -1,6 +1,6 @@
 # Server
 
-Frugal comes with a server, depending on the kind of [Exporter](/doc@{{FRUGAL_VERSION}}/reference/exporters) you use: Exporters that produces static website will not use the server.
+Frugal comes with a server, depending on the kind of [Exporter](/doc@{{version}}/reference/exporters) you use: Exporters that produces static website will not use the server.
 
 ## Dynamic pages
 
@@ -16,7 +16,7 @@ The server offers some nice features besides serving static pages from caches.
 
 ### Page Refresh
 
-If you configured the [`cryptoKey`](/doc@{{FRUGAL_VERSION}}/reference/configuration#heading-cryptokey) you will be able to refresh static pages at runtime (if your data source was updated, for example).
+If you configured the [`cryptoKey`](/doc@{{version}}/reference/configuration#heading-cryptokey) you will be able to refresh static pages at runtime (if your data source was updated, for example).
 
 To do so, you'll have to send a `GET` request to the static page you want to refresh with some query parameters :
 
@@ -27,7 +27,7 @@ The cached page will be refreshed if the signature in `sign` is valid and the `t
 
 ### Just in time build
 
-By default, Frugal [enforces the list of path](/doc@{{FRUGAL_VERSION}}/reference/page-descriptor#heading-with-getpaths-for-static-pages) returned by `getPaths`. But you can change this behavior with `export const strictPaths = false;` on your page.
+By default, Frugal [enforces the list of path](/doc@{{version}}/reference/page-descriptor#heading-with-getpaths-for-static-pages) returned by `getPaths`. But you can change this behavior with `export const strictPaths = false;` on your page.
 
 By doing so, Frugal will accept paths outside those returned by `getPaths` and build the pages when requested for the first time. Frugal will still cache them after build for subsequent requests.
 
@@ -48,7 +48,7 @@ export async function getPaths(): Promise<PathList<typeof route>> {
 
 ### Force dynamic
 
-You can redirect to a static page with an `EmptyResponse` using the `forceDynamic` option to get a [Hybrid Page](/doc@{{FRUGAL_VERSION}}/reference/page-descriptor#heading-hybrid-page) :
+You can redirect to a static page with an `EmptyResponse` using the `forceDynamic` option to get a [Hybrid Page](/doc@{{version}}/reference/page-descriptor#heading-hybrid-page) :
 
 ```ts
 import { DynamicHandlerContext, HybridHandlerContext } from "https://deno.land/x/frugal@{{FRUGAL_VERSION}}/mod.ts";
@@ -87,7 +87,7 @@ In the context of a `forceDynamic` generation, the `generate` method behaves lik
 
 ## CSRF protection
 
-Frugal comes with an optional CSRF middleware. When [correctly configured](/doc@{{FRUGAL_VERSION}}/reference/configuration#heading-csrf), Frugal will run the following process on protected pages :
+Frugal comes with an optional CSRF middleware. When [correctly configured](/doc@{{version}}/reference/configuration#heading-csrf), Frugal will run the following process on protected pages :
 
 - Frugal will set in the `state` a `csrf` value containing the CSRF token. You can include it in your markup wherever you wish.
 - Frugal will send a CSRF token in a cookie alongside the protected page
@@ -152,7 +152,7 @@ If your page is static, you cannot access the `state`. You will need some javasc
 
 ## Session
 
-Frugal will create a session for each client. Each client gets a cookie with a unique id. The Frugal will use this id to get the data stored in the [session storage](/doc@{{FRUGAL_VERSION}}/reference/configuration#heading-session).
+Frugal will create a session for each client. Each client gets a cookie with a unique id. The Frugal will use this id to get the data stored in the [session storage](/doc@{{version}}/reference/configuration#heading-session).
 
 Frugal comes only with two types of session storage :
 
@@ -167,7 +167,7 @@ Frugal comes only with two types of session storage :
 
 ### Session object
 
-If you [configured Frugal to use session](/doc@{{FRUGAL_VERSION}}/reference/configuration#heading-session), each dynamic handler should have access to a Session object.
+If you [configured Frugal to use session](/doc@{{version}}/reference/configuration#heading-session), each dynamic handler should have access to a Session object.
 
 ```ts
 type Session = {
