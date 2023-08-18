@@ -6,6 +6,7 @@ import { ExportContext, Exporter } from "./Export.ts";
 import { CacheStorageCreator } from "../cache/CacheStorage.ts";
 import { FrugalConfig } from "../Config.ts";
 import { BuildCacheSnapshot } from "../cache/BuildCacheSnapshot.ts";
+import { getManifestName } from "../Manifest.ts";
 
 export class DenoExporter implements Exporter {
     #cacheStorageCreator: CacheStorageCreator;
@@ -70,6 +71,8 @@ async function insert(cacheStorage, responsePath, response) {
 
         const cacheStorageInstance = this.#cacheStorageCreator.instance();
 
+        const manifestName = getManifestName(this.#config);
+
         await fs.ensureFile(serverScriptURL);
         await Deno.writeTextFile(
             serverScriptURL,
@@ -83,7 +86,7 @@ import { ${cacheStorageInstance.import.name} as CacheStorage } from "${
             }";
             
 import userConfig from "${resolveFrugal(path.fromFileUrl(this.#config.self), serverScriptURL)}"
-import * as manifest from "../manifest.mjs"
+import * as manifest from "../${manifestName}.mjs"
 
 const config = new FrugalConfig(userConfig)
 
