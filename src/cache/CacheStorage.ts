@@ -7,6 +7,6 @@ export type CacheStorage = {
 export interface CacheStorageCreator {
     instance(): {
         import: { name: string; url: string };
-        instanceParams: (config: string, manifest: string) => string[];
+        instanceParams: (config: string, manifest: string, deploymentId: string) => string[];
     };
 }
