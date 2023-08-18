@@ -1,5 +1,4 @@
-import { clsx } from "$dep/frugal/doc/dep/clsx.ts";
-import { CodeBlock } from "$dep/frugal/doc/src/components/CodeBlock.tsx";
+import { clsx } from "$dep/clsx.ts";
 import hero from "./Hero.module.css";
 
 export function Hero() {

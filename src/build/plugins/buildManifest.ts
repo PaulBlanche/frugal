@@ -1,4 +1,3 @@
-import * as path from "../../../dep/std/path.ts";
 import * as esbuild from "../../../dep/esbuild.ts";
 import * as xxhash from "../../../dep/xxhash.ts";
 
@@ -8,6 +7,7 @@ import { isInChildWatchProcess } from "../../WatchContext.ts";
 import { FrugalConfig } from "../../Config.ts";
 import { CompileError } from "../../page/Page.ts";
 import { Assets } from "../../page/PageDescriptor.ts";
+import { writeManifest } from "../../Manifest.ts";
 
 type Manifest = {
     config: string;
@@ -69,14 +69,14 @@ export function buildManifest(config: FrugalConfig, assets: Assets): esbuild.Plu
                         }
                     }
 
-                    manifest.id = `${idHash.digest("hex").toString()}_${Date.now()}`;
+                    manifest.id = `${idHash.digest("hex").toString()}}`;
 
                     log("Manifest built", {
                         scope: "buildManifest",
                         level: "debug",
                     });
 
-                    await saveManifest(manifest);
+                    await writeManifest(config, manifest);
                 } catch (error) {
                     if (error instanceof CompileError) {
                         let message = error.message;
@@ -93,35 +93,4 @@ export function buildManifest(config: FrugalConfig, assets: Assets): esbuild.Plu
             });
         },
     };
-
-    async function saveManifest(manifest: Manifest) {
-        const filePath = path.resolve(path.fromFileUrl(config.outdir), `manifest.mjs`);
-        await Deno.writeTextFile(
-            filePath,
-            `${
-                manifest.pages.map((page) => {
-                    const url = new URL(page.outputPath, config.rootdir);
-                    const importIdentifier = `./${path.relative(path.dirname(filePath), path.fromFileUrl(url))}`;
-                    return `import * as descriptor_${page.moduleHash} from "./${importIdentifier}#${page.moduleHash}";`;
-                }).join("\n")
-            }
-
-export const id = ${JSON.stringify(manifest.id)};
-export const config = ${JSON.stringify(manifest.config)};
-export const assets = ${JSON.stringify(manifest.assets)};
-export const pages = [${
-                manifest.pages.map((page) =>
-                    `{
-    "moduleHash": "${page.moduleHash}",
-    "entrypoint": "${page.entrypoint}",
-    "descriptor": descriptor_${page.moduleHash},
-}`
-                ).join(",\n")
-            }];
-`,
-        );
-    }
 }
-
-/*
-*/

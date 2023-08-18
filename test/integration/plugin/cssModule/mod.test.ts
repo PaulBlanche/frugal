@@ -2,12 +2,12 @@ import * as asserts from "../../../../dep/std/testing/asserts.ts";
 import * as snapshot from "../../../../dep/std/testing/snapshot.ts";
 import * as fs from "../../../../dep/std/fs.ts";
 
-import { Config, context } from "../../../../mod.ts";
+import { Config } from "../../../../mod.ts";
 import { FrugalHelper } from "../../../utils/FrugalHelper.ts";
 
 if (import.meta.main) {
     const config = await loadConfig();
-    await context(config).watch();
+    FrugalHelper.watch(config);
 } else {
     await setupTestFiles();
 }
@@ -18,9 +18,10 @@ Deno.test("css: build page with css module dependencies", async (t) => {
 
     await helper.build();
 
-    await new Promise((res) => setTimeout(res, 200));
+    const assets = await helper.assets();
+    const cssURL = new URL(assets["style"]["page.ts"].slice(1), helper.config.publicdir);
 
-    snapshot.assertSnapshot(t, await Deno.readTextFile(new URL("css/page.css", helper.config.publicdir)));
+    snapshot.assertSnapshot(t, await Deno.readTextFile(cssURL));
 
     const cache = await helper.cacheExplorer();
 
@@ -37,7 +38,7 @@ Deno.test("css: css module dependencies are watched", async () => {
     await context.awaitNextBuild();
 
     const firstBuildCache = await context.cacheExplorer();
-    const updatedAt = firstBuildCache.get("/page").updatedAt;
+    const updatedAt = (await firstBuildCache.get("/page"))?.updatedAt;
 
     // add a comment at the top of dep.css
     const depModuleURL = new URL("./project/dep.module.css", import.meta.url);
@@ -47,7 +48,7 @@ Deno.test("css: css module dependencies are watched", async () => {
     await context.awaitNextBuild();
 
     const secondBuildChache = await context.cacheExplorer();
-    asserts.assertNotEquals(updatedAt, secondBuildChache.get("/page").updatedAt);
+    asserts.assertNotEquals(updatedAt, (await secondBuildChache.get("/page"))?.updatedAt);
 
     await Deno.writeTextFile(depModuleURL, originalData);
 

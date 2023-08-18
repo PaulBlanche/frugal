@@ -4,7 +4,7 @@ import * as esbuild from "../../../dep/esbuild.ts";
 import { FrugalConfig } from "../../Config.ts";
 import { log } from "../../log.ts";
 
-export function cleanOutdir(config: FrugalConfig): esbuild.Plugin {
+export function cleanOutdir(config: FrugalConfig, cleanAll: boolean): esbuild.Plugin {
     return {
         name: "__frugal_internal:cleanOutdir",
         setup(build) {
@@ -12,8 +12,7 @@ export function cleanOutdir(config: FrugalConfig): esbuild.Plugin {
 
             const initialOptions = build.initialOptions;
             const cwd = path.toFileUrl(initialOptions.absWorkingDir ?? Deno.cwd());
-            const outdir = initialOptions.outdir ?? ".";
-            const outdirURL = new URL(outdir, cwd);
+            const esbuildOutDir = new URL(initialOptions.outdir ?? ".", cwd);
 
             build.onStart(async () => {
                 if (!isFirstBuild) {
@@ -21,19 +20,35 @@ export function cleanOutdir(config: FrugalConfig): esbuild.Plugin {
                 }
 
                 try {
-                    log(
-                        `clean ${
-                            path.relative(path.fromFileUrl(new URL(".", config.self)), path.fromFileUrl(outdirURL))
-                        }`,
-                        {
-                            level: "debug",
-                            scope: "cleanOutdir",
-                        },
-                    );
+                    if (cleanAll) {
+                        log(
+                            `clean directory ${config.outdir}`,
+                            {
+                                level: "debug",
+                                scope: "cleanOutdir",
+                            },
+                        );
 
-                    await Deno.remove(outdirURL, {
-                        recursive: true,
-                    });
+                        for await (const entry of Deno.readDir(config.outdir)) {
+                            if (entry.name !== ".cache") {
+                                await Deno.remove(new URL(entry.name, config.outdir), {
+                                    recursive: true,
+                                });
+                            }
+                        }
+                    } else {
+                        log(
+                            `clean directory ${esbuildOutDir}`,
+                            {
+                                level: "debug",
+                                scope: "cleanOutdir",
+                            },
+                        );
+
+                        await Deno.remove(esbuildOutDir, {
+                            recursive: true,
+                        });
+                    }
                 } catch (error) {
                     if (!(error instanceof Deno.errors.NotFound)) {
                         throw error;
