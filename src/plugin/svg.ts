@@ -5,7 +5,6 @@ import * as dom from "../../dep/deno_dom.ts";
 
 import { Plugin } from "../Plugin.ts";
 import { log } from "../log.ts";
-import { Asset } from "../AssetCollector.ts";
 import { FrugalConfig } from "../Config.ts";
 
 type SvgOptions = {
@@ -20,6 +19,8 @@ export function svg(
         return {
             name: "frugal:svg",
             setup(build) {
+                const svgBuilder = new SvgBuilder();
+
                 build.onResolve({ filter }, (args) => {
                     return { path: args.path };
                 });
@@ -27,25 +28,10 @@ export function svg(
                 build.onLoad({ filter }, async (args) => {
                     const url = frugal.url(args);
 
-                    const { id, viewBox, basename } = await symbolUrl(path.fromFileUrl(url));
-
-                    log(
-                        `found svg symbol "${
-                            path.relative(
-                                path.fromFileUrl(
-                                    new URL(".", frugal.config.self),
-                                ),
-                                path.fromFileUrl(url),
-                            )
-                        }"`,
-                        {
-                            level: "debug",
-                            scope: "frugal:svg",
-                        },
-                    );
+                    const { meta: { spritesheet, id, viewBox } } = await svgBuilder.symbol(path.fromFileUrl(url));
 
                     return {
-                        contents: JSON.stringify({ href: `/${outdir}${basename}#${id}`, viewBox }),
+                        contents: JSON.stringify({ href: `/${outdir}${spritesheet}#${id}`, viewBox }),
                         loader: "json",
                     };
                 });
@@ -63,15 +49,15 @@ export function svg(
                     const spritesheets: Record<string, Symbol[]> = {};
 
                     await Promise.all(assets.map(async (asset) => {
-                        const { spritesheet, symbol } = await symbolFrom(asset);
-                        spritesheets[spritesheet] = spritesheets[spritesheet] ?? [];
-                        spritesheets[spritesheet].push(symbol);
+                        const symbol = await svgBuilder.symbol(path.fromFileUrl(asset.url));
+                        spritesheets[symbol.meta.spritesheet] = spritesheets[symbol.meta.spritesheet] ?? [];
+                        spritesheets[symbol.meta.spritesheet].push(symbol);
                     }));
 
                     const generated = [];
 
                     for (const [name, symbols] of Object.entries(spritesheets)) {
-                        const svg = renderSpritesheet(symbols, frugal.config);
+                        const svg = svgBuilder.spritesheet(symbols, frugal.config);
                         const svgPath = path.join("svg", name);
                         const svgUrl = new URL(svgPath, frugal.config.publicdir);
                         const assetPath = `/${svgPath}`;
@@ -80,13 +66,6 @@ export function svg(
 
                         await fs.ensureFile(svgUrl);
                         await Deno.writeTextFile(svgUrl, svg);
-                        const stat = await Deno.stat(svgUrl);
-
-                        frugal.config.budget.add({
-                            size: stat.size,
-                            type: "images",
-                            assetPath,
-                        });
                     }
 
                     frugal.output("svg", generated);
@@ -96,123 +75,153 @@ export function svg(
     };
 }
 
-async function symbolUrl(svgPath: string) {
-    const svgString = await Deno.readTextFile(svgPath);
-    const svgHash = (await xxhash.create()).update(svgString)
-        .digest("hex");
+type MetaSymbol = { id: string; viewBox: string; spritesheet: string; path: string };
 
-    const doc = new dom.DOMParser().parseFromString(svgString, "text/html")!;
-    const svg = doc.querySelector("svg")!;
-    const viewBox = svg.getAttribute("viewBox");
-    const width = svg.getAttribute("width");
-    const height = svg.getAttribute("height");
-
-    const id = `${path.basename(svgPath, path.extname(svgPath))}-${svgHash}`;
-    const spritesheet = path.basename(path.dirname(svgPath));
-
-    return {
-        id,
-        viewBox: viewBox ?? `0 0 ${width} ${height}`,
-        basename: `${spritesheet}.svg`,
-    };
-}
-
-type Symbol = {
+type SvgSymbol = {
     attributes: Record<string, string>;
     gatheredIds: string[];
     defs?: string;
     content?: string;
-    path: string;
 };
 
-async function symbolFrom(asset: Asset) {
-    const assetPath = path.fromFileUrl(asset.url);
-    const svgString = await Deno.readTextFile(assetPath);
+type Symbol = {
+    meta: MetaSymbol;
+    svg: SvgSymbol;
+};
 
-    const { id, basename } = await symbolUrl(assetPath);
+class SvgBuilder {
+    #symbolCache: Map<string, Symbol>;
+    #spritesheetCache: Map<string, string>;
 
-    const doc = new dom.DOMParser().parseFromString(svgString, "text/html")!;
-
-    const svg = doc.querySelector("svg")!;
-    const svgAttributes: Record<string, string> = {};
-    for (let i = 0; i < svg.attributes.length; i++) {
-        const attribute = svg.attributes.item(i)!;
-        svgAttributes[attribute.name] = attribute.value;
+    constructor() {
+        this.#symbolCache = new Map();
+        this.#spritesheetCache = new Map();
     }
 
-    const symbol: Symbol = {
-        attributes: svgAttributes,
-        gatheredIds: [],
-        path: assetPath,
-    };
-    symbol.attributes["id"] = id;
+    async symbol(svgPath: string) {
+        const svgString = await Deno.readTextFile(svgPath);
+        const svgHash = (await xxhash.create()).update(svgString)
+            .digest("hex").toString();
 
-    svg.querySelectorAll("[id]").forEach((node) => {
-        if (isElement(node)) {
-            symbol.gatheredIds.push(node.id);
+        const cached = this.#symbolCache.get(svgHash);
+        if (cached !== undefined) {
+            return cached;
         }
-    });
 
-    const defs = svg.querySelector("defs");
-    if (defs && defs.children.length !== 0) {
-        symbol.defs = defs?.innerHTML.trim();
+        log(`generating svg symbol from "${svgPath}"`, { level: "debug", scope: "frugal:svg" });
+
+        const doc = new dom.DOMParser().parseFromString(svgString, "text/html")!;
+        const svg = doc.querySelector("svg")!;
+        const viewBox = svg.getAttribute("viewBox");
+        const width = svg.getAttribute("width");
+        const height = svg.getAttribute("height");
+
+        const id = `${path.basename(svgPath, path.extname(svgPath))}-${svgHash}`;
+        const spritesheet = path.basename(path.dirname(svgPath));
+
+        const metaSymbol: MetaSymbol = {
+            id,
+            viewBox: viewBox ?? `0 0 ${width} ${height}`,
+            spritesheet: `${spritesheet}.svg`,
+            path: svgPath,
+        };
+
+        const svgAttributes: Record<string, string> = {};
+        for (let i = 0; i < svg.attributes.length; i++) {
+            const attribute = svg.attributes.item(i)!;
+            svgAttributes[attribute.name] = attribute.value;
+        }
+
+        const svgSymbol: SvgSymbol = {
+            attributes: svgAttributes,
+            gatheredIds: [],
+        };
+        svgSymbol.attributes["id"] = id;
+
+        svg.querySelectorAll("[id]").forEach((node) => {
+            if (isElement(node)) {
+                svgSymbol.gatheredIds.push(node.id);
+            }
+        });
+
+        const defs = svg.querySelector("defs");
+        if (defs && defs.children.length !== 0) {
+            svgSymbol.defs = defs?.innerHTML.trim();
+        }
+        defs?.remove();
+
+        svgSymbol.content = svg.innerHTML.trim();
+
+        const symbol = { svg: svgSymbol, meta: metaSymbol };
+
+        this.#symbolCache.set(svgHash, symbol);
+
+        return symbol;
     }
-    defs?.remove();
 
-    symbol.content = svg.innerHTML.trim();
-
-    return { spritesheet: basename, symbol };
-}
-
-function renderSpritesheet(symbols: Symbol[], config: FrugalConfig) {
-    const seenId: Record<string, string[]> = {};
-    const svgContent = [];
-    const defs = [];
-    for (const symbol of symbols) {
-        for (const id of symbol.gatheredIds) {
-            seenId[id] = seenId[id] ?? [];
-            seenId[id].push(symbol.path);
+    spritesheet(symbols: Symbol[], config: FrugalConfig) {
+        const id = symbols.map((symbol) => symbol.meta.id).join("/");
+        const cached = this.#spritesheetCache.get(id);
+        if (cached !== undefined) {
+            return cached;
         }
 
-        if (symbol.defs) {
-            defs.push(symbol.defs);
-        }
+        log(`generating spritesheet "${symbols[0].meta.spritesheet}"`, { level: "debug", scope: "frugal:svg" });
 
-        const symbolAttributes = Object.entries(
-            symbol.attributes,
-        ).filter(([key, _]) =>
-            ["id", "viewbox", "preserveaspectratio"]
-                .includes(key.toLowerCase())
-        ).map(([key, value]) => `${key}="${value}"`).join(
-            " ",
-        );
+        const seenId: Record<string, Set<string>> = {};
+        const svgContent = [];
+        const defs = [];
+        for (const symbol of symbols) {
+            for (const id of symbol.svg.gatheredIds) {
+                seenId[id] = seenId[id] ?? new Set();
+                seenId[id].add(symbol.meta.path);
+            }
 
-        svgContent.push(
-            `<symbol ${symbolAttributes}>${symbol.content}</symbol><use href="#${symbol.attributes["id"]}" />`,
-        );
-    }
+            if (symbol.svg.defs) {
+                defs.push(symbol.svg.defs);
+            }
 
-    for (const [id, paths] of Object.entries(seenId)) {
-        if (paths.length > 1) {
-            log(
-                `found the same id "${id}" in multiple symbols : ${
-                    paths.map((conflictPath) =>
-                        path.relative(
-                            path.fromFileUrl(
-                                new URL(".", config.self),
-                            ),
-                            conflictPath,
-                        )
-                    ).join(", ")
-                }`,
-                { scope: "plugin:svg", level: "warning" },
+            const symbolAttributes = Object.entries(
+                symbol.svg.attributes,
+            ).filter(([key, _]) =>
+                ["id", "viewbox", "preserveaspectratio"]
+                    .includes(key.toLowerCase())
+            ).map(([key, value]) => `${key}="${value}"`).join(
+                " ",
+            );
+
+            svgContent.push(
+                `<symbol ${symbolAttributes}>${symbol.svg.content}</symbol><use href="#${
+                    symbol.svg.attributes["id"]
+                }" />`,
             );
         }
-    }
 
-    return `<svg xmlns="http://www.w3.org/2000/svg">${defs.length !== 0 ? `<defs>${defs.join("\n")}</defs>` : ""}${
-        svgContent.join("\n")
-    }</svg>`;
+        for (const [id, paths] of Object.entries(seenId)) {
+            if (paths.size > 1) {
+                log(
+                    `found the same id "${id}" in multiple symbols : ${
+                        Array.from(paths.values()).map((conflictPath) =>
+                            path.relative(
+                                path.fromFileUrl(
+                                    new URL(".", config.self),
+                                ),
+                                conflictPath,
+                            )
+                        ).join(", ")
+                    }`,
+                    { scope: "plugin:svg", level: "warning" },
+                );
+            }
+        }
+
+        const spritesheet = `<svg xmlns="http://www.w3.org/2000/svg">${
+            defs.length !== 0 ? `<defs>${defs.join("\n")}</defs>` : ""
+        }${svgContent.join("\n")}</svg>`;
+
+        this.#spritesheetCache.set(id, spritesheet);
+        return spritesheet;
+    }
 }
 
 function isElement(node: dom.Node): node is dom.Element {

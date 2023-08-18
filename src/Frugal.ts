@@ -15,7 +15,6 @@ export class Frugal {
     }
 
     async build() {
-        this.#config.budget.logBudget();
         const builder = new Builder(this.#config);
 
         await builder.build();
@@ -39,7 +38,6 @@ export class Frugal {
     }
 
     context() {
-        this.#config.budget.logBudget();
         return WatchContext.create(this.#config, new RuntimeWatchCache());
     }
 }

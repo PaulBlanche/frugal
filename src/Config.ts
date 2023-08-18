@@ -4,7 +4,6 @@ import * as path from "../dep/std/path.ts";
 
 import * as log from "./log.ts";
 import { Plugin } from "./Plugin.ts";
-import { Budget, BudgetConfig } from "./Budget.ts";
 import { Exporter } from "./export/Export.ts";
 import { Middleware } from "./server/Middleware.ts";
 import { SessionStorage } from "./server/session/SessionStorage.ts";
@@ -68,7 +67,6 @@ export type Config = {
     >;
     server?: ServerConfig;
     plugins?: Plugin[];
-    budget?: BudgetConfig;
     exporter?: Exporter;
     cleanAll?: boolean;
 };
@@ -127,7 +125,6 @@ export class FrugalConfig {
     #importMapURL?: URL;
     #importMap?: Promise<importmap.ImportMap>;
     #serverConfig: FrugalServerConfig;
-    #budget: Budget;
 
     constructor(config: Config) {
         this.#config = config;
@@ -135,8 +132,6 @@ export class FrugalConfig {
         if (this.#config.log) {
             log.config(this.#config.log);
         }
-
-        this.#budget = new Budget(config.budget);
 
         this.#importMapURL = config.importMap ? new URL(config.importMap, this.#config.self) : undefined;
 
@@ -157,10 +152,6 @@ export class FrugalConfig {
 
     get plugins() {
         return (this.#config.plugins ?? []);
-    }
-
-    get budget() {
-        return this.#budget;
     }
 
     get server() {
