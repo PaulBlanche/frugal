@@ -5,4 +5,5 @@ export const config: Config = {
     outdir: "./dist/",
     pages: ["./page.ts"],
     log: { level: "silent" },
+    cleanAll: false,
 };
