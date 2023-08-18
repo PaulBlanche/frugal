@@ -1,5 +1,5 @@
 import { BrowserSession } from "$dep/frugal/runtime/session.ts";
-import { FocusTrap } from "$dep/frugal/doc/src/client/focusTrap.ts";
+import { FocusTrap } from "$dep/frugal/doc/src/lib/focusTrap.ts";
 
 export const TOGGLE_ID = "site-nav-toggle";
 export const DRAWER_ID = "site-nav-drawer";
@@ -16,6 +16,10 @@ if (import.meta.main) {
         if (event.detail.readystate === "complete") {
             setup();
         }
+    });
+
+    addEventListener("frugal:beforeunload", () => {
+        FocusTrap.deactivate();
     });
 }
 
@@ -43,6 +47,7 @@ function setup() {
         overlay.addEventListener("click", () => {
             drawer.toggleAttribute("data-open");
             document.body.classList.toggle("no-scroll");
+            FocusTrap.deactivate();
         });
         REGISTERED.add(overlay);
     }

@@ -103,6 +103,16 @@
                 "slug": "guides/authentication",
                 "title": "Authentication",
                 "file": "0.9/03-guides/01-authentication.md"
+            },
+            {
+                "slug": "guides/deno-deploy",
+                "title": "Deno deploy",
+                "file": "0.9/03-guides/02-deno-deploy.md"
+            },
+            {
+                "slug": "guides/dotenv",
+                "title": "Dotenv",
+                "file": "0.9/03-guides/03-dotenv.md"
             }
         ]
     }
