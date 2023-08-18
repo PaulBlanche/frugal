@@ -95,7 +95,7 @@ export class Builder {
             outputMetafile(),
             buildManifest(this.#config, context.assets),
             cleanOutdir(this.#config, this.#config.cleanAll),
-            reporter(this.#config),
+            reporter(),
             {
                 name: "__frugal_internal:cleanAssetMap",
                 setup(build) {

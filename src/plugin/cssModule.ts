@@ -56,11 +56,6 @@ export function cssModule({ filter = /\.module.css$/, pattern, dashedIdents }: P
                             throw Error(`Can't bundle remote css module ${url.href}`);
                         }
 
-                        log(
-                            `found css module "${args.path}"`,
-                            { scope: "frugal:cssModule", level: "debug" },
-                        );
-
                         const modulePath = path.fromFileUrl(url);
                         const contents = await frugal.load(url);
                         const contentHash = (await xxhash.create()).update(contents).digest("hex").toString();
@@ -109,6 +104,8 @@ class CssModuleBuilder {
         if (cached && isSameUint8Array(cached.contents, contents)) {
             return cached;
         }
+
+        log(`compiling css module "${path}"`, { scope: "frugal:cssModule", level: "debug" });
 
         const { css, exports } = await this.#transform(path, contents);
 
