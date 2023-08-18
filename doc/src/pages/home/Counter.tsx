@@ -1,7 +1,7 @@
 import { computed, Signal, signal, useComputed } from "@preact/signals";
 
 import counter from "./Counter.module.css";
-import { clsx } from "$dep/frugal/doc/dep/clsx.ts";
+import { clsx } from "$dep/clsx.ts";
 
 export type CounterProps = {
     initialValue: number;

@@ -18,4 +18,5 @@ export const config: Config = {
             storage: new MemorySessionStorage(),
         },
     },
+    cleanAll: false,
 };

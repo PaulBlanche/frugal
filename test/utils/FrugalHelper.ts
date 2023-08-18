@@ -5,6 +5,7 @@ import { FrugalConfig } from "../../src/Config.ts";
 import { loadManifest } from "../../src/Manifest.ts";
 import { WatchContext } from "../../src/WatchContext.ts";
 import { BuildCacheData, loadBuildCacheData } from "../../src/cache/BuildCache.ts";
+import { FsWatchCache } from "../../src/cache/FsWatchCache.ts";
 import { RuntimeWatchCache } from "../../src/cache/RuntimeWatchCache.ts";
 import { Router } from "../../src/page/Router.ts";
 import { FrugalServer } from "../../src/server/FrugalServer.ts";
@@ -13,6 +14,11 @@ import { WatchHelper } from "./WatchHelper.ts";
 export class FrugalHelper {
     #config: Config;
     #frugalConfig: FrugalConfig;
+
+    static watch(config: Config) {
+        const helper = new FrugalHelper(config);
+        return helper.context().watch();
+    }
 
     constructor(config: Config) {
         const outdir = `./dist/${crypto.randomUUID()}/`;
@@ -29,8 +35,13 @@ export class FrugalHelper {
         await frugal.build();
     }
 
+    async assets() {
+        const manifest = await loadManifest(this.#frugalConfig);
+        return manifest.assets;
+    }
+
     context() {
-        const cache = new RuntimeWatchCache();
+        const cache = new FsWatchCache(this.#frugalConfig);
         const context = WatchContext.create(this.#frugalConfig, cache);
         return new WatchHelper(context, cache);
     }

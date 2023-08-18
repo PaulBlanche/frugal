@@ -1,13 +1,11 @@
-import * as asserts from "../../dep/std/testing/asserts.ts";
-
 import { WatchContext } from "../../src/WatchContext.ts";
-import { RuntimeWatchCache, WatchCacheData } from "../../src/cache/RuntimeWatchCache.ts";
+import { FsWatchCache } from "../../src/cache/FsWatchCache.ts";
 
 export class WatchHelper {
     #context: WatchContext;
-    #cache: RuntimeWatchCache;
+    #cache: FsWatchCache;
 
-    constructor(context: WatchContext, watchCache: RuntimeWatchCache) {
+    constructor(context: WatchContext, watchCache: FsWatchCache) {
         this.#cache = watchCache;
         this.#context = context;
     }
@@ -22,45 +20,29 @@ export class WatchHelper {
 
     async awaitNextBuild() {
         await new Promise<void>((res) => {
-            const listener = () => {
-                res();
-                this.#context.removeEventListener(listener);
+            const listener = (event: any) => {
+                if (event === "reload") {
+                    res();
+                    this.#context.removeEventListener(listener);
+                }
             };
             this.#context.addEventListener(listener);
         });
     }
 
     async cacheExplorer() {
-        return new WatchCachExplorer(this.#cache._data);
+        return new WatchCachExplorer(this.#cache);
     }
 }
 
 class WatchCachExplorer {
-    #data: WatchCacheData;
+    #cache: FsWatchCache;
 
-    constructor(data: WatchCacheData) {
-        this.#data = data;
+    constructor(cache: FsWatchCache) {
+        this.#cache = cache;
     }
 
     get(path: string) {
-        return this.#data[path];
-    }
-
-    entries() {
-        return Object.entries(this.#data).sort((a, b) => a[0].localeCompare(b[0]));
-    }
-
-    keys() {
-        return Object.keys(this.#data).sort((a, b) => a.localeCompare(b));
-    }
-
-    async assertContent(expected: [string, Partial<WatchCacheData[string]>][]) {
-        const actual = this.entries();
-        asserts.assertEquals(actual.length, expected.length);
-        await Promise.all(actual.map(async ([actualKey, actualValue], index) => {
-            const [expectedKey, expectedValue] = expected[index];
-            asserts.assertEquals(actualKey, expectedKey);
-            asserts.assertObjectMatch(actualValue, expectedValue);
-        }));
+        return this.#cache.getData(path);
     }
 }

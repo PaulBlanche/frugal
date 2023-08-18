@@ -133,7 +133,7 @@ export function script(
                                 nodeModulesDir: true,
                                 loader: "portable",
                             }),
-                            cleanOutdir(config),
+                            cleanOutdir(config, false),
                             outputMetafile(),
                         ],
                         loader: { ".css": "empty" },

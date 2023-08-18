@@ -1,11 +1,11 @@
-import { clsx } from "$dep/frugal/doc/dep/clsx.ts";
+import { clsx } from "$dep/clsx.ts";
 import { Highlight } from "./Highlight.tsx";
 
 import code from "./Code.module.css";
 import "./Code.script.ts";
 import { File } from "./type.ts";
 import { Clipboard } from "../../glyphs/icons/Clipboard.tsx";
-import { Check } from "$dep/frugal/doc/src/glyphs/icons/mod.ts";
+import { Check } from "../../glyphs/icons/mod.ts";
 
 export type CodeProps = {
     files: File[];

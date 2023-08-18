@@ -15,4 +15,5 @@ export const config: Config = {
         }),
     ],
     log: { level: "silent" },
+    cleanAll: false,
 };

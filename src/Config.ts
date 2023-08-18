@@ -70,6 +70,7 @@ export type Config = {
     plugins?: Plugin[];
     budget?: BudgetConfig;
     exporter?: Exporter;
+    cleanAll?: boolean;
 };
 
 type ServerConfig = {
@@ -144,6 +145,10 @@ export class FrugalConfig {
         }
 
         this.#serverConfig = new FrugalServerConfig(config.server ?? {});
+    }
+
+    get cleanAll() {
+        return this.#config.cleanAll ?? true;
     }
 
     get globalCss() {

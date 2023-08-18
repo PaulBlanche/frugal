@@ -1,1 +1,1 @@
-export * from "npm:clsx@1.2.1";
+export * from "npm:clsx@2.0.0";

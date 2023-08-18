@@ -7,7 +7,7 @@ import { FrugalHelper } from "../../../utils/FrugalHelper.ts";
 
 if (import.meta.main) {
     const config = await loadConfig();
-    await context(config).watch();
+    FrugalHelper.watch(config);
 } else {
     await setupTestFiles();
 }
@@ -18,8 +18,12 @@ Deno.test("script: build page with script and css module dependencies", async (t
 
     await helper.build();
 
-    snapshot.assertSnapshot(t, await Deno.readTextFile(new URL("css/page.css", helper.config.publicdir)));
-    snapshot.assertSnapshot(t, await Deno.readTextFile(new URL("js/page.js", helper.config.publicdir)));
+    const assets = await helper.assets();
+    const cssURL = new URL(assets["style"]["page.ts"].slice(1), helper.config.publicdir);
+    const jsURL = new URL(assets["script"]["page.ts"].slice(1), helper.config.publicdir);
+
+    snapshot.assertSnapshot(t, await Deno.readTextFile(cssURL));
+    snapshot.assertSnapshot(t, await Deno.readTextFile(jsURL));
 });
 
 Deno.test("css: script dependencies are watched", async () => {
@@ -32,7 +36,7 @@ Deno.test("css: script dependencies are watched", async () => {
     await context.awaitNextBuild();
 
     const firstBuildCache = await context.cacheExplorer();
-    const updatedAt = firstBuildCache.get("/page").updatedAt;
+    const updatedAt = (await firstBuildCache.get("/page"))?.updatedAt;
 
     // add a comment at the top of dep.css
     const depModuleURL = new URL("./project/dep.ts", import.meta.url);
@@ -42,7 +46,7 @@ Deno.test("css: script dependencies are watched", async () => {
     await context.awaitNextBuild();
 
     const secondBuildChache = await context.cacheExplorer();
-    asserts.assertNotEquals(updatedAt, secondBuildChache.get("/page").updatedAt);
+    asserts.assertNotEquals(updatedAt, (await secondBuildChache.get("/page"))?.updatedAt);
 
     await Deno.writeTextFile(depModuleURL, originalData);
 

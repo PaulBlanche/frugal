@@ -5,17 +5,13 @@ import { GenerationResult, SerializedGenerationResult } from "../page/Generation
 import { JSONValue } from "../page/JSONValue.ts";
 import * as etag from "../server/etag.ts";
 
-export type WatchCacheData = Record<string, SerializedGenerationResult & { updatedAt: number }>;
+export type WatchCacheData = Record<string, SerializedGenerationResult>;
 
 export class RuntimeWatchCache implements RuntimeCache {
     #data: WatchCacheData;
 
     constructor(data: WatchCacheData = {}) {
         this.#data = data;
-    }
-
-    get _data() {
-        return this.#data;
     }
 
     async add<PATH extends string, DATA extends JSONValue>(generationResult: GenerationResult<PATH, DATA>) {
@@ -27,10 +23,7 @@ export class RuntimeWatchCache implements RuntimeCache {
             }
         }
 
-        this.#data[generationResult.path] = {
-            ...await generationResult.serialize(),
-            updatedAt: Date.now(),
-        };
+        this.#data[generationResult.path] = await generationResult.serialize();
     }
 
     has(path: string): Promise<boolean> {
@@ -47,20 +40,24 @@ export class RuntimeWatchCache implements RuntimeCache {
             return undefined;
         }
 
-        const headers = new Headers(generationResult.headers);
-
-        if (!headers.has("content-type")) {
-            headers.set("Content-Type", "text/html; charset=utf-8");
-        }
-
-        if (!headers.has("etag") && generationResult.body !== undefined) {
-            headers.set("Etag", await etag.compute(generationResult.body));
-        }
-
-        return new Response(generationResult.body, {
-            headers,
-            status: generationResult.status,
-            statusText: generationResult.status ? http.STATUS_TEXT[generationResult.status] : undefined,
-        });
+        return await toResponse(generationResult);
     }
+}
+
+export async function toResponse(generationResult: SerializedGenerationResult) {
+    const headers = new Headers(generationResult.headers);
+
+    if (!headers.has("content-type")) {
+        headers.set("Content-Type", "text/html; charset=utf-8");
+    }
+
+    if (!headers.has("etag") && generationResult.body !== undefined) {
+        headers.set("Etag", await etag.compute(generationResult.body));
+    }
+
+    return new Response(generationResult.body, {
+        headers,
+        status: generationResult.status,
+        statusText: generationResult.status ? http.STATUS_TEXT[generationResult.status] : undefined,
+    });
 }

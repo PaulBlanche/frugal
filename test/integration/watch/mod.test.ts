@@ -7,7 +7,7 @@ import * as puppeteer from "../../utils/puppeteer.ts";
 
 if (import.meta.main) {
     const config = await loadConfig();
-    await context(config).watch();
+    FrugalHelper.watch(config);
 } else {
     await setupTestFiles();
 }
@@ -22,10 +22,10 @@ Deno.test("watch: files are regenerated if page code changes", async (t) => {
     await context.awaitNextBuild();
 
     const firstBuildCache = await context.cacheExplorer();
-    const updatedAt11 = firstBuildCache.get("/page1/1").updatedAt;
-    const updatedAt12 = firstBuildCache.get("/page1/2").updatedAt;
-    const updatedAt21 = firstBuildCache.get("/page2/1").updatedAt;
-    const updatedAt22 = firstBuildCache.get("/page2/2").updatedAt;
+    const updatedAt11 = (await firstBuildCache.get("/page1/1"))?.updatedAt;
+    const updatedAt12 = (await firstBuildCache.get("/page1/2"))?.updatedAt;
+    const updatedAt21 = (await firstBuildCache.get("/page2/1"))?.updatedAt;
+    const updatedAt22 = (await firstBuildCache.get("/page2/2"))?.updatedAt;
 
     // add a comment at the top of page1.ts
     const page1ModuleURL = new URL("./project/page1.ts", import.meta.url);
@@ -36,11 +36,11 @@ Deno.test("watch: files are regenerated if page code changes", async (t) => {
 
     const secondBuildChache = await context.cacheExplorer();
     // moduleHash of path1.ts changed, cache result is regenerated
-    asserts.assertNotEquals(updatedAt11, secondBuildChache.get("/page1/1").updatedAt);
-    asserts.assertNotEquals(updatedAt12, secondBuildChache.get("/page1/2").updatedAt);
+    asserts.assertNotEquals(updatedAt11, (await secondBuildChache.get("/page1/1"))?.updatedAt);
+    asserts.assertNotEquals(updatedAt12, (await secondBuildChache.get("/page1/2"))?.updatedAt);
     // moduleHash of path2.ts did not changed, cache result is not changed
-    asserts.assertEquals(updatedAt21, secondBuildChache.get("/page2/1").updatedAt);
-    asserts.assertEquals(updatedAt22, secondBuildChache.get("/page2/2").updatedAt);
+    asserts.assertEquals(updatedAt21, (await secondBuildChache.get("/page2/1"))?.updatedAt);
+    asserts.assertEquals(updatedAt22, (await secondBuildChache.get("/page2/2"))?.updatedAt);
 
     await Deno.writeTextFile(page1ModuleURL, originalData);
 
@@ -57,10 +57,10 @@ Deno.test("watch: files are regenerated if dependency code changes", async (t) =
     await context.awaitNextBuild();
 
     const firstBuildCache = await context.cacheExplorer();
-    const updatedAt11 = firstBuildCache.get("/page1/1").updatedAt;
-    const updatedAt12 = firstBuildCache.get("/page1/2").updatedAt;
-    const updatedAt21 = firstBuildCache.get("/page2/1").updatedAt;
-    const updatedAt22 = firstBuildCache.get("/page2/2").updatedAt;
+    const updatedAt11 = (await firstBuildCache.get("/page1/1"))?.updatedAt;
+    const updatedAt12 = (await firstBuildCache.get("/page1/2"))?.updatedAt;
+    const updatedAt21 = (await firstBuildCache.get("/page2/1"))?.updatedAt;
+    const updatedAt22 = (await firstBuildCache.get("/page2/2"))?.updatedAt;
 
     // add a comment at the top of store.ts
     const storeModuleURL = new URL("./project/store.ts", import.meta.url);
@@ -71,11 +71,11 @@ Deno.test("watch: files are regenerated if dependency code changes", async (t) =
 
     const secondBuildChache = await context.cacheExplorer();
     // moduleHash of path1.ts changed because of store.ts, cache result is regenerated
-    asserts.assertNotEquals(updatedAt11, secondBuildChache.get("/page1/1").updatedAt);
-    asserts.assertNotEquals(updatedAt12, secondBuildChache.get("/page1/2").updatedAt);
+    asserts.assertNotEquals(updatedAt11, (await secondBuildChache.get("/page1/1"))?.updatedAt);
+    asserts.assertNotEquals(updatedAt12, (await secondBuildChache.get("/page1/2"))?.updatedAt);
     // moduleHash of path2.ts changed because of store.ts, cache result is regenerated
-    asserts.assertNotEquals(updatedAt21, secondBuildChache.get("/page2/1").updatedAt);
-    asserts.assertNotEquals(updatedAt22, secondBuildChache.get("/page2/2").updatedAt);
+    asserts.assertNotEquals(updatedAt21, (await secondBuildChache.get("/page2/1"))?.updatedAt);
+    asserts.assertNotEquals(updatedAt22, (await secondBuildChache.get("/page2/2"))?.updatedAt);
 
     await Deno.writeTextFile(storeModuleURL, originalData);
 
@@ -92,10 +92,10 @@ Deno.test("watch: files are regenerated on demand if data changes", async (t) =>
     await context.awaitNextBuild();
 
     const firstBuildCache = await context.cacheExplorer();
-    const updatedAt11 = firstBuildCache.get("/page1/1").updatedAt;
-    const updatedAt12 = firstBuildCache.get("/page1/2").updatedAt;
-    const updatedAt21 = firstBuildCache.get("/page2/1").updatedAt;
-    const updatedAt22 = firstBuildCache.get("/page2/2").updatedAt;
+    const updatedAt11 = (await firstBuildCache.get("/page1/1"))?.updatedAt;
+    const updatedAt12 = (await firstBuildCache.get("/page1/2"))?.updatedAt;
+    const updatedAt21 = (await firstBuildCache.get("/page2/1"))?.updatedAt;
+    const updatedAt22 = (await firstBuildCache.get("/page2/2"))?.updatedAt;
 
     // modify data.json but only data used by page1/1
     const dataURL = new URL("./project/data.json", import.meta.url);
@@ -113,12 +113,12 @@ Deno.test("watch: files are regenerated on demand if data changes", async (t) =>
 
     const secondBuildChache = await context.cacheExplorer();
     // dataHash at /page1/1 changed and /page1/1 was visited, cache result is regenerated
-    asserts.assertNotEquals(updatedAt11, secondBuildChache.get("/page1/1").updatedAt);
+    asserts.assertNotEquals(updatedAt11, (await secondBuildChache.get("/page1/1"))?.updatedAt);
     // dataHash for any other page did not change (wether the page was visited
     // or not), cache result is not changed
-    asserts.assertEquals(updatedAt12, secondBuildChache.get("/page1/2").updatedAt);
-    asserts.assertEquals(updatedAt21, secondBuildChache.get("/page2/1").updatedAt);
-    asserts.assertEquals(updatedAt22, secondBuildChache.get("/page2/2").updatedAt);
+    asserts.assertEquals(updatedAt12, (await secondBuildChache.get("/page1/2"))?.updatedAt);
+    asserts.assertEquals(updatedAt21, (await secondBuildChache.get("/page2/1"))?.updatedAt);
+    asserts.assertEquals(updatedAt22, (await secondBuildChache.get("/page2/2"))?.updatedAt);
 
     await Deno.writeTextFile(dataURL, originalData);
 

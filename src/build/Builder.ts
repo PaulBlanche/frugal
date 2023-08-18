@@ -2,13 +2,11 @@ import * as esbuild from "../../dep/esbuild.ts";
 import { denoLoaderPlugin, denoResolverPlugin } from "../../dep/esbuild_deno_loader.ts";
 import * as path from "../../dep/std/path.ts";
 
-import { isInChildWatchProcess } from "../WatchContext.ts";
 import { FrugalConfig } from "../Config.ts";
 import { buildManifest } from "./plugins/buildManifest.ts";
 import { cleanOutdir } from "./plugins/cleanOutdir.ts";
 import { outputMetafile } from "./plugins/outputMetafile.ts";
 import { reporter } from "./plugins/reporter.ts";
-import { watchEmitter } from "./plugins/watchEmitter.ts";
 import { log } from "../log.ts";
 import { copyStatic } from "./plugins/copyStatic.ts";
 import { PluginContext } from "../Plugin.ts";
@@ -16,9 +14,11 @@ import { css } from "./plugins/css.ts";
 
 export class Builder {
     #config: FrugalConfig;
+    #plugins: esbuild.Plugin[];
 
-    constructor(config: FrugalConfig) {
+    constructor(config: FrugalConfig, plugins: esbuild.Plugin[] = []) {
         this.#config = config;
+        this.#plugins = plugins;
     }
 
     async build() {
@@ -94,8 +94,7 @@ export class Builder {
             copyStatic(this.#config),
             outputMetafile(),
             buildManifest(this.#config, context.assets),
-            cleanOutdir(this.#config),
-            isInChildWatchProcess() && watchEmitter(),
+            cleanOutdir(this.#config, this.#config.cleanAll),
             reporter(this.#config),
             {
                 name: "__frugal_internal:cleanAssetMap",
@@ -105,6 +104,7 @@ export class Builder {
                     });
                 },
             },
+            ...this.#plugins,
         ];
 
         const config = {
@@ -114,7 +114,7 @@ export class Builder {
                 ...this.#config.pages.map((page) => path.fromFileUrl(page)),
                 path.fromFileUrl(this.#config.self),
             ],
-            entryNames: "[dir]/[name]",
+            entryNames: "[dir]/[name]-[hash]",
             chunkNames: "[dir]/[name]-[hash]",
             assetNames: "[dir]/[name]-[hash]",
             bundle: true,

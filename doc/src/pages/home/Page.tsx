@@ -1,5 +1,5 @@
 import { PageProps } from "$dep/frugal/runtime/preact.server.ts";
-import { clsx } from "$dep/frugal/doc/dep/clsx.ts";
+import { clsx } from "$dep/clsx.ts";
 
 import page from "./Page.module.css";
 import link from "../../styles/link.module.css";
@@ -7,7 +7,7 @@ import { Hero } from "./Hero.tsx";
 import { LandingLayout } from "./_layout/LandingLayout.tsx";
 import { Code } from "../../components/code/Code.tsx";
 
-import { CounterIsland } from "$dep/frugal/doc/src/pages/home/CounterIsland.tsx";
+import { CounterIsland } from "./CounterIsland.tsx";
 
 export function Page(props: PageProps) {
     return (
