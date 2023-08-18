@@ -1,7 +1,7 @@
 # Frugal
 
 [![tag](https://img.shields.io/github/v/tag/PaulBlanche/frugal)](https://deno.land/x/frugal)
-[![codecov](https://codecov.io/gh/PaulBlanche/frugal/branch/main/graph/badge.svg?token=F5PV06R9V1)](https://codecov.io/gh/PaulBlanche/frugal)
+[![codecov](https://codecov.io/gh/PaulBlanche/frugal/branch/dev/graph/badge.svg?token=F5PV06R9V1)](https://codecov.io/gh/PaulBlanche/frugal)
 [![license](https://img.shields.io/github/license/PaulBlanche/frugal)](https://github.com/PaulBlanche/frugal/blob/main/LICENSE)
 
 Frugal is a hybrid, dynamic and static site generator that aims to minimize the amount of JavaScript served, thanks to partial hydration:
