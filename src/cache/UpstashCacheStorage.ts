@@ -1,4 +1,3 @@
-import { Manifest } from "../Manifest.ts";
 import { CacheStorage, CacheStorageCreator } from "./CacheStorage.ts";
 
 export class UpstashCache implements CacheStorageCreator {
@@ -13,7 +12,11 @@ export class UpstashCache implements CacheStorageCreator {
     instance() {
         return {
             import: { name: "UpstashCacheStorage", url: import.meta.url },
-            instanceParams: (_config: string, manifest: string) => [`"${this.#url}"`, `"${this.#token}"`, manifest],
+            instanceParams: (
+                _config: string,
+                _manifest: string,
+                deploymentId: string,
+            ) => [`"${this.#url}"`, `"${this.#token}"`, deploymentId],
         };
     }
 }
@@ -21,16 +24,16 @@ export class UpstashCache implements CacheStorageCreator {
 export class UpstashCacheStorage implements CacheStorage {
     #url: string;
     #token: string;
-    #manifest: Manifest;
+    #deploymentId: string;
 
-    constructor(url: string, token: string, manifest: Manifest) {
+    constructor(url: string, token: string, deploymentId: string) {
         this.#url = url;
         this.#token = token;
-        this.#manifest = manifest;
+        this.#deploymentId = deploymentId;
     }
 
     async set(key: string, content: string) {
-        const command = ["hset", this.#manifest.id, key, content];
+        const command = ["hset", this.#deploymentId, key, content];
 
         const response = await this.#sendCommand(command);
 
@@ -41,7 +44,7 @@ export class UpstashCacheStorage implements CacheStorage {
     }
 
     async get(key: string) {
-        const command = ["hget", this.#manifest.id, key];
+        const command = ["hget", this.#deploymentId, key];
 
         const response = await this.#sendCommand(command);
         const body = await response.json();
@@ -54,7 +57,7 @@ export class UpstashCacheStorage implements CacheStorage {
     }
 
     async delete(key: string) {
-        const command = ["hdel", this.#manifest.id, key];
+        const command = ["hdel", this.#deploymentId, key];
 
         const response = await this.#sendCommand(command);
         if (response.status !== 200) {

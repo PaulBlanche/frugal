@@ -73,6 +73,21 @@ async function insert(cacheStorage, responsePath, response) {
 
         const manifestName = await getManifestName(this.#config);
 
+        const dateFormater = new Intl.DateTimeFormat("ja", {
+            year: "numeric",
+            month: "2-digit",
+            day: "2-digit",
+        });
+        const timeFormAter = new Intl.DateTimeFormat("en", {
+            hour: "2-digit",
+            minute: "2-digit",
+            second: "2-digit",
+            fractionalSecondDigits: 3,
+            hour12: false,
+            timeZone: "UTC",
+        });
+        const now = new Date();
+
         await fs.ensureFile(serverScriptURL);
         await Deno.writeTextFile(
             serverScriptURL,
@@ -88,18 +103,24 @@ import { ${cacheStorageInstance.import.name} as CacheStorage } from "${
 import userConfig from "${resolveFrugal(path.fromFileUrl(this.#config.self), serverScriptURL)}"
 import * as manifest from "../${manifestName}"
 
+const deploymentId = "${dateFormater.format(now)}-${timeFormAter.format(now)}";
+
+console.log('deployment id', deploymentId)
+
 const config = new FrugalConfig(userConfig)
 
-const cacheStorage = new CacheStorage(${cacheStorageInstance.instanceParams("config", "manifest").join(", ")})
+const cacheStorage = new CacheStorage(${
+                cacheStorageInstance.instanceParams("config", "manifest", "deploymentId").join(", ")
+            })
 const cache = new RuntimeStorageCache(cacheStorage)
 
 const router = new Router({ config, manifest, cache })
 
 const current = await cacheStorage.get("__frugal__current")
-if (current !== router.id) {
+if (current !== deploymentId) {
     console.log('populate')
     const { populate } = await import("./populate.mjs")
-    await populate(cacheStorage, router.id)
+    await populate(cacheStorage, deploymentId)
 }
 
 const server = new FrugalServer({
