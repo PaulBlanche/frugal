@@ -71,7 +71,7 @@ async function insert(cacheStorage, responsePath, response) {
 
         const cacheStorageInstance = this.#cacheStorageCreator.instance();
 
-        const manifestName = getManifestName(this.#config);
+        const manifestName = await getManifestName(this.#config);
 
         await fs.ensureFile(serverScriptURL);
         await Deno.writeTextFile(
@@ -86,7 +86,7 @@ import { ${cacheStorageInstance.import.name} as CacheStorage } from "${
             }";
             
 import userConfig from "${resolveFrugal(path.fromFileUrl(this.#config.self), serverScriptURL)}"
-import * as manifest from "../${manifestName}.mjs"
+import * as manifest from "../${manifestName}"
 
 const config = new FrugalConfig(userConfig)
 
