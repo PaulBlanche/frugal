@@ -22,7 +22,6 @@ export class WatchHelper {
         await new Promise<void>((res) => {
             const listener = (event: any) => {
                 if (event === "reload") {
-                    console.log("reload");
                     res();
                     this.#context.removeEventListener(listener);
                 }
