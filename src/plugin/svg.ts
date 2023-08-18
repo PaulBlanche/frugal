@@ -5,7 +5,6 @@ import * as dom from "../../dep/deno_dom.ts";
 
 import { Plugin } from "../Plugin.ts";
 import { log } from "../log.ts";
-import { Asset } from "../AssetCollector.ts";
 import { FrugalConfig } from "../Config.ts";
 
 type SvgOptions = {
