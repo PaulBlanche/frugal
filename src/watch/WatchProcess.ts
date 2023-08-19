@@ -14,7 +14,7 @@ export class WatchProcess {
         this.#listeners = [];
 
         const command = Deno.execPath();
-        const args = ["--unstable", "run", "-A", `--watch`, Deno.mainModule];
+        const args = ["--unstable", "run", "-A", Deno.mainModule];
         log(`Setup watch process process`, {
             scope: "WatchProcess",
             level: "debug",

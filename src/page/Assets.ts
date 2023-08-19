@@ -8,7 +8,7 @@ export type AssetType = {
     assets: Record<string, any>;
 };
 
-export type AssetRepository = Record<string, AssetType>;
+export type AssetRepository = Record<string, AssetType[]>;
 
 export class Assets {
     #assets: AssetRepository;
@@ -23,15 +23,17 @@ export class Assets {
         if (!(type in this.#assets)) {
             throw Error(`No "${type}" assets found`);
         }
-        const assetType = this.#assets[type];
-        if (assetType.type === "global") {
-            return assetType.asset;
-        }
-        if (assetType.type === "page") {
-            if (!(this.#descriptor in assetType.assets)) {
-                throw Error(`No "${type}" assets found for page "${this.#descriptor}"`);
+        const assetTypes = this.#assets[type];
+        return assetTypes.map((assetType) => {
+            if (assetType.type === "global") {
+                return assetType.asset;
             }
-            return assetType.assets[this.#descriptor];
-        }
+            if (assetType.type === "page") {
+                if (!(this.#descriptor in assetType.assets)) {
+                    throw Error(`No "${type}" assets found for page "${this.#descriptor}"`);
+                }
+                return assetType.assets[this.#descriptor];
+            }
+        });
     }
 }

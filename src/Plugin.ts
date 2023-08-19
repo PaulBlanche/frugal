@@ -40,7 +40,8 @@ export class PluginContext implements Build {
     }
 
     output(type: string, asset: AssetType) {
-        this.#assets[type] = asset;
+        this.#assets[type] = this.#assets[type] ?? [];
+        this.#assets[type].push(asset);
     }
 
     collect(filter: RegExp, metafile: esbuild.Metafile) {
