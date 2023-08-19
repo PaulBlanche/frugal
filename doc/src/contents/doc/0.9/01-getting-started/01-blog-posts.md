@@ -39,7 +39,7 @@ const POSTS: Data[] = [
 export const route = '/post/:slug';
 ```
 
-To generate an html page for each post, Frugal needs you to define a `getPaths` method (called at build time) that will return the list of all possible "path objects": with a route `/post/:slug`, the path object will have the shape `{ slug: string }`. The `getPaths` method has to return the list of each slug:
+To generate an html page for each post, Frugal needs you to define a `getPaths` method (called at build time) that will return the list of all possible "path objects". With a route `/post/:slug`, the path object will have the shape `{ slug: string }`. The `getPaths` method has to return the list of each slug:
 
 ```ts filename=pages/posts.ts lines=[1,7-9]
 import { PathList } from "https://deno.land/x/frugal@{{FRUGAL_VERSION}}/mod.ts"

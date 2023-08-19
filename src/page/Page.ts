@@ -71,10 +71,9 @@ class BasePage<
     compile(path: PathObject<PATH>) {
         try {
             return this.#urlCompiler(path);
-        } catch (error: unknown) {
+        } catch (error) {
             throw new CompileError(
-                `Error while compiling route "${this.route}" with path "${JSON.stringify(path)}"`,
-                { cause: error },
+                `Error while compiling route "${this.route}" with path "${JSON.stringify(path)}": ${error.message}`,
             );
         }
     }
@@ -166,8 +165,7 @@ export function compile<PATH extends string = string, DATA extends JSONValue = J
             return new DynamicPage(pageDescriptor, moduleHash, entrypoint);
         } catch (error) {
             throw new CompileError(
-                `Error while parsing descriptor "${entrypoint}"`,
-                { cause: error },
+                `Error while parsing descriptor "${entrypoint}": ${error.message}`,
             );
         }
     }
@@ -177,8 +175,7 @@ export function compile<PATH extends string = string, DATA extends JSONValue = J
         return new StaticPage(pageDescriptor, moduleHash, entrypoint);
     } catch (error) {
         throw new CompileError(
-            `Error while parsing descriptor "${entrypoint}"`,
-            { cause: error },
+            `Error while parsing descriptor "${entrypoint}": ${error.message}`,
         );
     }
 }

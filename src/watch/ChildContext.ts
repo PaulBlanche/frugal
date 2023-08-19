@@ -7,6 +7,7 @@ import { Router } from "../page/Router.ts";
 import { FrugalServer } from "../server/FrugalServer.ts";
 import { FrugalConfig } from "../Config.ts";
 import { WatchOptions } from "./ParentContext.ts";
+import { log } from "../log.ts";
 
 export const WATCH_MESSAGE_SYMBOL = Symbol("WATCH_MESSAGE_SYMBOL");
 
@@ -102,19 +103,24 @@ export class ChildContext {
     }
 
     async #getWatchServer() {
-        const router = new Router({
-            config: this.#config,
-            manifest: await loadManifest(this.#config),
-            cache: this.#watchCache,
-        });
+        try {
+            const router = new Router({
+                config: this.#config,
+                manifest: await loadManifest(this.#config),
+                cache: this.#watchCache,
+            });
 
-        await router.buildAllStaticRoutes();
+            await router.buildAllStaticRoutes();
 
-        return new FrugalServer({
-            config: this.#config,
-            router,
-            cache: this.#watchCache,
-            watchMode: true,
-        });
+            return new FrugalServer({
+                config: this.#config,
+                router,
+                cache: this.#watchCache,
+                watchMode: true,
+            });
+        } catch (e) {
+            log(e);
+            throw e;
+        }
     }
 }

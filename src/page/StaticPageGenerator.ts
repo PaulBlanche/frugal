@@ -45,7 +45,6 @@ export class StaticPageGenerator<PATH extends string = string, DATA extends JSON
         });
 
         const response = await this.#getStaticGenerationResult(pathname, buildPath, phase);
-
         await this.#config.cache.add(response);
     }
 
