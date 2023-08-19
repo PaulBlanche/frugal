@@ -1,5 +1,6 @@
 import * as path from "../dep/std/path.ts";
 import * as xxhash from "../dep/xxhash.ts";
+import * as streams from "../dep/std/streams.ts";
 
 import { FrugalConfig } from "./Config.ts";
 import { Assets, PageDescriptor } from "./page/PageDescriptor.ts";
@@ -44,7 +45,14 @@ export async function writeManifest(config: FrugalConfig, manifest: WritableMani
     await setManifestName(config, manifestName);
 
     const filePath = path.resolve(path.fromFileUrl(config.outdir), manifestName);
-    await Deno.writeTextFile(filePath, content);
+    try {
+        const file = await Deno.open(filePath, { write: true, createNew: true });
+        await streams.writeAll(file, new TextEncoder().encode(content));
+    } catch (error) {
+        if (!(error instanceof Deno.errors.AlreadyExists)) {
+            throw error;
+        }
+    }
 }
 
 export async function getManifestName(config: FrugalConfig) {

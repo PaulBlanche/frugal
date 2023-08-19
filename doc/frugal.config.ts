@@ -5,6 +5,7 @@ import { googleFonts } from "$dep/frugal/plugins/googleFonts.ts";
 import { Config, DenoExporter, UpstashCache } from "$dep/frugal/mod.ts";
 import { docLatestRewrite } from "$dep/frugal/doc/src/middlewares/docLatestRewrite.ts";
 
+//kikette
 export default {
     self: import.meta.url,
     outdir: "./dist/",
