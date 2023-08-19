@@ -90,7 +90,7 @@ export function css(frugal: Build): esbuild.Plugin {
                     }),
                 );
 
-                frugal.output("style", stylesheets);
+                frugal.output("style", { type: "page", assets: stylesheets });
             });
         },
     };

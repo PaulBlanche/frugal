@@ -78,9 +78,9 @@ export const assets = ${JSON.stringify(manifest.assets)};
 export const pages = [${
         manifest.pages.map((page) =>
             `{
-"moduleHash": "${page.moduleHash}",
-"entrypoint": "${page.entrypoint}",
-"descriptor": descriptor_${page.moduleHash},
+    "moduleHash": "${page.moduleHash}",
+    "entrypoint": "${page.entrypoint}",
+    "descriptor": descriptor_${page.moduleHash},
 }`
         ).join(",\n")
     }];

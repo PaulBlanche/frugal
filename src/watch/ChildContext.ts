@@ -37,22 +37,27 @@ export class ChildContext {
 
                 build.onEnd(async (result) => {
                     if (result.errors.length === 0) {
-                        const server = await this.#getWatchServer();
-                        this.#serverController.abort();
-                        this.#serverController = new AbortController();
-                        // leave time for address to be freed
-                        setTimeout(() => {
-                            server.serve({
-                                port: this.#port,
-                                signal: this.#serverController.signal,
-                                onListen: () => {
-                                    console.log({
-                                        type: "reload",
-                                        [WATCH_MESSAGE_SYMBOL]: true,
-                                    });
-                                },
+                        try {
+                            const server = await this.#getWatchServer();
+                            this.#serverController.abort();
+                            this.#serverController = new AbortController();
+                            // leave time for address to be freed
+                            setTimeout(() => {
+                                server.serve({
+                                    port: this.#port,
+                                    signal: this.#serverController.signal,
+                                    onListen: () => {
+                                        console.log({
+                                            type: "reload",
+                                            [WATCH_MESSAGE_SYMBOL]: true,
+                                        });
+                                    },
+                                });
                             });
-                        });
+                        } catch (error) {
+                            log(error);
+                            throw error;
+                        }
                     }
                 });
             },
@@ -103,24 +108,19 @@ export class ChildContext {
     }
 
     async #getWatchServer() {
-        try {
-            const router = new Router({
-                config: this.#config,
-                manifest: await loadManifest(this.#config),
-                cache: this.#watchCache,
-            });
+        const router = new Router({
+            config: this.#config,
+            manifest: await loadManifest(this.#config),
+            cache: this.#watchCache,
+        });
 
-            await router.buildAllStaticRoutes();
+        await router.buildAllStaticRoutes();
 
-            return new FrugalServer({
-                config: this.#config,
-                router,
-                cache: this.#watchCache,
-                watchMode: true,
-            });
-        } catch (e) {
-            log(e);
-            throw e;
-        }
+        return new FrugalServer({
+            config: this.#config,
+            router,
+            cache: this.#watchCache,
+            watchMode: true,
+        });
     }
 }

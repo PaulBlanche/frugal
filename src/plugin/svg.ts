@@ -68,7 +68,7 @@ export function svg(
                         await Deno.writeTextFile(svgUrl, svg);
                     }
 
-                    frugal.output("svg", generated);
+                    frugal.output("svg", { type: "global", asset: generated });
                 });
             },
         };

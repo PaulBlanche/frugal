@@ -33,7 +33,15 @@ class BasePage<
             scope: "Page",
             level: "verbose",
         });
-        return this.#descriptor.render(context);
+        try {
+            return this.#descriptor.render(context);
+        } catch (error) {
+            throw new PageError(
+                `Error while rendering route "${this.route}" with path "${
+                    JSON.stringify(context.path)
+                }": ${error.message}`,
+            );
+        }
     }
 
     get moduleHash() {
@@ -72,7 +80,7 @@ class BasePage<
         try {
             return this.#urlCompiler(path);
         } catch (error) {
-            throw new CompileError(
+            throw new PageError(
                 `Error while compiling route "${this.route}" with path "${JSON.stringify(path)}": ${error.message}`,
             );
         }
@@ -164,7 +172,7 @@ export function compile<PATH extends string = string, DATA extends JSONValue = J
             descriptor.parseDynamicDescriptor<PATH, DATA>(pageDescriptor);
             return new DynamicPage(pageDescriptor, moduleHash, entrypoint);
         } catch (error) {
-            throw new CompileError(
+            throw new PageError(
                 `Error while parsing descriptor "${entrypoint}": ${error.message}`,
             );
         }
@@ -174,10 +182,10 @@ export function compile<PATH extends string = string, DATA extends JSONValue = J
         descriptor.parseStaticDescriptor<PATH, DATA>(pageDescriptor);
         return new StaticPage(pageDescriptor, moduleHash, entrypoint);
     } catch (error) {
-        throw new CompileError(
+        throw new PageError(
             `Error while parsing descriptor "${entrypoint}": ${error.message}`,
         );
     }
 }
 
-export class CompileError extends Error {}
+export class PageError extends Error {}
