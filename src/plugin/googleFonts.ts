@@ -77,31 +77,37 @@ export function googleFonts({ type = "local" }: Config = {}): Plugin {
                                         .toString();
                                     const ext = path.extname(matched[1]);
 
-                                    const fontPath = `fonts/${name}${ext}`;
-                                    const fontUrl = new URL(fontPath, frugal.config.publicdir);
+                                    const fontPath = `googleFonts/${name}${ext}`;
+                                    const fontUrl = new URL(fontPath, frugal.config.cachedir);
 
-                                    if (await exists(fontUrl)) {
-                                        css = css.replace(matched[1], `/fonts/${name}${ext}`);
-                                    } else {
-                                        log(`Loading font ${++index} of ${urls.length}`, {
-                                            scope: "frugal:googleFonts",
-                                            level: "debug",
-                                        });
-                                        const response = await fetch(matched[1]);
-                                        const readableStream = response.body?.getReader();
-                                        if (readableStream) {
-                                            const reader = streams.readerFromStreamReader(readableStream);
+                                    try {
+                                        await fs.ensureDir(path.dirname(path.fromFileUrl(fontUrl)));
+                                        const file = await Deno.open(fontUrl, { createNew: true, write: true });
+                                        try {
+                                            log(`Loading font ${++index} of ${urls.length}`, {
+                                                scope: "frugal:googleFonts",
+                                                level: "debug",
+                                            });
+                                            const response = await fetch(matched[1]);
+                                            const readableStream = response.body?.getReader();
+                                            if (readableStream) {
+                                                const reader = streams.readerFromStreamReader(readableStream);
 
-                                            await fs.ensureFile(fontUrl);
-                                            const file = await Deno.open(fontUrl, { create: true, write: true });
-                                            try {
                                                 await streams.copy(reader, file);
-                                                css = css.replace(matched[1], `/fonts/${name}${ext}`);
-                                            } finally {
-                                                file.close();
                                             }
+                                        } finally {
+                                            file.close();
+                                        }
+                                    } catch (error) {
+                                        if (!(error instanceof Deno.errors.AlreadyExists)) {
+                                            throw error;
                                         }
                                     }
+
+                                    const fontDest = new URL(`fonts/${name}${ext}`, frugal.config.publicdir);
+                                    await fs.ensureDir(path.dirname(path.fromFileUrl(fontDest)));
+                                    await fs.copy(fontUrl, fontDest);
+                                    css = css.replace(matched[1], `/fonts/${name}${ext}`);
                                 }
                             }
                         }
@@ -112,17 +118,4 @@ export function googleFonts({ type = "local" }: Config = {}): Plugin {
             },
         };
     };
-}
-
-async function exists(path: string | URL) {
-    try {
-        await Deno.stat(path);
-        return true;
-    } catch (error) {
-        if (error instanceof Deno.errors.NotFound) {
-            return false;
-        }
-
-        throw error;
-    }
 }

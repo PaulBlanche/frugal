@@ -178,8 +178,12 @@ export class FrugalConfig {
         return new URL(".cache/", this.outdir);
     }
 
+    get tempdir() {
+        return new URL(".temp/", this.outdir);
+    }
+
     get builddir() {
-        return new URL("build/", this.cachedir);
+        return new URL("build/", this.tempdir);
     }
 
     get buildCacheFile() {
