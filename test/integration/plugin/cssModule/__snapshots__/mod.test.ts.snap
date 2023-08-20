@@ -1,6 +1,6 @@
 export const snapshot = {};
 
-snapshot[`css: build page with css module dependencies 1`] = `
+snapshot[`cssModule: build page with css module dependencies 1`] = `
 "/* virtual:/home/whiteshoulders/perso/frugal/test/integration/plugin/cssModule/project/dep.module.css-db09027996f7e6b0.frugal-compiled-css-module.css */
 " +
   ".baz {
@@ -27,4 +27,4 @@ snapshot[`css: build page with css module dependencies 1`] = `
 "
 `;
 
-snapshot[`css: build page with css module dependencies 2`] = `'{"bar":"bar baz","foo":"foo bar baz"}'`;
+snapshot[`cssModule: build page with css module dependencies 2`] = `'{"bar":"bar baz","foo":"foo bar baz"}'`;

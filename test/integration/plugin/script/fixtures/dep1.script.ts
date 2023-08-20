@@ -1,5 +1,5 @@
 import "./shared.ts";
 
-if (import.meta.main) {
+if (import.meta.environment === "client") {
     console.log("dep1.script.ts");
 }

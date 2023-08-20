@@ -3,19 +3,20 @@ import * as xxhash from "../dep/xxhash.ts";
 import * as streams from "../dep/std/streams.ts";
 
 import { FrugalConfig } from "./Config.ts";
-import { Assets, PageDescriptor } from "./page/PageDescriptor.ts";
+import { PageDescriptor } from "./page/PageDescriptor.ts";
+import { AssetRepository } from "./page/Assets.ts";
 
 export type Manifest = {
     id: string;
     config: string;
-    assets: Assets;
+    assets: AssetRepository;
     pages: { moduleHash: string; entrypoint: string; descriptor: PageDescriptor }[];
 };
 
 export type WritableManifest = {
     config: string;
     id: string;
-    assets: Assets;
+    assets: AssetRepository;
     pages: { moduleHash: string; entrypoint: string; outputPath: string }[];
 };
 
@@ -47,7 +48,11 @@ export async function writeManifest(config: FrugalConfig, manifest: WritableMani
     const filePath = path.resolve(path.fromFileUrl(config.outdir), manifestName);
     try {
         const file = await Deno.open(filePath, { write: true, createNew: true });
-        await streams.writeAll(file, new TextEncoder().encode(content));
+        try {
+            await streams.writeAll(file, new TextEncoder().encode(content));
+        } finally {
+            file.close();
+        }
     } catch (error) {
         if (!(error instanceof Deno.errors.AlreadyExists)) {
             throw error;

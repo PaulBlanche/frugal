@@ -35,7 +35,11 @@ async function writeOutFile(out: esbuild.OutputFile) {
     try {
         await fs.ensureDir(path.dirname(out.path));
         const file = await Deno.open(out.path, { write: true, createNew: true });
-        await streams.writeAll(file, out.contents);
+        try {
+            await streams.writeAll(file, out.contents);
+        } finally {
+            file.close();
+        }
     } catch (error) {
         if (!(error instanceof Deno.errors.AlreadyExists)) {
             throw error;

@@ -7,6 +7,7 @@ import { WatchContext } from "../../src/WatchContext.ts";
 import { BuildCacheData, loadBuildCacheData } from "../../src/cache/BuildCache.ts";
 import { FsWatchCache } from "../../src/cache/FsWatchCache.ts";
 import { RuntimeWatchCache } from "../../src/cache/RuntimeWatchCache.ts";
+import { Assets } from "../../src/page/Assets.ts";
 import { Router } from "../../src/page/Router.ts";
 import { FrugalServer } from "../../src/server/FrugalServer.ts";
 import { WatchHelper } from "./WatchHelper.ts";
@@ -35,9 +36,9 @@ export class FrugalHelper {
         await frugal.build();
     }
 
-    async assets() {
+    async assets(descriptor: string) {
         const manifest = await loadManifest(this.#frugalConfig);
-        return manifest.assets;
+        return new Assets(manifest.assets, descriptor);
     }
 
     context() {

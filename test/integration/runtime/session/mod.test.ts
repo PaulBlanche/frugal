@@ -5,7 +5,6 @@ import * as fs from "../../../../dep/std/fs.ts";
 import { Config, context } from "../../../../mod.ts";
 import { FrugalHelper } from "../../../utils/FrugalHelper.ts";
 import * as puppeteer from "../../../utils/puppeteer.ts";
-import { assert } from "https://deno.land/std@0.193.0/testing/asserts.ts";
 
 if (import.meta.main) {
     const config = await loadConfig();
