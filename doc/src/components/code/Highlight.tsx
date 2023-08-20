@@ -27,11 +27,14 @@ export function Highlight(
             <pre
                 class={clsx(
                     highlight["highlight"],
-                    language && `language-${language}`,
                     !noLineNumbers && highlight["highlight-line-numbers"],
                 )}
             >
                 <code
+                    class={clsx(
+                        highlight['code'],
+                        language && `language-${language}`
+                    )}
                     dangerouslySetInnerHTML={{ __html:  htmlCode }}
                 />
             </pre>
