@@ -122,6 +122,9 @@ export function script(
                             ...config.esbuildOptions?.define,
                             "import.meta.environment": "'client'",
                         },
+                        entryNames: "[dir]/[name]-[hash]",
+                        chunkNames: "[dir]/[name]-[hash]",
+                        assetNames: "[dir]/[name]-[hash]",
                         outdir: path.fromFileUrl(outdirURL),
                         plugins: [
                             denoResolverPlugin({
