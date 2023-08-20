@@ -58,7 +58,8 @@ export function svg(
 
                     for (const [name, symbols] of Object.entries(spritesheets)) {
                         const svg = svgBuilder.spritesheet(symbols, frugal.config);
-                        const svgPath = path.join("svg", name);
+                        const hash = (await xxhash.create()).update(svg).digest("hex").toString();
+                        const svgPath = path.join("svg", `${name}-${hash}.svg`);
                         const svgUrl = new URL(svgPath, frugal.config.publicdir);
                         const assetPath = `/${svgPath}`;
 
@@ -122,7 +123,7 @@ class SvgBuilder {
         const metaSymbol: MetaSymbol = {
             id,
             viewBox: viewBox ?? `0 0 ${width} ${height}`,
-            spritesheet: `${spritesheet}.svg`,
+            spritesheet,
             path: svgPath,
         };
 
