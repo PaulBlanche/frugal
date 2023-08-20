@@ -77,6 +77,7 @@ export class BuildCache implements Cache {
     async save() {
         const filePath = path.fromFileUrl(this.#config.buildCacheFile);
 
+        await fs.ensureFile(filePath);
         await Deno.writeTextFile(
             filePath,
             JSON.stringify({ current: this.#current, previous: this.#previous }, undefined, 2),

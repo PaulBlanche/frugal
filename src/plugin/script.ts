@@ -46,7 +46,7 @@ export function script(
                     for (const asset of assets) {
                         const entrypoint = asset.entrypoint;
                         const facadePath = path.join("asset", "script", entrypoint);
-                        const facadeUrl = new URL(facadePath, frugal.config.cachedir);
+                        const facadeUrl = new URL(facadePath, frugal.config.tempdir);
                         const facadeContent = `import "${asset.url.href}";`;
                         facadesMap[entrypoint] = facadesMap[entrypoint] ?? {
                             entrypoint,

@@ -30,15 +30,13 @@ export function cleanOutdir(config: FrugalConfig, cleanAll: boolean): esbuild.Pl
                         );
 
                         for await (const entry of Deno.readDir(config.outdir)) {
-                            if (entry.name !== ".cache") {
-                                await Deno.remove(new URL(entry.name, config.outdir), {
+                            const entryURL = new URL(entry.name, config.outdir);
+                            if (!entry.isDirectory || `${entryURL.href}/` !== config.cachedir.href) {
+                                await Deno.remove(entryURL, {
                                     recursive: true,
                                 });
                             }
                         }
-                        await Deno.remove(esbuildOutDir, {
-                            recursive: true,
-                        });
                     } else {
                         log(
                             `clean directory ${esbuildOutDir}`,
