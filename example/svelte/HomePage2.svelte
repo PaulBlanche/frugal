@@ -7,7 +7,7 @@
 	const scripts = assets.get("script");
 </script>
 
-<head>
+<svelte:head>
 	<meta charset="utf-8" />
 	<meta name="viewport" content="width=device-width" />
 	<meta name="generator" content="frugal" />
@@ -18,7 +18,7 @@
 	{#each scripts as src}
 		<script type="module" src={src}></script>
 	{/each}
-</head>
+</svelte:head>
 
 <main>
 	<a href="/">home</a>

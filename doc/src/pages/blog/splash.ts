@@ -26,7 +26,6 @@ async function splashTransform(src: string, dest: string) {
 
     const data = await Deno.readFile(src);
 
-    //TOTO TATA
     await ImageMagick.read(data, async (img) => {
         const geometry = new MagickGeometry("900x512^");
         img.resize(geometry);
