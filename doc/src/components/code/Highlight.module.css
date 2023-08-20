@@ -20,12 +20,6 @@ pre.highlight-line-numbers {
     padding-left: 0;
 }
 
-pre.highlight>code {
-    position: relative;
-    z-index: 1;
-    font-family: inherit;
-}
-
 pre.line-numbers {
     position: absolute;
     top: 0;
@@ -47,6 +41,13 @@ pre.line-highlights {
     padding: 16px 0;
     user-select: none;
     margin: 0;
+}
+
+pre.highlight>.code {
+    display: block;
+    position: relative;
+    z-index: 1;
+    font-family: inherit;
 }
 
 .line-highlights .highlight {
