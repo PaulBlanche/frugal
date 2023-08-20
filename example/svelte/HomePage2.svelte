@@ -3,10 +3,8 @@
 	import Counter from "./Counter.svelte";
 
 	export let assets;
-	export let descriptor;
-	console.log(assets)
-	const syleHref = assets["style"]?.[descriptor];
-	const scriptSrc = assets["script"]?.[descriptor];
+	const styles = assets.get('style');
+	const scripts = assets.get("script");
 </script>
 
 <head>
@@ -14,12 +12,12 @@
 	<meta name="viewport" content="width=device-width" />
 	<meta name="generator" content="frugal" />
 	<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-	{#if syleHref}
-		<link rel="stylesheet" href={syleHref} />
-	{/if}
-	{#if scriptSrc}
-		<script type="module" src={scriptSrc}></script>
-	{/if}
+	{#each styles as href}
+		<link rel="stylesheet" href={href} />
+	{/each}
+	{#each scripts as src}
+		<script type="module" src={src}></script>
+	{/each}
 </head>
 
 <main>

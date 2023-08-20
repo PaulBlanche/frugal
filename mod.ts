@@ -1,3 +1,5 @@
+import "./src/global.ts";
+
 export * from "./src/Frugal.ts";
 export { type Config } from "./src/Config.ts";
 export { exportKey, importKey } from "./src/server/crypto.ts";

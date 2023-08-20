@@ -157,7 +157,7 @@ export function render({ data }) {
                     }, {
                         filename: "log.script.ts",
                         language: "ts",
-                        code: `if (import.meta.main) {
+                        code: `if (import.meta.environment === 'client') {
     console.log('Hello world')
 }
 `,
@@ -271,7 +271,7 @@ import { Counter } from "./Counter.tsx";
 
 export const NAME = "Counter";
 
-if (import.meta.main) {
+if (import.meta.environment === 'client') {
     hydrate(NAME, () => Counter);
 }                        
 `,

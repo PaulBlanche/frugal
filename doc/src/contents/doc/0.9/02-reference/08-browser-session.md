@@ -37,7 +37,7 @@ To use _Browser Session_, you just have to initialize it in a _script_ :
 ```ts filename=session.script.ts
 import { BrowserSession } from "https://deno.land/x/frugal@{{FRUGAL_VERSION}}/runtime/session.ts";
 
-if (import.meta.main) {
+if (import.meta.environment === 'client') {
     BrowserSession.init();
 }
 ```

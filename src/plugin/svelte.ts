@@ -17,7 +17,8 @@ export function svelte({ filter = /\.svelte$/, preprocess }: Partial<SvelteOptio
         return {
             name: "frugal:svelte",
             setup(build) {
-                const isInScript = build.initialOptions.define?.["import.meta.main"] === "true";
+                const isInScript = build.initialOptions.define?.["import.meta.environment"] === "'client'";
+                console.log(build.initialOptions.define);
                 const cssLoader = build.initialOptions.loader?.[".css"] ?? "css";
 
                 const svelteCompiler = new SvelteCompiler({
@@ -158,7 +159,7 @@ class SvelteCompiler {
             const promises: Promise<boolean>[] = [];
             module.dependencies.forEach((time, path) => {
                 promises.push((async () => {
-                    const stat = await Deno.stat(new URL(path));
+                    const stat = await Deno.stat(path);
                     return stat.mtime !== null && stat.mtime <= time;
                 })());
             });

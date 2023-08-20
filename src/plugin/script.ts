@@ -120,7 +120,7 @@ export function script(
                             : config.esbuildOptions.target,
                         define: {
                             ...config.esbuildOptions?.define,
-                            "import.meta.main": "true",
+                            "import.meta.environment": "'client'",
                         },
                         outdir: path.fromFileUrl(outdirURL),
                         plugins: [

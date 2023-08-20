@@ -1,4 +1,4 @@
-import { build } from "../../mod.ts";
+import { context } from "../../mod.ts";
 import config from "./frugal.config.ts";
 
-await build(config);
+await context(config).watch();

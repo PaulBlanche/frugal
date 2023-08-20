@@ -12,6 +12,8 @@ export function hydrateIsland(
 
     const html = root.querySelector("[data-svelte-slot]")?.innerHTML;
 
+    console.log(Hydratable);
+
     new Hydratable({
         target: root,
         hydrate: true,

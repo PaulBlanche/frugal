@@ -177,7 +177,7 @@ import { MyComponent } from "./MyComponent.tsx"
 
 export const NAME = "MyComponent";
 
-if (import.meta.main) {
+if (import.meta.environment === 'client') {
     hydrate(NAME, () => MyComponent)
 }
 ```
@@ -197,7 +197,7 @@ import { hydrate } from "https://deno.land/x/frugal@{{FRUGAL_VERSION}}/runtime/p
 
 export const NAME = "MyComponent";
 
-if (import.meta.main) {
+if (import.meta.environment === 'client') {
     hydrate(NAME, () => (await import('./MyComponent.tsx')).MyComponent)
 }
 ```

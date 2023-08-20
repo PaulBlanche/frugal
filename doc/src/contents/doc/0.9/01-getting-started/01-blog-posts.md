@@ -4,16 +4,16 @@ For our blog, we need to have a "blog post page" that displays a given blog post
 
 ## Static page with data fetching
 
-As with our first page, we will create a file, `pages/posts.ts`. To display posts, first, we need some data. As a starting point, we will use an array :
+Before anything, we need a list of posts to render. As a starting we will use an array of posts, and to simplify things further we will write this array directly in our page file `pages/posts.ts`.
 
 ```ts filename=pages/posts.ts
-type Data = { 
+type Post = { 
     slug: string; 
     title: string; 
     content: string;
 }
 
-const POSTS: Data[] = [
+const POSTS: Post[] = [
     {
         slug: "hello-world",
         title: "Hello world",
@@ -32,7 +32,7 @@ Now we need to define the pattern of URLs generated from the page. We would like
 ```ts filename=pages/posts.ts lines=[7]
 ...
 
-const POSTS: Data[] = [
+const POSTS: Post[] = [
     ...
 ]
 
@@ -74,17 +74,17 @@ export function getPaths(): PathList<typeof route> {
 }
 
 export function generate({ path: { slug } }: StaticHandlerContext<typeof route>) {
-    return new DataResponse(POSTS.find(post => post.slug === slug))
+    return new DataResponse<Post>(POSTS.find(post => post.slug === slug))
 }
 ```
 
 Here we search an array, but again any asynchronous operations can happen here.
 
-The consolidated data that was fetched is returned in a `DataResponse` object.
+The consolidated data that was fetched (here a single `Post` matching the given slug) is returned in a `DataResponse` object.
 
 Finally, we define a `render` method that will output HTML markup for a given data object :
 
-```ts filename=pages/posts.ts lines=[5,14-20]
+```ts filename=pages/posts.ts lines=[5,14-22]
 import { 
     DataResponse, 
     PathList, 
@@ -95,10 +95,10 @@ import {
 ...
 
 export function generate({ path: { slug } }: StaticHandlerContext<typeof route>) {
-    return new DataResponse(POSTS.find(post => post.slug === slug))
+    return new DataResponse<Post>(POSTS.find(post => post.slug === slug))
 }
 
-export function render({ data }: RenderContext<typeof route, Data> ) {
+export function render({ data }: RenderContext<typeof route, Post> ) {
     return `<!DOCTYPE html>
 <html>
     <body>
@@ -132,13 +132,13 @@ import {
 
 export const route = '/post/:slug'
 
-type Data = { 
+type Post = { 
     slug:string; 
     title: string; 
     content: string;
 }
 
-const POSTS = [
+const POSTS: Post[] = [
     {
         slug: "hello-world",
         title: "Hello world",
@@ -156,10 +156,10 @@ export function getPaths(): PathList<typeof route> {
 }
 
 export function generate({ path: { slug } }: StaticHandlerContext<typeof route>) {
-    return new DataResponse(POSTS[slug])
+    return new DataResponse<Post>(POSTS.find(post => post.slug === slug))
 }
 
-export function render({ data }: RenderContext<typeof route, Data> ) {
+export function render({ data }: RenderContext<typeof route, Post> ) {
     return `<!DOCTYPE html>
 <html>
     <body>
@@ -184,30 +184,30 @@ export function render({ data }: RenderContext<typeof route, Data> ) {
 
 Having the `POSTS` array keeps everything simple, but mixing code and data's not a good practice; we'd have to update the page code each time we want to add a post.
 
-Instead, having a list of markdown files and a `toc.json` file containing any metadata (like the title) would be better. To add a post, we write a new markdown file and add it to the `toc.json` file.
+Instead, we could have an `posts.json` file containing all our posts. Adding a post would simply means adding a new entry to the `posts.json`. No code modification needed.
 
-To do so, we create a `posts` directory where we write a `toc.json` file :
+To do so, we create a `pages/posts.json` file :
 
-```ts filename=posts/toc.json
+```ts filename=pages/posts.json
 [
     {
-        slug: "hello-world",
-        title: "Hello world",
-        file: "hello-world.md"
+        "slug": "hello-world",
+        "title": "Hello world",
+        "content": "<p>This is my first post ever</p>"
     },
     {
-        slug: "second-post",
-        title: "Second post",
-        file: "second-post.md"
+        "slug": "second-post",
+        "title": "Second post",
+        "content": "<p>And a second post !</p>"
     }
 ]
 ```
 
-And we create the corresponding markdown files in the `posts` directory.
+We can remove our `POSTS` array. Instead of reading from the array, we will read from the `posts.json` file.
 
-Now we have to rewrite the `getPaths` and `generate` methods. Let's start with `getPaths`. We have to load the `toc.json` file and iterate over each post:
+Now we have to rewrite the `getPaths` and `generate` methods. Let's start with `getPaths`. We have to load the `posts.json` file and iterate over each post:
 
-```ts filename=pages/posts.ts lines=[3,8,12-17]
+```ts filename=pages/posts.ts lines=[3,11-17]
 import { 
     DataResponse, 
     GetPathsParams,
@@ -218,11 +218,12 @@ import {
 
 ...
 
-export async function getPaths({ resolve }: GetPathsParams): PathList<typeof route> {
-    const tocText = await Deno.readTextFile(resolve('posts/toc.json'))
-    const toc = JSON.parse(tocText)
+export async function getPaths({ resolve }: GetPathsParams): Promise<PathList<typeof route>> {
+    const postsAbsolutePath = resolve('pages/posts.json')
+    const postsText = await Deno.readTextFile(postsAbsolutePath)
+    const posts: Post[] = JSON.parse(postsText)
 
-    return toc.map(entry => ({ slug: entry.slug }));
+    return posts.map(post => ({ slug: post.slug }));
 }
 
 ...
@@ -231,9 +232,9 @@ export async function getPaths({ resolve }: GetPathsParams): PathList<typeof rou
 > [!info]
 > The call to the `resolve` method is necessary because Frugal will compile your project, output it in another place and run it from there. It means that relative paths might not be preserved. The `resolve` method will resolve paths relative to the root of your project.
 
-For the `generate` method, given the slug, we find the corresponding entry in the `toc.json` file, read the referenced file, and compile the markdown :
+For the `generate` method, given the slug, we find the corresponding entry in the `posts.json` file and get its `"content"`. :
 
-```ts filename=pages/posts.ts lines=[2,10,14-27]
+```ts filename=pages/posts.ts lines=[2-3,12-24]
 import { 
     DataResponse, 
     EmptyResponse,
@@ -242,23 +243,21 @@ import {
     StaticHandlerContext, 
     RenderContext
 } from "https://deno.land/x/frugal@{{FRUGAL_VERSION}}/mod.ts"
-import { marked } from "https://esm.sh/marked"
 
 ...
 
 export async function generate({ path: { slug }, resolve }: StaticHandlerContext<typeof route>) {
-    const tocText = await Deno.readTextFile(resolve('posts/toc.json'))
-    const toc = JSON.parse(tocText)
+    const postsAbsolutePath = resolve('pages/posts.json')
+    const postsText = await Deno.readTextFile(postsAbsolutePath)
+    const posts: Post[] = JSON.parse(postsText)
 
-    const entry = toc.find(entry => entry.slug === slug)
+    const post = posts.find(post => post.slug === slug)
 
-    if (entry === undefined) {
+    if (post === undefined) {
         return new EmptyResponse({ status: 404 })
     }
 
-    const markdown = await Deno.readTextFile(resolve(`posts/${entry.file}`))
-    const content = marked.parse(markdown)
-    return new DataResponse({ title: entry.title, content})
+    return new DataResponse<Post>(post)
 }
 
 ...
@@ -278,54 +277,39 @@ import {
     StaticHandlerContext, 
     RenderContext
 } from "https://deno.land/x/frugal@{{FRUGAL_VERSION}}/mod.ts"
-import { marked } from "https://esm.sh/marked"
 
 export const route = '/post/:slug'
 
-type Data = { 
+type Post = { 
     slug:string; 
     title: string; 
     content: string;
 }
 
-const POSTS = [
-    {
-        slug: "hello-world",
-        title: "Hello world",
-        content: "<p>This is my first post ever</p>"
-    },
-    {
-        slug: "second-post",
-        title: "Second post",
-        content: "<p>And a second post !</p>"
-    },
-]
 
-export async function getPaths({ resolve }: GetPathsParams): PathList<typeof route> {
-    const tocText = await Deno.readTextFile(resolve('posts/toc.json'))
-    const toc = JSON.parse(tocText)
+export async function getPaths({ resolve }: GetPathsParams): Promise<PathList<typeof route>> {
+    const postsAbsolutePath = resolve('pages/posts.json')
+    const postsText = await Deno.readTextFile(postsAbsolutePath)
+    const posts: Post[] = JSON.parse(postsText)
 
-    return toc.map(entry => ({ slug: entry.slug }));
+    return posts.map(post => ({ slug: post.slug }));
 }
 
-export function async generate({ path: { slug }, resolve }: StaticHandlerContext<typeof route>) {
-    const tocText = await Deno.readTextFile(resolve('posts/toc.json'))
-    const toc = JSON.parse(tocText)
+export async function generate({ path: { slug }, resolve }: StaticHandlerContext<typeof route>) {
+    const postsAbsolutePath = resolve('pages/posts.json')
+    const postsText = await Deno.readTextFile(postsAbsolutePath)
+    const posts: Post[] = JSON.parse(postsText)
 
-    const entry = toc.find(entry => entry.slug === slug)
+    const post = posts.find(post => post.slug === slug)
 
-    if (entry === undefined) {
+    if (post === undefined) {
         return new EmptyResponse({ status: 404 })
     }
 
-    const markdown = await Deno.readTextFile(resolve(`posts/${entry.file}`))
-
-    const content = marked.parse(markdown)
-
-    return new DataResponse({ title: entry.title, content})
+    return new DataResponse<Post>(post)
 }
 
-export function render({ data }: RenderContext<typeof route, Data> ) {
+export function render({ data }: RenderContext<typeof route, Post> ) {
     return `<!DOCTYPE html>
 <html>
     <body>
@@ -336,4 +320,78 @@ export function render({ data }: RenderContext<typeof route, Data> ) {
 }
 ```
 
-We now have a small markdown file-based static blog, but it serves only raw HTML for now. In the next section, we will add assets (js scripts and CSS) to our pages.
+## Using markdown
+
+Having raw html inside json in our `pages/posts.json` file is not practical. Instead of having a `"content"` value, we could have a `"file"` value, giving a path to a markdown file. It would make editing content easier.
+
+To do so, we write two markdown files with our content (`/pages/hello-world.md` and `/pages/second-post.md`) and update the `pages/posts.json` file :
+
+```ts filename=pages/posts.json
+[
+    {
+        "slug": "hello-world",
+        "title": "Hello world",
+        "file": "pages/hello-world.md"
+    },
+    {
+        "slug": "second-post",
+        "title": "Second post",
+        "file": "pages/second-post.md"
+    }
+]
+```
+
+Previously, `pages/posts.json` contained a list of `Post` (`title`, `slug` and `content`). Now it contains a different type (`title`, `slug` and `file`) that we'll call `Entry` :
+
+```ts filename=pages/posts.ts
+...
+
+type Entry = {
+    slug: string,
+    title: string,
+    file: string
+}
+```
+
+The `getPaths` method does not change (excepte for a change in type to use `Entry`), since the `pages/posts.json` still contains all slug that needs to be generated. But we need to change the `generate` method to read and compile the markdown file :
+
+```ts filename=pages/posts.ts lines=[3,10,27-30]
+...
+
+import { marked } from "https://esm.sh/marked"
+
+...
+
+export async function getPaths({ resolve }: GetPathsParams): Promise<PathList<typeof route>> {
+    const postsAbsolutePath = resolve('pages/posts.json')
+    const postsText = await Deno.readTextFile(postsAbsolutePath)
+    const posts: Entry[] = JSON.parse(postsText)
+
+    return posts.map(post => ({ slug: post.slug }));
+}
+
+
+export async function generate({ path: { slug }, resolve }: StaticHandlerContext<typeof route>) {
+    const postsAbsolutePath = resolve('pages/posts.json')
+    const postsText = await Deno.readTextFile(postsAbsolutePath)
+    const posts: Entry[] = JSON.parse(postsText)
+
+    const post = posts.find(post => post.slug === slug)
+
+    if (post === undefined) {
+        return new EmptyResponse({ status: 404 })
+    }
+
+    const markdown = await Deno.readTextFile(resolve(entry.file))
+    const content = marked.parse(markdown)
+        
+    return new DataResponse<Post>({ slug:post.slug, title: post.title, content })
+}
+```
+
+We now have a small markdown file-based static blog, but it could be improved :
+
+- the `pages/` directory is a mess of unrelated files (`.ts` files for pages, `.json` and `.md` for data). We could better organise the project by separating data and source files.
+- instead of having the `posts.json` file, we could have all our markdown files in a single directory, each with a front-matter for title and slug. The `getPaths` method would scan the directory, parse the front-matter of each file and output the liste of slugs
+
+Our static blog only serves raw HTML for now. In the next section, we will add assets (js scripts and CSS) to our pages.

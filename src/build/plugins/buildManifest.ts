@@ -5,7 +5,6 @@ import { log } from "../../log.ts";
 import { MetaFileAnalyser } from "../MetafileAnalyser.ts";
 import { isInChildWatchProcess } from "../../WatchContext.ts";
 import { FrugalConfig } from "../../Config.ts";
-import { PageError } from "../../page/Page.ts";
 import { writeManifest } from "../../Manifest.ts";
 import { AssetRepository } from "../../page/Assets.ts";
 

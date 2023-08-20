@@ -128,7 +128,7 @@ The `generate` function takes a single parameter of type `StaticHandlerContext`.
 
 ```ts
 type StaticHandlerContext<PATH extends string> = {
-    assets: Record<string, any>;
+    assets: Assets;
     descriptor: string;
     path: PathObject<PATH>;
     phase: Phase;
@@ -141,7 +141,7 @@ export type Phase = "build" | "refresh" | "generate";
 
 ##### `assets`
 
-This parameter contains all the static assets generated for each page descriptor by plugins. It's an object where the keys are the type of assets, and the value depends on each plugin.
+This parameter is an object with a `get` method. Given an asset type (`"script"`, `"style"` ...), it should return an array of values depending on the asset type (the url of a script for `"script"`, the url of a stylesheet for `"style"` ...)
 
 ##### `descriptor`
 

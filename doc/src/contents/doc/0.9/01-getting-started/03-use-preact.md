@@ -48,19 +48,19 @@ Since we use an Import Map, we must also pass it to Frugal.
 
 ## Update the post page
 
-First, we move our markup in a jsx component in a `pages/Page.tsx` module :
+First, we move our markup in a jsx component in a `pages/PostPage.tsx` module :
 
 ```tsx filename=pages/PostPage.tsx
 import { PageProps, useData, Head } from "https://deno.land/x/frugal@{{FRUGAL_VERSION}}/runtime/preact.server.ts"
 
-export function PostPage({ assets, descriptor }: PageProps) {
-    const styleHref = assets["style"][descriptor]}
-
+export function PostPage({ assets }: PageProps) {
     const data = useData<{ title:string, content: string }>()
 
     return <>
         <Head>
-            <link rel="stylesheet" href={styleHref}>
+            {assets.get('style').map(href => {
+                return <link rel="stylesheet" href={href}>
+            })}
         </Head>
 
         <h1>{data.title}</h1>
@@ -88,15 +88,15 @@ import { PostPage } from "./PostPage.tsx"
 export const render = getRenderFrom(PostPage)
 ```
 
-And that's it. We now have a static page that can be designed with jsx components. Remember that the homepage still uses js templates to output raw HTML. You can mix any UI framework you want if you don't mix them on the same page.
+And that's it. We now have a static page that can be designed with jsx components. But remember that the homepage still uses js templates to output raw HTML. This means that you can mix any UI framework you want on different pages.
 
 For now, Frugal still outputs static markup for our components. To have a client-side component, we'll have to use islands.
 
 ## First client-side island
 
-We will add a counter to the homepage. To do so, we will migrate it to preact, like we did for the posts page (this is left as an exercise for you, dear reader).
+We will add a counter to the homepage. To do so, we first need to migrate it to preact, like we did for the posts page (this is left as an exercise for you, dear reader).
 
-First, we create our stateful counter component :
+Once the page works with preact, we create our stateful counter component :
 
 ```tsx filename=Counter.tsx
 import * as hooks from "preact/hooks";
@@ -132,12 +132,14 @@ import { Counter } from "./Counter.tsx";
 
 export const NAME = "Counter";
 
-if (import.meta.main) {
+if (import.meta.environment === "client") {
     hydrate(NAME, () => Counter);
 }
 ```
 
-Since it is a client-side `script`, the `hydrate` function will execute only in the browser. The function will hydrate all instances of islands with the name `"Counter"` using the component `Counter` to do so. And now we create a `CounterIsland.tsx` component to create island instances of our `Counter` component :
+Since it is a client-side `script` using `import.meta.environment`, the `hydrate` function will execute only client-side. The function will hydrate with the `Counter` component all instances of islands with the name `"Counter"`.
+
+Now we create a `CounterIsland.tsx` component to create island instances of our `Counter` component :
 
 ```tsx
 import { Island } from "https://deno.land/x/frugal@{{FRUGAL_VERSION}}/runtime/preact.client.ts";
@@ -178,7 +180,7 @@ export function Page({ assets, descriptor }: PageProps) {
 }
 ```
 
-Inside your browser's dev tools, you can see the generated js bundle containing our first _vanilla_ script and our component and its dependencies (`hydrate`, `preact` etc...).
+Inside your browser's dev tools, you can see the generated js bundle containing our first _vanilla_ script (changing the style of the title) and our `Counter.ts` component and its dependencies (`hydrate`, `preact` etc...).
 
 ## To infinity and beyond
 

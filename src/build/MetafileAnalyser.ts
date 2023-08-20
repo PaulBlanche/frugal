@@ -42,10 +42,9 @@ export class MetaFileAnalyser {
             if (entryPointUrl.pathname.endsWith(".css")) {
                 return await this.#handleCss(output.entryPoint);
             }
-            throw Error(`Found esbuild entrypoint ${output.entryPoint} that is not a page`);
+        } else {
+            return await this.#handlePage(output.entryPoint, outputPath);
         }
-
-        return await this.#handlePage(output.entryPoint, outputPath);
     }
 
     async #handlePage(entrypoint: string, outputPath: string): Promise<Analysis> {

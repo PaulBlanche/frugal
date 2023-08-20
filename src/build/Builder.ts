@@ -125,7 +125,7 @@ export class Builder {
             define: {
                 ...this.#config.esbuildOptions?.define,
                 // used to drop browser code in script assets
-                "import.meta.main": "false",
+                "import.meta.environment": "'server'",
             },
             format: "esm",
             outdir: path.fromFileUrl(this.#config.builddir),

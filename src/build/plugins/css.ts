@@ -104,7 +104,10 @@ export function css(frugal: Build): esbuild.Plugin {
                 ]);
 
                 frugal.output("style", { type: "page", assets: stylesheets });
-                frugal.output("style", { type: "global", asset: globalStylesheets["global"] });
+                const globalStylesheet = globalStylesheets["global"];
+                if (globalStylesheet) {
+                    frugal.output("style", { type: "global", asset: globalStylesheet });
+                }
             });
         },
     };
