@@ -75,6 +75,7 @@ export class Builder {
             },
             ...this.#config.plugins.map((plugin) => plugin(context)),
             ...(this.#config.esbuildOptions?.plugins ?? []),
+            outputMetafile(),
             css(context),
             {
                 name: "__frugal_internal:externalRemote",
@@ -92,7 +93,6 @@ export class Builder {
                 nodeModulesDir: true,
             }),
             copyStatic(this.#config),
-            outputMetafile(),
             buildManifest(this.#config, context.assets),
             cleanOutdir(this.#config, this.#config.cleanAll),
             reporter(),
@@ -119,13 +119,13 @@ export class Builder {
             assetNames: "[dir]/[name]-[hash]",
             bundle: true,
             metafile: true,
-            write: true,
+            write: false,
             splitting: true,
             sourcemap: false,
             define: {
                 ...this.#config.esbuildOptions?.define,
                 // used to drop browser code in script assets
-                "import.meta.main": "false",
+                "import.meta.environment": "'server'",
             },
             format: "esm",
             outdir: path.fromFileUrl(this.#config.builddir),

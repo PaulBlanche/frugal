@@ -47,7 +47,7 @@ function updateClient(state: preact.VNode[]) {
 
     const bodyProps = {};
     for (const body of bodys) {
-        Object.assign(htmlProps, body.props);
+        Object.assign(bodyProps, body.props);
     }
 
     for (const [key, value] of Object.entries(htmlProps)) {
@@ -83,7 +83,9 @@ function reduceComponents(
 ) {
     return effects
         .reduce<preact.ComponentChild[]>((allChilren, effect) => {
-            const effectChildren = effect.props.children;
+            const effectChildren = Array.isArray(effect.props.children)
+                ? effect.props.children.flat(10)
+                : effect.props.children;
             return allChilren.concat(effectChildren);
         }, []).reduce<preact.VNode[]>((list, node) => {
             if (preact.isValidElement(node)) {

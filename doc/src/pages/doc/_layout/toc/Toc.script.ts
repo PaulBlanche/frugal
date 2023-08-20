@@ -9,7 +9,7 @@ export const VERSION_SELECT_ID = "version-select";
 
 const REGISTERED = new WeakSet();
 
-if (import.meta.main) {
+if (import.meta.environment === "client") {
     setup();
 
     addEventListener("frugal:readystatechange", (event) => {

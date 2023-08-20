@@ -3,6 +3,6 @@ import { Counter } from "./Counter.tsx";
 
 export const NAME = "Counter";
 
-if (import.meta.main) {
+if (import.meta.environment === "client") {
     hydrate(NAME, () => Counter);
 }

@@ -1,20 +1,22 @@
 import * as path from "../dep/std/path.ts";
 import * as xxhash from "../dep/xxhash.ts";
+import * as streams from "../dep/std/streams.ts";
 
 import { FrugalConfig } from "./Config.ts";
-import { Assets, PageDescriptor } from "./page/PageDescriptor.ts";
+import { PageDescriptor } from "./page/PageDescriptor.ts";
+import { AssetRepository } from "./page/Assets.ts";
 
 export type Manifest = {
     id: string;
     config: string;
-    assets: Assets;
+    assets: AssetRepository;
     pages: { moduleHash: string; entrypoint: string; descriptor: PageDescriptor }[];
 };
 
 export type WritableManifest = {
     config: string;
     id: string;
-    assets: Assets;
+    assets: AssetRepository;
     pages: { moduleHash: string; entrypoint: string; outputPath: string }[];
 };
 
@@ -44,7 +46,18 @@ export async function writeManifest(config: FrugalConfig, manifest: WritableMani
     await setManifestName(config, manifestName);
 
     const filePath = path.resolve(path.fromFileUrl(config.outdir), manifestName);
-    await Deno.writeTextFile(filePath, content);
+    try {
+        const file = await Deno.open(filePath, { write: true, createNew: true });
+        try {
+            await streams.writeAll(file, new TextEncoder().encode(content));
+        } finally {
+            file.close();
+        }
+    } catch (error) {
+        if (!(error instanceof Deno.errors.AlreadyExists)) {
+            throw error;
+        }
+    }
 }
 
 export async function getManifestName(config: FrugalConfig) {
@@ -78,9 +91,9 @@ export const assets = ${JSON.stringify(manifest.assets)};
 export const pages = [${
         manifest.pages.map((page) =>
             `{
-"moduleHash": "${page.moduleHash}",
-"entrypoint": "${page.entrypoint}",
-"descriptor": descriptor_${page.moduleHash},
+    "moduleHash": "${page.moduleHash}",
+    "entrypoint": "${page.entrypoint}",
+    "descriptor": descriptor_${page.moduleHash},
 }`
         ).join(",\n")
     }];

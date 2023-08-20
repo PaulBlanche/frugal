@@ -7,6 +7,7 @@ import { Router } from "../page/Router.ts";
 import { FrugalServer } from "../server/FrugalServer.ts";
 import { FrugalConfig } from "../Config.ts";
 import { WatchOptions } from "./ParentContext.ts";
+import { log } from "../log.ts";
 
 export const WATCH_MESSAGE_SYMBOL = Symbol("WATCH_MESSAGE_SYMBOL");
 
@@ -36,22 +37,27 @@ export class ChildContext {
 
                 build.onEnd(async (result) => {
                     if (result.errors.length === 0) {
-                        const server = await this.#getWatchServer();
-                        this.#serverController.abort();
-                        this.#serverController = new AbortController();
-                        // leave time for address to be freed
-                        setTimeout(() => {
-                            server.serve({
-                                port: this.#port,
-                                signal: this.#serverController.signal,
-                                onListen: () => {
-                                    console.log({
-                                        type: "reload",
-                                        [WATCH_MESSAGE_SYMBOL]: true,
-                                    });
-                                },
+                        try {
+                            const server = await this.#getWatchServer();
+                            this.#serverController.abort();
+                            this.#serverController = new AbortController();
+                            // leave time for address to be freed
+                            setTimeout(() => {
+                                server.serve({
+                                    port: this.#port,
+                                    signal: this.#serverController.signal,
+                                    onListen: () => {
+                                        console.log({
+                                            type: "reload",
+                                            [WATCH_MESSAGE_SYMBOL]: true,
+                                        });
+                                    },
+                                });
                             });
-                        });
+                        } catch (error) {
+                            log(error);
+                            throw error;
+                        }
                     }
                 });
             },

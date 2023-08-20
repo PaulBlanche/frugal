@@ -3,6 +3,6 @@ import { PageToc } from "./PageToc.tsx";
 
 export const NAME = "PageToc";
 
-if (import.meta.main) {
+if (import.meta.environment === "client") {
     hydrate(NAME, () => PageToc);
 }

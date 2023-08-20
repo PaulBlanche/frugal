@@ -1,6 +1,6 @@
 const REGISTERED = new WeakSet();
 
-if (import.meta.main) {
+if (import.meta.environment === "client") {
     setup();
 
     addEventListener("frugal:readystatechange", (event) => {

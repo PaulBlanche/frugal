@@ -3,13 +3,11 @@ import { PathObject } from "./PathObject.ts";
 import { PageResponse } from "./Response.ts";
 import * as zod from "../../dep/zod.ts";
 import { PageSession } from "./PageSession.ts";
+import { Assets } from "./Assets.ts";
 
 export type Phase = "build" | "refresh" | "generate";
 
 export type Method = "GET" | "POST" | "PUT" | "DELETE" | "PATCH";
-
-// deno-lint-ignore no-explicit-any
-export type Assets = Record<string, any>;
 
 type BaseHandlerContext<PATH extends string> = {
     phase: Phase;

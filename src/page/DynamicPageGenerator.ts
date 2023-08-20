@@ -7,19 +7,22 @@ import { GenerationResult } from "./GenerationResult.ts";
 import { PageSession } from "./PageSession.ts";
 import { log } from "../log.ts";
 import { FrugalConfig } from "../Config.ts";
+import { AssetRepository, Assets } from "./Assets.ts";
 
 export type DynamicPageGeneratorConfig<PATH extends string = string, DATA extends JSONValue = JSONValue> = {
     page: page.Page<PATH, DATA>;
-    assets: descriptor.Assets;
+    assets: AssetRepository;
     configHash: string;
     config: FrugalConfig;
 };
 
 export class DynamicPageGenerator<PATH extends string = string, DATA extends JSONValue = JSONValue> {
     #config: DynamicPageGeneratorConfig<PATH, DATA>;
+    #assets: Assets;
 
     constructor(config: DynamicPageGeneratorConfig<PATH, DATA>) {
         this.#config = config;
+        this.#assets = new Assets(this.#config.assets, this.#config.page.entrypoint);
     }
 
     async generate(
@@ -43,7 +46,7 @@ export class DynamicPageGenerator<PATH extends string = string, DATA extends JSO
             request,
             path,
             state,
-            assets: this.#config.assets,
+            assets: this.#assets,
             descriptor: this.#config.page.entrypoint,
             session,
             resolve: (path) => this.#config.config.resolve(path),

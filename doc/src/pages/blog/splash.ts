@@ -26,8 +26,6 @@ async function splashTransform(src: string, dest: string) {
 
     const data = await Deno.readFile(src);
 
-    console.log(data);
-
     await ImageMagick.read(data, async (img) => {
         const geometry = new MagickGeometry("900x512^");
         img.resize(geometry);
@@ -38,7 +36,6 @@ async function splashTransform(src: string, dest: string) {
         await img.write(
             MagickFormat.Jpeg,
             async (data: Uint8Array) => {
-                console.log(data);
                 await fs.ensureFile(dest);
                 await Deno.writeFile(dest, data);
             },

@@ -9,10 +9,11 @@ import { Cache } from "../cache/Cache.ts";
 import { log } from "../log.ts";
 import { PageSession } from "./PageSession.ts";
 import { FrugalConfig } from "../Config.ts";
+import { AssetRepository, Assets } from "./Assets.ts";
 
 type StaticPageGeneratorConfig<PATH extends string = string, DATA extends JSONValue = JSONValue> = {
     page: page.StaticPage<PATH, DATA>;
-    assets: descriptor.Assets;
+    assets: AssetRepository;
     configHash: string;
     cache: Cache;
     config: FrugalConfig;
@@ -20,9 +21,11 @@ type StaticPageGeneratorConfig<PATH extends string = string, DATA extends JSONVa
 
 export class StaticPageGenerator<PATH extends string = string, DATA extends JSONValue = JSONValue> {
     #config: StaticPageGeneratorConfig<PATH, DATA>;
+    #assets: Assets;
 
     constructor(config: StaticPageGeneratorConfig<PATH, DATA>) {
         this.#config = config;
+        this.#assets = new Assets(this.#config.assets, this.#config.page.entrypoint);
     }
 
     async buildAll() {
@@ -97,7 +100,7 @@ export class StaticPageGenerator<PATH extends string = string, DATA extends JSON
                 request,
                 path,
                 state,
-                assets: this.#config.assets,
+                assets: this.#assets,
                 descriptor: this.#config.page.entrypoint,
                 session,
                 resolve: (path) => this.#config.config.resolve(path),
@@ -142,7 +145,7 @@ export class StaticPageGenerator<PATH extends string = string, DATA extends JSON
             await this.#config.page.generate({
                 phase,
                 path: buildPath,
-                assets: this.#config.assets,
+                assets: this.#assets,
                 descriptor: this.#config.page.entrypoint,
                 resolve: (path) => this.#config.config.resolve(path),
                 publicdir: fromFileUrl(this.#config.config.publicdir),
@@ -150,7 +153,7 @@ export class StaticPageGenerator<PATH extends string = string, DATA extends JSON
             {
                 phase,
                 path: buildPath,
-                assets: this.#config.assets,
+                assets: this.#assets,
                 descriptor: this.#config.page.entrypoint,
                 pathname,
                 moduleHash: this.#config.page.moduleHash,

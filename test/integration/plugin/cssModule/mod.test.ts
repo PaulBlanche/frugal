@@ -12,14 +12,16 @@ if (import.meta.main) {
     await setupTestFiles();
 }
 
-Deno.test("css: build page with css module dependencies", async (t) => {
+Deno.test("cssModule: build page with css module dependencies", async (t) => {
     const config = await loadConfig();
     const helper = new FrugalHelper(config);
 
     await helper.build();
 
-    const assets = await helper.assets();
-    const cssURL = new URL(assets["style"]["page.ts"].slice(1), helper.config.publicdir);
+    const assets = await helper.assets("page.ts");
+
+    asserts.assertEquals(assets.get("style").length, 1);
+    const cssURL = new URL(assets.get("style")[0].slice(1), helper.config.publicdir);
 
     snapshot.assertSnapshot(t, await Deno.readTextFile(cssURL));
 
@@ -28,7 +30,7 @@ Deno.test("css: build page with css module dependencies", async (t) => {
     snapshot.assertSnapshot(t, await cache.loadDocument("/page"));
 });
 
-Deno.test("css: css module dependencies are watched", async () => {
+Deno.test("cssModule: css module dependencies are watched", async () => {
     const config = await loadConfig();
     const helper = new FrugalHelper(config);
 

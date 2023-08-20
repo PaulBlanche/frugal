@@ -1,5 +1,5 @@
-import { Session } from "../../runtime/session.ts";
+import { BrowserSession } from "../../runtime/session.ts";
 
-if (import.meta.main) {
-    Session.init();
+if (import.meta.environment === "client") {
+    BrowserSession.init();
 }

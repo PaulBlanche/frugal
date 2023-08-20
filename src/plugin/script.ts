@@ -72,7 +72,10 @@ export function script(
 
                     const buildResult = await context.rebuild();
 
-                    frugal.output("script", getJsBundle(buildResult.metafile, facades, frugal.config));
+                    frugal.output("script", {
+                        type: "page",
+                        assets: getJsBundle(buildResult.metafile, facades, frugal.config),
+                    });
                 });
 
                 async function getContext(
@@ -117,7 +120,7 @@ export function script(
                             : config.esbuildOptions.target,
                         define: {
                             ...config.esbuildOptions?.define,
-                            "import.meta.main": "true",
+                            "import.meta.environment": "'client'",
                         },
                         outdir: path.fromFileUrl(outdirURL),
                         plugins: [

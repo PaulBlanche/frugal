@@ -59,6 +59,7 @@ export function css(frugal: Build): esbuild.Plugin {
                 }
 
                 const cssBundles = [];
+                const globalCssBundles = [];
                 for (const outputPath of Object.keys(metafile.outputs)) {
                     const output = metafile.outputs[outputPath];
                     const cssBundle = output.cssBundle;
@@ -67,17 +68,18 @@ export function css(frugal: Build): esbuild.Plugin {
                         if (cssBundle) {
                             cssBundles.push({ cssBundle, entrypoint });
                         } else if (entrypoint.endsWith(".css")) {
-                            cssBundles.push({ cssBundle: outputPath, entrypoint: "global" });
+                            globalCssBundles.push({ cssBundle: outputPath, entrypoint: "global" });
                         }
                     }
                 }
 
-                const commonRoot = path.common(cssBundles.map(({ cssBundle }) => cssBundle));
+                const commonRoot = path.common([...cssBundles, ...globalCssBundles].map(({ cssBundle }) => cssBundle));
 
                 const stylesheets: Record<string, string> = {};
+                const globalStylesheets: Record<string, string> = {};
 
-                await Promise.all(
-                    cssBundles.map(async ({ cssBundle, entrypoint }) => {
+                await Promise.all([
+                    ...cssBundles.map(async ({ cssBundle, entrypoint }) => {
                         const cssBundlePath = `css/${path.relative(commonRoot, cssBundle)}`;
 
                         const cssBundleUrl = new URL(cssBundlePath, frugal.config.publicdir);
@@ -88,9 +90,24 @@ export function css(frugal: Build): esbuild.Plugin {
                             overwrite: true,
                         });
                     }),
-                );
+                    ...globalCssBundles.map(async ({ cssBundle, entrypoint }) => {
+                        const cssBundlePath = `css/${path.relative(commonRoot, cssBundle)}`;
 
-                frugal.output("style", stylesheets);
+                        const cssBundleUrl = new URL(cssBundlePath, frugal.config.publicdir);
+
+                        globalStylesheets[entrypoint] = `/${cssBundlePath}`;
+                        await fs.ensureFile(cssBundleUrl);
+                        await fs.copy(new URL(cssBundle, frugal.config.rootdir), cssBundleUrl, {
+                            overwrite: true,
+                        });
+                    }),
+                ]);
+
+                frugal.output("style", { type: "page", assets: stylesheets });
+                const globalStylesheet = globalStylesheets["global"];
+                if (globalStylesheet) {
+                    frugal.output("style", { type: "global", asset: globalStylesheet });
+                }
             });
         },
     };

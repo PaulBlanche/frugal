@@ -2,10 +2,11 @@ import * as http from "../../dep/std/http.ts";
 import * as xxhash from "../../dep/xxhash.ts";
 import { Phase } from "./PageDescriptor.ts";
 import { JSONValue } from "./JSONValue.ts";
-import { Assets, Render } from "./PageDescriptor.ts";
+import { Render } from "./PageDescriptor.ts";
 import { PathObject } from "./PathObject.ts";
 import { PageResponse } from "./Response.ts";
 import * as etag from "../server/etag.ts";
+import { Assets } from "./Assets.ts";
 
 type GenerationResultInit<PATH extends string, DATA extends JSONValue> = {
     phase: Phase;

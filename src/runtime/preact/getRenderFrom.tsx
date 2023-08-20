@@ -6,10 +6,11 @@ import * as descriptor from "../../page/PageDescriptor.ts";
 import { JSONValue } from "../../page/JSONValue.ts";
 import { DataProvider } from "./dataContext.tsx";
 import { ISLAND_END } from "./Island.tsx";
+import { Assets } from "../../page/Assets.ts";
 
 export type PageProps = {
     descriptor: string;
-    assets: descriptor.Assets;
+    assets: Assets;
 };
 
 export type Page = preact.ComponentType<PageProps>;
@@ -17,7 +18,7 @@ export type Page = preact.ComponentType<PageProps>;
 export type DocumentProps = {
     head: preact.VNode[];
     descriptor: string;
-    assets: descriptor.Assets;
+    assets: Assets;
     dangerouslySetInnerHTML: { __html: string };
 };
 

@@ -18,9 +18,11 @@ Deno.test("script: build page with script and css module dependencies", async (t
 
     await helper.build();
 
-    const assets = await helper.assets();
-    const cssURL = new URL(assets["style"]["page.ts"].slice(1), helper.config.publicdir);
-    const jsURL = new URL(assets["script"]["page.ts"].slice(1), helper.config.publicdir);
+    const assets = await helper.assets("page.ts");
+    asserts.assertEquals(assets.get("style").length, 1);
+    asserts.assertEquals(assets.get("script").length, 1);
+    const cssURL = new URL(assets.get("style")[0].slice(1), helper.config.publicdir);
+    const jsURL = new URL(assets.get("script")[0].slice(1), helper.config.publicdir);
 
     snapshot.assertSnapshot(t, await Deno.readTextFile(cssURL));
     snapshot.assertSnapshot(t, await Deno.readTextFile(jsURL));

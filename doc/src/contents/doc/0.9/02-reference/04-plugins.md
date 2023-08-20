@@ -26,17 +26,17 @@ export default {
 
 Now each js module imported by a page matching `/.script.[tj]sx?$/` will be considered as _scripts_ and will be bundled.
 
-#### Script context and `import.meta.main`
+#### Conditional execution with `import.meta.environment`
 
 Since your script needs to be imported by the page to be bundled, the top level of your script will be executed server-side. All usages of browser-specific API will fail.
 
-To fix that, Frugal reuse Deno's [`import.meta.main`](https://deno.land/api@v{{DENO_VERSION}}?s=ImportMeta#prop_main) flag. This flag indicates if the script is executed in the browser or the server :
+To fix that, Frugal add an `environment` value in `import.meta`. This value indicates if the script is executed client-side or server-side :
 
 ```ts filename=main.script.ts
 // this is executed both in the server and the browser.
 export const ID = 'my-id'
 
-if (import.meta.main) {
+if (import.meta.environment === 'client') {
     // this is executed only in the browser.
     document.getElementById(ID).style.color = 'blue'
 }

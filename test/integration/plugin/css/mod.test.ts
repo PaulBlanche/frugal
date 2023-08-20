@@ -18,8 +18,10 @@ Deno.test("css: build page with css dependencies", async (t) => {
 
     await helper.build();
 
-    const assets = await helper.assets();
-    const cssURL = new URL(assets["style"]["page.ts"].slice(1), helper.config.publicdir);
+    const assets = await helper.assets("page.ts");
+
+    asserts.assertEquals(assets.get("style").length, 1);
+    const cssURL = new URL(assets.get("style")[0].slice(1), helper.config.publicdir);
 
     snapshot.assertSnapshot(t, await Deno.readTextFile(cssURL));
 });

@@ -8,11 +8,10 @@ export type BaseLayoutProps = PageProps & {
 };
 
 export function BaseLayout(
-    { descriptor, assets, children }: BaseLayoutProps,
+    { assets, children }: BaseLayoutProps,
 ) {
-    const scriptSrc = assets["script"]?.[descriptor];
-    const styleHref = assets["style"]?.[descriptor];
-    const globalStyleHref = assets["style"]?.["global"];
+    const scriptSrcs = assets.get("script");
+    const styleHrefs = assets.get("style");
 
     return (
         <>
@@ -30,9 +29,12 @@ export function BaseLayout(
                     content="Frugal web developpment with a framework that does not waste resources. Do the same, but send less"
                 />
                 <title>Frugal</title>
-                {styleHref && <link rel="stylesheet" href={styleHref} />}
-                {globalStyleHref && <link rel="stylesheet" href={globalStyleHref} />}
-                {scriptSrc && <script async type="module" src={scriptSrc}></script>}
+                {scriptSrcs.map((src) => {
+                    return <script async type="module" src={src}></script>;
+                })}
+                {styleHrefs.map((href) => {
+                    return <link rel="stylesheet" href={href} />;
+                })}
             </Head>
             {children}
         </>

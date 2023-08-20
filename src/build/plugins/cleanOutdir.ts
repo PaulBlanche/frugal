@@ -36,6 +36,9 @@ export function cleanOutdir(config: FrugalConfig, cleanAll: boolean): esbuild.Pl
                                 });
                             }
                         }
+                        await Deno.remove(esbuildOutDir, {
+                            recursive: true,
+                        });
                     } else {
                         log(
                             `clean directory ${esbuildOutDir}`,

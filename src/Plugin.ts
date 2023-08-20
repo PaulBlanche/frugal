@@ -4,10 +4,9 @@ import * as path from "../dep/std/path.ts";
 import type { FrugalConfig } from "./Config.ts";
 import { Asset, AssetCollector } from "./AssetCollector.ts";
 import { Loader } from "./Loader.ts";
-import { Assets } from "./page/PageDescriptor.ts";
+import { AssetRepository, AssetType } from "./page/Assets.ts";
 
-// deno-lint-ignore no-explicit-any
-export type Output = (type: string, output: any) => void;
+export type Output = (type: string, asset: AssetType) => void;
 
 export type Build = {
     config: FrugalConfig;
@@ -20,7 +19,7 @@ export type Build = {
 export class PluginContext implements Build {
     #config: FrugalConfig;
     #loader: Loader;
-    #assets: Assets;
+    #assets: AssetRepository;
 
     constructor(config: FrugalConfig) {
         this.#config = config;
@@ -40,9 +39,9 @@ export class PluginContext implements Build {
         return this.#loader.load(url);
     }
 
-    // deno-lint-ignore no-explicit-any
-    output(type: string, output: any) {
-        this.#assets[type] = output;
+    output(type: string, asset: AssetType) {
+        this.#assets[type] = this.#assets[type] ?? [];
+        this.#assets[type].push(asset);
     }
 
     collect(filter: RegExp, metafile: esbuild.Metafile) {
