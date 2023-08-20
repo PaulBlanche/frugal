@@ -5,6 +5,7 @@ import * as streams from "../dep/std/streams.ts";
 import { FrugalConfig } from "./Config.ts";
 import { PageDescriptor } from "./page/PageDescriptor.ts";
 import { AssetRepository } from "./page/Assets.ts";
+import { pathJoin } from "https://deno.land/x/puppeteer@16.2.0/vendor/puppeteer-core/vendor/std.ts";
 
 export type Manifest = {
     id: string;
@@ -23,16 +24,16 @@ export type WritableManifest = {
 class ManifestExecutionError extends Error {}
 
 export async function loadManifest(config: FrugalConfig): Promise<Manifest> {
-    const name = await getManifestName(config);
-    if (name === undefined) {
+    const manifestName = await getManifestName(config);
+    if (manifestName === undefined) {
         throw Error("No manifest was built");
     }
-    const manifestURL = new URL(name, config.outdir);
+    const filePath = path.resolve(config.outdir, manifestName);
 
     try {
-        return await import(manifestURL.href);
+        return await import(filePath);
     } catch (error) {
-        throw new ManifestExecutionError(`Error while loading manifest ${manifestURL.href}: ${error.message}`, {
+        throw new ManifestExecutionError(`Error while loading manifest ${filePath}: ${error.message}`, {
             cause: error,
         });
     }
@@ -45,7 +46,7 @@ export async function writeManifest(config: FrugalConfig, manifest: WritableMani
     const manifestName = `manifest-${hash}.mjs`;
     await setManifestName(config, manifestName);
 
-    const filePath = path.resolve(path.fromFileUrl(config.outdir), manifestName);
+    const filePath = path.resolve(config.outdir, manifestName);
     try {
         const file = await Deno.open(filePath, { write: true, createNew: true });
         try {
@@ -61,9 +62,9 @@ export async function writeManifest(config: FrugalConfig, manifest: WritableMani
 }
 
 export async function getManifestName(config: FrugalConfig) {
-    const manifestNameURL = new URL("manifestname", config.outdir);
+    const manifestNamePath = path.resolve(config.outdir, "manifestname");
     try {
-        return await Deno.readTextFile(manifestNameURL);
+        return await Deno.readTextFile(manifestNamePath);
     } catch (error) {
         if (!(error instanceof Deno.errors.NotFound)) {
             throw error;
@@ -72,15 +73,15 @@ export async function getManifestName(config: FrugalConfig) {
 }
 
 async function setManifestName(config: FrugalConfig, name: string) {
-    const manifestNameURL = new URL("manifestname", config.outdir);
-    await Deno.writeTextFile(manifestNameURL, name);
+    const manifestNamePath = path.resolve(config.outdir, "manifestname");
+    await Deno.writeTextFile(manifestNamePath, name);
 }
 
 function manifestContent(config: FrugalConfig, manifest: WritableManifest) {
     return `${
         manifest.pages.map((page) => {
-            const url = new URL(page.outputPath, config.rootdir);
-            const importIdentifier = `./${path.relative(path.fromFileUrl(config.outdir), path.fromFileUrl(url))}`;
+            const pagePath = path.resolve(config.rootdir, page.outputPath);
+            const importIdentifier = `./${path.relative(config.outdir, pagePath)}`;
             return `import * as descriptor_${page.moduleHash} from "./${importIdentifier}";`;
         }).join("\n")
     }

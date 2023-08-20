@@ -66,7 +66,7 @@ export class BuildCache implements Cache {
             age: "new",
         };
         if (serialized.body) {
-            const bodyPath = path.fromFileUrl(new URL(`./buildcache/${name}`, this.#config.buildCacheFile));
+            const bodyPath = path.resolve(path.dirname(this.#config.buildCacheFile), "buildcache", name);
             await fs.ensureFile(bodyPath);
             await Deno.writeTextFile(bodyPath, serialized.body);
             entry.documentPath = `./buildcache/${name}`;
@@ -75,11 +75,9 @@ export class BuildCache implements Cache {
     }
 
     async save() {
-        const filePath = path.fromFileUrl(this.#config.buildCacheFile);
-
-        await fs.ensureFile(filePath);
+        await fs.ensureFile(this.#config.buildCacheFile);
         await Deno.writeTextFile(
-            filePath,
+            this.#config.buildCacheFile,
             JSON.stringify({ current: this.#current, previous: this.#previous }, undefined, 2),
         );
     }
@@ -89,7 +87,7 @@ export async function loadBuildCacheData(
     config: FrugalConfig,
 ): Promise<SerializedBuildCache | undefined> {
     try {
-        const filePath = path.fromFileUrl(config.buildCacheFile);
+        const filePath = config.buildCacheFile;
         const data = await Deno.readTextFile(filePath);
 
         return JSON.parse(data);

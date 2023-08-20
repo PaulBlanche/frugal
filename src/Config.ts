@@ -159,43 +159,43 @@ export class FrugalConfig {
     }
 
     get self() {
-        return new URL(this.#config.self);
-    }
-
-    get pages() {
-        return this.#config.pages.map((page) => new URL(page, this.self));
-    }
-
-    get outdir() {
-        return new URL(this.#config.outdir ?? "dist/", this.self);
-    }
-
-    get publicdir() {
-        return new URL("public/", this.outdir);
-    }
-
-    get cachedir() {
-        return new URL(".cache/", this.outdir);
-    }
-
-    get tempdir() {
-        return new URL(".temp/", this.outdir);
-    }
-
-    get builddir() {
-        return new URL("build/", this.tempdir);
-    }
-
-    get buildCacheFile() {
-        return new URL("buildcache.json", this.cachedir);
+        return path.fromFileUrl(this.#config.self);
     }
 
     get rootdir() {
-        return new URL(".", this.#config.self);
+        return path.dirname(this.self);
+    }
+
+    get pages() {
+        return this.#config.pages.map((page) => path.resolve(this.rootdir, page));
+    }
+
+    get outdir() {
+        return path.resolve(this.rootdir, this.#config.outdir ?? "dist/");
+    }
+
+    get publicdir() {
+        return path.resolve(this.outdir, "public/");
+    }
+
+    get cachedir() {
+        return path.resolve(this.outdir, ".cache/");
+    }
+
+    get tempdir() {
+        return path.resolve(this.outdir, ".temp/");
+    }
+
+    get builddir() {
+        return path.resolve(this.tempdir, "build/");
+    }
+
+    get buildCacheFile() {
+        return path.resolve(this.cachedir, "buildcache.json");
     }
 
     get staticdir() {
-        return new URL(this.#config.staticdir ?? "static/", this.self);
+        return path.resolve(this.outdir, this.#config.staticdir ?? "static/");
     }
 
     get exporter() {
@@ -215,7 +215,7 @@ export class FrugalConfig {
     }
 
     resolve(specifier: string) {
-        return path.fromFileUrl(new URL(specifier, this.rootdir));
+        return path.resolve(this.rootdir, specifier);
     }
 }
 

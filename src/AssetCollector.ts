@@ -1,9 +1,10 @@
 import * as esbuild from "../dep/esbuild.ts";
+import * as path from "../dep/std/path.ts";
 import type { FrugalConfig } from "./Config.ts";
 
 export type Asset = {
     entrypoint: string;
-    url: URL;
+    path: string;
 };
 
 type OutputEntryPoint =
@@ -40,13 +41,10 @@ export class AssetCollector {
                 visited.add(current);
 
                 if (filter.test(current)) {
-                    const url = new URL(current, this.#config.self);
-                    if (url.protocol !== "facade:") {
-                        assets.push({
-                            entrypoint: outputEntryPoint.entryPoint,
-                            url: new URL(current, this.#config.self),
-                        });
-                    }
+                    assets.push({
+                        entrypoint: outputEntryPoint.entryPoint,
+                        path: path.resolve(this.#config.rootdir, current),
+                    });
                 }
 
                 const input = inputs[current];

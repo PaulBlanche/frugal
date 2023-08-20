@@ -45,12 +45,11 @@ export function script(
 
                     for (const asset of assets) {
                         const entrypoint = asset.entrypoint;
-                        const facadePath = path.join("asset", "script", entrypoint);
-                        const facadeUrl = new URL(facadePath, frugal.config.tempdir);
-                        const facadeContent = `import "${asset.url.href}";`;
+                        const facadePath = path.resolve(frugal.config.tempdir, "asset", "script", entrypoint);
+                        const facadeContent = `import "${asset.path}";`;
                         facadesMap[entrypoint] = facadesMap[entrypoint] ?? {
                             entrypoint,
-                            url: facadeUrl,
+                            path: facadePath,
                             content: [],
                         };
                         facadesMap[entrypoint].content.push(facadeContent);
@@ -60,13 +59,13 @@ export function script(
 
                     await Promise.all(
                         facades.map(async (facade) => {
-                            await fs.ensureFile(facade.url);
-                            await Deno.writeTextFile(facade.url, facade.content.join("\n"));
+                            await fs.ensureFile(facade.path);
+                            await Deno.writeTextFile(facade.path, facade.content.join("\n"));
                         }),
                     );
 
                     const context = await getContext(
-                        facades.map((facade) => path.fromFileUrl(facade.url)),
+                        facades.map((facade) => facade.path),
                         frugal.config,
                     );
 
@@ -111,7 +110,7 @@ export function script(
                     >
                 > {
                     const parentConfig = build.initialOptions;
-                    const outdirURL = new URL(outdir, config.publicdir);
+                    const outdirPath = path.resolve(config.publicdir, outdir);
                     const esbuildConfig: esbuild.BuildOptions = {
                         ...config.esbuildOptions,
                         target: config.esbuildOptions?.target === undefined ||
@@ -125,7 +124,7 @@ export function script(
                         entryNames: "[dir]/[name]-[hash]",
                         chunkNames: "[dir]/[name]-[hash]",
                         assetNames: "[dir]/[name]-[hash]",
-                        outdir: path.fromFileUrl(outdirURL),
+                        outdir: outdirPath,
                         plugins: [
                             denoResolverPlugin({
                                 importMapURL: frugal.config.importMapURL?.href,
@@ -137,7 +136,6 @@ export function script(
                             denoLoaderPlugin({
                                 importMapURL: frugal.config.importMapURL?.href,
                                 nodeModulesDir: true,
-                                loader: "portable",
                             }),
                             cleanOutdir(config, false),
                             outputMetafile(),
@@ -147,7 +145,7 @@ export function script(
                         entryPoints: entrypoints,
                         bundle: true,
                         metafile: true,
-                        absWorkingDir: path.fromFileUrl(new URL(".", config.self)),
+                        absWorkingDir: config.outdir,
                     };
 
                     log(`asset esbuild config`, {
@@ -177,21 +175,16 @@ function getJsBundle(
             continue;
         }
 
-        const outputEntrypointUrl = new URL(output.entryPoint, config.self);
+        const outputEntrypointPath = path.resolve(config.outdir, output.entryPoint);
 
-        const facade = facades.find(
-            (facade) => facade.url.href === outputEntrypointUrl.href,
-        );
+        const facade = facades.find((facade) => facade.path === outputEntrypointPath);
 
         if (facade === undefined) {
             continue;
         }
 
-        const jsBundleUrl = new URL(outputPath, config.self);
-        const bundleName = path.relative(
-            path.fromFileUrl(config.publicdir),
-            path.fromFileUrl(jsBundleUrl),
-        );
+        const jsBundleUrl = path.resolve(config.outdir, outputPath);
+        const bundleName = path.relative(config.publicdir, jsBundleUrl);
 
         generated[facade.entrypoint] = `/${bundleName}`;
     }
@@ -199,4 +192,4 @@ function getJsBundle(
     return generated;
 }
 
-type Facade = { entrypoint: string; url: URL; content: string[] };
+type Facade = { entrypoint: string; path: string; content: string[] };

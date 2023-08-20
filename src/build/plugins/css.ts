@@ -82,22 +82,22 @@ export function css(frugal: Build): esbuild.Plugin {
                     ...cssBundles.map(async ({ cssBundle, entrypoint }) => {
                         const cssBundlePath = `css/${path.relative(commonRoot, cssBundle)}`;
 
-                        const cssBundleUrl = new URL(cssBundlePath, frugal.config.publicdir);
+                        const cssBundleUrl = path.resolve(frugal.config.publicdir, cssBundlePath);
 
                         stylesheets[entrypoint] = `/${cssBundlePath}`;
                         await fs.ensureFile(cssBundleUrl);
-                        await fs.copy(new URL(cssBundle, frugal.config.rootdir), cssBundleUrl, {
+                        await fs.copy(path.resolve(frugal.config.rootdir, cssBundle), cssBundleUrl, {
                             overwrite: true,
                         });
                     }),
                     ...globalCssBundles.map(async ({ cssBundle, entrypoint }) => {
                         const cssBundlePath = `css/${path.relative(commonRoot, cssBundle)}`;
 
-                        const cssBundleUrl = new URL(cssBundlePath, frugal.config.publicdir);
+                        const cssBundleUrl = path.resolve(frugal.config.publicdir, cssBundlePath);
 
                         globalStylesheets[entrypoint] = `/${cssBundlePath}`;
                         await fs.ensureFile(cssBundleUrl);
-                        await fs.copy(new URL(cssBundle, frugal.config.rootdir), cssBundleUrl, {
+                        await fs.copy(path.resolve(frugal.config.rootdir, cssBundle), cssBundleUrl, {
                             overwrite: true,
                         });
                     }),

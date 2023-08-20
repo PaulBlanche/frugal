@@ -50,7 +50,7 @@ export class DynamicPageGenerator<PATH extends string = string, DATA extends JSO
             descriptor: this.#config.page.entrypoint,
             session,
             resolve: (path) => this.#config.config.resolve(path),
-            publicdir: fromFileUrl(this.#config.config.publicdir),
+            publicdir: this.#config.config.publicdir,
         });
     }
 
