@@ -5,7 +5,6 @@ import * as streams from "../dep/std/streams.ts";
 import { FrugalConfig } from "./Config.ts";
 import { PageDescriptor } from "./page/PageDescriptor.ts";
 import { AssetRepository } from "./page/Assets.ts";
-import { pathJoin } from "https://deno.land/x/puppeteer@16.2.0/vendor/puppeteer-core/vendor/std.ts";
 
 export type Manifest = {
     id: string;

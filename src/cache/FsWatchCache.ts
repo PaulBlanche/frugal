@@ -1,3 +1,4 @@
+import * as path from "../../dep/std/path.ts";
 import * as fs from "../../dep/std/fs.ts";
 import * as xxhash from "../../dep/xxhash.ts";
 
@@ -35,7 +36,7 @@ export class FsWatchCache extends RuntimeWatchCache {
         this.#data.set(generationResult.path, await generationResult.hash);
 
         const pathHash = (await xxhash.create()).update(generationResult.path).digest("hex").toString();
-        const url = new URL(`watchCache/${pathHash}`, this.#config.outdir);
+        const url = path.resolve(this.#config.outdir, "watchCache", pathHash);
         await fs.ensureFile(url);
         await Deno.writeTextFile(url, JSON.stringify(data));
     }
@@ -44,11 +45,11 @@ export class FsWatchCache extends RuntimeWatchCache {
         return Promise.resolve(this.#data.has(path));
     }
 
-    async getData(path: string): Promise<WatchCachEntry | undefined> {
-        const pathHash = (await xxhash.create()).update(path).digest("hex").toString();
+    async getData(_path: string): Promise<WatchCachEntry | undefined> {
+        const pathHash = (await xxhash.create()).update(_path).digest("hex").toString();
 
         try {
-            const url = new URL(`watchCache/${pathHash}`, this.#config.outdir);
+            const url = path.resolve(this.#config.outdir, "watchCache", pathHash);
             return JSON.parse(await Deno.readTextFile(url));
         } catch (error) {
             if (!(error instanceof Deno.errors.NotFound)) {

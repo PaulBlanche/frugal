@@ -1,8 +1,9 @@
 import * as asserts from "../../../../dep/std/testing/asserts.ts";
 import * as snapshot from "../../../../dep/std/testing/snapshot.ts";
 import * as fs from "../../../../dep/std/fs.ts";
+import * as path from "../../../../dep/std/path.ts";
 
-import { Config, context } from "../../../../mod.ts";
+import { Config } from "../../../../mod.ts";
 import { FrugalHelper } from "../../../utils/FrugalHelper.ts";
 
 if (import.meta.main) {
@@ -21,8 +22,8 @@ Deno.test("script: build page with script and css module dependencies", async (t
     const assets = await helper.assets("page.ts");
     asserts.assertEquals(assets.get("style").length, 1);
     asserts.assertEquals(assets.get("script").length, 1);
-    const cssURL = new URL(assets.get("style")[0].slice(1), helper.config.publicdir);
-    const jsURL = new URL(assets.get("script")[0].slice(1), helper.config.publicdir);
+    const cssURL = path.resolve(helper.config.publicdir, assets.get("style")[0].slice(1));
+    const jsURL = path.resolve(helper.config.publicdir, assets.get("script")[0].slice(1));
 
     snapshot.assertSnapshot(t, await Deno.readTextFile(cssURL));
     snapshot.assertSnapshot(t, await Deno.readTextFile(jsURL));

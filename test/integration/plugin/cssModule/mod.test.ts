@@ -1,6 +1,7 @@
 import * as asserts from "../../../../dep/std/testing/asserts.ts";
 import * as snapshot from "../../../../dep/std/testing/snapshot.ts";
 import * as fs from "../../../../dep/std/fs.ts";
+import * as path from "../../../../dep/std/path.ts";
 
 import { Config } from "../../../../mod.ts";
 import { FrugalHelper } from "../../../utils/FrugalHelper.ts";
@@ -21,9 +22,9 @@ Deno.test("cssModule: build page with css module dependencies", async (t) => {
     const assets = await helper.assets("page.ts");
 
     asserts.assertEquals(assets.get("style").length, 1);
-    const cssURL = new URL(assets.get("style")[0].slice(1), helper.config.publicdir);
+    const cssPath = path.resolve(helper.config.publicdir, assets.get("style")[0].slice(1));
 
-    snapshot.assertSnapshot(t, await Deno.readTextFile(cssURL));
+    snapshot.assertSnapshot(t, await Deno.readTextFile(cssPath));
 
     const cache = await helper.cacheExplorer();
 
@@ -45,7 +46,7 @@ Deno.test("cssModule: css module dependencies are watched", async () => {
     // add a comment at the top of dep.css
     const depModuleURL = new URL("./project/dep.module.css", import.meta.url);
     const originalData = await Deno.readTextFile(depModuleURL);
-    await Deno.writeTextFile(depModuleURL, `/* comment */\n${originalData}`);
+    await Deno.writeTextFile(depModuleURL, `/* comment*/\n${originalData}`);
 
     await context.awaitNextBuild();
 

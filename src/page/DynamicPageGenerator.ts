@@ -1,5 +1,3 @@
-import { fromFileUrl } from "../../dep/std/path.ts";
-
 import * as descriptor from "./PageDescriptor.ts";
 import * as page from "./Page.ts";
 import { JSONValue } from "./JSONValue.ts";
