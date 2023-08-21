@@ -1,4 +1,5 @@
 import * as asserts from "../../dep/std/testing/asserts.ts";
+import * as path from "../../dep/std/path.ts";
 
 import { Config, Frugal } from "../../mod.ts";
 import { FrugalConfig } from "../../src/Config.ts";
@@ -117,12 +118,12 @@ class BuildCacheExplorer {
         return this.#data[path];
     }
 
-    async loadDocument(path: string) {
-        const documentPath = this.#data[path].documentPath;
+    async loadDocument(_path: string) {
+        const documentPath = this.#data[_path].documentPath;
         if (documentPath === undefined) {
             return undefined;
         }
-        return await Deno.readTextFile(new URL(documentPath, this.#config.buildCacheFile));
+        return await Deno.readTextFile(path.resolve(path.dirname(this.#config.buildCacheFile), documentPath));
     }
 
     entries() {

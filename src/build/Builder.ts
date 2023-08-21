@@ -40,7 +40,7 @@ export class Builder {
 
     #esbuildConfig(): esbuild.BuildOptions {
         const context = new PluginContext(this.#config);
-        const configRegExp = new RegExp(`${escapeRegExp(path.basename(path.fromFileUrl(this.#config.self)))}$`);
+        const configRegExp = new RegExp(`${escapeRegExp(path.basename(this.#config.self))}$`);
 
         const plugins: (esbuild.Plugin | boolean)[] = [
             denoResolverPlugin({
@@ -50,10 +50,9 @@ export class Builder {
                 name: "__frugal_internal:loadConfig",
                 setup: (build) => {
                     build.onResolve({ filter: configRegExp }, (args) => {
-                        const url = context.url(args);
                         // compare pathname and not href because the url might include a
                         // cache busting hash (for the watch process)
-                        if (url.pathname === this.#config.self.pathname) {
+                        if (args.path === this.#config.self) {
                             // resolve in an alternative namespace to avoid
                             // watching it. The deno watch process handles
                             // reloading the whole script if the config changes,
@@ -111,8 +110,8 @@ export class Builder {
             ...this.#config.esbuildOptions,
             target: [],
             entryPoints: [
-                ...this.#config.pages.map((page) => path.fromFileUrl(page)),
-                path.fromFileUrl(this.#config.self),
+                ...this.#config.pages,
+                this.#config.self,
             ],
             entryNames: "[dir]/[name]-[hash]",
             chunkNames: "[dir]/[name]-[hash]",
@@ -128,16 +127,16 @@ export class Builder {
                 "import.meta.environment": "'server'",
             },
             format: "esm",
-            outdir: path.fromFileUrl(this.#config.builddir),
+            outdir: this.#config.builddir,
             plugins: plugins.filter((plugin): plugin is esbuild.Plugin => Boolean(plugin)),
-            absWorkingDir: path.fromFileUrl(new URL(".", this.#config.self)),
+            absWorkingDir: this.#config.rootdir,
             logLevel: "silent",
             outExtension: { ".js": ".mjs" },
             platform: "node",
         } satisfies esbuild.BuildOptions;
 
         if (this.#config.globalCss) {
-            config.entryPoints.push(path.fromFileUrl(new URL(this.#config.globalCss, this.#config.rootdir)));
+            config.entryPoints.push(path.resolve(this.#config.rootdir, this.#config.globalCss));
         }
 
         log(`esbuild config`, {

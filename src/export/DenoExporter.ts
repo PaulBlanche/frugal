@@ -24,13 +24,13 @@ class InternalExporter {
     #snapshot: BuildCacheSnapshot;
     #config: FrugalConfig;
     #cacheStorageCreator: CacheStorageCreator;
-    #populateScriptURL: URL;
+    #populateScriptPath: string;
 
     constructor({ snapshot, config }: ExportContext, cacheStorageCreator: CacheStorageCreator) {
         this.#snapshot = snapshot;
         this.#config = config;
         this.#cacheStorageCreator = cacheStorageCreator;
-        this.#populateScriptURL = new URL("deno/populate.mjs", this.#config.outdir);
+        this.#populateScriptPath = path.resolve(this.#config.outdir, "deno", "populate.mjs");
     }
 
     async export() {
@@ -38,15 +38,19 @@ class InternalExporter {
 
         await this.#populateScript();
         await this.#entrypointScript();
-        await fs.copy(new URL("buildcache", this.#config.cachedir), new URL("deno/buildcache/", this.#config.outdir), {
-            overwrite: true,
-        });
+        await fs.copy(
+            path.resolve(this.#config.cachedir, "buildcache"),
+            path.resolve(this.#config.outdir, "deno", "buildcache"),
+            {
+                overwrite: true,
+            },
+        );
     }
 
     async #populateScript() {
-        await fs.ensureFile(this.#populateScriptURL);
+        await fs.ensureFile(this.#populateScriptPath);
         await Deno.writeTextFile(
-            this.#populateScriptURL,
+            this.#populateScriptPath,
             `export async function populate(cacheStorage, id) {
     await Promise.all([
 ${
@@ -67,7 +71,7 @@ async function insert(cacheStorage, responsePath, response) {
     }
 
     async #entrypointScript() {
-        const serverScriptURL = new URL("deno/entrypoint.mjs", this.#config.outdir);
+        const serverScriptPath = path.resolve(this.#config.outdir, "deno", "entrypoint.mjs");
 
         const cacheStorageInstance = this.#cacheStorageCreator.instance();
 
@@ -88,19 +92,19 @@ async function insert(cacheStorage, responsePath, response) {
         });
         const now = new Date();
 
-        await fs.ensureFile(serverScriptURL);
+        await fs.ensureFile(serverScriptPath);
         await Deno.writeTextFile(
-            serverScriptURL,
+            serverScriptPath,
             `
-import { Router } from "${resolveFrugal("../page/Router.ts", serverScriptURL)}";
-import { FrugalServer } from "${resolveFrugal("../server/FrugalServer.ts", serverScriptURL)}";
-import { RuntimeStorageCache } from "${resolveFrugal("../cache/RuntimeStorageCache.ts", serverScriptURL)}";
-import { FrugalConfig } from "${resolveFrugal("../Config.ts", serverScriptURL)}";
+import { Router } from "${resolveFrugal("../page/Router.ts", serverScriptPath)}";
+import { FrugalServer } from "${resolveFrugal("../server/FrugalServer.ts", serverScriptPath)}";
+import { RuntimeStorageCache } from "${resolveFrugal("../cache/RuntimeStorageCache.ts", serverScriptPath)}";
+import { FrugalConfig } from "${resolveFrugal("../Config.ts", serverScriptPath)}";
 import { ${cacheStorageInstance.import.name} as CacheStorage } from "${
-                resolveFrugal(cacheStorageInstance.import.url, serverScriptURL)
+                resolveFrugal(cacheStorageInstance.import.url, serverScriptPath)
             }";
             
-import userConfig from "${resolveFrugal(path.fromFileUrl(this.#config.self), serverScriptURL)}"
+import userConfig from "${resolveFrugal(this.#config.self, serverScriptPath)}"
 import * as manifest from "../${manifestName}"
 
 const deploymentId = "${dateFormater.format(now)}-${timeFormAter.format(now)}";
@@ -137,10 +141,10 @@ server.serve()
     }
 }
 
-function resolveFrugal(_path: string, scriptURL: string | URL) {
+function resolveFrugal(_path: string, script: string) {
     const url = new URL(_path, import.meta.url);
     if (url.protocol === "file:") {
-        return path.relative(path.dirname(path.fromFileUrl(scriptURL)), path.fromFileUrl(url));
+        return path.relative(path.dirname(script), path.fromFileUrl(url));
     }
     return new URL("../page/Router.ts", import.meta.url).href;
 }

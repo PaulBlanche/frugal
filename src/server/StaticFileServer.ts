@@ -18,7 +18,7 @@ export class StaticFileServer implements Server {
     handler(_secure?: boolean): http.Handler {
         return async (request, _connInfo) => {
             const response = await file_server.serveDir(request, {
-                fsRoot: path.fromFileUrl(this.#config.publicdir),
+                fsRoot: this.#config.publicdir,
                 quiet: true,
             });
 

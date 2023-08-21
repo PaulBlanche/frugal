@@ -11,8 +11,8 @@ export function cleanOutdir(config: FrugalConfig, cleanAll: boolean): esbuild.Pl
             let isFirstBuild = true;
 
             const initialOptions = build.initialOptions;
-            const cwd = path.toFileUrl(initialOptions.absWorkingDir ?? Deno.cwd());
-            const esbuildOutDir = new URL(initialOptions.outdir ?? ".", cwd);
+            const cwd = initialOptions.absWorkingDir ?? Deno.cwd();
+            const esbuildOutDir = path.resolve(cwd, initialOptions.outdir ?? ".");
 
             build.onStart(async () => {
                 if (!isFirstBuild) {
@@ -30,9 +30,9 @@ export function cleanOutdir(config: FrugalConfig, cleanAll: boolean): esbuild.Pl
                         );
 
                         for await (const entry of Deno.readDir(config.outdir)) {
-                            const entryURL = new URL(entry.name, config.outdir);
-                            if (!entry.isDirectory || `${entryURL.href}/` !== config.cachedir.href) {
-                                await Deno.remove(entryURL, {
+                            const entryPath = path.resolve(config.outdir, entry.name);
+                            if (!entry.isDirectory || `${entryPath}/` !== config.cachedir) {
+                                await Deno.remove(entryPath, {
                                     recursive: true,
                                 });
                             }

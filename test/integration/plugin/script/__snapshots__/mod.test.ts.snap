@@ -180,7 +180,7 @@ snapshot[`script: build page with script and css module dependencies 2`] = `
 " +
   "
 " +
-  "// shared.ts
+  "// ../shared.ts
 " +
   "var import_npm_pad_left_2_1 = __toESM(require_pad_left());
 " +
@@ -226,7 +226,7 @@ snapshot[`script: build page with script and css module dependencies 2`] = `
 " +
   "
 " +
-  "// style.module.css
+  "// ../style.module.css
 " +
   "var style_module_default = {
 " +
@@ -236,13 +236,13 @@ snapshot[`script: build page with script and css module dependencies 2`] = `
 " +
   "
 " +
-  "// shared.ts
+  "// ../shared.ts
 " +
   "window.style = style_module_default;
 " +
   "
 " +
-  "// before.script.ts
+  "// ../before.script.ts
 " +
   "if (true) {
 " +
@@ -252,7 +252,7 @@ snapshot[`script: build page with script and css module dependencies 2`] = `
 " +
   "
 " +
-  "// dep1.script.ts
+  "// ../dep1.script.ts
 " +
   "if (true) {
 " +
@@ -262,7 +262,7 @@ snapshot[`script: build page with script and css module dependencies 2`] = `
 " +
   "
 " +
-  "// dep2.script.ts
+  "// ../dep2.script.ts
 " +
   "if (true) {
 " +
@@ -272,7 +272,7 @@ snapshot[`script: build page with script and css module dependencies 2`] = `
 " +
   "
 " +
-  "// after.script.ts
+  "// ../after.script.ts
 " +
   "if (true) {
 " +

@@ -77,12 +77,11 @@ export function googleFonts({ type = "local" }: Config = {}): Plugin {
                                         .toString();
                                     const ext = path.extname(matched[1]);
 
-                                    const fontPath = `googleFonts/${name}${ext}`;
-                                    const fontUrl = new URL(fontPath, frugal.config.cachedir);
+                                    const fontPath = path.resolve(frugal.config.cachedir, `googleFonts/${name}${ext}`);
 
                                     try {
-                                        await fs.ensureDir(path.dirname(path.fromFileUrl(fontUrl)));
-                                        const file = await Deno.open(fontUrl, { createNew: true, write: true });
+                                        await fs.ensureDir(path.dirname(fontPath));
+                                        const file = await Deno.open(fontPath, { createNew: true, write: true });
                                         try {
                                             log(`Loading font ${++index} of ${urls.length}`, {
                                                 scope: "frugal:googleFonts",
@@ -104,9 +103,9 @@ export function googleFonts({ type = "local" }: Config = {}): Plugin {
                                         }
                                     }
 
-                                    const fontDest = new URL(`fonts/${name}${ext}`, frugal.config.publicdir);
-                                    await fs.ensureDir(path.dirname(path.fromFileUrl(fontDest)));
-                                    await fs.copy(fontUrl, fontDest);
+                                    const fontDest = path.resolve(frugal.config.publicdir, `fonts/${name}${ext}`);
+                                    await fs.ensureDir(path.dirname(fontDest));
+                                    await fs.copy(fontPath, fontDest);
                                     css = css.replace(matched[1], `/fonts/${name}${ext}`);
                                 }
                             }

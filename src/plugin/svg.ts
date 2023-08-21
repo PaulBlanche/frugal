@@ -49,7 +49,7 @@ export function svg(
                     const spritesheets: Record<string, Symbol[]> = {};
 
                     await Promise.all(assets.map(async (asset) => {
-                        const symbol = await svgBuilder.symbol(path.fromFileUrl(asset.url));
+                        const symbol = await svgBuilder.symbol(asset.path);
                         spritesheets[symbol.meta.spritesheet] = spritesheets[symbol.meta.spritesheet] ?? [];
                         spritesheets[symbol.meta.spritesheet].push(symbol);
                     }));
@@ -60,7 +60,7 @@ export function svg(
                         const svg = svgBuilder.spritesheet(symbols, frugal.config);
                         const hash = (await xxhash.create()).update(svg).digest("hex").toString();
                         const svgPath = path.join("svg", `${name}-${hash}.svg`);
-                        const svgUrl = new URL(svgPath, frugal.config.publicdir);
+                        const svgUrl = path.resolve(frugal.config.publicdir, svgPath);
                         const assetPath = `/${svgPath}`;
 
                         generated.push(assetPath);

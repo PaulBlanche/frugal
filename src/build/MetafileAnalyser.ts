@@ -1,3 +1,4 @@
+import * as path from "../../dep/std/path.ts";
 import * as importmap from "../../dep/importmap.ts";
 import * as xxhash from "../../dep/xxhash.ts";
 import * as esbuild from "../../dep/esbuild.ts";
@@ -30,16 +31,16 @@ export class MetaFileAnalyser {
             return undefined;
         }
 
-        const entryPointUrl = new URL(output.entryPoint, this.#config.self);
-        const page = this.#config.pages.find((page) => page.href === entryPointUrl.href);
+        const entryPointPath = path.resolve(this.#config.rootdir, output.entryPoint);
+        const page = this.#config.pages.find((page) => page === entryPointPath);
 
         if (page === undefined) {
             // compare pathname and not href because the url might include a
             // cache busting hash (for the watch process)
-            if (entryPointUrl.pathname === this.#config.self.pathname) {
+            if (entryPointPath === this.#config.self) {
                 return await this.#handleConfig(output.entryPoint);
             }
-            if (entryPointUrl.pathname.endsWith(".css")) {
+            if (entryPointPath.endsWith(".css")) {
                 return await this.#handleCss(output.entryPoint);
             }
         } else {
@@ -76,7 +77,7 @@ export class MetaFileAnalyser {
         const dependencies = [];
         dependencies.push({
             path: entrypoint,
-            url: new URL(entrypoint, this.#config.self),
+            url: new URL(entrypoint, path.toFileUrl(this.#config.self)),
         });
 
         const seen = new Set();
@@ -100,8 +101,14 @@ export class MetaFileAnalyser {
                 const parsed = parsePath(imported.path);
 
                 const resolved = importMap
-                    ? new URL(importmap.resolveModuleSpecifier(parsed.path, importMap, this.#config.rootdir))
-                    : new URL(parsed.path, this.#config.rootdir);
+                    ? new URL(
+                        importmap.resolveModuleSpecifier(
+                            parsed.path,
+                            importMap,
+                            path.toFileUrl(this.#config.self),
+                        ),
+                    )
+                    : new URL(parsed.path, path.toFileUrl(this.#config.self));
                 const dep = {
                     path: imported.path,
                     url: resolved,
@@ -124,7 +131,7 @@ const ENCODER = new TextEncoder();
 
 async function getDependencyContent(dep: { path: string; url: URL }, config: FrugalConfig) {
     if (dep.url.protocol === "file:") {
-        return await Deno.readFile(new URL(dep.url, config.rootdir));
+        return await Deno.readFile(new URL(dep.url, path.toFileUrl(config.rootdir)));
     }
     if (dep.url.protocol === "frugal-config:") {
         const contentUrl = new URL(dep.url, config.rootdir);

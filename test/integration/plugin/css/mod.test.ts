@@ -1,6 +1,7 @@
 import * as asserts from "../../../../dep/std/testing/asserts.ts";
 import * as snapshot from "../../../../dep/std/testing/snapshot.ts";
 import * as fs from "../../../../dep/std/fs.ts";
+import * as path from "../../../../dep/std/path.ts";
 
 import { Config } from "../../../../mod.ts";
 import { FrugalHelper } from "../../../utils/FrugalHelper.ts";
@@ -21,7 +22,7 @@ Deno.test("css: build page with css dependencies", async (t) => {
     const assets = await helper.assets("page.ts");
 
     asserts.assertEquals(assets.get("style").length, 1);
-    const cssURL = new URL(assets.get("style")[0].slice(1), helper.config.publicdir);
+    const cssURL = path.resolve(helper.config.publicdir, assets.get("style")[0].slice(1));
 
     snapshot.assertSnapshot(t, await Deno.readTextFile(cssURL));
 });
