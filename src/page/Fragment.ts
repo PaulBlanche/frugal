@@ -8,7 +8,7 @@ export function render<PROPS>(fragment: Fragment<PROPS>, props: PROPS): Renderab
     return () => fragment.render(props);
 }
 
-export function stream(
+/*export function stream(
     templateArray: TemplateStringsArray,
     ...interpolations: (RenderableFragment | string)[]
 ): ReadableStream<string> {
@@ -17,8 +17,6 @@ export function stream(
     return new ReadableStream({
         async pull(controller) {
             if (promise !== undefined) {
-                // false positive
-                // deno-lint-ignore no-await-in-sync-fn
                 await promise;
             }
             const chunkOrFragment = i % 2 === 0 ? templateArray[i / 2] : interpolations[(i - 1) / 2];
@@ -40,4 +38,4 @@ export function stream(
             });
         },
     });
-}
+}*/
