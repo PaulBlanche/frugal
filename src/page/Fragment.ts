@@ -17,6 +17,8 @@ export function stream(
     return new ReadableStream({
         async pull(controller) {
             if (promise !== undefined) {
+                // false positive
+                // deno-lint-ignore no-await-in-sync-fn
                 await promise;
             }
             const chunkOrFragment = i % 2 === 0 ? templateArray[i / 2] : interpolations[(i - 1) / 2];
