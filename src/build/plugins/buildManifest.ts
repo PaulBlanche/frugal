@@ -7,6 +7,7 @@ import { isInChildWatchProcess } from "../../WatchContext.ts";
 import { FrugalConfig } from "../../Config.ts";
 import { writeManifest } from "../../Manifest.ts";
 import { AssetRepository } from "../../page/Assets.ts";
+import { PluginContext } from "../../Plugin.ts";
 
 type Manifest = {
     config: string;
@@ -15,7 +16,7 @@ type Manifest = {
     pages: { moduleHash: string; entrypoint: string; outputPath: string }[];
 };
 
-export function buildManifest(config: FrugalConfig, assets: AssetRepository): esbuild.Plugin {
+export function buildManifest(config: FrugalConfig, context: PluginContext): esbuild.Plugin {
     return {
         name: "__frugal_internal:buildManifest",
         setup: (build) => {
@@ -38,7 +39,7 @@ export function buildManifest(config: FrugalConfig, assets: AssetRepository): es
                     pages: [],
                     id: "",
                     config: "",
-                    assets,
+                    assets: context.assets,
                 };
 
                 const idHash = await xxhash.create();

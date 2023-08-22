@@ -8,7 +8,10 @@ export function hydrateIsland(
     component: ClientComponent,
 ) {
     const propsScript = root.querySelector("script");
-    const props = propsScript?.textContent ? JSON.parse(propsScript.textContent) : {};
+    console.log(propsScript?.textContent);
+    const { props } = propsScript?.textContent ? JSON.parse(propsScript.textContent) : { props: {} };
+
+    console.log(props);
 
     const html = root.querySelector("[data-svelte-slot]")?.innerHTML;
 

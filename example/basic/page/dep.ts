@@ -1,5 +1,6 @@
-//import "file:///home/whiteshoulders/perso/frugal/src/watch/livereload/livereload.script.ts";
-//import "./test.css";
-//import "https://meyerweb.com/eric/tools/css/reset/reset.css";
-
+// frugal will bundle css ...
+import "./test.css";
+// remote css ...
+import "https://meyerweb.com/eric/tools/css/reset/reset.css";
+// and any js dependencies
 import "./jquery.script.ts";
