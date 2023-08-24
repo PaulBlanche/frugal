@@ -1,5 +1,4 @@
-import { Config } from "../../mod.ts";
-import { ApacheExporter } from "../../src/export/ApacheExporter.ts";
+import { Config, NginxExporter } from "../../mod.ts";
 import { script } from "../../src/plugin/script.ts";
 
 export default {
@@ -7,14 +6,8 @@ export default {
     pages: [
         "./page/page.ts",
     ],
-    log: {
-        level: "verbose",
-    },
-    esbuild: {
-        splitting: true,
-    },
-    plugins: [script({
-        filter: /\.(min|script)\.[tj]sx?$/,
-    })],
-    exporter: ApacheExporter.export,
+    // we want frugal to bundle client scripts
+    plugins: [script()],
+    // we want frugal to export a static website.
+    exporter: new NginxExporter(),
 } satisfies Config;

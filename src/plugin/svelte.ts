@@ -18,7 +18,6 @@ export function svelte({ filter = /\.svelte$/, preprocess }: Partial<SvelteOptio
             name: "frugal:svelte",
             setup(build) {
                 const isInScript = build.initialOptions.define?.["import.meta.environment"] === "'client'";
-                console.log(build.initialOptions.define);
                 const cssLoader = build.initialOptions.loader?.[".css"] ?? "css";
 
                 const svelteCompiler = new SvelteCompiler({

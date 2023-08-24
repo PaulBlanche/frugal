@@ -58,24 +58,3 @@ export function Island<PROPS>(
         </islandContext.Provider>
     );
 }
-
-/*
-type NoDiffProps = { children?: preact.ComponentChildren };
-
-// suspend the diff of client_session (used around islands)
-function NoDiff({ children }: NoDiffProps) {
-    return (
-        <>
-            {preact.h(
-                `!--${START_NO_DIFF_COMMENT}--`,
-                null,
-            )}
-            {children}
-            {preact.h(
-                `!--${END_NO_DIFF_COMMENT}--`,
-                null,
-            )}
-        </>
-    );
-}
-*/

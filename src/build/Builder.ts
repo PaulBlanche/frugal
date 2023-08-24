@@ -93,7 +93,7 @@ export class Builder {
                 nodeModulesDir: true,
             }),
             copyStatic(this.#config),
-            buildManifest(this.#config, context.assets),
+            buildManifest(this.#config, context),
             cleanOutdir(this.#config, this.#config.cleanAll),
             reporter(),
             {
