@@ -83,6 +83,9 @@ export class Builder {
                     build.onResolve({ filter: /.*/, namespace: "http" }, (args) => {
                         return { external: true, path: context.url(args).href, namespace: args.namespace };
                     });
+                    build.onResolve({ filter: /.*/, namespace: "npm" }, (args) => {
+                        return { external: true, path: context.url(args).href, namespace: args.namespace };
+                    });
                     build.onResolve({ filter: /.*/, namespace: "https" }, (args) => {
                         return { external: true, path: context.url(args).href, namespace: args.namespace };
                     });

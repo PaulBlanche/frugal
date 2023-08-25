@@ -1,0 +1,7 @@
+{
+    "imports": {
+        "solid-js": "npm:/solid-js@1.7.11",
+        "solid-js/": "npm:/solid-js@1.7.11/",
+        "@solidjs/meta": "npm:/@solidjs/meta@0.28.6"
+    }
+}
