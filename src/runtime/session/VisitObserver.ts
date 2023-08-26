@@ -19,14 +19,14 @@ export class VisitObserver {
 
         const visit = this.visit.bind(this);
         const restore = this.restore.bind(this);
-        addEventListener("click", visit, { capture: false });
-        addEventListener("keypress", visit, { capture: false });
-        addEventListener("frugal:popstate", restore, { capture: false });
+        addEventListener("click", visit, { capture: true });
+        addEventListener("keypress", visit, { capture: true });
+        addEventListener("frugal:popstate", restore, { capture: true });
 
         return () => {
-            removeEventListener("click", visit, { capture: false });
-            removeEventListener("keypress", visit, { capture: false });
-            removeEventListener("frugal:popstate", restore, { capture: false });
+            removeEventListener("click", visit, { capture: true });
+            removeEventListener("keypress", visit, { capture: true });
+            removeEventListener("frugal:popstate", restore, { capture: true });
         };
     }
 

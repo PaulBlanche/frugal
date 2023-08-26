@@ -102,6 +102,7 @@ class HistoryInternal {
         this._current = 0;
         this._minIndex = 0;
         this._observing = false;
+        // HEAD
     }
 
     serialize(): SerializedHistory {
@@ -110,6 +111,8 @@ class HistoryInternal {
             index: this._index,
             current: this._current,
         };
+        //
+        //e6c2f0e (feat: solidjs runtime)
     }
 
     observe() {
@@ -160,7 +163,7 @@ class HistoryInternal {
                     detail: { navigator: current },
                 }),
             );
-        });
+        }, { capture: true });
     }
 
     saveScroll() {

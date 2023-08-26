@@ -1,7 +1,7 @@
 /* @jsxRuntime automatic */
 /* @jsxImportSource solid-js */
 import * as solid from "solid-js";
-import { ssr } from "solid-js/web";
+import { Hydration, ssr } from "solid-js/web";
 import type { HydrationStrategy } from "./types.ts";
 
 export const ISLAND_END = "frugal-island-end";
@@ -47,13 +47,15 @@ export function Island<PROPS>(
     return (
         <islandContext.Provider value={true}>
             <script
-                data-hydratable={name}
-                data-hydration-strategy={strategy ?? "load"}
-                data-hydration-query={query}
+                data-frugal-hydratable={name}
+                data-frugal-hydration-strategy={strategy ?? "load"}
+                data-frugal-hydration-query={query}
                 type="application/json"
                 innerHTML={"props" in rest ? JSON.stringify(rest.props) : undefined}
             />
-            {!clientOnly && Component}
+            <Hydration>
+                {!clientOnly && Component}
+            </Hydration>
             <IslandEndComment />
         </islandContext.Provider>
     );

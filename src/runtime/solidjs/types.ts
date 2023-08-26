@@ -1,3 +1,7 @@
+import * as solid from "solid-js";
+
+export * from "../types.ts";
+
 declare global {
     interface FrugalGlobalNamespace {
         context: {
@@ -13,13 +17,6 @@ declare global {
     }
 }
 
-export type HydrationStrategy =
-    | "load"
-    | "idle"
-    | "visible"
-    | "media-query"
-    | "never";
-
-export type App<PROPS> = (props: PROPS) => preact.VNode;
+export type App<PROPS> = solid.Component<PROPS>;
 
 export type GetApp<PROPS> = () => Promise<App<PROPS>> | App<PROPS>;

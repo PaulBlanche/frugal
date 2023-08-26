@@ -1,5 +1,5 @@
 /* @jsxRuntime automatic */
-/* @jsxImportSource preact */
+/* @jsxImportSource solid-js */
 import { SharedCounter } from "../component/counter/SharedCounter.tsx";
 
 export function Dynamic() {

@@ -1,32 +1,32 @@
 /* @jsxRuntime automatic */
-/* @jsxImportSource preact */
-import * as preact from "preact";
-import * as hooks from "preact/hooks";
-import { createRootFragment } from "./createRootFragment.ts";
+/* @jsxImportSource solid-js */
+import { render } from "solid-js/web";
 
-import { DataProvider } from "../dataContext.tsx";
-import { HeadProvider } from "../Head.tsx";
 import { App } from "../types.ts";
 import { ISLAND_END } from "../Island.tsx";
+import { Hydratable } from "./Hydratable.tsx";
 
 export function hydrateIsland<PROPS>(
-    start: HTMLScriptElement,
+    start: HTMLElement,
     App: App<PROPS>,
 ) {
     const props: preact.RenderableProps<PROPS> = start.textContent ? JSON.parse(start.textContent ?? {}) : {};
 
-    const children = getComponentRange(start);
+    const nodeRange = getComponentRange(start);
 
-    // hydrate the "dom range" of the island
-    preact.hydrate(
-        <Hydratable App={App} props={props} />,
-        createRootFragment(start.parentNode!, children),
-    );
+    const range = document.createRange();
+    range.setStartBefore(nodeRange[0]);
+    range.setEndAfter(nodeRange[nodeRange.length - 1]);
 
-    start.dataset["hydrated"] = "";
+    const fragment = document.createDocumentFragment();
+
+    render(() => <Hydratable App={App} props={props} />, fragment);
+
+    range.deleteContents();
+    range.insertNode(fragment);
 }
 
-function getComponentRange(start: HTMLScriptElement) {
+function getComponentRange(start: HTMLElement) {
     // get the "dom range" of the island (scan nodes from start until)
     const children: Node[] = [];
     let node: ChildNode | null = start.nextSibling;
@@ -54,41 +54,4 @@ function getComponentRange(start: HTMLScriptElement) {
 
 function isCommentNode(node: Node): node is Comment {
     return node.nodeType === Node.COMMENT_NODE;
-}
-
-type HydratableProps<PROPS> = {
-    App: App<PROPS>;
-    props: preact.RenderableProps<PROPS>;
-};
-
-function Hydratable<PROPS>({ App, props }: HydratableProps<PROPS>) {
-    const [unmounted, setUnmounted] = hooks.useState(false);
-
-    // unmount the component on session unload. The DOM should already be
-    // cleaned, but unmounting anyway allows running effect cleanups (like
-    // removing event listeners, reseting signals...)
-    hooks.useEffect(() => {
-        addEventListener("frugal:beforeunload", () => {
-            setUnmounted(true);
-        });
-    }, []);
-
-    if (unmounted) {
-        return <span></span>;
-    }
-
-    return (
-        <DataProvider>
-            <HeadProvider
-                onHeadUpdate={(nextHead) => {
-                    preact.render(
-                        nextHead,
-                        document.head,
-                    );
-                }}
-            >
-                <App {...props} />
-            </HeadProvider>
-        </DataProvider>
-    );
 }

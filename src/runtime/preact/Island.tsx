@@ -47,9 +47,9 @@ export function Island<PROPS>(
     return (
         <islandContext.Provider value={true}>
             <script
-                data-hydratable={name}
-                data-hydration-strategy={strategy ?? "load"}
-                data-hydration-query={query}
+                data-frugal-hydratable={name}
+                data-frugal-hydration-strategy={strategy ?? "load"}
+                data-frugal-hydration-query={query}
                 type="application/json"
                 dangerouslySetInnerHTML={"props" in rest ? { __html: JSON.stringify(rest.props) } : undefined}
             />

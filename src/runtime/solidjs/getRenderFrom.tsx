@@ -1,6 +1,6 @@
 /* @jsxRuntime automatic */
 /* @jsxImportSource solid-js */
-import { NoHydration, render, renderToString } from "solid-js/web";
+import { HydrationScript, NoHydration, render, renderToString } from "solid-js/web";
 import * as solid from "solid-js";
 import { MetaProvider, renderTags } from "@solidjs/meta";
 import * as descriptor from "../../page/PageDescriptor.ts";
@@ -59,6 +59,7 @@ export function getRenderFrom<PATH extends string, DATA extends JSONValue>(
             <NoHydration>
                 <MetaProvider tags={tags}>
                     <DataProvider context={{ data, embedData, pathname }}>
+                        <HydrationScript />
                         <Page
                             descriptor={descriptor}
                             assets={assets}

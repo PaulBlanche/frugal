@@ -130,7 +130,7 @@ function visitText(actual: Text, target: Text): VisitResult {
 }
 
 function visitElement(actual: Element, target: Element): VisitResult {
-    if (actual.tagName !== target.tagName) {
+    if (actual.tagName !== target.tagName || actual.tagName === "SCRIPT") {
         return [replaceNode(target)];
     }
 
