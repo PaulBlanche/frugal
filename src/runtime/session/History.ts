@@ -14,9 +14,7 @@ export class History {
             throw new Error("History was already initialised");
         }
 
-        console.log("init");
         const restoredHistory = restoreHistory();
-        console.log("history", restoredHistory);
         if (restoredHistory) {
             HistoryInternal.instance = HistoryInternal.deserialize(restoredHistory, config);
         } else {
@@ -66,13 +64,10 @@ class HistoryInternal {
     static instance?: HistoryInternal;
 
     static deserialize({ stack, index, current }: SerializedHistory, config: NavigatorConfig) {
-        console.log("deserialize");
         const history = new HistoryInternal(config);
         history._stack = stack.map((serialized) => Navigator.deserialize(serialized, config));
         history._index = index;
         history._current = current;
-
-        console.log(getPerformanceNavigationType());
 
         switch (getPerformanceNavigationType()) {
             case "navigate": {
@@ -124,14 +119,12 @@ class HistoryInternal {
         this._observing = true;
 
         const onBeforeUnload = () => {
-            console.log("beforeunload");
             persistHistory(this.serialize());
             removeEventListener("beforeunload", onBeforeUnload);
         };
         addEventListener("beforeunload", onBeforeUnload);
 
         addEventListener("popstate", (event) => {
-            console.log("popstate", event.state);
             this._index = this._current;
 
             const previous = this._stack[this._index];
@@ -182,7 +175,6 @@ class HistoryInternal {
         this._stack.push(navigator);
         this._index = stackIndex;
         this._current = this._index;
-        console.log("push", { index: this._index });
         history.pushState({ index: this._index }, "", navigator.url);
     }
 }
@@ -190,7 +182,6 @@ class HistoryInternal {
 const SERIALIZED_HISTORY_KEY = "frugal_browsersession_history";
 
 function persistHistory(serializedHistory: SerializedHistory) {
-    console.log("save", JSON.stringify(serializedHistory, null, 2));
     sessionStorage.setItem(SERIALIZED_HISTORY_KEY, JSON.stringify(serializedHistory));
 }
 
@@ -202,7 +193,6 @@ function restoreHistory(): SerializedHistory | undefined {
 }
 
 function getPerformanceNavigationType(): NavigationTimingType | undefined {
-    console.log("getPerformanceNavigationType");
     try {
         const entries = performance.getEntriesByType("navigation") as PerformanceNavigationTiming[];
         return entries[0].type;
@@ -215,5 +205,3 @@ function getPerformanceNavigationType(): NavigationTimingType | undefined {
         }
     }
 }
-
-window["TOTO"] = HistoryInternal;
