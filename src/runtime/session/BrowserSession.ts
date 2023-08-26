@@ -18,6 +18,8 @@ type PartialSessionConfig = {
     navigate?: Partial<NavigatorConfig>;
 };
 
+console.log("coucou");
+
 export class BrowserSession {
     static init(config: PartialSessionConfig = {}) {
         if (BrowserSessionInternal.instance !== undefined) {

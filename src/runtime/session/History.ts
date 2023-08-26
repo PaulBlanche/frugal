@@ -14,7 +14,9 @@ export class History {
             throw new Error("History was already initialised");
         }
 
+        console.log("init");
         const restoredHistory = restoreHistory();
+        console.log("history", restoredHistory);
         if (restoredHistory) {
             HistoryInternal.instance = HistoryInternal.deserialize(restoredHistory, config);
         } else {
@@ -121,10 +123,12 @@ class HistoryInternal {
         }
         this._observing = true;
 
-        addEventListener("beforeunload", () => {
+        const onBeforeUnload = () => {
             console.log("beforeunload");
             persistHistory(this.serialize());
-        });
+            removeEventListener("beforeunload", onBeforeUnload);
+        };
+        addEventListener("beforeunload", onBeforeUnload);
 
         addEventListener("popstate", (event) => {
             console.log("popstate", event.state);
@@ -211,3 +215,5 @@ function getPerformanceNavigationType(): NavigationTimingType | undefined {
         }
     }
 }
+
+window["TOTO"] = HistoryInternal;
