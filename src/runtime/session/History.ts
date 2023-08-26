@@ -1,4 +1,4 @@
-import { Navigator } from "./Navigator.ts";
+import { Navigator, SerializedNavigator } from "./Navigator.ts";
 import { NavigatorConfig } from "./Navigator.ts";
 import { isUrlForSameDocument } from "./utils.ts";
 
@@ -8,13 +8,22 @@ declare global {
     }
 }
 
+const SERIALIZED_HISTORY_KEY = "frugal_browsersession_history";
+
 export class History {
     static init(config: NavigatorConfig) {
         if (HistoryInternal.instance !== undefined) {
             throw new Error("History was already initialised");
         }
 
-        HistoryInternal.instance = new HistoryInternal(config);
+        const persistedHistory = sessionStorage.getItem(SERIALIZED_HISTORY_KEY);
+        if (persistedHistory) {
+            sessionStorage.removeItem(SERIALIZED_HISTORY_KEY);
+            const serializedHistory = JSON.parse(persistedHistory);
+            HistoryInternal.instance = HistoryInternal.deserialize(serializedHistory, config);
+        } else {
+            HistoryInternal.instance = new HistoryInternal(config);
+        }
     }
 
     static observe() {
@@ -42,21 +51,38 @@ export class History {
     }
 }
 
+type SerializedHistory = {
+    stack: SerializedNavigator[];
+    index: number;
+};
+
 class HistoryInternal {
     _stack: Navigator[];
     _index: number;
     _observing: boolean;
     _config: NavigatorConfig;
-    _id: string;
 
     static instance?: HistoryInternal;
+
+    static deserialize({ stack, index }: SerializedHistory, config: NavigatorConfig) {
+        const history = new HistoryInternal(config);
+        history._stack = stack.map((serialized) => Navigator.deserialize(serialized, config));
+        history._index = index;
+        return history;
+    }
 
     constructor(config: NavigatorConfig) {
         this._config = config;
         this._stack = [new Navigator(new URL(location.href), this._config)];
         this._index = 0;
         this._observing = false;
-        this._id = String(Math.random());
+    }
+
+    serialize(): SerializedHistory {
+        return {
+            stack: this._stack.map((navigator) => navigator.serialize()),
+            index: this._index,
+        };
     }
 
     observe() {
@@ -64,6 +90,10 @@ class HistoryInternal {
             return;
         }
         this._observing = true;
+
+        addEventListener("beforeunload", () => {
+            sessionStorage.setItem(SERIALIZED_HISTORY_KEY, JSON.stringify(this.serialize()));
+        });
 
         addEventListener("popstate", (event) => {
             const previous = this._stack[this._index];
@@ -108,6 +138,6 @@ class HistoryInternal {
         this._stack = this._stack.slice(0, stackIndex);
         this._stack.push(navigator);
         this._index = stackIndex;
-        history.pushState({ index: stackIndex, id: this._id }, "", navigator.url);
+        history.pushState({ index: stackIndex }, "", navigator.url);
     }
 }
