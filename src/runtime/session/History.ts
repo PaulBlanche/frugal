@@ -70,6 +70,7 @@ class HistoryInternal {
         history._current = current;
 
         const entries = performance.getEntriesByType("navigation");
+        console.log(entries);
         switch (entries[0].type) {
             case "navigate": {
                 if (history._index === history._current) {
@@ -194,5 +195,3 @@ function restoreHistory(): SerializedHistory | undefined {
         return JSON.parse(persistedHistory);
     }
 }
-
-window["TOTO"] = HistoryInternal;
