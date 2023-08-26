@@ -1,4 +1,4 @@
-import { Navigator } from "./Navigator.ts";
+import { Navigator, SerializedNavigator } from "./Navigator.ts";
 import { NavigatorConfig } from "./Navigator.ts";
 import { isUrlForSameDocument } from "./utils.ts";
 
@@ -14,7 +14,12 @@ export class History {
             throw new Error("History was already initialised");
         }
 
-        HistoryInternal.instance = new HistoryInternal(config);
+        const restoredHistory = restoreHistory();
+        if (restoredHistory) {
+            HistoryInternal.instance = HistoryInternal.deserialize(restoredHistory, config);
+        } else {
+            HistoryInternal.instance = new HistoryInternal(config);
+        }
     }
 
     static observe() {
@@ -42,21 +47,69 @@ export class History {
     }
 }
 
+type SerializedHistory = {
+    stack: SerializedNavigator[];
+    index: number;
+    current: number;
+};
+
 class HistoryInternal {
     _stack: Navigator[];
     _index: number;
+    _minIndex: number;
+    _current: number;
     _observing: boolean;
     _config: NavigatorConfig;
-    _id: string;
 
     static instance?: HistoryInternal;
+
+    static deserialize({ stack, index, current }: SerializedHistory, config: NavigatorConfig) {
+        const history = new HistoryInternal(config);
+        history._stack = stack.map((serialized) => Navigator.deserialize(serialized, config));
+        history._index = index;
+        history._current = current;
+
+        switch (getPerformanceNavigationType()) {
+            case "navigate": {
+                if (history._index === history._current) {
+                    history._stack.push(new Navigator(new URL(location.href), config));
+                    history._current += 1;
+                } else {
+                    history._stack = history._stack.slice(0, history._current + 1);
+                    history._stack[history._current] = new Navigator(
+                        new URL(location.href),
+                        config,
+                    );
+                }
+                break;
+            }
+            case "back_forward": {
+                if (history._index === history._current) {
+                    history._current += 1;
+                }
+            }
+        }
+
+        history._minIndex = history._stack.length - 1;
+
+        return history;
+    }
 
     constructor(config: NavigatorConfig) {
         this._config = config;
         this._stack = [new Navigator(new URL(location.href), this._config)];
         this._index = 0;
+        this._current = 0;
+        this._minIndex = 0;
         this._observing = false;
-        this._id = String(Math.random());
+    }
+
+    serialize(): SerializedHistory {
+        return {
+            stack: this._stack.map((navigator) => navigator.serialize()),
+            index: this._index,
+            current: this._current,
+        };
     }
 
     observe() {
@@ -65,9 +118,17 @@ class HistoryInternal {
         }
         this._observing = true;
 
+        const onBeforeUnload = () => {
+            persistHistory(this.serialize());
+            removeEventListener("beforeunload", onBeforeUnload);
+        };
+        addEventListener("beforeunload", onBeforeUnload);
+
         addEventListener("popstate", (event) => {
+            this._index = this._current;
+
             const previous = this._stack[this._index];
-            const nextIndex = event.state?.index ?? 0;
+            const nextIndex = event.state?.index ?? this._minIndex;
             const current = this._stack[nextIndex];
 
             if (previous === undefined || current === undefined) {
@@ -84,6 +145,10 @@ class HistoryInternal {
             }
 
             this._index = nextIndex;
+            this._current = this._index;
+            if (this._index === this._minIndex) {
+                this._index -= 1;
+            }
 
             event.preventDefault();
 
@@ -104,10 +169,39 @@ class HistoryInternal {
     }
 
     push(navigator: Navigator) {
+        this._index = this._current;
         const stackIndex = this._index + 1;
         this._stack = this._stack.slice(0, stackIndex);
         this._stack.push(navigator);
         this._index = stackIndex;
-        history.pushState({ index: stackIndex, id: this._id }, "", navigator.url);
+        this._current = this._index;
+        history.pushState({ index: this._index }, "", navigator.url);
+    }
+}
+
+const SERIALIZED_HISTORY_KEY = "frugal_browsersession_history";
+
+function persistHistory(serializedHistory: SerializedHistory) {
+    sessionStorage.setItem(SERIALIZED_HISTORY_KEY, JSON.stringify(serializedHistory));
+}
+
+function restoreHistory(): SerializedHistory | undefined {
+    const persistedHistory = sessionStorage.getItem(SERIALIZED_HISTORY_KEY);
+    if (persistedHistory) {
+        return JSON.parse(persistedHistory);
+    }
+}
+
+function getPerformanceNavigationType(): NavigationTimingType | undefined {
+    try {
+        const entries = performance.getEntriesByType("navigation") as PerformanceNavigationTiming[];
+        return entries[0].type;
+    } catch {
+        if (window.performance.navigation.type === window.performance.navigation.TYPE_BACK_FORWARD) {
+            return "back_forward";
+        }
+        if (window.performance.navigation.type === window.performance.navigation.TYPE_NAVIGATE) {
+            return "navigate";
+        }
     }
 }

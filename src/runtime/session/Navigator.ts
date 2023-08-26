@@ -13,16 +13,37 @@ export type NavigatorConfig = {
     viewTransition?: boolean;
 };
 
+export type SerializedNavigator = {
+    url: string;
+    scroll?: { x: number; y: number };
+    shouldRestoreScroll: boolean;
+};
+
 export class Navigator {
     _url: URL;
     _config: NavigatorConfig;
     scroll?: { x: number; y: number };
     _shouldRestoreScroll: boolean;
 
+    static deserialize({ url, scroll, shouldRestoreScroll }: SerializedNavigator, config: NavigatorConfig) {
+        const navigator = new Navigator(new URL(url), config);
+        navigator._shouldRestoreScroll = shouldRestoreScroll;
+        navigator.scroll = scroll;
+        return navigator;
+    }
+
     constructor(url: URL, config: NavigatorConfig) {
         this._url = url;
         this._config = config;
         this._shouldRestoreScroll = false;
+    }
+
+    serialize(): SerializedNavigator {
+        return {
+            url: this._url.href,
+            scroll: this.scroll,
+            shouldRestoreScroll: this._shouldRestoreScroll,
+        };
     }
 
     saveScroll() {
