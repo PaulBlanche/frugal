@@ -27,7 +27,7 @@ const POSTS: Post[] = [
 ]
 ```
 
-Now we need to define the pattern of URLs generated from the page. We would like URLs like `/post/hello-world` and `/post/second-post` for our posts. To do so, we will use the route `/post/:slug` :
+Now we need to define the pattern of URLs generated from the page. We would like URLs like `/post/hello-world` and `/post/second-post` for our posts. To do so, we will use the route `/post/:slug`:
 
 ```ts filename=pages/posts.ts lines=[7]
 ...
@@ -39,7 +39,9 @@ const POSTS: Post[] = [
 export const route = '/post/:slug';
 ```
 
-To generate an html page for each post, Frugal needs you to define a `getPaths` method (called at build time) that will return the list of all possible "path objects". With a route `/post/:slug`, the path object will have the shape `{ slug: string }`. The `getPaths` method has to return the list of each slug:
+To generate an html page for each post, Frugal needs you to define a `getPaths` method (which is called at build time) that will return the list of all possible "path objects".
+
+With a route `/post/:slug`, the path object will have the shape `{ slug: string }`. The `getPaths` method has to return the list of each slug:
 
 ```ts filename=pages/posts.ts lines=[1,7-9]
 import { PathList } from "https://deno.land/x/frugal@{{FRUGAL_VERSION}}/mod.ts"
@@ -58,7 +60,7 @@ export function getPaths(): PathList<typeof route> {
 
 We simply have to map over an array, but any asynchronous operations can happen here: reading from a file or a database, calling an API, etc...
 
-Then, we define the data fetching method `generate`. This method is called at build time, and this is where - given the URL parameters - we query any data needed to build the page :
+Then, we define the data fetching method `generate`. This method is called at build time, and this is where - given the URL parameters - we query any data needed to build the page:
 
 ```ts filename=pages/posts.ts lines=[2,4,13-15]
 import { 
@@ -78,11 +80,11 @@ export function generate({ path: { slug } }: StaticHandlerContext<typeof route>)
 }
 ```
 
-Here we search an array, but again any asynchronous operations can happen here.
+For the purpose of the example we search an array, but again any asynchronous operations can happen here.
 
 The consolidated data that was fetched (here a single `Post` matching the given slug) is returned in a `DataResponse` object.
 
-Finally, we define a `render` method that will output HTML markup for a given data object :
+Finally, we define a `render` method that will output HTML markup for a given data object:
 
 ```ts filename=pages/posts.ts lines=[5,14-22]
 import { 
@@ -109,7 +111,7 @@ export function render({ data }: RenderContext<typeof route, Post> ) {
 }
 ```
 
-Now that our page is complete, we can add it to the `pages` list in the `frugal.config.ts` module :
+Now that our page is complete, we can add it to the `pages` list in the `frugal.config.ts` module:
 
 ```ts filename=frugal.config.ts lines=[5]
 import { Config } from "https://deno.land/x/frugal@{{FRUGAL_VERSION}}/mod.ts"
@@ -120,7 +122,7 @@ export default {
 } satisfies Config;
 ```
 
-Here is the whole file `pages/posts.ts` after we are done :
+Here is the whole file `pages/posts.ts` after we are done:
 
 ```ts filename=pages/posts.ts
 import { 
@@ -173,20 +175,20 @@ export function render({ data }: RenderContext<typeof route, Post> ) {
 > [!info]
 > The is the general shape of a static page: a `route` string and three methods `getPaths`, `generate`, and `render`.
 >
-> But as you saw earlier with the `pages/home.ts` page, `getPaths` and `generate` are optional if you don't need them :
+> But as you saw earlier with the `pages/home.ts` page, `getPaths` and `generate` are optional if you don't need them:
 >
-> - You don't need `getPaths` for a page with a single path, .
-> - You don't need `generate` for a page without any data fetching.
+> - You don't need `getPaths` for a page with a single path
+> - You don't need `generate` for a page without any data fetching
 >
 > However, you must always define a `route` and a `render` method.
 
 ## External data
 
-Having the `POSTS` array keeps everything simple, but mixing code and data's not a good practice; we'd have to update the page code each time we want to add a post.
+Having the `POSTS` array keeps everything simple, but mixing code and data is not a good practice; we have to update the page code each time we want to add a post.
 
 Instead, we could have an `posts.json` file containing all our posts. Adding a post would simply means adding a new entry to the `posts.json`. No code modification needed.
 
-To do so, we create a `pages/posts.json` file :
+To do so, we create a `pages/posts.json` file:
 
 ```ts filename=pages/posts.json
 [
@@ -232,7 +234,7 @@ export async function getPaths({ resolve }: GetPathsParams): Promise<PathList<ty
 > [!info]
 > The call to the `resolve` method is necessary because Frugal will compile your project, output it in another place and run it from there. It means that relative paths might not be preserved. The `resolve` method will resolve paths relative to the root of your project.
 
-For the `generate` method, given the slug, we find the corresponding entry in the `posts.json` file and get its `"content"`. :
+For the `generate` method, given the slug, we find the corresponding entry in the `posts.json` file and get its `"content"`.:
 
 ```ts filename=pages/posts.ts lines=[2-3,12-24]
 import { 
@@ -266,7 +268,7 @@ export async function generate({ path: { slug }, resolve }: StaticHandlerContext
 > [!tip]
 > Additionally to `DataResponse`, the `generate` function can return `EmptyResponse` when you wish to return a response without calling the `render` method. Here we use it to return a `404` without a body.
 
-Here is the whole file `pages/posts.ts` after we are done :
+Here is the whole file `pages/posts.ts` after we are done:
 
 ```ts filename=pages/posts.ts
 import { 
@@ -322,9 +324,9 @@ export function render({ data }: RenderContext<typeof route, Post> ) {
 
 ## Using markdown
 
-Having raw html inside json in our `pages/posts.json` file is not practical. Instead of having a `"content"` value, we could have a `"file"` value, giving a path to a markdown file. It would make editing content easier.
+Having raw HTML inside JSON in our `pages/posts.json` file is not optimal. Instead of having a `"content"` value, we could have a `"file"` value, giving a path to a markdown file. It would make editing content easier.
 
-To do so, we write two markdown files with our content (`/pages/hello-world.md` and `/pages/second-post.md`) and update the `pages/posts.json` file :
+To do so, we write two markdown files with our content (`/pages/hello-world.md` and `/pages/second-post.md`) and update the `pages/posts.json` file:
 
 ```ts filename=pages/posts.json
 [
@@ -341,7 +343,7 @@ To do so, we write two markdown files with our content (`/pages/hello-world.md` 
 ]
 ```
 
-Previously, `pages/posts.json` contained a list of `Post` (`title`, `slug` and `content`). Now it contains a different type (`title`, `slug` and `file`) that we'll call `Entry` :
+Previously, `pages/posts.json` contained a list of `Post` (`title`, `slug` and `content`). Now it contains a different type (`title`, `slug` and `file`) that we'll call `Entry`:
 
 ```ts filename=pages/posts.ts
 ...
@@ -353,7 +355,7 @@ type Entry = {
 }
 ```
 
-The `getPaths` method does not change (excepte for a change in type to use `Entry`), since the `pages/posts.json` still contains all slug that needs to be generated. But we need to change the `generate` method to read and compile the markdown file :
+The `getPaths` method does not change (except for a change in type to use `Entry`), since the `pages/posts.json` still contains all slug that needs to be generated. But we need to change the `generate` method to read and compile the markdown file:
 
 ```ts filename=pages/posts.ts lines=[3,10,27-30]
 ...
@@ -389,7 +391,7 @@ export async function generate({ path: { slug }, resolve }: StaticHandlerContext
 }
 ```
 
-We now have a small markdown file-based static blog, but it could be improved :
+We now have a small markdown file-based static blog, but it still can be improved:
 
 - the `pages/` directory is a mess of unrelated files (`.ts` files for pages, `.json` and `.md` for data). We could better organise the project by separating data and source files.
 - instead of having the `posts.json` file, we could have all our markdown files in a single directory, each with a front-matter for title and slug. The `getPaths` method would scan the directory, parse the front-matter of each file and output the liste of slugs

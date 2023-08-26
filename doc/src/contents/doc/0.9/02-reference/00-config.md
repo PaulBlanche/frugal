@@ -1,6 +1,6 @@
 # Frugal config
 
-Frugal expects a config object to be passed to the `build` or `context` methods :
+Frugal expects a config object to be passed to the `build` or `context` methods:
 
 ```ts filename=frugal.config.js
 import { Config } from "https://deno.land/x/frugal@{{FRUGAL_VERSION}}/mod.ts"
@@ -18,7 +18,7 @@ export default {
 >
 > **required**
 
-This parameter should contain the absolute path of the current module using `import.meta.url` :
+This parameter should contain the absolute path of the current module using `import.meta.url`:
 
 ```ts
 export default {
@@ -37,7 +37,7 @@ export default {
 >
 > **required**
 
-This parameter contains the relative paths to the pages module of your project :
+This parameter contains the relative paths to the pages module of your project:
 
 ```ts
 export default {
@@ -208,7 +208,7 @@ Set the port the server listens on.
 >
 > **optional**
 
-Set a key that will be used for any functionality that needs HMAC. Frugal exposes two function `exportKey` and `importKey` to help you create the kind of key needed :
+Set a key that will be used for any functionality that needs HMAC. Frugal exposes two function `exportKey` and `importKey` to help you create the kind of key needed:
 
 - The function `exportKey` will generate a new key and encode it in base64.
 - The function `importKey` will take the base64 generated and decode the generated key.

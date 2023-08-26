@@ -4,7 +4,7 @@ Frugal does not come with any CLI to run your projet. Instead, it lets you write
 
 ## Development mode
 
-When running in development mode, Frugal will ignore the [`exporter`](/doc@{{version}}/reference/configuration#heading-exporter) configuration. Instead, Frugal will setup a dev server with livereload :
+When running in development mode, Frugal will ignore the [`exporter`](/doc@{{version}}/reference/configuration#heading-exporter) configuration. Instead, Frugal will setup a dev server with livereload:
 
 ```ts filename=dev.ts
 import { context } from "https://deno.land/x/frugal@{{FRUGAL_VERSION}}/mod.ts"
@@ -23,7 +23,7 @@ The dev server should listen on port `3000`, but you can change it by passing a 
 
 ## Production mode
 
-In production mode, frugal will build and export your project and exit :
+In production mode, frugal will build and export your project and exit:
 
 ```ts filename=build.ts
 import { build } from "https://deno.land/x/frugal@{{FRUGAL_VERSION}}/mod.ts"

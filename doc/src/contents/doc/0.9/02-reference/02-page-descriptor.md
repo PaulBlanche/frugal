@@ -11,7 +11,7 @@ A page descriptor is static by default, but you can turn it into a dynamic page 
 
 ## Routing
 
-Unlike most frameworks, Frugal does not rely on file-based routing. Instead, you have to declare the route of the page in the page descriptor :
+Unlike most frameworks, Frugal does not rely on file-based routing. Instead, you have to declare the route of the page in the page descriptor:
 
 ```ts
 export const route = "/post/:tag/:page";
@@ -79,7 +79,7 @@ This helper function resolves paths relative to the project's root. Since Frugal
 
 ### With `generate`
 
-For static pages, you can export a function `generate`. Frugal will call this method to generate the page :
+For static pages, you can export a function `generate`. Frugal will call this method to generate the page:
 
 - at build time for each path generated with `getPaths`
 - at request time on static page refresh (need some configuration)
@@ -112,7 +112,7 @@ export async function generate({ path: { slug } }: StaticHandlerContext<typeof r
 
 #### Result
 
-This method should return either :
+This method should return either:
 
 - a `DataResponse` object if you want to pass a data object to the `render` method
 - an `EmptyResponse` object if you don't have any data to render
@@ -153,7 +153,7 @@ This parameter contains the path object extracted from the route. With a route `
 
 ##### `phase`
 
-This is the current phase of Frugal :
+This is the current phase of Frugal:
 
 - `"build"` if the method was called during build time
 - `"refresh"` if the method was called at request time (either for a page refresh or a generation just in time)
@@ -197,7 +197,7 @@ export async function GET({ path: { slug } }: DynamicHandlerContext<typeof route
 
 #### Result
 
-This method should return either :
+This method should return either:
 
 - a `DataResponse` object if you want to pass a data object to the `render` method
 - an `EmptyResponse` object if you don't have any data to render
@@ -303,7 +303,7 @@ This is the current pathname (the route with parameters replaced with current va
 
 ##### `phase`
 
-This is the current phase of Frugal :
+This is the current phase of Frugal:
 
 - `"build"` if the method was called at build time for a static page
 - `"generate"` if the method was called at request time for a dynamic page
@@ -311,12 +311,12 @@ This is the current phase of Frugal :
 
 ## Hybrid Page
 
-You can define a hybrid page descriptor that will be both static and dynamic :
+You can define a hybrid page descriptor that will be both static and dynamic:
 
 - For GET request, you'll get the cached static page
 - For other HTTP methods, you'll get a dynamic response
 
-To do so, you write your page as a static page and export a `POST`, `PATCH`, `PUT` or `DELETE` handler :
+To do so, you write your page as a static page and export a `POST`, `PATCH`, `PUT` or `DELETE` handler:
 
 ```ts
 import { DynamicHandlerContext, HybridHandlerContext } from "https://deno.land/x/frugal@{{FRUGAL_VERSION}}/mod.ts";
@@ -362,7 +362,7 @@ export async function POST({ path: { slug }, request, session }: DynamicHandlerC
 }
 ```
 
-We have a hybrid page. Suppose it contains a form submitted via POST method :
+We have a hybrid page. Suppose it contains a form submitted via POST method:
 
 - a GET request will return the page from the cache. The page was built by calling the `generate` method with a `StaticHandlerContext` without any `session`. Therefore `message` will be `undefined`.
 - a POST request (form submission) will call the `POST` handler and redirect to the same URL with a GET method when done (via a [303 See Other](https://developer.mozilla.org/fr/docs/Web/HTTP/Status/303)) while forcing Frugal to handle this GET method dynamically (via `forceDynamic: true`).

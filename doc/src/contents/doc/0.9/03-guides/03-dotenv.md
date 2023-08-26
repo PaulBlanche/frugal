@@ -25,7 +25,7 @@ The same modification can be done in your `build.ts` script. But be careful, you
 
 To be safe, never commit the `.env` file. That way, even if the load runs in production, there will be no `.env` file to load from.
 
-You can also use the `CI` environment variable that is usually set by CI platforms :
+You can also use the `CI` environment variable that is usually set by CI platforms:
 
 ```ts filename=build.ts
 import { build } from "https://deno.land/x/frugal@0.9.2/mod.ts"

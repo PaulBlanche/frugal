@@ -4,7 +4,7 @@
 
 SPA frameworks have popularised the client-side form submission. When submitting a form, javascript intercepts the `submit` event and sends the payload to an API. This is powerfull for interactivity, but accessibility suffers (typically for low-capability devices).
 
-In contrast, Frugal allows you to use native `<form>` submission :
+In contrast, Frugal allows you to use native `<form>` submission:
 
 ```tsx filename=pages/post-edition.tsx
 import { 
@@ -69,7 +69,7 @@ The user ends up on the initial page, with the form prefilled with the new post 
 
 ## Cross-page form submission
 
-With the `action` attribute, you can submit the form to another route :
+With the `action` attribute, you can submit the form to another route:
 
 ```tsx
 import { RenderContext } from "https://deno.land/x/frugal@{{FRUGAL_VERSION}}/mod.ts";
@@ -94,13 +94,13 @@ On submission, the form will be handled by the `POST` handler of the page with a
 
 ## Submit multiple forms on the same page
 
-There are two strategies :
+There are two strategies:
 
 - send each form to a different route
 - send each form with a different HTTP method
 - add a flag to the form to switch between different process
 
-The first one was already covered. The second one is technically possible, but since each HTTP method has a semantic meaning, it would be bad practice to use `DELETE` to update or create identity. This leaves us with the third method :
+The first one was already covered. The second one is technically possible, but since each HTTP method has a semantic meaning, it would be bad practice to use `DELETE` to update or create identity. This leaves us with the third method:
 
 ```tsx
 import {

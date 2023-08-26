@@ -2,7 +2,7 @@
 
 ## Scripts
 
-By default, any javascript you write will be interpreted server-side to generate the page markup. To execute javascript in the browser, we could insert a `<script>` tag pointing to a script in the `static/` folder. But there are several drawbacks :
+By default, any javascript you write will be interpreted server-side to generate the page markup. To execute javascript in the browser, we could insert a `<script>` tag pointing to a script in the `static/` folder. But there are several drawbacks:
 
 - If you have multiple scripts, you will have to bundle them in a separate process. This means that besides Frugal, you will have another process (like esbuild) running to bundle your scripts.
 - If the script source change during development, you'll have to refresh the browser manually to get the updated bundle once the bundling from the second process is done.
@@ -11,7 +11,7 @@ It could work for a small number of scripts that do not change often, but this d
 
 ### Basic usage
 
-First you'll have to register the plugin :
+First you'll have to register the plugin:
 
 ```ts filename=frugal.config
 ...
@@ -30,7 +30,7 @@ Now each js module imported by a page matching `/.script.[tj]sx?$/` will be cons
 
 Since your script needs to be imported by the page to be bundled, the top level of your script will be executed server-side. All usages of browser-specific API will fail.
 
-To fix that, Frugal add an `environment` value in `import.meta`. This value indicates if the script is executed client-side or server-side :
+To fix that, Frugal add an `environment` value in `import.meta`. This value indicates if the script is executed client-side or server-side:
 
 ```ts filename=main.script.ts
 // this is executed both in the server and the browser.
@@ -61,7 +61,7 @@ export function render() {
 
 #### Loading scripts
 
-Frugal will bundle all your script using esbuild, and output them in a `public` directory in the [`outdir`](/doc@{{version}}/reference/configuration#heading-outdir) directory. But you still have to insert a `<script>` in your markup :
+Frugal will bundle all your script using esbuild, and output them in a `public` directory in the [`outdir`](/doc@{{version}}/reference/configuration#heading-outdir) directory. But you still have to insert a `<script>` in your markup:
 
 ```ts filename=page.ts lines=[3,6-8]
 ...
@@ -83,7 +83,7 @@ The style plugin will set the `"script"` key of the `assets` object to an map of
 
 ### Configuration
 
-The plugin accepts a configuration object :
+The plugin accepts a configuration object:
 
 ```ts
 type ScriptOptions = {
@@ -114,7 +114,7 @@ export default {
 }
 ```
 
-With the plugin registered, given the following CSS module :
+With the plugin registered, given the following CSS module:
 
 ```css filename=style.module.css
 .foo {
@@ -127,7 +127,7 @@ With the plugin registered, given the following CSS module :
 }
 ```
 
-Importing it in our page module will give us a default import containing an object with all the classes defined :
+Importing it in our page module will give us a default import containing an object with all the classes defined:
 
 ```ts filename=page.ts
 import style from './style.module.css'
@@ -139,7 +139,7 @@ console.log(style['baz']) // undefined
 
 ### Configuration
 
-This plugin accepts a configuration object :
+This plugin accepts a configuration object:
 
 ```ts
 type ScriptOptions = {
@@ -167,7 +167,7 @@ This plugin will detect stylesheets from [Google Fonts](https://fonts.google.com
 
 ### Basic usage
 
-First, you'll have to register the plugin :
+First, you'll have to register the plugin:
 
 ```ts filename=frugal.config
 ...
@@ -184,7 +184,7 @@ Now any `@import` coming from Google Fonts will be modified by the plugin and in
 
 ### Configuration
 
-This plugin accepts a configuration object :
+This plugin accepts a configuration object:
 
 ```ts
 type ScriptOptions = {
@@ -202,7 +202,7 @@ When using SVG icons, it might be beneficial to generate sprites: a large SVG fi
 
 ### Basic usage
 
-First, you'll have to register the plugin :
+First, you'll have to register the plugin:
 
 ```ts filename=frugal.config
 ...
@@ -215,7 +215,7 @@ export default {
 }
 ```
 
-Now you can import `.svg` files inside your modules and receive an object `{ href:string, viewBox:string }` as a default export. You can use those values to generate a "reference" to the symbol inside the sprite sheet :
+Now you can import `.svg` files inside your modules and receive an object `{ href:string, viewBox:string }` as a default export. You can use those values to generate a "reference" to the symbol inside the sprite sheet:
 
 ```ts
 import icon from "./icon.svg";
@@ -229,7 +229,7 @@ Frugal will consider that two SVGs are in the same sprite sheet if they are in t
 
 ### Configuration
 
-This plugin accepts a configuration object :
+This plugin accepts a configuration object:
 
 ```ts
 type SvgOptions = {
@@ -250,7 +250,7 @@ If you wish to use Svelte as a UI framework, you will need this plugin to import
 
 ### Basic usage
 
-First, you'll have to register the plugin :
+First, you'll have to register the plugin:
 
 ```ts filename=frugal.config
 ...
@@ -267,7 +267,7 @@ Now you can import `.svelte` files inside your modules, and you'll receive as a 
 
 ### Configuration
 
-This plugin accepts a configuration object :
+This plugin accepts a configuration object:
 
 ```ts
 type SvelteOptions = {
@@ -286,7 +286,7 @@ If you need to register [preprocessor for svelte](https://svelte.dev/docs/svelte
 
 ## Writing your own plugin
 
-A Frugal plugin is an [esbuild plugin](https://esbuild.github.io/plugins/) with an extra step :
+A Frugal plugin is an [esbuild plugin](https://esbuild.github.io/plugins/) with an extra step:
 
 ```ts
 type Plugin = (context: PluginContext) => esbuild.Plugin;
