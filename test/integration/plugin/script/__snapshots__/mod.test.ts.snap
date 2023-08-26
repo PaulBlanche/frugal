@@ -186,43 +186,45 @@ snapshot[`script: build page with script and css module dependencies 2`] = `
 " +
   "
 " +
-  "// node_modules/.deno/clsx@2.0.0/node_modules/clsx/dist/clsx.mjs
+  "// https://esm.sh/v131/clsx@2.0.0/denonext/clsx.mjs
 " +
-  "function r(e) {
+  "function o(r) {
 " +
-  '  var t, f, n = "";
+  '  var f, n, t = "";
 ' +
-  '  if ("string" == typeof e || "number" == typeof e)
+  '  if (typeof r == "string" || typeof r == "number")
 ' +
-  "    n += e;
+  "    t += r;
 " +
-  '  else if ("object" == typeof e)
+  '  else if (typeof r == "object")
 ' +
-  "    if (Array.isArray(e))
+  "    if (Array.isArray(r))
 " +
-  "      for (t = 0; t < e.length; t++)
+  "      for (f = 0; f < r.length; f++)
 " +
-  '        e[t] && (f = r(e[t])) && (n && (n += " "), n += f);
+  '        r[f] && (n = o(r[f])) && (t && (t += " "), t += n);
 ' +
   "    else
 " +
-  "      for (t in e)
+  "      for (f in r)
 " +
-  '        e[t] && (n && (n += " "), n += t);
+  '        r[f] && (t && (t += " "), t += f);
 ' +
-  "  return n;
+  "  return t;
 " +
   "}
 " +
-  "function clsx() {
+  "function e() {
 " +
-  '  for (var e, t, f = 0, n = ""; f < arguments.length; )
+  '  for (var r, f, n = 0, t = ""; n < arguments.length; )
 ' +
-  '    (e = arguments[f++]) && (t = r(e)) && (n && (n += " "), n += t);
+  '    (r = arguments[n++]) && (f = o(r)) && (t && (t += " "), t += f);
 ' +
-  "  return n;
+  "  return t;
 " +
   "}
+" +
+  "var i = e;
 " +
   "
 " +
@@ -230,7 +232,7 @@ snapshot[`script: build page with script and css module dependencies 2`] = `
 " +
   "var style_module_default = {
 " +
-  '  "foo": clsx("foo")
+  '  "foo": i("foo")
 ' +
   "};
 " +
