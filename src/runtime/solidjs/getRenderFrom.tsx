@@ -16,6 +16,7 @@ export type PageProps = {
 export type Page = solid.Component<PageProps>;
 
 export type DocumentProps = {
+    // deno-lint-ignore no-explicit-any
     tags: any[];
     descriptor: string;
     assets: Assets;
@@ -53,6 +54,7 @@ export function getRenderFrom<PATH extends string, DATA extends JSONValue>(
         descriptor,
         assets,
     }) => {
+        // deno-lint-ignore no-explicit-any
         const tags: any[] = [];
 
         const html = renderToString(() => (

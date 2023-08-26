@@ -47,6 +47,7 @@ class SolidCompiler {
         this.#cache = new Map();
     }
 
+    // deno-lint-ignore no-explicit-any
     async compile(contents: Uint8Array, filePath: string, options: any) {
         const hash = (await xxhash.create()).update(contents).digest("hex").toString();
         const key = `${filePath}-${hash}-${options.generate}`;
@@ -61,6 +62,7 @@ class SolidCompiler {
         return result;
     }
 
+    // deno-lint-ignore no-explicit-any
     async #rawCompile(contents: Uint8Array, filePath: string, options: any) {
         const { name, ext } = path.parse(filePath);
         const filename = name + ext;
