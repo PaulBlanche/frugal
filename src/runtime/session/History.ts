@@ -69,9 +69,9 @@ class HistoryInternal {
         history._index = index;
         history._current = current;
 
-        const entries = performance.getEntriesByType("navigation");
-        console.log(entries);
-        switch (entries[0].type) {
+        console.log(getPerformanceNavigationType());
+
+        switch (getPerformanceNavigationType()) {
             case "navigate": {
                 if (history._index === history._current) {
                     history._stack.push(new Navigator(new URL(location.href), config));
@@ -193,5 +193,19 @@ function restoreHistory(): SerializedHistory | undefined {
     const persistedHistory = sessionStorage.getItem(SERIALIZED_HISTORY_KEY);
     if (persistedHistory) {
         return JSON.parse(persistedHistory);
+    }
+}
+
+function getPerformanceNavigationType(): NavigationTimingType | undefined {
+    try {
+        const entries = performance.getEntriesByType("navigation") as PerformanceNavigationTiming[];
+        return entries[0].type;
+    } catch {
+        if (window.performance.navigation.type === window.performance.navigation.TYPE_BACK_FORWARD) {
+            return "back_forward";
+        }
+        if (window.performance.navigation.type === window.performance.navigation.TYPE_NAVIGATE) {
+            return "navigate";
+        }
     }
 }
