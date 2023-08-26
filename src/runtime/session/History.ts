@@ -198,6 +198,7 @@ function restoreHistory(): SerializedHistory | undefined {
 }
 
 function getPerformanceNavigationType(): NavigationTimingType | undefined {
+    console.log("getPerformanceNavigationType");
     try {
         const entries = performance.getEntriesByType("navigation") as PerformanceNavigationTiming[];
         return entries[0].type;
