@@ -64,6 +64,7 @@ class HistoryInternal {
     static instance?: HistoryInternal;
 
     static deserialize({ stack, index, current }: SerializedHistory, config: NavigatorConfig) {
+        console.log("deserialize");
         const history = new HistoryInternal(config);
         history._stack = stack.map((serialized) => Navigator.deserialize(serialized, config));
         history._index = index;
