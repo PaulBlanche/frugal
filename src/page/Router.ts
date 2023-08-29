@@ -36,12 +36,13 @@ export class Router {
     constructor(config: RouterConfig) {
         this.#config = config;
 
-        this.#routes = this.#config.manifest.pages.map(({ descriptor, entrypoint, moduleHash }) => {
+        this.#routes = this.#config.manifest.pages.map(({ descriptor, route, entrypoint, moduleHash }) => {
             log(`Compile page "${entrypoint}" (${moduleHash})`, { scope: "Router", level: "debug" });
             const compiledPage = page.compile(
                 entrypoint,
                 moduleHash,
                 descriptor,
+                route,
             );
             if (compiledPage.type === "static") {
                 return {

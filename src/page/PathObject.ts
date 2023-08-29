@@ -1,4 +1,4 @@
-export type PathObject<PATH extends string> = Collapse<
+export type PathObject<PATH extends string = ""> = PATH extends "" ? Record<string, string> : Collapse<
     Consume<{ rest: PATH; object: unknown; index: [] }>["object"]
 >;
 

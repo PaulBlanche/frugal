@@ -1,20 +1,13 @@
 import * as esbuild from "../../../dep/esbuild.ts";
+import * as path from "../../../dep/std/path.ts";
 import * as xxhash from "../../../dep/xxhash.ts";
 
 import { log } from "../../log.ts";
 import { MetaFileAnalyser } from "../MetafileAnalyser.ts";
 import { isInChildWatchProcess } from "../../WatchContext.ts";
 import { FrugalConfig } from "../../Config.ts";
-import { writeManifest } from "../../Manifest.ts";
-import { AssetRepository } from "../../page/Assets.ts";
+import { WritableManifest, writeManifest } from "../../Manifest.ts";
 import { PluginContext } from "../../Plugin.ts";
-
-type Manifest = {
-    config: string;
-    id: string;
-    assets: AssetRepository;
-    pages: { moduleHash: string; entrypoint: string; outputPath: string }[];
-};
 
 export function buildManifest(config: FrugalConfig, context: PluginContext): esbuild.Plugin {
     return {
@@ -35,7 +28,7 @@ export function buildManifest(config: FrugalConfig, context: PluginContext): esb
                     }),
                 );
 
-                const manifest: Manifest = {
+                const manifest: WritableManifest = {
                     pages: [],
                     id: "",
                     config: "",
@@ -62,6 +55,7 @@ export function buildManifest(config: FrugalConfig, context: PluginContext): esb
                             moduleHash: analysis.moduleHash,
                             entrypoint: analysis.entrypoint,
                             outputPath: analysis.outputPath,
+                            route: analysis.route,
                         });
 
                         idHash.hash(analysis.moduleHash);

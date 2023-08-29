@@ -12,7 +12,7 @@ import { Context } from "./server/Context.ts";
 
 export type Config = {
     self: string;
-    pages: string[];
+    pages: (string | { path: string; route: string })[];
     outdir?: string;
     staticdir?: string;
     importMap?: string;
@@ -162,8 +162,13 @@ export class FrugalConfig {
         return new URL(this.#config.self);
     }
 
-    get pages() {
-        return this.#config.pages.map((page) => new URL(page, this.self));
+    get pages(): { url: URL; route?: string }[] {
+        return this.#config.pages.map((page) => {
+            if (typeof page === "string") {
+                return { url: new URL(page, this.self) };
+            }
+            return { url: new URL(page.path, this.self), route: page.route };
+        });
     }
 
     get outdir() {

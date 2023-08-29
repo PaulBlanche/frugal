@@ -111,7 +111,7 @@ export class Builder {
             ...this.#config.esbuildOptions,
             target: [],
             entryPoints: [
-                ...this.#config.pages.map((page) => path.fromFileUrl(page)),
+                ...this.#config.pages.map(({ url }) => path.fromFileUrl(url)),
                 path.fromFileUrl(this.#config.self),
             ],
             entryNames: "[dir]/[name]-[hash]",

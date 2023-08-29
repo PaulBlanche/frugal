@@ -10,14 +10,14 @@ export type Manifest = {
     id: string;
     config: string;
     assets: AssetRepository;
-    pages: { moduleHash: string; entrypoint: string; descriptor: PageDescriptor }[];
+    pages: { moduleHash: string; entrypoint: string; descriptor: PageDescriptor; route?: string }[];
 };
 
 export type WritableManifest = {
     config: string;
     id: string;
     assets: AssetRepository;
-    pages: { moduleHash: string; entrypoint: string; outputPath: string }[];
+    pages: { moduleHash: string; entrypoint: string; outputPath: string; route?: string }[];
 };
 
 class ManifestExecutionError extends Error {}
@@ -91,6 +91,7 @@ export const assets = ${JSON.stringify(manifest.assets)};
 export const pages = [${
         manifest.pages.map((page) =>
             `{
+    "route": ${page.route ? `"${page.route}"` : `undefined`},
     "moduleHash": "${page.moduleHash}",
     "entrypoint": "${page.entrypoint}",
     "descriptor": descriptor_${page.moduleHash},

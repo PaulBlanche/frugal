@@ -9,7 +9,7 @@ export type Phase = "build" | "refresh" | "generate";
 
 export type Method = "GET" | "POST" | "PUT" | "DELETE" | "PATCH";
 
-type BaseHandlerContext<PATH extends string> = {
+type BaseHandlerContext<PATH extends string = ""> = {
     phase: Phase;
     path: PathObject<PATH>;
     assets: Assets;
@@ -54,7 +54,7 @@ export type Render<PATH extends string, DATA extends JSONValue> = (
 ) => string | ReadableStream<string>;
 
 interface BasePageDescriptor<PATH extends string, DATA extends JSONValue> {
-    route: string;
+    route?: string;
     render: Render<PATH, DATA>;
     GET?: DynamicHandler<PATH, DATA>;
     POST?: DynamicHandler<PATH, DATA>;
@@ -92,11 +92,13 @@ export type PageDescriptor<PATH extends string = string, DATA extends JSONValue 
     | StaticPageDescriptor<PATH, DATA>
     | DynamicPageDescriptor<PATH, DATA>;
 
+export const routeSchema = zod.string({
+    required_error: 'A page descriptor must have a string "route"',
+    invalid_type_error: 'Expected a page descriptor with "route" as a string',
+}).startsWith("/", 'A page descriptor route should start with a "/"');
+
 const baseDescriptorSchema = zod.object({
-    route: zod.string({
-        required_error: 'A page descriptor must have a string "route"',
-        invalid_type_error: 'Expected a page descriptor with "route" as a string',
-    }).startsWith("/", 'A page descriptor route should start with a "/"'),
+    route: zod.optional(routeSchema),
     render: zod.function(zod.tuple([zod.any()]), zod.any(), {
         required_error: 'A page descriptor must have a function "render"',
         invalid_type_error: 'Expected a page descriptor with "render" as a function',
@@ -167,6 +169,17 @@ export function parseDynamicDescriptor<PATH extends string, DATA extends JSONVal
     try {
         dynamicDescriptorSchema.parse(descriptor);
         return true;
+    } catch (error) {
+        if (error instanceof zod.ZodError) {
+            throw new Error(error.errors[0].message);
+        }
+        throw error;
+    }
+}
+
+export function parseRoute(route: unknown): string {
+    try {
+        return routeSchema.parse(route);
     } catch (error) {
         if (error instanceof zod.ZodError) {
             throw new Error(error.errors[0].message);

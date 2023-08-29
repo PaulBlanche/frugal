@@ -19,11 +19,15 @@ class BasePage<
     #urlCompiler: pathToRegexp.PathFunction<PathObject<PATH>>;
     #urlMatcher: pathToRegexp.MatchFunction<PathObject<PATH>>;
     #moduleHash: string;
+    #route: string;
 
-    constructor(descriptor: DESCRIPTOR, moduleHash: string, entrypoint: string) {
-        this.#descriptor = descriptor;
-        this.#urlCompiler = pathToRegexp.compile(this.#descriptor.route);
-        this.#urlMatcher = pathToRegexp.match(this.#descriptor.route);
+    constructor(desc: DESCRIPTOR, moduleHash: string, entrypoint: string, route?: string) {
+        this.#descriptor = desc;
+        const pageRoute = route ?? desc.route;
+        this.#route = descriptor.parseRoute(pageRoute);
+
+        this.#urlCompiler = pathToRegexp.compile(this.#route);
+        this.#urlMatcher = pathToRegexp.match(this.#route);
         this.#moduleHash = moduleHash;
         this.#entrypoint = entrypoint;
     }
@@ -53,7 +57,7 @@ class BasePage<
     }
 
     get route() {
-        return this.#descriptor.route;
+        return this.#route;
     }
 
     get GET() {
@@ -98,8 +102,8 @@ export class DynamicPage<
 > extends BasePage<PATH, DATA, DESCRIPTOR> {
     #descriptor: DESCRIPTOR;
 
-    constructor(descriptor: DESCRIPTOR, moduleHash: string, entrypoint: string) {
-        super(descriptor, moduleHash, entrypoint);
+    constructor(descriptor: DESCRIPTOR, moduleHash: string, entrypoint: string, route?: string) {
+        super(descriptor, moduleHash, entrypoint, route);
         this.#descriptor = descriptor;
     }
 
@@ -119,8 +123,8 @@ export class StaticPage<
 > extends BasePage<PATH, DATA, DESCRIPTOR> {
     #descriptor: descriptor.StaticPageDescriptor<PATH, DATA>;
 
-    constructor(descriptor: DESCRIPTOR, moduleHash: string, entrypoint: string) {
-        super(descriptor, moduleHash, entrypoint);
+    constructor(descriptor: DESCRIPTOR, moduleHash: string, entrypoint: string, route?: string) {
+        super(descriptor, moduleHash, entrypoint, route);
         this.#descriptor = descriptor;
     }
 
@@ -162,6 +166,7 @@ export function compile<PATH extends string = string, DATA extends JSONValue = J
     entrypoint: string,
     moduleHash: string,
     pageDescriptor: descriptor.PageDescriptor<PATH, DATA>,
+    route?: string,
 ): Page<PATH, DATA> {
     if (
         typeof pageDescriptor === "object" &&
@@ -170,7 +175,7 @@ export function compile<PATH extends string = string, DATA extends JSONValue = J
     ) {
         try {
             descriptor.parseDynamicDescriptor<PATH, DATA>(pageDescriptor);
-            return new DynamicPage(pageDescriptor, moduleHash, entrypoint);
+            return new DynamicPage(pageDescriptor, moduleHash, entrypoint, route);
         } catch (error) {
             throw new PageError(
                 `Error while parsing descriptor "${entrypoint}": ${error.message}`,
@@ -180,7 +185,7 @@ export function compile<PATH extends string = string, DATA extends JSONValue = J
 
     try {
         descriptor.parseStaticDescriptor<PATH, DATA>(pageDescriptor);
-        return new StaticPage(pageDescriptor, moduleHash, entrypoint);
+        return new StaticPage(pageDescriptor, moduleHash, entrypoint, route);
     } catch (error) {
         throw new PageError(
             `Error while parsing descriptor "${entrypoint}": ${error.message}`,

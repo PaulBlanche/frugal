@@ -11,6 +11,7 @@ type Analysis = {
     entrypoint: string;
     outputPath: string;
     moduleHash: string;
+    route?: string;
 } | {
     type: "config";
     moduleHash: string;
@@ -31,7 +32,7 @@ export class MetaFileAnalyser {
         }
 
         const entryPointUrl = new URL(output.entryPoint, this.#config.self);
-        const page = this.#config.pages.find((page) => page.href === entryPointUrl.href);
+        const page = this.#config.pages.find(({ url }) => url.href === entryPointUrl.href);
 
         if (page === undefined) {
             // compare pathname and not href because the url might include a
@@ -43,15 +44,16 @@ export class MetaFileAnalyser {
                 return await this.#handleCss(output.entryPoint);
             }
         } else {
-            return await this.#handlePage(output.entryPoint, outputPath);
+            return await this.#handlePage(output.entryPoint, outputPath, page.route);
         }
     }
 
-    async #handlePage(entrypoint: string, outputPath: string): Promise<Analysis> {
+    async #handlePage(entrypoint: string, outputPath: string, route?: string): Promise<Analysis> {
         return {
             type: "page",
             entrypoint,
             outputPath,
+            route,
             moduleHash: await this.#moduleHash(entrypoint),
         };
     }
