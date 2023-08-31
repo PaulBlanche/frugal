@@ -15,8 +15,12 @@ export function googleFonts({ type = "local" }: Config = {}): Plugin {
         return {
             name: "frugal:googleFonts",
             setup(build) {
-                build.onResolve({ filter: /^\/\/fonts.googleapis.com\//, namespace: "https" }, async (args) => {
-                    const name = (await xxhash.create()).update(args.path).digest("hex").toString();
+                build.onResolve({
+                    filter: /^\/\/fonts.googleapis.com\//,
+                    namespace: "https",
+                }, async (args) => {
+                    const name = (await xxhash.create()).update(args.path).digest("hex")
+                        .toString();
                     return {
                         path: `/googlefonts-${name}.css`,
                         namespace: "virtual",
@@ -25,7 +29,10 @@ export function googleFonts({ type = "local" }: Config = {}): Plugin {
                 });
 
                 if (type === "external") {
-                    build.onLoad({ filter: /^\/googlefonts-.*\.css$/, namespace: "virtual" }, async (args) => {
+                    build.onLoad({
+                        filter: /^\/googlefonts-.*\.css$/,
+                        namespace: "virtual",
+                    }, async (args) => {
                         const url = args.pluginData.url;
                         if (!url) {
                             return;
@@ -43,7 +50,10 @@ export function googleFonts({ type = "local" }: Config = {}): Plugin {
                         return { contents: css, loader: "css" };
                     });
 
-                    build.onResolve({ filter: /^\/\/fonts.gstatic.com\//, namespace: "https" }, () => {
+                    build.onResolve({
+                        filter: /^\/\/fonts.gstatic.com\//,
+                        namespace: "https",
+                    }, () => {
                         return { external: true };
                     });
                 }
@@ -53,7 +63,10 @@ export function googleFonts({ type = "local" }: Config = {}): Plugin {
                         return { external: true };
                     });
 
-                    build.onLoad({ filter: /^\/googlefonts-.*\.css$/, namespace: "virtual" }, async (args) => {
+                    build.onLoad({
+                        filter: /^\/googlefonts-.*\.css$/,
+                        namespace: "virtual",
+                    }, async (args) => {
                         const url = args.pluginData.url;
                         if (!url) {
                             return;
@@ -73,7 +86,8 @@ export function googleFonts({ type = "local" }: Config = {}): Plugin {
                             for (const url of urls) {
                                 const matched = url.match(/src\s*:\s*url\((.*?)\)/);
                                 if (matched) {
-                                    const name = (await xxhash.create()).update(matched[1]).digest("hex")
+                                    const name = (await xxhash.create()).update(matched[1])
+                                        .digest("hex")
                                         .toString();
                                     const ext = path.extname(matched[1]);
 
@@ -82,7 +96,10 @@ export function googleFonts({ type = "local" }: Config = {}): Plugin {
 
                                     try {
                                         await fs.ensureDir(path.dirname(path.fromFileUrl(fontUrl)));
-                                        const file = await Deno.open(fontUrl, { createNew: true, write: true });
+                                        const file = await Deno.open(fontUrl, {
+                                            createNew: true,
+                                            write: true,
+                                        });
                                         try {
                                             log(`Loading font ${++index} of ${urls.length}`, {
                                                 scope: "frugal:googleFonts",
@@ -91,7 +108,9 @@ export function googleFonts({ type = "local" }: Config = {}): Plugin {
                                             const response = await fetch(matched[1]);
                                             const readableStream = response.body?.getReader();
                                             if (readableStream) {
-                                                const reader = streams.readerFromStreamReader(readableStream);
+                                                const reader = streams.readerFromStreamReader(
+                                                    readableStream,
+                                                );
 
                                                 await streams.copy(reader, file);
                                             }
@@ -104,9 +123,18 @@ export function googleFonts({ type = "local" }: Config = {}): Plugin {
                                         }
                                     }
 
-                                    const fontDest = new URL(`fonts/${name}${ext}`, frugal.config.publicdir);
+                                    const fontDest = new URL(
+                                        `fonts/${name}${ext}`,
+                                        frugal.config.publicdir,
+                                    );
                                     await fs.ensureDir(path.dirname(path.fromFileUrl(fontDest)));
-                                    await fs.copy(fontUrl, fontDest);
+                                    try {
+                                        await fs.copy(fontUrl, fontDest);
+                                    } catch (error) {
+                                        if (!(error instanceof Deno.errors.AlreadyExists)) {
+                                            throw error;
+                                        }
+                                    }
                                     css = css.replace(matched[1], `/fonts/${name}${ext}`);
                                 }
                             }

@@ -28,10 +28,14 @@ export function svg(
                 build.onLoad({ filter }, async (args) => {
                     const url = frugal.url(args);
 
-                    const { meta: { spritesheet, id, viewBox } } = await svgBuilder.symbol(path.fromFileUrl(url));
+                    const { meta: { spritesheet, id, viewBox } } = await svgBuilder
+                        .symbol(path.fromFileUrl(url));
 
                     return {
-                        contents: JSON.stringify({ href: `/${outdir}${spritesheet}#${id}`, viewBox }),
+                        contents: JSON.stringify({
+                            href: `/${outdir}${spritesheet}#${id}`,
+                            viewBox,
+                        }),
                         loader: "json",
                     };
                 });
@@ -58,8 +62,7 @@ export function svg(
 
                     for (const [name, symbols] of Object.entries(spritesheets)) {
                         const svg = svgBuilder.spritesheet(symbols, frugal.config);
-                        const hash = (await xxhash.create()).update(svg).digest("hex").toString();
-                        const svgPath = path.join("svg", `${name}-${hash}.svg`);
+                        const svgPath = path.join("svg", `${name}`);
                         const svgUrl = new URL(svgPath, frugal.config.publicdir);
                         const assetPath = `/${svgPath}`;
 
@@ -76,7 +79,12 @@ export function svg(
     };
 }
 
-type MetaSymbol = { id: string; viewBox: string; spritesheet: string; path: string };
+type MetaSymbol = {
+    id: string;
+    viewBox: string;
+    spritesheet: string;
+    path: string;
+};
 
 type SvgSymbol = {
     attributes: Record<string, string>;
@@ -91,12 +99,27 @@ type Symbol = {
 };
 
 class SvgBuilder {
+    #spritesheetName: Map<string, string>;
     #symbolCache: Map<string, Symbol>;
     #spritesheetCache: Map<string, string>;
 
     constructor() {
         this.#symbolCache = new Map();
         this.#spritesheetCache = new Map();
+        this.#spritesheetName = new Map();
+    }
+
+    async #getSpritesheetName(svgPath: string) {
+        const baseName = path.basename(path.dirname(svgPath));
+
+        const name = this.#spritesheetName.get(baseName);
+        if (name != undefined) {
+            return name;
+        }
+
+        const hash = (await xxhash.create()).update(baseName).update(String(Date.now()))
+            .digest("hex").toString();
+        return `${name}-${hash}.svg`;
     }
 
     async symbol(svgPath: string) {
@@ -109,7 +132,10 @@ class SvgBuilder {
             return cached;
         }
 
-        log(`generating svg symbol from "${svgPath}"`, { level: "debug", scope: "frugal:svg" });
+        log(`generating svg symbol from "${svgPath}"`, {
+            level: "debug",
+            scope: "frugal:svg",
+        });
 
         const doc = new dom.DOMParser().parseFromString(svgString, "text/html")!;
         const svg = doc.querySelector("svg")!;
@@ -118,7 +144,7 @@ class SvgBuilder {
         const height = svg.getAttribute("height");
 
         const id = `${path.basename(svgPath, path.extname(svgPath))}-${svgHash}`;
-        const spritesheet = path.basename(path.dirname(svgPath));
+        const spritesheet = await this.#getSpritesheetName(svgPath);
 
         const metaSymbol: MetaSymbol = {
             id,
@@ -167,7 +193,10 @@ class SvgBuilder {
             return cached;
         }
 
-        log(`generating spritesheet "${symbols[0].meta.spritesheet}"`, { level: "debug", scope: "frugal:svg" });
+        log(`generating spritesheet "${symbols[0].meta.spritesheet}"`, {
+            level: "debug",
+            scope: "frugal:svg",
+        });
 
         const seenId: Record<string, Set<string>> = {};
         const svgContent = [];
