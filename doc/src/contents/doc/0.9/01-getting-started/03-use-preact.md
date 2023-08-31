@@ -14,7 +14,7 @@ First, you'll need an [Import Map](https://developer.mozilla.org/en-US/docs/Web/
 }
 ```
 
-You'll also need a `deno.json` [config file](https://deno.land/manual@v{{DENO_VERSION}}/getting_started/configuration_file) to configure `jsx` :
+You'll also need a `deno.json` [config file](https://deno.land/manual@v{{DENO_VERSION}}/getting_started/configuration_file) to configure `jsx`:
 
 ```json filename=deno.json
 {
@@ -26,7 +26,7 @@ You'll also need a `deno.json` [config file](https://deno.land/manual@v{{DENO_VE
 }
 ```
 
-Now that deno is configured to understand `jsx` correctly, we need to update the `frugal.config.ts` file :
+Now that deno is configured to understand `jsx` correctly, we need to update the `frugal.config.ts` file:
 
 ```ts filename=frugal.config.ts lines=[6-10]
 import { Config } from "https://deno.land/x/frugal@{{FRUGAL_VERSION}}/mod.ts"
@@ -48,7 +48,7 @@ Since we use an Import Map, we must also pass it to Frugal.
 
 ## Update the post page
 
-First, we move our markup in a jsx component in a `pages/PostPage.tsx` module :
+First, we move our markup in a jsx component in a `pages/PostPage.tsx` module:
 
 ```tsx filename=pages/PostPage.tsx
 import { PageProps, useData, Head } from "https://deno.land/x/frugal@{{FRUGAL_VERSION}}/runtime/preact.server.ts"
@@ -69,13 +69,13 @@ export function PostPage({ assets }: PageProps) {
 }
 ```
 
-In this component :
+In this component:
 
 - `PageProps` is the standard props object passed to page components (the top-level component of your page).
 - `useData` is the hook used to access the data object. This hook can be used in any component with some caveats.
 - `Head` is the component used to modify the document's `<head>`. We use it to link to the page stylesheet.
 
-Now we need to modify the page module :
+Now we need to modify the page module:
 
 ```ts filename=pages/posts.ts
 ...
@@ -96,7 +96,7 @@ For now, Frugal still outputs static markup for our components. To have a client
 
 We will add a counter to the homepage. To do so, we first need to migrate it to preact, like we did for the posts page (this is left as an exercise for you, dear reader).
 
-Once the page works with preact, we create our stateful counter component :
+Once the page works with preact, we create our stateful counter component:
 
 ```tsx filename=Counter.tsx
 import * as hooks from "preact/hooks";
@@ -124,7 +124,7 @@ export function Counter({ initialValue }: CounterProps) {
 }
 ```
 
-Next, we create a hydration script `Counter-hydrate.script.ts` :
+Next, we create a hydration script `Counter-hydrate.script.ts`:
 
 ```tsx
 import { hydrate } from "https://deno.land/x/frugal@{{FRUGAL_VERSION}}/runtime/preact.client.ts";
@@ -139,7 +139,7 @@ if (import.meta.environment === "client") {
 
 Since it is a client-side `script` using `import.meta.environment`, the `hydrate` function will execute only client-side. The function will hydrate with the `Counter` component all instances of islands with the name `"Counter"`.
 
-Now we create a `CounterIsland.tsx` component to create island instances of our `Counter` component :
+Now we create a `CounterIsland.tsx` component to create island instances of our `Counter` component:
 
 ```tsx
 import { Island } from "https://deno.land/x/frugal@{{FRUGAL_VERSION}}/runtime/preact.client.ts";
@@ -154,7 +154,7 @@ export function CounterIsland(props: CounterProps) {
 
 The `Island` component will render the `Counter` components in the static markup outputted by Frugal and embed any data necessary to the hydration process in that markup. The name of the island is also embedded in the markup.
 
-We can now use our `CounterIsland` inside our `Page` component :
+We can now use our `CounterIsland` inside our `Page` component:
 
 ```tsx filename=pages/HomePage.tsx
 import { PageProps, Head } from "https://deno.land/x/frugal@{{FRUGAL_VERSION}}/runtime/preact.server.ts"

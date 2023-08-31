@@ -2,7 +2,7 @@
 
 ## The configuration module `frugal.config.ts`
 
-Frugal tries to assume as little as possible about your project, so you have to configure it. First, let's write the minimal configuration needed :
+Frugal tries to assume as little as possible about your project, so you have to configure it. First, let's write the minimal configuration needed:
 
 ```ts filename=frugal.config.ts
 import { Config } from "https://deno.land/x/frugal@{{FRUGAL_VERSION}}/mod.ts"
@@ -19,7 +19,7 @@ The `self` property should be the absolute path of the configuration module (obt
 > Unless you know what you are doing, `self` should always be `import.meta.url`.
 
 The `pages` should list the paths of the page modules of your website.
-It is empty for now, but not for long.
+You can notice, It's empty for now, but not for long.
 
 ## Your first page
 
@@ -38,7 +38,7 @@ export function render() {
 }
 ```
 
-You just wrote your first static page with Frugal!
+Congratulations! You just wrote your first static page with Frugal.
 
 For now, we will not use any UI framework, so we output basic HTML with template strings in the `render` method. This method will be called at build time to generate the page's markup. The `route` contains the URL pattern of the generated page. Here the generated page will live at the root of the website.
 
@@ -66,19 +66,19 @@ import config from "./frugal.config.ts"
 await context(config).watch()
 ```
 
-Simply calling the `watch` function on the `context` will set up a watch process and a dev server with live-reload.
+Simply calling the `watch` function on the `context` will set up a watch process and a dev server with a live-reload mechanism.
 
-You can now run this script to get a dev server with live reload :
+You can now run this script to get a dev server with live reload:
 
 ```console no-line-numbers
 deno run -A dev.ts
 ```
 
-Visiting [http://0.0.0.0:3000/](http://0.0.0.0:3000/) should display your page.
+Open [http://0.0.0.0:3000/](http://0.0.0.0:3000/) and it should display your page.
 
 > [!info]
 > The dev server has live-reload capacity. Changing the code of a page or any of its dependencies should trigger a page reload.
 >
-> However, this is limited to _staticaly analyzable imports_ (static imports or dynamic imports with paths known ahead of time). Any change in external data sources (database, API, filesystem ...) won't trigger a reload: you'll have to refresh the page manually
+> However, keep in mind this is limited to _staticaly analyzable imports_ (static imports or dynamic imports with paths known ahead of time). Any change in external data sources (database, API, filesystem ...) won't trigger a reload: you'll have to refresh the page manually
 
 Now that we have a working project, we will start coding our blog in the next section.

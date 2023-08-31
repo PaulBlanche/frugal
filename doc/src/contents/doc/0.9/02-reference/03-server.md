@@ -4,7 +4,7 @@ Frugal comes with a server, depending on the kind of [Exporter](/doc@{{version}}
 
 ## Dynamic pages
 
-All dynamic handlers `GET`, `POST`, `PUT`, `PATCH` and `DELETE` receive some extra values from the server :
+All dynamic handlers `GET`, `POST`, `PUT`, `PATCH` and `DELETE` receive some extra values from the server:
 
 - the `Request` object
 - the `state` object that any middleware can manipulate to pass data to pages
@@ -18,7 +18,7 @@ The server offers some nice features besides serving static pages from caches.
 
 If you configured the [`cryptoKey`](/doc@{{version}}/reference/configuration#heading-cryptokey) you will be able to refresh static pages at runtime (if your data source was updated, for example).
 
-To do so, you'll have to send a `GET` request to the static page you want to refresh with some query parameters :
+To do so, you'll have to send a `GET` request to the static page you want to refresh with some query parameters:
 
 - a `timestamp` parameter containing a UNIX timestamp in milliseconds of the time you made the request
 - a `sign` parameter containing a SHA-512 HMAC signature of the `timestamp` with the `cryptoKey` of the server
@@ -48,7 +48,7 @@ export async function getPaths(): Promise<PathList<typeof route>> {
 
 ### Force dynamic
 
-You can redirect to a static page with an `EmptyResponse` using the `forceDynamic` option to get a [Hybrid Page](/doc@{{version}}/reference/page-descriptor#heading-hybrid-page) :
+You can redirect to a static page with an `EmptyResponse` using the `forceDynamic` option to get a [Hybrid Page](/doc@{{version}}/reference/page-descriptor#heading-hybrid-page):
 
 ```ts
 import { DynamicHandlerContext, HybridHandlerContext } from "https://deno.land/x/frugal@{{FRUGAL_VERSION}}/mod.ts";
@@ -87,11 +87,11 @@ In the context of a `forceDynamic` generation, the `generate` method behaves lik
 
 ## CSRF protection
 
-Frugal comes with an optional CSRF middleware. When [correctly configured](/doc@{{version}}/reference/configuration#heading-csrf), Frugal will run the following process on protected pages :
+Frugal comes with an optional CSRF middleware. When [correctly configured](/doc@{{version}}/reference/configuration#heading-csrf), Frugal will run the following process on protected pages:
 
 - Frugal will set in the `state` a `csrf` value containing the CSRF token. You can include it in your markup wherever you wish.
 - Frugal will send a CSRF token in a cookie alongside the protected page
-- During `POST`, `PUT`, `PATCH` or `DELETE`, Frugal will search the request for either :
+- During `POST`, `PUT`, `PATCH` or `DELETE`, Frugal will search the request for either:
   - a form field with the name `csrftoken` (or the name you chose in the configuration)
   - a header with the name `X-CSRFToken` (or the name you chose in the configuration)
 - Frugal will compare what it found to the token in the cookie and reject the request if they don't match with a [403 Forbidden](https://developer.mozilla.org/fr/docs/Web/HTTP/Status/403).
@@ -154,7 +154,7 @@ If your page is static, you cannot access the `state`. You will need some javasc
 
 Frugal will create a session for each client. Each client gets a cookie with a unique id. The Frugal will use this id to get the data stored in the [session storage](/doc@{{version}}/reference/configuration#heading-session).
 
-Frugal comes only with two types of session storage :
+Frugal comes only with two types of session storage:
 
 - the `CookieSessionStorage` where session data for the user is stored in a cookie.
 - the `MemorySessionStorage` where session data is stored in memory.
@@ -196,7 +196,7 @@ Check if a value is stored in the session with the given `key`.
 
 ### Custom session storage
 
-If you want to store session data somewhere else, you will have to write your own `SessionStorage` following this interface :
+If you want to store session data somewhere else, you will have to write your own `SessionStorage` following this interface:
 
 ```ts
 interface SessionStorage {
@@ -233,7 +233,7 @@ It should return the id of the session.
 
 #### `get`
 
-The `get` method will be called to fetch the data of the session with :
+The `get` method will be called to fetch the data of the session with:
 
 - the headers of the request if you need to read some cookies
 - the id of the session
@@ -271,7 +271,7 @@ type Middleware<CONTEXT = unknown> = (
 ) => Promise<Response> | Response;
 ```
 
-The `next` function will delegate to the next middleware in the stack. The current middleware is responsible for forwarding the `context` (or a modified context if needed) to the next middleware. The middleware can choose to answer the request directly (without calling `next`) or delegate to the next middleware and intercept and modify the `Response` :
+The `next` function will delegate to the next middleware in the stack. The current middleware is responsible for forwarding the `context` (or a modified context if needed) to the next middleware. The middleware can choose to answer the request directly (without calling `next`) or delegate to the next middleware and intercept and modify the `Response`:
 
 ```ts
 function middleware(context: Context, next: Next<Context>) {
@@ -288,7 +288,7 @@ function middleware(context: Context, next: Next<Context>) {
 
 When you register a middleware, it will be pushed at the top of the middleware stack. It means you have acces to the request before any Frugal internal middleware, and to the object response after each Frugal internal middleware.
 
-The base middleware for Frugal will receive the following context :
+The base middleware for Frugal will receive the following context:
 
 ```ts
 type Context = {

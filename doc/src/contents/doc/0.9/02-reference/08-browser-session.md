@@ -4,14 +4,14 @@ A **Multi Page Application (MPA)** is a "classical" website consisting of multip
 
 A **Single Page Appplication (SPA)** is a website consisting of a single HTML page that loads a javascript app. To navigate from one "view" to another, the javascript queries the necessary data and then computes and renders the DOM of the destination. Next.js, Remix, and SvelteKit are examples of SPA frameworks.
 
-Both have their strenghts and weaknesses :
+Both have their strenghts and weaknesses:
 
 - MPAs are by default more accessible than SPA (screen reader and assistive technology easily interpret static markup, which also works well on low-capability devices). A SPA can be as accessible as an MPA, but it needs more work.
 - MPAs are less complex than SPA by default.
 - SPAs handle complex stateful websites better (for a web app like Gmail).
 - MPAs are faster on first load (because SPA needs to load the whole application), but on subsequent navigation, the SPA is faster (the application is already loaded while the MPA needs to load the next page).
 
-Frugal is an MPA framework, but it comes with a tool to mitigate its weaknesses : _Browser Session_
+Frugal is an MPA framework, but it comes with a tool to mitigate its weaknesses: _Browser Session_
 
 ## Features
 
@@ -32,7 +32,7 @@ _Browser Session_ will intercept navigation intent (like a link hover, focus, et
 
 ## Usage
 
-To use _Browser Session_, you just have to initialize it in a _script_ :
+To use _Browser Session_, you just have to initialize it in a _script_:
 
 ```ts filename=session.script.ts
 import { BrowserSession } from "https://deno.land/x/frugal@{{FRUGAL_VERSION}}/runtime/session.ts";
@@ -110,7 +110,7 @@ import { BrowserSession } from "https://deno.land/x/frugal@{{FRUGAL_VERSION}}/ru
 const result = await BrowserSession.navigate("/target/url");
 ```
 
-The function is async and returns a sucess flag with a reason in case of failure :
+The function is async and returns a sucess flag with a reason in case of failure:
 
 ```ts
 export enum Reason {
@@ -138,7 +138,7 @@ const form = document.getElementById(MY_FORM_ID);
 BrowserSession.submit(form);
 ```
 
-The function is async and returns a sucess flag with a reason in case of failure :
+The function is async and returns a sucess flag with a reason in case of failure:
 
 ```ts
 export enum Reason {
@@ -172,7 +172,7 @@ This event is cancelable, allowing you to cancel a visit before it happens with 
 
 ### `frugal:readystatechange`
 
-This event contains the current `readystate` in `event.detail.readystate`. This event will be dispatched three times during navigation :
+This event contains the current `readystate` in `event.detail.readystate`. This event will be dispatched three times during navigation:
 
 - At the beginning of a navigation that was not canceled with `readystate: loading`.
 - After having fetched and rendered the target document with `readystate: interactive`

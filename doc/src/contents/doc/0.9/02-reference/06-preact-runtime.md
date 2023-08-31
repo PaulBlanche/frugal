@@ -16,7 +16,7 @@ First, you'll need an [Import Map](https://developer.mozilla.org/en-US/docs/Web/
 }
 ```
 
-You'll also need a `deno.json` [config file](https://deno.land/manual@v{{DENO_VERSION}}/getting_started/configuration_file) to configure the JSX and the Import Map :
+You'll also need a `deno.json` [config file](https://deno.land/manual@v{{DENO_VERSION}}/getting_started/configuration_file) to configure the JSX and the Import Map:
 
 ```json filename=deno.json
 {
@@ -28,7 +28,7 @@ You'll also need a `deno.json` [config file](https://deno.land/manual@v{{DENO_VE
 }
 ```
 
-Now that Deno is configured to understand `jsx` correctly, we need to configure Frugal :
+Now that Deno is configured to understand `jsx` correctly, we need to configure Frugal:
 
 ```ts filename=frugal.config.ts
 import { Config } from "https://deno.land/x/frugal@{{FRUGAL_VERSION}}/mod.ts"
@@ -52,7 +52,7 @@ Those functions can only be used in server-side components. They can't be used i
 
 ### `getRenderFrom`
 
-The only thing that changes in page descriptors is the render function. Instead of defining it ourselves, the preact runtime computes a render function for us from a JSX component :
+The only thing that changes in page descriptors is the render function. Instead of defining it ourselves, the preact runtime computes a render function for us from a JSX component:
 
 ```tsx filename=page.tsx
 import { getRenderFrom } from "https://deno.land/x/frugal@{{FRUGAL_VERSION}}/runtime/preact.server.ts"
@@ -117,7 +117,7 @@ function MyComponentIsland(props: MyComponentProps) {
 > [!warn]
 > The `<Island>` component does not perform any hydration; it only generates the markup necessary for hydration. The hydration is done via a client-side call to the [`hydrate`](/doc@{{version}}/reference/preact-runtime#heading-hydrate) function.
 
-The component accepts the following props :
+The component accepts the following props:
 
 ```ts
 export type IslandProps<PROPS> = {
@@ -134,7 +134,7 @@ export type HydrationStrategy = "load" | "idle" | "visible" | "media-query" | "n
 
 #### `strategy`
 
-This prop selects the hydration strategy for the island :
+This prop selects the hydration strategy for the island:
 
 - `"load"` will hydrate the island on page load (default behavior)
 - `"idle"` will defer hydration until the browser is idle (via `requestIdleCallback` or `setTimeout` for browsers not supporting it)
@@ -169,7 +169,7 @@ The props passed to your component.
 
 ### `hydrate`
 
-This is the function to call client-side (inside a _script_) to hydrate an `<Island>` :
+This is the function to call client-side (inside a _script_) to hydrate an `<Island>`:
 
 ```ts filename=MyComponentIsland.script.ts
 import { hydrate } from "https://deno.land/x/frugal@{{FRUGAL_VERSION}}/runtime/preact.client.ts"
@@ -206,7 +206,7 @@ The JS chunk containing your component will not be loaded immediately. Instead, 
 
 ### `<Head>`
 
-This component allows you to change the `<head>` content and the attributes of `<html>` and `<body>` from everywhere in your JSX :
+This component allows you to change the `<head>` content and the attributes of `<html>` and `<body>` from everywhere in your JSX:
 
 ```tsx filename=Component.tsx
 import { Head } from "https://deno.land/x/frugal@{{FRUGAL_VERSION}}/runtime/preact.client.ts"

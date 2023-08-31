@@ -18,7 +18,7 @@ First, you'll need an [Import Map](https://developer.mozilla.org/en-US/docs/Web/
 }
 ```
 
-You'll also need a `deno.json` [config file](https://deno.land/manual@v{{DENO_VERSIO}}/getting_started/configuration_file) to configure the Import Map :
+You'll also need a `deno.json` [config file](https://deno.land/manual@v{{DENO_VERSIO}}/getting_started/configuration_file) to configure the Import Map:
 
 ```json filename=deno.json
 {
@@ -26,7 +26,7 @@ You'll also need a `deno.json` [config file](https://deno.land/manual@v{{DENO_VE
 }
 ```
 
-Now that deno is configured, we need to configure Frugal with the [svelte plugin](/doc@{{version}}/reference/plugins#heading-svelte-experimental) :
+Now that deno is configured, we need to configure Frugal with the [svelte plugin](/doc@{{version}}/reference/plugins#heading-svelte-experimental):
 
 ```ts filename=frugal.config.ts
 import { Config } from "https://deno.land/x/frugal@{{FRUGAL_VERSION}}/mod.ts"
@@ -47,7 +47,7 @@ Those functions can only be used in server-side components. They can't be used i
 
 ### `getRenderFrom`
 
-The only thing that changes in page descriptors is the render function. Instead of defining it ourselves, the Svelte runtime compute a render function for us from a Svelte component :
+The only thing that changes in page descriptors is the render function. Instead of defining it ourselves, the Svelte runtime compute a render function for us from a Svelte component:
 
 ```tsx filename=page.tsx
 import { getRenderFrom } from "https://deno.land/x/frugal@{{FRUGAL_VERSION}}/runtime/preact.server.ts"
@@ -104,11 +104,11 @@ Wrapping your stateful client-side component in the `<Island>` component will cr
 > [!warn]
 > The `<Island>` component does not perform any hydration; it only generates the markup necessary for hydration. The hydration is done via a client-side call to the [`hydrate`](/doc@{{version}}/reference/svelte-runtime#heading-hydrate) function.
 
-The component accepts the following props :
+The component accepts the following props:
 
 #### `strategy`
 
-This prop selects the hydration strategy for the island :
+This prop selects the hydration strategy for the island:
 
 - `"load"` will hydrate the island on page load (default behavior)
 - `"idle"` will defer hydration until the browser is idle (via `requestIdleCallback` or `setTimeout` for browsers not supporting it)
@@ -139,7 +139,7 @@ The props passed to your component.
 
 ### `hydrate`
 
-This is the function to call client-side (inside a _script_) to hydrate an `<Island>` :
+This is the function to call client-side (inside a _script_) to hydrate an `<Island>`:
 
 ```ts filename=MyComponentIsland.script.ts
 import { hydrate } from "https://deno.land/x/frugal@{{FRUGAL_VERSION}}/runtime/svelte.client.ts"

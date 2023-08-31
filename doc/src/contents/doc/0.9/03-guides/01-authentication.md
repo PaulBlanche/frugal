@@ -4,7 +4,7 @@ For authentication, you'll need to use [Server Session](/doc@{{version}}/referen
 
 ## Login page
 
-Let's build the login page with native form submission :
+Let's build the login page with native form submission:
 
 ```ts
 import {
@@ -88,7 +88,7 @@ export function render({ data }: RenderContext<typeof route, Data>) {
 > [!warn]
 > We store an `accessToken` in the session. If you use `CookieSessionStorage`, it will be stored **unencrypted** in the client browser.
 
-The login page has multiple functionality :
+The login page has multiple functionality:
 
 - If the user is already logged in, it redirects to the homepage
 - If the user is not logged in, it displays a login form
@@ -97,12 +97,12 @@ The login page has multiple functionality :
 
 ## Restrict access to some pages
 
-You could restrict access to some pages with a check to the `accessToken` in the `GET` method, but that would mean :
+You could restrict access to some pages with a check to the `accessToken` in the `GET` method, but that would mean:
 
 - extra duplicate code in each restricted page
 - static pages won't be restricted, because they don't have a `GET` method
 
-The best way to handle this situation is to use a `Server Middleware` :
+The best way to handle this situation is to use a `Server Middleware`:
 
 ```ts
 import { Context, Next } from "https://deno.land/x/frugal@{{FRUGAL_VERSION}}/mod.ts";
@@ -130,7 +130,7 @@ export function accessRestrictedPages(context: Context, next: Next<Context>) {
 
 Don't forget to [register the middleware](/doc@{{FRUGAL_CONFIG}}/reference/configuration#heading-middlewares) in your config
 
-In this middleware :
+In this middleware:
 
 - if the URL is not restricted, we delegate to the next middleware
 - if the URL is protected, we check the access token

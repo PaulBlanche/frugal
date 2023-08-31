@@ -8,7 +8,7 @@ Export your project as a static website to be served with [NGINX](https://nginx.
 
 ### Configuration
 
-To use this exporter, add it to your config file :
+To use this exporter, add it to your config file:
 
 ```ts filename=frugal.config.ts
 import { NginxExporter } from "https://deno.land/x/frugal@{{FRUGAL_VERSION}}/mod.ts";
@@ -30,12 +30,12 @@ Export your project to be run on Deno or deployed on [Deno Deploy][https://deno.
 
 ### Configuration
 
-You first have to choose a cache provider for static pages :
+You first have to choose a cache provider for static pages:
 
 - `DenoKVCache` that will store static pages in [Deno KV](https://deno.com/deploy/docs/kv) (still in beta on Deno Deploy)
 - `UpstashCache` that will store static pages in [Upstash](https://upstash.com/)
 
-Then, you'll have to add the Exporter to your config file :
+Then, you'll have to add the Exporter to your config file:
 
 ```ts filename=frugal.config.ts
 import { DenoExporter, UpstashCache } from "https://deno.land/x/frugal@{{FRUGAL_VERSION}}/mod.ts";
