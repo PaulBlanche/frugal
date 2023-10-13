@@ -1,0 +1,60 @@
+{
+  "#log: default config:1": [
+    0,
+    [
+      [
+        "\u001b[90m01/01/1970 24:00:00.000 UTC\u001b[39m \u001b[107m\u001b[97m[\u001b[39m\u001b[30mINFO   \u001b[39m\u001b[97m]\u001b[39m\u001b[49m \u001b[1m ??? >\u001b[22m default"
+      ],
+      [
+        "\u001b[90m01/01/1970 24:00:02.000 UTC\u001b[39m \u001b[101m\u001b[91m[\u001b[39m\u001b[30mERROR  \u001b[39m\u001b[91m]\u001b[39m\u001b[49m \u001b[31m\u001b[1m test1 >\u001b[22m\u001b[39m \u001b[91merror\u001b[39m"
+      ],
+      [
+        "\u001b[90m01/01/1970 24:00:04.000 UTC\u001b[39m \u001b[101m\u001b[91m[\u001b[39m\u001b[30mERROR  \u001b[39m\u001b[91m]\u001b[39m\u001b[49m \u001b[31m\u001b[1m test1 >\u001b[22m\u001b[39m \u001b[91mError : true error default\u001b[39m\n\u001b[91m\u001b[39m\n\u001b[91m[mocked error stack]\u001b[39m"
+      ],
+      [
+        "\u001b[90m01/01/1970 24:00:06.000 UTC\u001b[39m \u001b[107m\u001b[97m[\u001b[39m\u001b[30mINFO   \u001b[39m\u001b[97m]\u001b[39m\u001b[49m \u001b[1m test1 >\u001b[22m Error : true error\n\n[mocked error stack]"
+      ],
+      [
+        "\u001b[90m01/01/1970 24:00:08.000 UTC\u001b[39m \u001b[103m\u001b[93m[\u001b[39m\u001b[30mWARNING\u001b[39m\u001b[93m]\u001b[39m\u001b[49m \u001b[33m\u001b[1m test1 >\u001b[22m\u001b[39m \u001b[33mwarning\u001b[39m"
+      ],
+      [
+        "\u001b[90m01/01/1970 24:00:10.000 UTC\u001b[39m \u001b[107m\u001b[97m[\u001b[39m\u001b[30mINFO   \u001b[39m\u001b[97m]\u001b[39m\u001b[49m \u001b[1m test1 >\u001b[22m info"
+      ],
+      [
+        "\u001b[90m01/01/1970 24:00:16.000 UTC\u001b[39m \u001b[101m\u001b[91m[\u001b[39m\u001b[30mERROR  \u001b[39m\u001b[91m]\u001b[39m\u001b[49m \u001b[31m\u001b[1m test2 >\u001b[22m\u001b[39m \u001b[91merror\u001b[39m"
+      ],
+      [
+        "\u001b[90m01/01/1970 24:00:18.000 UTC\u001b[39m \u001b[103m\u001b[93m[\u001b[39m\u001b[30mWARNING\u001b[39m\u001b[93m]\u001b[39m\u001b[49m \u001b[33m\u001b[1m test2 >\u001b[22m\u001b[39m \u001b[33mwarning\u001b[39m"
+      ],
+      [
+        "\u001b[90m01/01/1970 24:00:20.000 UTC\u001b[39m \u001b[107m\u001b[97m[\u001b[39m\u001b[30mINFO   \u001b[39m\u001b[97m]\u001b[39m\u001b[49m \u001b[1m test2 >\u001b[22m info"
+      ]
+    ]
+  ],
+  "#log: custom config:1": [
+    0,
+    [
+      [
+        "\u001b[90m01/01/1970 24:00:24.000 UTC\u001b[39m \u001b[101m\u001b[91m[\u001b[39m\u001b[30mERROR  \u001b[39m\u001b[91m]\u001b[39m\u001b[49m \u001b[31m\u001b[1m test1 >\u001b[22m\u001b[39m \u001b[91merror\u001b[39m"
+      ],
+      [
+        "\u001b[90m01/01/1970 24:00:24.000 UTC\u001b[39m \u001b[101m\u001b[91m[\u001b[39m\u001b[30mERROR  \u001b[39m\u001b[91m]\u001b[39m\u001b[49m \u001b[31m\u001b[1m test1 >\u001b[22m\u001b[39m \u001b[91mError : true error default\u001b[39m\n\u001b[91m\u001b[39m\n\u001b[91m[mocked error stack]\u001b[39m"
+      ],
+      [
+        "\u001b[90m01/01/1970 24:00:24.000 UTC\u001b[39m \u001b[101m\u001b[91m[\u001b[39m\u001b[30mERROR  \u001b[39m\u001b[91m]\u001b[39m\u001b[49m \u001b[31m\u001b[1m test2 >\u001b[22m\u001b[39m \u001b[91merror\u001b[39m"
+      ],
+      [
+        "\u001b[90m01/01/1970 24:00:24.000 UTC\u001b[39m \u001b[103m\u001b[93m[\u001b[39m\u001b[30mWARNING\u001b[39m\u001b[93m]\u001b[39m\u001b[49m \u001b[33m\u001b[1m test2 >\u001b[22m\u001b[39m \u001b[33mwarning\u001b[39m"
+      ],
+      [
+        "\u001b[90m01/01/1970 24:00:24.000 UTC\u001b[39m \u001b[107m\u001b[97m[\u001b[39m\u001b[30mINFO   \u001b[39m\u001b[97m]\u001b[39m\u001b[49m \u001b[1m test2 >\u001b[22m info"
+      ],
+      [
+        "\u001b[90m01/01/1970 24:00:24.000 UTC\u001b[39m \u001b[100m\u001b[90m[\u001b[39m\u001b[30mDEBUG  \u001b[39m\u001b[90m]\u001b[39m\u001b[49m \u001b[90m\u001b[1m test2 >\u001b[22m\u001b[39m \u001b[90mdebug\u001b[39m"
+      ],
+      [
+        "\u001b[90m01/01/1970 24:00:24.000 UTC\u001b[39m \u001b[100m\u001b[90m[\u001b[39m\u001b[30mVERBOSE\u001b[39m\u001b[90m]\u001b[39m\u001b[49m \u001b[90m\u001b[1m test2 >\u001b[22m\u001b[39m \u001b[90mverbose\u001b[39m"
+      ]
+    ]
+  ]
+}

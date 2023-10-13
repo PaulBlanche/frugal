@@ -1,0 +1,15 @@
+.red {
+    composes: boo baz;
+    composes: red_base from "./test3.module.css";
+    font-size: 10px;
+}
+
+.boo {
+    composes: red_base from "./test3.module.css";
+    background: white;
+}
+
+.baz {
+    composes: red_base from "./test3.module.css";
+    text-transform: uppercase;
+}

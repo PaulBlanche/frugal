@@ -1,50 +1,44 @@
 name: test
 
-on: 
-  push:
-    branches: dev
-  pull_request:
-    branches: dev
-    types: [opened, synchronize, reopened]
+on:
+    push:
+        branches: dev
+    pull_request:
+        branches: dev
+        types: [opened, synchronize, reopened]
 
 jobs:
-  test:
-    name: run tests
+    test:
+        name: run tests
 
-    strategy:
-      matrix:
-        deno-version: ["1.34", 1.x, canary]
-        include:
-          - deno-version: canary
-            coverage: true
+        strategy:
+            matrix:
+                node-version: [20.x, canary]
+                include:
+                    - node-version: canary
+                      coverage: true
 
-    runs-on: ubuntu-latest
+        runs-on: ubuntu-latest
 
-    env:
-      CI: true
+        env:
+            CI: true
 
-    steps:
-    - name: checkout project
-      uses: actions/checkout@v3
+        steps:
+            - name: checkout project
+              uses: actions/checkout@v3
 
-    - name: install deno ${{ matrix.deno-version }}
-      uses: denoland/setup-deno@v1
-      with:
-        deno-version: ${{ matrix.deno-version }}
+            - name: install node ${{ matrix.node-version }}
+              uses: actions/setup-node@v3
+              with:
+                  node-version: ${{ matrix.node-version }}
 
-    - name: run lint
-      run: deno lint
+            - name: run test with coverage
+              run: npm run test --workspace=frugal -- --coverage
 
-    - name: install binaries
-      run: deno run -A test/install_binaries.ts
-
-    - name: run test with coverage
-      run: deno task test --coverage
-
-    - name: integration test code coverage
-      if: matrix.coverage
-      uses: codecov/codecov-action@v3
-      with: 
-        token: ${{ secrets.CODECOV_TOKEN }}
-        files: ./cov_profile.lcov
-        fail_ci_if_error: true
+            - name: integration test code coverage
+              if: matrix.coverage
+              uses: codecov/codecov-action@v3
+              with:
+                  token: ${{ secrets.CODECOV_TOKEN }}
+                  files: ./cov_profile.lcov
+                  fail_ci_if_error: true
