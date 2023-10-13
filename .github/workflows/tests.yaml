@@ -13,7 +13,7 @@ jobs:
 
         strategy:
             matrix:
-                node-version: [20.x, canary]
+                node-version: [20.x, 20-v8-canary]
                 include:
                     - node-version: canary
                       coverage: true
@@ -40,5 +40,5 @@ jobs:
               uses: codecov/codecov-action@v3
               with:
                   token: ${{ secrets.CODECOV_TOKEN }}
-                  files: ./cov_profile.lcov
+                  files: ./packages/frugal/coverage
                   fail_ci_if_error: true
