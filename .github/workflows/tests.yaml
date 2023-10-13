@@ -15,7 +15,7 @@ jobs:
             matrix:
                 node-version: [20.x, 20-v8-canary]
                 include:
-                    - node-version: canary
+                    - node-version: 20-v8-canary
                       coverage: true
 
         runs-on: ubuntu-latest
