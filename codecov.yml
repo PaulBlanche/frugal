@@ -6,4 +6,4 @@ component_management:
         - component_id: frugal
           name: frugal
           paths:
-              - api
+              - packages/frugal
