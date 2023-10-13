@@ -1,9 +1,0 @@
-ignore:
-    - "test/**/*"
-
-component_management:
-    individual_components:
-        - component_id: frugal
-          name: frugal
-          paths:
-              - packages/frugal

@@ -1,6 +1,6 @@
 dist/
 .vscode
-cov_profile.lcov
+coverage/
 .env
 node_modules
 TODO.md

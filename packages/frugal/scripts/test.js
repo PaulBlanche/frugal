@@ -13,22 +13,26 @@ if (process.env["CHILD_PROCESS"] === undefined) {
 }
 
 function spawnTestProcess() {
-    /** @type {Record<string, string>} */
-    const env = { ...process.env, CHILD_PROCESS: "1" };
-    const flags = [];
+    /** @type {{ command: string; args: string[]; env: Record<string, string> }} */
+    const config = {
+        command: process.argv[0],
+        args: [process.argv[1]],
+        env: { ...process.env, CHILD_PROCESS: "1" },
+    };
+
     const argv = process.argv.slice(2);
 
     if (argv.includes("--update")) {
-        env["UPDATE_SNAPSHOT"] = "1";
+        config.env["UPDATE_SNAPSHOT"] = "1";
     }
 
     if (argv.includes("--coverage")) {
-        env["NODE_V8_COVERAGE"] = "coverage";
-        flags.push("--experimental-test-coverage");
+        config.command = "c8";
+        config.args.unshift("node");
     }
 
-    child_process.spawn(process.argv[0], [...flags, process.argv[1]], {
-        env,
+    child_process.spawn(config.command, config.args, {
+        env: config.env,
         stdio: "inherit",
     });
 }
