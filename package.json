@@ -1,0 +1,15 @@
+{
+    "name": "@",
+    "private": true,
+    "workspaces": [
+        "packages/frugal",
+        "packages/example/basic"
+    ],
+    "devDependencies": {
+        "@types/node": "^20.8.0",
+        "c8": "^8.0.1",
+        "prettier": "^3.0.3",
+        "prettier-plugin-jsdoc": "^1.0.2",
+        "typescript": "^5.2.2"
+    }
+}

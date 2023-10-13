@@ -1,0 +1,6 @@
+{
+    "lock": false,
+    "imports": {
+        "jquery": "https://esm.sh/jquery@3.7.1"
+    }
+}
