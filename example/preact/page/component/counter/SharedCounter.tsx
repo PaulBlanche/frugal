@@ -1,3 +1,5 @@
+/* @jsxRuntime automatic */
+/* @jsxImportSource preact */
 import * as hooks from "preact/hooks";
 import { count } from "./count.ts";
 

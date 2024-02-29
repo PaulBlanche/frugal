@@ -1,3 +1,5 @@
+/* @jsxRuntime automatic */
+/* @jsxImportSource preact */
 import { Head, PageProps } from "../../../../runtime/preact.server.ts";
 import { SharedCounterIsland } from "../component/counter/SharedCounterIsland.tsx";
 import "../session.script.ts";

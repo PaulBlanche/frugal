@@ -8,9 +8,9 @@
 
 
 <div
-    data-hydratable={name}
-    data-hydration-strategy={strategy}
-    data-hydration-query={query}
+    data-frugal-hydratable={name}
+    data-frugal-hydration-strategy={strategy}
+    data-frugal-hydration-query={query}
 >
 {@html `<script type="application/json">${JSON.stringify({ props })}</script>`}
     <svelte:component this={component} {...props}><slot /></svelte:component>

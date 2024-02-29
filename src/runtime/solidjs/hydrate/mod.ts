@@ -1,6 +1,6 @@
 import type { GetApp } from "../types.ts";
-import { hydrateIsland } from "./hydrateIsland.tsx";
 import { hydrate as baseHydrate } from "../../hydrate.ts";
+import { hydrateIsland } from "./hydrateIsland.tsx";
 
 export function hydrate<PROPS>(name: string, getApp: GetApp<PROPS>) {
     baseHydrate(name, {

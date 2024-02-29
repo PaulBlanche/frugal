@@ -8,9 +8,7 @@
             "deno.unstable",
             "dom.iterable",
             "dom.asynciterable"
-        ],
-        "jsxImportSource": "preact",
-        "jsx": "react-jsx"
+        ]
     },
     "fmt": {
         "lineWidth": 120,

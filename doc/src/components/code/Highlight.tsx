@@ -1,5 +1,5 @@
 import Prism from "$dep/prism.ts";
-import * as he from "$dep/he.ts";
+import he from "$dep/he.ts";
 import { clsx } from "$dep/clsx.ts";
 
 import highlight from "./Highlight.module.css";

@@ -10,7 +10,7 @@ import { App } from "../types.ts";
 import { ISLAND_END } from "../Island.tsx";
 
 export function hydrateIsland<PROPS>(
-    start: HTMLScriptElement,
+    start: HTMLElement,
     App: App<PROPS>,
 ) {
     const props: preact.RenderableProps<PROPS> = start.textContent ? JSON.parse(start.textContent ?? {}) : {};
@@ -22,11 +22,9 @@ export function hydrateIsland<PROPS>(
         <Hydratable App={App} props={props} />,
         createRootFragment(start.parentNode!, children),
     );
-
-    start.dataset["hydrated"] = "";
 }
 
-function getComponentRange(start: HTMLScriptElement) {
+function getComponentRange(start: HTMLElement) {
     // get the "dom range" of the island (scan nodes from start until)
     const children: Node[] = [];
     let node: ChildNode | null = start.nextSibling;

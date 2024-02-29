@@ -191,7 +191,7 @@ class CssModuleCompiler {
             }).join("\n")
         }
 import "${compiledCssPath}";
-import { clsx } from "npm:clsx@2.0.0";
+import clsx from "https://esm.sh/clsx@2.0.0";
 
 export default {
     ${

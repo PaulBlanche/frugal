@@ -1,7 +1,7 @@
 /* @jsxRuntime automatic */
-/* @jsxImportSource preact */
-import * as hooks from "preact/hooks";
-import * as preact from "preact";
+/* @jsxImportSource solid-js */
+import * as solid from "solid-js";
+import { Hydration, ssr } from "solid-js/web";
 import type { HydrationStrategy } from "./types.ts";
 
 export const ISLAND_END = "frugal-island-end";
@@ -14,13 +14,13 @@ export type IslandProps<PROPS> =
         name: string;
     }
     & ({
-        Component: preact.ComponentType<PROPS>;
-        props: preact.RenderableProps<PROPS>;
+        Component: solid.Component<PROPS>;
+        props: solid.ParentProps<PROPS>;
     } | {
-        Component: preact.ComponentType;
+        Component: solid.Component;
     });
 
-const islandContext = preact.createContext(false);
+const islandContext = solid.createContext(false);
 
 export function Island<PROPS>(
     {
@@ -31,7 +31,7 @@ export function Island<PROPS>(
         ...rest
     }: IslandProps<PROPS>,
 ) {
-    const isInIsland = hooks.useContext(islandContext);
+    const isInIsland = solid.useContext(islandContext);
 
     const Component = "props" in rest ? <rest.Component {...rest.props} /> : <rest.Component />;
 
@@ -51,10 +51,18 @@ export function Island<PROPS>(
                 data-frugal-hydration-strategy={strategy ?? "load"}
                 data-frugal-hydration-query={query}
                 type="application/json"
-                dangerouslySetInnerHTML={"props" in rest ? { __html: JSON.stringify(rest.props) } : undefined}
+                innerHTML={"props" in rest ? JSON.stringify(rest.props) : undefined}
             />
-            {!clientOnly && Component}
-            {preact.h(`!--${ISLAND_END}--`, null)}
+            <Hydration>
+                {!clientOnly && Component}
+            </Hydration>
+            <IslandEndComment />
         </islandContext.Provider>
     );
+}
+
+function IslandEndComment() {
+    return (typeof document === "undefined"
+        ? ssr(`<!--${ISLAND_END}--\>`)
+        : globalThis.document?.createComment(ISLAND_END)) as solid.JSX.Element;
 }
